@@ -1,4 +1,4 @@
-package com.example.architecture_test
+package com.idiotfrogs.memoryseal
 
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.JavaVersion

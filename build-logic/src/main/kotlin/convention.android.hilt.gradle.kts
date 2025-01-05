@@ -1,4 +1,4 @@
-import com.example.architecture_test.libs
+import com.idiotfrogs.memoryseal.libs
 
 plugins {
     id("com.google.devtools.ksp")

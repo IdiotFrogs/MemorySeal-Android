@@ -1,4 +1,4 @@
-package com.example.architecture_test
+package com.idiotfrogs.memoryseal
 
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
