@@ -1,4 +1,4 @@
-package com.idiotfrogs.codin
+package com.idiotfrogs.memoryseal
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

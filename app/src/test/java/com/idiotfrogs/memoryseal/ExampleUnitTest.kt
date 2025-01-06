@@ -1,4 +1,4 @@
-package com.idiotfrogs.codin
+package com.idiotfrogs.memoryseal
 
 import org.junit.Test
 

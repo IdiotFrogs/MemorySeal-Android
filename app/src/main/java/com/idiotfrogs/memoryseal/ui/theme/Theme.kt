@@ -1,6 +1,5 @@
-package com.idiotfrogs.codin.ui.theme
+package com.idiotfrogs.memoryseal.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme

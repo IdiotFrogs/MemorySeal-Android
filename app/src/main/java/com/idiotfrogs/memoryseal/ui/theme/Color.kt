@@ -1,4 +1,4 @@
-package com.idiotfrogs.codin.ui.theme
+package com.idiotfrogs.memoryseal.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
