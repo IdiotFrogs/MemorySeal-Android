@@ -1,4 +1,4 @@
-import com.example.architecture_test.configureKotlinAndroid
+import com.idiotfrogs.memoryseal.configureKotlinAndroid
 
 plugins {
     id("com.android.library")

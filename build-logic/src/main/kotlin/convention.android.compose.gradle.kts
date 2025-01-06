@@ -1,4 +1,4 @@
-import com.example.architecture_test.configureComposeAndroid
+import com.idiotfrogs.memoryseal.configureComposeAndroid
 
 plugins {
     id("convention.android.library")

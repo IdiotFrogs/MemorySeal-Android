@@ -20,7 +20,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Codin"
+rootProject.name = "MemorySeal"
 
 include(":app")
 include(":common:extension")
@@ -33,12 +33,11 @@ include(":core:domain")
 include(":core:model")
 include(":core:designsystem")
 include(":core:datastore")
+include(":feature:auth")
 include(":feature:home")
-include(":feature:calender")
-include(":feature:insight")
-include(":feature:login")
+include(":feature:detail")
+include(":feature:profile")
+include(":feature:create")
 include(":feature:setting")
 include(":widget")
 include(":baselineprofile")
-
-gradle.startParameter.excludedTaskNames.addAll(listOf(":build-logic:testClasses"))
