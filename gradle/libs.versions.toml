@@ -8,7 +8,7 @@ androidxNavigation = "2.8.5"
 kotlinxSerializationJson = "1.7.3"
 kotlin = "2.1.0"
 kotlinDatetime = "0.6.1"
-hilt = "2.52"
+hilt = "2.55"
 hiltNavigation = "1.2.0"
 ksp = "2.1.0-1.0.29"
 
