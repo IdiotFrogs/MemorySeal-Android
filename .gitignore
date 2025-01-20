@@ -16,3 +16,4 @@
 local.properties
 /.gradle
 .kotlin/
+app/google-services.json

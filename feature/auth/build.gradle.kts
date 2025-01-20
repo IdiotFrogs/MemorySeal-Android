@@ -7,6 +7,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:data"))
+
+    implementation(libs.androidx.navigation)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)

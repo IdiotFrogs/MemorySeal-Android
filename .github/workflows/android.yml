@@ -42,14 +42,22 @@ jobs:
     - name: Run detekt
       run: ./gradlew detekt
 
+    - name: Create file
+      run: cat /home/runner/work/MemorySeal-Android/MemorySeal-Android/app/google-services.json | base64
+
+    - name: Putting data
+      env:
+        DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
+      run: echo $DATA > /home/runner/work/MemorySeal-Android/MemorySeal-Android/app/google-services.json
+
     - name: Build with Gradle
       run: ./gradlew build
 
-    - name: Codin Android CI Discord Notification
+    - name: MemorySeal Android CI Discord Notification
       uses: sarisia/actions-status-discord@v1
       if: ${{ success() }}
       with:
-        title: ✅ Codin-Android-CI 성공! ✅
+        title: ✅ MemorySeal-Android-CI 성공! ✅
         webhook: ${{ secrets.CODIN_DISCORD_WEBHOOK }}
         status: ${{ job.status }}
         image: ${{ secrets.SUCCESS_IMAGE }}

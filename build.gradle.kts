@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.android.test) apply false
     alias(libs.plugins.baselineprofile) apply false
     alias(libs.plugins.detekt)
+    alias(libs.plugins.google.services) apply false
 }
 
 allprojects {
