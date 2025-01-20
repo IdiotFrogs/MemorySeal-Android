@@ -1,0 +1,70 @@
+package com.idiotfrogs.auth
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.idiotfrogs.data.LoginManager
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
+import javax.inject.Inject
+
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val loginManager: LoginManager
+) : ViewModel() {
+    private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Init)
+    val uiState = _uiState
+        .onStart {
+            fetchInitUi()
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            LoginUiState.Init
+        )
+
+    // TODO: 공통 error 처리 CEH 분리
+    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        _uiState.value = LoginUiState.Error(throwable.message)
+    }
+
+    private val safeScope = viewModelScope + coroutineExceptionHandler
+
+    private fun fetchInitUi() {
+        viewModelScope.launch {
+            _uiState.emit(LoginUiState.Init)
+            /**
+                sampleUsecase.onSuccess {
+                    _uiState.emit(SampleUiState.Success)
+                }.onFailure {
+                    _uiState.emit(SampleUiState.Error)
+                }
+             */
+        }
+    }
+
+    fun googleLogin() {
+        safeScope.launch {
+            loginManager.googleLogin()
+            _uiState.emit(LoginUiState.Success)
+        }
+    }
+
+    fun appleLogin() {
+        safeScope.launch {
+            loginManager.appleLogin()
+            _uiState.emit(LoginUiState.Success)
+        }
+    }
+}
+
+sealed interface LoginUiState {
+    data object Init : LoginUiState
+    data object Success : LoginUiState
+    data class Error(val errorMessage: String?) : LoginUiState
+}

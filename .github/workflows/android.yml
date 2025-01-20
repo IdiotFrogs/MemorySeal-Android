@@ -45,11 +45,11 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
-    - name: Codin Android CI Discord Notification
+    - name: MemorySeal Android CI Discord Notification
       uses: sarisia/actions-status-discord@v1
       if: ${{ success() }}
       with:
-        title: ✅ Codin-Android-CI 성공! ✅
+        title: ✅ MemorySeal-Android-CI 성공! ✅
         webhook: ${{ secrets.CODIN_DISCORD_WEBHOOK }}
         status: ${{ job.status }}
         image: ${{ secrets.SUCCESS_IMAGE }}
