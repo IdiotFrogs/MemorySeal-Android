@@ -7,26 +7,40 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.idiotfrogs.data.LoginManager
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
-    loginViewModel: LoginViewModel = viewModel()
+    loginViewModel: LoginViewModel = viewModel(),
 ) {
     val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val loginManager = remember { LoginManager(context) }
 
-    // TODO: Login button guideline에 맞게 디자인 수정
     Column(modifier = Modifier.fillMaxSize()) {
         Button(
-            onClick = { loginViewModel.googleLogin() }
+            onClick = {
+                coroutineScope.launch {
+                    loginViewModel.socialLogin { loginManager.googleLogin() }
+                }
+            }
         ) {
             Text(text = "google login")
         }
-
         Button(
-            onClick = { loginViewModel.appleLogin() }
+            onClick = {
+                coroutineScope.launch {
+                    loginViewModel.socialLogin { loginManager.appleLogin() }
+                }
+            }
         ) {
             Text(text = "apple login")
         }

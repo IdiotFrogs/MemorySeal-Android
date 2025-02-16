@@ -2,7 +2,6 @@ package com.idiotfrogs.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.idiotfrogs.data.LoginManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,9 +13,7 @@ import kotlinx.coroutines.plus
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
-    private val loginManager: LoginManager
-) : ViewModel() {
+class LoginViewModel @Inject constructor(): ViewModel() {
     private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Init)
     val uiState = _uiState
         .onStart {
@@ -48,16 +45,11 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun googleLogin() {
+    fun socialLogin(
+        loginCallback: suspend () -> Unit
+    ) {
         safeScope.launch {
-            loginManager.googleLogin()
-            _uiState.emit(LoginUiState.Success)
-        }
-    }
-
-    fun appleLogin() {
-        safeScope.launch {
-            loginManager.appleLogin()
+            loginCallback()
             _uiState.emit(LoginUiState.Success)
         }
     }
