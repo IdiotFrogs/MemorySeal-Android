@@ -21,26 +21,17 @@ fun LoginScreen(
     loginViewModel: LoginViewModel = viewModel(),
 ) {
     val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
-    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val loginManager = remember { LoginManager(context) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Button(
-            onClick = {
-                coroutineScope.launch {
-                    loginViewModel.socialLogin { loginManager.googleLogin() }
-                }
-            }
+            onClick = { loginViewModel.socialLogin { loginManager.googleLogin() } }
         ) {
             Text(text = "google login")
         }
         Button(
-            onClick = {
-                coroutineScope.launch {
-                    loginViewModel.socialLogin { loginManager.appleLogin() }
-                }
-            }
+            onClick = { loginViewModel.socialLogin { loginManager.appleLogin() } }
         ) {
             Text(text = "apple login")
         }

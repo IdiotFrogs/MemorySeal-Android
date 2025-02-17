@@ -45,9 +45,7 @@ class LoginViewModel @Inject constructor(): ViewModel() {
         }
     }
 
-    fun socialLogin(
-        loginCallback: suspend () -> Unit
-    ) {
+    fun socialLogin(loginCallback: suspend () -> Unit) {
         safeScope.launch {
             loginCallback()
             _uiState.emit(LoginUiState.Success)
