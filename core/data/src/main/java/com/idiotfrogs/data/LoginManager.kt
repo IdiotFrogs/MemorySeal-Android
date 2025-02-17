@@ -8,12 +8,11 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.OAuthProvider
 import com.idiotfrogs.extension.findActivity
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class LoginManager @Inject constructor(
+class LoginManager(
     // 필요한 파라미터? (ex. 내부저장소 로직)
-    @ApplicationContext private val context: Context
+    private val context: Context
 ) {
     suspend fun googleLogin() {
         val credentialManager = CredentialManager.create(context)
