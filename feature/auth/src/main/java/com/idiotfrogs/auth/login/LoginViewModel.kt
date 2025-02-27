@@ -1,4 +1,4 @@
-package com.idiotfrogs.auth
+package com.idiotfrogs.auth.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
