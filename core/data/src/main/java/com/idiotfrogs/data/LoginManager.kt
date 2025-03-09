@@ -8,11 +8,14 @@ import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.OAuthProvider
 import com.idiotfrogs.extension.findActivity
+import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.scopes.ActivityScoped
 import javax.inject.Inject
 
-class LoginManager(
+@ActivityScoped
+class LoginManager @Inject constructor(
     // 필요한 파라미터? (ex. 내부저장소 로직)
-    private val context: Context
+    @ActivityContext private val context: Context
 ) {
     suspend fun googleLogin() {
         val credentialManager = CredentialManager.create(context)
@@ -50,7 +53,7 @@ class LoginManager(
          */
     }
 
-     fun appleLogin() {
+    fun appleLogin() {
         val provider = OAuthProvider.newBuilder("apple.com")
         // TODO: 필요한 기본 값 범위를 넘는 OAuth 2.0 범위 추가 지정 (필요한 경우)
         // TODO: 로그인 화면 언어를 추가로 설정해줘야 하는 경우 locale 설정
@@ -91,7 +94,6 @@ class LoginManager(
             } ?: run {
                 throw Exception("activity is not available")
             }
-
         }
     }
 }

@@ -22,6 +22,7 @@ internal fun Project.configureComposeAndroid(commonExtension: CommonExtension<*,
             add("implementation", libs.findLibrary("androidx-compose-ui-tooling-preview").get())
             add("implementation", libs.findLibrary("androidx-activity-compose").get())
             add("implementation", libs.findLibrary("androidx-compose-material3").get())
+            add("implementation", libs.findLibrary("androidx-navigation").get())
         }
 
         extensions.configure<ComposeCompilerGradlePluginExtension> {
