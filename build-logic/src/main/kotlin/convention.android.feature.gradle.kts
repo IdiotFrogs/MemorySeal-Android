@@ -9,7 +9,3 @@ plugins {
 android {
     configureComposeAndroid(this)
 }
-
-dependencies {
-    implementation(project(":core:navigation"))
-}

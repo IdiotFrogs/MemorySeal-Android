@@ -33,28 +33,22 @@ class LoginViewModel @Inject constructor(): ViewModel() {
     private val safeScope = viewModelScope + coroutineExceptionHandler
 
     private fun fetchInitUi() {
-        viewModelScope.launch {
-            _uiState.emit(LoginUiState.Init)
-            /**
-                sampleUsecase.onSuccess {
-                    _uiState.emit(SampleUiState.Success)
-                }.onFailure {
-                    _uiState.emit(SampleUiState.Error)
-                }
-             */
+        safeScope.launch {
+            _uiState.emit(LoginUiState.UiLoaded)
         }
     }
 
     fun socialLogin(loginCallback: suspend () -> Unit) {
         safeScope.launch {
             loginCallback()
-            _uiState.emit(LoginUiState.Success)
+            _uiState.emit(LoginUiState.LoginSuccess)
         }
     }
 }
 
 sealed interface LoginUiState {
     data object Init : LoginUiState
-    data object Success : LoginUiState
+    data object UiLoaded : LoginUiState
+    data object LoginSuccess: LoginUiState
     data class Error(val errorMessage: String?) : LoginUiState
 }

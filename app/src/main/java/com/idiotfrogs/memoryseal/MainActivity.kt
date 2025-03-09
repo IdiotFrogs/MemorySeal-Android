@@ -10,8 +10,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.idiotfrogs.auth.login.loginScreen
+import com.idiotfrogs.auth.login.LoginRoute
 import com.idiotfrogs.auth.util.LocalLoginManager
 import com.idiotfrogs.data.LoginManager
 import com.idiotfrogs.memoryseal.ui.theme.CodinTheme
@@ -36,7 +37,9 @@ class MainActivity : ComponentActivity() {
                             navController = rememberNavController(),
                             startDestination = Routes.Login
                         ) {
-                            loginScreen()
+                            composable<Routes.Login> {
+                                LoginRoute(navigateToErrorScreen = {})
+                            }
                         }
                     }
                 }

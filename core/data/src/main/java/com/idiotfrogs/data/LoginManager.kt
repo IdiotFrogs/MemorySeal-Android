@@ -53,7 +53,7 @@ class LoginManager @Inject constructor(
          */
     }
 
-     fun appleLogin() {
+    fun appleLogin() {
         val provider = OAuthProvider.newBuilder("apple.com")
         // TODO: 필요한 기본 값 범위를 넘는 OAuth 2.0 범위 추가 지정 (필요한 경우)
         // TODO: 로그인 화면 언어를 추가로 설정해줘야 하는 경우 locale 설정
@@ -94,7 +94,6 @@ class LoginManager @Inject constructor(
             } ?: run {
                 throw Exception("activity is not available")
             }
-
         }
     }
 }
