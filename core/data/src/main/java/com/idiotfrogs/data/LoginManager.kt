@@ -70,7 +70,7 @@ class LoginManager @Inject constructor(
         // 대기 중인 결과가 존재하는 경우
         if (pending != null) {
             pending.addOnSuccessListener { authResult ->
-                authResult.uidAction()
+                authResult.sendUid()
                 continuation.resume(Unit)
             }.addOnFailureListener { exception ->
                 if (exception is FirebaseAuthWebException) {
@@ -83,7 +83,7 @@ class LoginManager @Inject constructor(
             context.findActivity()?.let {
                 auth.startActivityForSignInWithProvider(it, provider.build())
                     .addOnSuccessListener { authResult ->
-                        authResult.uidAction()
+                        authResult.sendUid()
                         continuation.resume(Unit)
                     }
                     .addOnFailureListener { exception ->
@@ -99,7 +99,7 @@ class LoginManager @Inject constructor(
         }
     }
 
-    private fun AuthResult.uidAction() {
+    private fun AuthResult.sendUid() {
         this.user?.providerData?.takeIf { it.isNotEmpty() }?.let { providerData ->
             providerData.forEach { userInfo ->
                 if (userInfo.providerId == "apple.com") {
