@@ -2,6 +2,7 @@ package com.idiotfrogs.auth.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.idiotfrogs.domain.exception.LoginCancelledException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,9 @@ class LoginViewModel @Inject constructor(): ViewModel() {
 
     // TODO: 공통 error 처리 CEH 분리
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        _uiState.value = LoginUiState.Error(throwable.message)
+        if (throwable !is LoginCancelledException) {
+            _uiState.value = LoginUiState.Error(throwable.message)
+        }
     }
 
     private val safeScope = viewModelScope + coroutineExceptionHandler
