@@ -15,7 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.idiotfrogs.auth.login.LoginRoute
 import com.idiotfrogs.auth.util.LocalLoginManager
 import com.idiotfrogs.data.LoginManager
-import com.idiotfrogs.memoryseal.ui.theme.CodinTheme
+import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.navigation.Routes
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            CodinTheme {
+            MSTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
                     CompositionLocalProvider(LocalLoginManager provides loginManager) {
                         NavHost(
