@@ -8,6 +8,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +19,7 @@ import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.resource.pretendard
 
+@Immutable
 data class LoginUiModel(
     val containerColor: Color,
     val iconRes: Int,
@@ -26,7 +28,7 @@ data class LoginUiModel(
 )
 
 @Composable
-fun LoginButton(
+internal fun LoginButton(
     modifier: Modifier = Modifier,
     loginType: LoginType,
     onClick: () -> Unit,
