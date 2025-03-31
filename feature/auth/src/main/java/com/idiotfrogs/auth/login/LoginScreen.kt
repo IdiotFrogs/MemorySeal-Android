@@ -85,6 +85,7 @@ fun LoginScreen(
                 fontFamily = hsSantokki,
                 fontWeight = FontWeight.Normal,
                 fontSize = 56.dp.toSp(),
+                color = Color.Black
             )
             Spacer(modifier = Modifier.height(32.dp))
             Text(
@@ -92,6 +93,7 @@ fun LoginScreen(
                 fontFamily = pretendard,
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.dp.toSp(),
+                color = Color.Black
             )
             Spacer(modifier = Modifier.height(32.dp))
             Image(
