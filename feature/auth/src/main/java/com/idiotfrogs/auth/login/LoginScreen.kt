@@ -26,6 +26,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.idiotfrogs.auth.login.component.LoginButton
 import com.idiotfrogs.auth.login.component.LoginType
 import com.idiotfrogs.auth.util.LocalLoginManager
+import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
 import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
@@ -70,9 +71,7 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                color = Color(0xFFF4F4CC)
-            )
+            .background(MSTheme.color.bgSplash)
             .systemBarsPadding()
     ) {
         Column(
@@ -85,7 +84,7 @@ fun LoginScreen(
                 fontFamily = hsSantokki,
                 fontWeight = FontWeight.Normal,
                 fontSize = 56.dp.toSp(),
-                color = Color.Black
+                color = MSTheme.color.black
             )
             Spacer(modifier = Modifier.height(32.dp))
             Text(
@@ -93,7 +92,7 @@ fun LoginScreen(
                 fontFamily = pretendard,
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.dp.toSp(),
-                color = Color.Black
+                color = MSTheme.color.black
             )
             Spacer(modifier = Modifier.height(32.dp))
             Image(

@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.resource.pretendard
@@ -71,19 +72,20 @@ internal fun LoginButton(
 enum class LoginType {
     GOOGLE, APPLE;
 
+    @Composable
     internal fun toUiModel(): LoginUiModel {
         return when (this) {
             GOOGLE -> LoginUiModel(
-                containerColor = Color.White,
+                containerColor = MSTheme.color.white,
                 iconRes = R.drawable.ic_google_logo,
-                textColor = Color.Black,
+                textColor = MSTheme.color.black,
                 text = "Google로 로그인",
-                borderColor = Color.Black
+                borderColor = MSTheme.color.black
             )
             APPLE -> LoginUiModel(
-                containerColor = Color.Black,
+                containerColor = MSTheme.color.black,
                 iconRes = R.drawable.ic_apple_logo,
-                textColor = Color.White,
+                textColor = MSTheme.color.white,
                 text = "Apple로 로그인",
                 borderColor = Color.Transparent
             )

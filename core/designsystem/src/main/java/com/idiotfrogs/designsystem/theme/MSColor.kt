@@ -18,6 +18,7 @@ private val GreyG5 = Color(0xFF1A1A1A)
 
 // Background
 private val BGNormal = Color(0xFFF5F5F5)
+private val BGSplash = Color(0xFFF4F4CC)
 
 // System
 private val Red = Color(0xFFDD0303)
@@ -36,6 +37,7 @@ data class MSColor(
 
     // background
     val bgNormal: Color = BGNormal,
+    val bgSplash: Color = BGSplash,
 
     // grey
     val greyG1: Color = GreyG1,
