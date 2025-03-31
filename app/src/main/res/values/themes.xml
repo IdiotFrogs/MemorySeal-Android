@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Theme.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenAnimatedIcon">@drawable/img_splash</item>
+        <item name="windowSplashScreenBackground">#FFF4F4CC</item>
+        <item name="postSplashScreenTheme">@style/Theme.MemorySeal</item>"
+    </style>
 
     <style name="Theme.MemorySeal" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>
