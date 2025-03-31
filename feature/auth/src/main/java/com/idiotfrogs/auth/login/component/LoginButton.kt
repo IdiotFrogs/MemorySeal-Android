@@ -1,5 +1,6 @@
 package com.idiotfrogs.auth.login.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,7 +25,8 @@ data class LoginUiModel(
     val containerColor: Color,
     val iconRes: Int,
     val textColor: Color,
-    val text: String
+    val text: String,
+    val borderEnabled: Boolean,
 )
 
 @Composable
@@ -42,6 +44,10 @@ internal fun LoginButton(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
             containerColor = uiModel.containerColor
+        ),
+        border = BorderStroke(
+            width = if (uiModel.borderEnabled) 1.dp else 0.dp,
+            color = Color.Black
         )
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -71,13 +77,15 @@ enum class LoginType {
                 containerColor = Color.White,
                 iconRes = R.drawable.ic_google_logo,
                 textColor = Color.Black,
-                text = "Google로 로그인"
+                text = "Google로 로그인",
+                borderEnabled = true
             )
             APPLE -> LoginUiModel(
                 containerColor = Color.Black,
                 iconRes = R.drawable.ic_apple_logo,
                 textColor = Color.White,
-                text = "Apple로 로그인"
+                text = "Apple로 로그인",
+                borderEnabled = false
             )
         }
     }
