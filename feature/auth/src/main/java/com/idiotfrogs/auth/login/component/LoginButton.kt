@@ -23,8 +23,8 @@ fun LoginButton(
     modifier: Modifier = Modifier,
     @DrawableRes imageRes: Int,
     text: String,
-    textColor: Color,
-    backgroundColor: Color,
+    textColor: Color = Color.Black,
+    backgroundColor: Color = Color.White,
     onClick: () -> Unit,
 ) {
     Button(
