@@ -40,7 +40,10 @@ class MainActivity : ComponentActivity() {
                             startDestination = Routes.Login
                         ) {
                             composable<Routes.Login> {
-                                LoginRoute(navigateToErrorScreen = {})
+                                LoginRoute(
+                                    navigateToErrorScreen = {},
+                                    navigateToMainScreen = {}
+                                )
                             }
                         }
                     }
