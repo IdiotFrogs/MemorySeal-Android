@@ -10,6 +10,9 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:data"))
     implementation(project(":core:navigation"))
+    implementation(project(":common:resource"))
+
+    implementation(libs.androidx.core.splash)
 
     implementation(platform(libs.firebase.bom))
 

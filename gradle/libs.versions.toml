@@ -1,6 +1,7 @@
 [versions]
 androidGradlePlugin = "8.5.2"
 androidxCore = "1.13.1"
+androidxCoreSplash = "1.0.1"
 androidxAppCompat = "1.7.0"
 androidxActivity = "1.9.3"
 androidxComposeBom = "2024.12.01"
@@ -47,6 +48,7 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivity" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
+androidx-core-splash = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplash" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppCompat" }
 androidx-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxNavigation" }
 
