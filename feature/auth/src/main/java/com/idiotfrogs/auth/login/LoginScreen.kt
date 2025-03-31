@@ -23,8 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.idiotfrogs.auth.login.component.AppleLoginButton
-import com.idiotfrogs.auth.login.component.GoogleLoginButton
+import com.idiotfrogs.auth.login.component.LoginButton
+import com.idiotfrogs.auth.login.component.LoginType
 import com.idiotfrogs.auth.util.LocalLoginManager
 import com.idiotfrogs.designsystem.util.DevicePreview
 import com.idiotfrogs.designsystem.util.toSp
@@ -111,8 +111,14 @@ fun LoginScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            GoogleLoginButton(onClick = googleLogin)
-            AppleLoginButton(onClick = appleLogin)
+            LoginButton(
+                loginType = LoginType.GOOGLE,
+                onClick = googleLogin
+            )
+            LoginButton(
+                loginType = LoginType.APPLE,
+                onClick = appleLogin
+            )
         }
     }
 }
