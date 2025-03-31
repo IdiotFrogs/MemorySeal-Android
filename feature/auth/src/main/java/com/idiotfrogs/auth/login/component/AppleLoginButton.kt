@@ -25,7 +25,6 @@ fun AppleLoginButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
-    ButtonDefaults.shape
     Button(
         modifier = modifier
             .fillMaxWidth()
