@@ -26,7 +26,7 @@ data class LoginUiModel(
     val iconRes: Int,
     val textColor: Color,
     val text: String,
-    val borderEnabled: Boolean,
+    val borderColor: Color,
 )
 
 @Composable
@@ -46,8 +46,8 @@ internal fun LoginButton(
             containerColor = uiModel.containerColor
         ),
         border = BorderStroke(
-            width = if (uiModel.borderEnabled) 1.dp else 0.dp,
-            color = Color.Black
+            width = if (uiModel.borderColor != Color.Transparent) 1.dp else 0.dp,
+            color = uiModel.borderColor
         )
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -78,14 +78,14 @@ enum class LoginType {
                 iconRes = R.drawable.ic_google_logo,
                 textColor = Color.Black,
                 text = "Google로 로그인",
-                borderEnabled = true
+                borderColor = Color.Black
             )
             APPLE -> LoginUiModel(
                 containerColor = Color.Black,
                 iconRes = R.drawable.ic_apple_logo,
                 textColor = Color.White,
                 text = "Apple로 로그인",
-                borderEnabled = false
+                borderColor = Color.Transparent
             )
         }
     }
