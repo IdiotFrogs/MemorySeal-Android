@@ -17,8 +17,6 @@ fun GoogleLoginButton(
         modifier = modifier,
         imageRes = R.drawable.ic_google_logo,
         text = "Google로 로그인",
-        textColor = Color.Black,
-        backgroundColor = Color.White,
         onClick = onClick
     )
 }
