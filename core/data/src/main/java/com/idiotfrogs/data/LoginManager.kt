@@ -42,29 +42,16 @@ class LoginManager @Inject constructor(
                 context = context
             )
 
-            when (val credential = response.credential) {
-                is CustomCredential -> {
-                    if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                        try {
-                            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                            // TODO: idToken 관련 처리
-                        } catch (exception: Exception) {
-                            // 그 외 케이스
-                            throw exception
-                        }
-                    } else {
-                        // Credential 타입 에러 케이스
-                        throw Exception("Unexpected type of credential")
-                    }
-                }
-                else -> {
-                    // Credential 타입 에러 케이스
-                    throw Exception("Unexpected type of credential")
-                }
-            }
+            val credential = (response.credential as? CustomCredential)
+                ?.takeIf { it.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL }
+                ?: throw Exception("Unexpected type of credential")
+
+            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+            // TODO: idToken 관련 처리
         } catch (exception: GetCredentialCancellationException) {
-            // 사용자 취소 케이스
             throw LoginCancelledException()
+        } catch (exception: Exception) {
+            throw exception
         }
     }
 
@@ -75,49 +62,23 @@ class LoginManager @Inject constructor(
         val auth = FirebaseAuth.getInstance()
         val pending = auth.pendingAuthResult
 
-        // 대기 중인 결과가 존재하는 경우
-        if (pending != null) {
-            pending.addOnSuccessListener { authResult ->
-                authResult.sendUid()
+        val task = pending.takeIf { it != null } ?: run {
+            val activity = context.findActivity() ?: throw  Exception("Activity is not available")
+            auth.startActivityForSignInWithProvider(activity, provider.build())
+        }
+
+        task.addOnCompleteListener { authResult ->
+            if (authResult.isSuccessful) {
+                authResult.result.sendUid()
                 continuation.resume(Unit)
-            }.addOnFailureListener { exception ->
-                when (exception) {
-                    is FirebaseAuthWebException -> {
-                        // 사용자 취소 케이스
-                        if (exception.errorCode == ERROR_WEB_CONTEXT_CANCELED) {
-                            continuation.resumeWithException(LoginCancelledException())
-                        } else {
-                            continuation.resumeWithException(exception)
-                        }
-                    }
-                    else -> {
-                        continuation.resumeWithException(exception)
-                    }
+            } else {
+                val exception = requireNotNull(authResult.exception) { "Unknown Error" }
+                if (exception is FirebaseAuthWebException &&
+                    exception.errorCode == ERROR_WEB_CONTEXT_CANCELED) {
+                    continuation.resumeWithException(LoginCancelledException())
+                } else {
+                    continuation.resumeWithException(exception)
                 }
-            }
-        } else {
-            // 대기 중인 결과가 없는 경우
-            context.findActivity()?.let {
-                auth.startActivityForSignInWithProvider(it, provider.build())
-                    .addOnSuccessListener { authResult ->
-                        authResult.sendUid()
-                        continuation.resume(Unit)
-                    }
-                    .addOnFailureListener { exception ->
-                        if (exception is FirebaseAuthWebException) {
-                            // 사용자 취소 케이스
-                            if (exception.errorCode == ERROR_WEB_CONTEXT_CANCELED) {
-                                continuation.resumeWithException(LoginCancelledException())
-                            } else {
-                                continuation.resumeWithException(exception)
-                            }
-                        } else {
-                            continuation.resumeWithException(exception)
-                        }
-                    }
-            } ?: run {
-                // 액티비티를 찾지 못한 케이스
-                throw Exception("Activity is not available")
             }
         }
     }
