@@ -4,7 +4,8 @@ import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import androidx.credentials.exceptions.GetCredentialCancellationException
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -27,36 +28,30 @@ class LoginManager @Inject constructor(
     suspend fun googleLogin() {
         val credentialManager = CredentialManager.create(context)
 
-        val googleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(BuildConfig.WEB_CLIENT_ID)
-            .build()
+        val googleSignInOption = GetSignInWithGoogleOption.Builder(
+            BuildConfig.WEB_CLIENT_ID
+        ).build()
 
         val request = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
+            .addCredentialOption(googleSignInOption)
             .build()
 
-        val response = credentialManager.getCredential(
-            request = request,
-            context = context
-        )
+        try {
+            val response = credentialManager.getCredential(
+                request = request,
+                context = context
+            )
 
-        when (val credential = response.credential) {
-            is CustomCredential -> {
-                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                    try {
-                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                        // TODO: idToken 관련 처리
-                    } catch (exception: Exception) {
-                        throw exception
-                    }
-                } else {
-                    throw Exception("Unexpected type of credential")
-                }
-            }
-            else -> {
-                throw Exception("Unexpected type of credential")
-            }
+            val credential = (response.credential as? CustomCredential)
+                ?.takeIf { it.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL }
+                ?: throw Exception("Unexpected type of credential")
+
+            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+            // TODO: idToken 관련 처리
+        } catch (exception: GetCredentialCancellationException) {
+            throw LoginCancelledException()
+        } catch (exception: Exception) {
+            throw exception
         }
     }
 
@@ -67,48 +62,42 @@ class LoginManager @Inject constructor(
         val auth = FirebaseAuth.getInstance()
         val pending = auth.pendingAuthResult
 
-        // 대기 중인 결과가 존재하는 경우
-        if (pending != null) {
-            pending.addOnSuccessListener { authResult ->
-                authResult.sendUid()
+        val task = pending.takeIf { it != null } ?: run {
+            val activity = context.findActivity() ?: throw  Exception("Activity is not available")
+            auth.startActivityForSignInWithProvider(activity, provider.build())
+        }
+
+        task.addOnCompleteListener { authResult ->
+            if (authResult.isSuccessful) {
+                authResult.result.sendUid()
                 continuation.resume(Unit)
-            }.addOnFailureListener { exception ->
-                if (exception is FirebaseAuthWebException) {
+            } else {
+                val exception = requireNotNull(authResult.exception) { "Unknown Error" }
+                if (exception is FirebaseAuthWebException &&
+                    exception.errorCode == ERROR_WEB_CONTEXT_CANCELED) {
                     continuation.resumeWithException(LoginCancelledException())
                 } else {
                     continuation.resumeWithException(exception)
                 }
             }
-        } else {
-            context.findActivity()?.let {
-                auth.startActivityForSignInWithProvider(it, provider.build())
-                    .addOnSuccessListener { authResult ->
-                        authResult.sendUid()
-                        continuation.resume(Unit)
-                    }
-                    .addOnFailureListener { exception ->
-                        if (exception is FirebaseAuthWebException) {
-                            continuation.resumeWithException(LoginCancelledException())
-                        } else {
-                            continuation.resumeWithException(exception)
-                        }
-                    }
-            } ?: run {
-                throw Exception("Activity is not available")
-            }
         }
     }
 
-    private fun AuthResult.sendUid() {
-        this.user?.providerData?.takeIf { it.isNotEmpty() }?.let { providerData ->
-            providerData.forEach { userInfo ->
-                if (userInfo.providerId == "apple.com") {
-                    // TODO: uid 관련 처리
-                    return@let
+    companion object {
+        const val ERROR_WEB_CONTEXT_CANCELED = "ERROR_WEB_CONTEXT_CANCELED"
+
+        private fun AuthResult.sendUid() {
+            this.user?.providerData?.takeIf { it.isNotEmpty() }?.let { providerData ->
+                providerData.forEach { userInfo ->
+                    if (userInfo.providerId == "apple.com") {
+                        // TODO: uid 관련 처리
+                        return@let
+                    }
                 }
+            } ?: run {
+                // User 또는 ProviderData가 null인 케이스
+                throw Exception("User or ProviderData is null")
             }
-        } ?: run {
-            throw Exception("User or ProviderData is null")
         }
     }
 }
