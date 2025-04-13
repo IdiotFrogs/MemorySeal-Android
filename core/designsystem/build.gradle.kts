@@ -7,6 +7,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":common:resource"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
