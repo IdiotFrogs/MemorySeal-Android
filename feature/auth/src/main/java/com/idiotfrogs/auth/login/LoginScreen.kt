@@ -99,7 +99,7 @@ fun LoginScreen(
                     width = 320.dp,
                     height = 300.dp
                 ),
-                painter = painterResource(R.drawable.ic_login_logo),
+                painter = painterResource(R.drawable.img_login_logo),
                 contentDescription = "login logo"
             )
         }
