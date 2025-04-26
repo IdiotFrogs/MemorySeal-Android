@@ -9,3 +9,8 @@ plugins {
 android {
     configureComposeAndroid(this)
 }
+
+dependencies {
+    "implementation"(project(":common:resource"))
+    "implementation"(project(":core:designsystem"))
+}
