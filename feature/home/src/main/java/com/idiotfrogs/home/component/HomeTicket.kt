@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -88,7 +89,7 @@ fun HomeTicket(
                     spotColor = Color(0xBFA6A6A6)
                 )
                 .fillMaxWidth()
-                .height(348.dp)
+                .aspectRatio(1f)
                 .background(
                     color = MSTheme.color.white,
                     shape = RoundedCornerShape(16.dp)
