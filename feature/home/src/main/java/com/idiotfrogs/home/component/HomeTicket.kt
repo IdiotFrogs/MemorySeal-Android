@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -82,7 +81,6 @@ fun HomeTicket(
         )
         Column(
             modifier = Modifier
-                .offset(y = (-2).dp) // FIXME: DashedDivider margin
                 .shadow(
                     elevation = 4.dp,
                     shape = RoundedCornerShape(16.dp),
@@ -129,14 +127,15 @@ fun DashedDivider(
         modifier = modifier
             .fillMaxWidth()
             .height(strokeDp)
+            .background(MSTheme.color.white)
     ) {
         val dashPx = with(density) { dashDp.toPx() }
         val strokePx = with(density) { strokeDp.toPx() }
 
         drawLine(
             color = color,
-            start = Offset.Zero,
-            end = Offset(size.width, 0f),
+            start = Offset(0f, strokePx / 2),
+            end = Offset(size.width, strokePx / 2),
             strokeWidth = strokePx,
             cap = StrokeCap.Round,
             pathEffect = PathEffect.dashPathEffect(
