@@ -1,5 +1,6 @@
 package com.idiotfrogs.auth.login
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -15,9 +16,10 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -25,13 +27,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.idiotfrogs.auth.login.component.LoginButton
 import com.idiotfrogs.auth.login.component.LoginType
-import com.idiotfrogs.auth.util.LocalLoginManager
+import com.idiotfrogs.auth.util.LoginManagerEntryPoint
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
 import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.resource.hsSantokki
 import com.idiotfrogs.resource.pretendard
+import dagger.hilt.android.EntryPointAccessors
 
 @Composable
 fun LoginRoute(
@@ -40,23 +43,26 @@ fun LoginRoute(
     navigateToMainScreen: () -> Unit,
 ) {
     val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
-    val loginManager = LocalLoginManager.current
+
+    val activity = LocalContext.current as ComponentActivity
+    val loginManager = remember {
+        EntryPointAccessors.fromActivity(
+            activity = activity,
+            entryPoint = LoginManagerEntryPoint::class.java
+        ).getLoginManager()
+    }
 
     when (val state = uiState) {
         LoginUiState.Init -> Unit // 화면 로딩 로직
         LoginUiState.UiLoaded -> {
-            if (loginManager != null) {
-                LoginScreen(
-                    googleLogin = {
-                        loginViewModel.socialLogin { loginManager.googleLogin() }
-                    },
-                    appleLogin = {
-                        loginViewModel.socialLogin { loginManager.appleLogin() }
-                    }
-                )
-            } else {
-                navigateToErrorScreen("LoginManager is null")
-            }
+            LoginScreen(
+                googleLogin = {
+                    loginViewModel.socialLogin { loginManager.googleLogin() }
+                },
+                appleLogin = {
+                    loginViewModel.socialLogin { loginManager.appleLogin() }
+                }
+            )
         }
         is LoginUiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
         LoginUiState.LoginSuccess -> navigateToMainScreen()
