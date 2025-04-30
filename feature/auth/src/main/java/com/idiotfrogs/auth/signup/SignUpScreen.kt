@@ -45,6 +45,7 @@ import com.idiotfrogs.designsystem.component.MSButton
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
+import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
 import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
@@ -102,11 +103,7 @@ fun SignUpScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MSTheme.color.bgNormal)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = { focusManager.clearFocus() }
-            )
+            .noRippleClickable { focusManager.clearFocus() }
             .systemBarsPadding()
             .imePadding()
             .padding(
@@ -118,11 +115,7 @@ fun SignUpScreen(
             Icon(
                 modifier = Modifier
                     .padding(start = 20.dp)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = { navigateToBack() }
-                    ),
+                    .noRippleClickable { navigateToBack() },
                 painter = painterResource(R.drawable.ic_chevron_left),
                 contentDescription = "Back"
             )
@@ -150,11 +143,7 @@ fun SignUpScreen(
                 GlideImage(
                     imageModel = { imageUri },
                     modifier = Modifier
-                        .clickable(
-                            interactionSource = remember { MutableInteractionSource() },
-                            indication = null,
-                            onClick = { getImage.launch("image/*") }
-                        )
+                        .noRippleClickable { getImage.launch("image/*") }
                         .size(128.dp)
                         .clip(CircleShape)
                         .align(Alignment.CenterHorizontally),
@@ -162,11 +151,7 @@ fun SignUpScreen(
                 )
             } ?: Image(
                 modifier = Modifier
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = null,
-                        onClick = { getImage.launch("image/*") }
-                    )
+                    .noRippleClickable { getImage.launch("image/*") }
                     .size(128.dp)
                     .align(Alignment.CenterHorizontally),
                 painter = painterResource(R.drawable.img_empty_profile),
