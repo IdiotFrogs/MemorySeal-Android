@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,13 +36,13 @@ import com.idiotfrogs.resource.pretendard
 fun LoginRoute(
     loginViewModel: LoginViewModel = viewModel(),
     navigateToErrorScreen: (String) -> Unit,
-    navigateToMainScreen: () -> Unit,
+    navigateToSignUpScreen: () -> Unit,
 ) {
     val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
     val loginManager = LocalLoginManager.current
 
     when (val state = uiState) {
-        LoginUiState.Init -> Unit // 화면 로딩 로직
+        LoginUiState.Init -> Unit // 화면 로딩 로직 및 자동 로그인
         LoginUiState.UiLoaded -> {
             if (loginManager != null) {
                 LoginScreen(
@@ -59,7 +58,7 @@ fun LoginRoute(
             }
         }
         is LoginUiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
-        LoginUiState.LoginSuccess -> navigateToMainScreen()
+        LoginUiState.LoginSuccess -> navigateToSignUpScreen()
     }
 }
 

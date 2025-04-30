@@ -78,10 +78,10 @@ fun MSTextField(
                     .heightIn(48.dp)
                     .border(
                         width = 1.dp,
-                        color = if (enabled || textFieldState.text.isEmpty()) {
-                            MSTheme.color.greyG2
-                        } else {
-                            MSTheme.color.greyG5
+                        color = when {
+                            enabled && textFieldState.text.isEmpty() -> MSTheme.color.greyG2
+                            !enabled -> MSTheme.color.greyG2
+                            else -> MSTheme.color.greyG5
                         },
                         shape = RoundedCornerShape(12.dp)
                     )

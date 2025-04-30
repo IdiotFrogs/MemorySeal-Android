@@ -2,6 +2,7 @@ package com.idiotfrogs.memoryseal
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.idiotfrogs.auth.login.LoginRoute
+import com.idiotfrogs.auth.signup.SignUpRoute
 import com.idiotfrogs.auth.util.LocalLoginManager
 import com.idiotfrogs.data.LoginManager
 import com.idiotfrogs.designsystem.theme.MSTheme
@@ -33,14 +35,25 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MSTheme {
+                val navController = rememberNavController()
+
                 Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
                     CompositionLocalProvider(LocalLoginManager provides loginManager) {
                         NavHost(
-                            navController = rememberNavController(),
+                            navController = navController,
                             startDestination = Routes.Login
                         ) {
                             composable<Routes.Login> {
                                 LoginRoute(
+                                    navigateToErrorScreen = {},
+                                    navigateToSignUpScreen = {
+                                        navController.navigate(Routes.SignUp)
+                                    }
+                                )
+                            }
+                            composable<Routes.SignUp> {
+                                SignUpRoute(
+                                    navigateToBack = {},
                                     navigateToErrorScreen = {},
                                     navigateToMainScreen = {}
                                 )
