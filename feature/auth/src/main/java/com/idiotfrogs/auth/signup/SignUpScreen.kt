@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -60,12 +61,14 @@ fun SignUpRoute(
     navigateToMainScreen: () -> Unit,
 ) {
     val uiState by signUpViewModel.uiState.collectAsStateWithLifecycle()
+    val textFieldState = signUpViewModel.textFieldState
 
     when (val state = uiState) {
         SignUpUiState.Init -> Unit // 화면 로딩 로직
         SignUpUiState.UiLoaded -> {
             SignUpScreen(
                 navigateToBack = navigateToBack,
+                textFieldState = textFieldState,
                 signUpViewModel::signUp,
             )
         }
@@ -77,9 +80,9 @@ fun SignUpRoute(
 @Composable
 fun SignUpScreen(
     navigateToBack: () -> Unit,
+    textFieldState: TextFieldState,
     signUp: () -> Unit,
 ) {
-    val textFieldState = rememberTextFieldState()
     val isShowKeyboard = rememberKeyboardVisibility()
     val scrollState = rememberScrollState()
 
@@ -97,6 +100,10 @@ fun SignUpScreen(
         if (isShowKeyboard) {
             scrollState.scrollTo(scrollState.maxValue)
         }
+    }
+
+    LaunchedEffect(Unit) {
+        signUpViewModel.validateText()
     }
 
     Column(
@@ -229,13 +236,17 @@ fun SignUpScreen(
             }
         )
     }
+    BackHandler(onBack = navigateToBack)
 }
 
 @DevicePreview
 @Composable
 private fun LoginScreenPreview() {
+    val textFieldState = rememberTextFieldState()
+
     SignUpScreen(
         navigateToBack = { },
+        textFieldState = textFieldState,
         signUp = { }
     )
 }
