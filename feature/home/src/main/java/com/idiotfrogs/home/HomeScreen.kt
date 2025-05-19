@@ -20,9 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSDim
+import com.idiotfrogs.designsystem.component.MSMenuFab
+import com.idiotfrogs.designsystem.model.MSMenuFabModel
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
-import com.idiotfrogs.home.component.HomeMenuFab
 import com.idiotfrogs.home.component.HomeHeader
 import com.idiotfrogs.home.component.HomeJoinContainer
 import com.idiotfrogs.home.component.HomeTab
@@ -37,6 +38,18 @@ fun HomeScreen() {
 
     val showDim by remember {
         derivedStateOf { expanded || showJoinContainer }
+    }
+
+    val menuList by remember {
+        mutableStateOf(
+            listOf(
+                MSMenuFabModel("새 티켓 생성하기") { /** TODO: 타임 티켓 생성 */ },
+                MSMenuFabModel("참여코드로 합류하기") {
+                    expanded = false
+                    showJoinContainer = true
+                },
+            )
+        )
     }
 
     val textFieldState = rememberTextFieldState()
@@ -76,18 +89,14 @@ fun HomeScreen() {
                 showJoinContainer = false
             }
         )
-        HomeMenuFab(
+        MSMenuFab(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 20.dp, bottom = 24.dp),
             expanded = expanded,
+            menuList = menuList,
             onClick = { expanded = !expanded },
             onDismiss = { expanded = false },
-            onCreateTicket = { /** TODO: 타임 티켓 생성 */ },
-            onJoinWithCode = {
-                expanded = false
-                showJoinContainer = true
-            }
         )
         HomeJoinContainer(
             isShow = showJoinContainer,
