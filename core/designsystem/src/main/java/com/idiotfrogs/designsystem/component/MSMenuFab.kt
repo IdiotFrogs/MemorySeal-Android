@@ -63,39 +63,30 @@ fun MSMenuFab(
             shadowElevation = 0.dp,
             shape = RoundedCornerShape(12.dp)
         ) {
-            val createTicketInteractionSource = remember { MutableInteractionSource() }
-            val createTicketIsPressed by createTicketInteractionSource.collectIsPressedAsState()
-
-            val joinWithCodeInteractionSource = remember { MutableInteractionSource() }
-            val joinWithCodeIsPressed by joinWithCodeInteractionSource.collectIsPressedAsState()
-
             CompositionLocalProvider(LocalRippleConfiguration provides null) {
-                menuList.forEachIndexed { index, msMenuFabModel ->
+                menuList.forEach {
+                    val msMenuFabInteractionSource = remember { MutableInteractionSource() }
+                    val msMenuFabIsPressed by msMenuFabInteractionSource.collectIsPressedAsState()
+
                     DropdownMenuItem(
                         modifier = Modifier
                             .height(35.dp)
                             .padding(horizontal = 8.dp)
                             .background(
-                                color = when(index) {
-                                    0 -> if (createTicketIsPressed) MSTheme.color.greyG1 else Color.Transparent
-                                    else -> if (joinWithCodeIsPressed) MSTheme.color.greyG1 else Color.Transparent
-                                },
+                                color = if (msMenuFabIsPressed) MSTheme.color.greyG1 else Color.Transparent,
                                 shape = RoundedCornerShape(4.dp)
                             ),
                         text = {
                             Text(
-                                text = msMenuFabModel.text,
+                                text = it.text,
                                 fontFamily = pretendard,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 16.dp.toSp(),
                             )
                         },
                         contentPadding = PaddingValues(start = 8.dp, end = 23.dp),
-                        interactionSource = when(index) {
-                            0 -> createTicketInteractionSource
-                            else -> joinWithCodeInteractionSource
-                        },
-                        onClick = { msMenuFabModel.onClick.invoke() }
+                        interactionSource = msMenuFabInteractionSource,
+                        onClick = { it.onClick.invoke() }
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                 }
