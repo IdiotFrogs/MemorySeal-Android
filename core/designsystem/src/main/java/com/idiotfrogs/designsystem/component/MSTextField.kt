@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
 import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.pretendard
 
@@ -58,6 +59,7 @@ fun MSTextField(
     outputTransformation: OutputTransformation? = null,
     scrollState: ScrollState = rememberScrollState()
 ) {
+    val isShowKeyboard = rememberKeyboardVisibility()
     BasicTextField(
         state = textFieldState,
         modifier = modifier,
@@ -79,8 +81,7 @@ fun MSTextField(
                     .border(
                         width = 1.dp,
                         color = when {
-                            enabled && textFieldState.text.isEmpty() -> MSTheme.color.greyG2
-                            !enabled -> MSTheme.color.greyG2
+                            (enabled && !isShowKeyboard) || !enabled -> MSTheme.color.greyG2
                             else -> MSTheme.color.greyG5
                         },
                         shape = RoundedCornerShape(12.dp)
