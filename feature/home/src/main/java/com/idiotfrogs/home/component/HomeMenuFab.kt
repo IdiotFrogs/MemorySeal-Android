@@ -21,7 +21,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -32,14 +31,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.resource.pretendard
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,11 +75,9 @@ fun HomeMenuFab(
                             shape = RoundedCornerShape(4.dp)
                         ),
                     text = {
-                        Text(
+                        MSText(
                             text = "새 티켓 생성하기",
-                            fontFamily = pretendard,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.dp.toSp(),
+                            fontSize = 16.dp,
                         )
                     },
                     contentPadding = PaddingValues(start = 8.dp, end = 47.dp),
@@ -99,11 +94,9 @@ fun HomeMenuFab(
                             shape = RoundedCornerShape(4.dp)
                         ),
                     text = {
-                        Text(
+                        MSText(
                             text = "참여코드로 합류하기",
-                            fontFamily = pretendard,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.dp.toSp()
+                            fontSize = 16.dp
                         )
                     },
                     contentPadding = PaddingValues(start = 8.dp, end = 23.dp),
