@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -25,14 +24,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSButton
+import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.designsystem.util.toSp
-import com.idiotfrogs.resource.pretendard
 
 @Composable
 fun BoxScope.HomeJoinContainer(
@@ -64,11 +61,9 @@ fun BoxScope.HomeJoinContainer(
                 .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
+            MSText(
                 text = "참여코드를 입력해 타임 티켓에 합류해 보세요!",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.dp.toSp(),
-                color = MSTheme.color.black
+                fontSize = 16.dp,
             )
             Spacer(modifier = Modifier.height(16.dp))
             MSTextField(
@@ -93,11 +88,9 @@ fun BoxScope.HomeJoinContainer(
                         disabledContainerColor = MSTheme.color.greyG1
                     )
                 ) {
-                    Text(
+                    MSText(
                         text = "취소",
-                        fontFamily = pretendard,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.dp.toSp(),
+                        fontSize = 16.dp,
                         color = MSTheme.color.greyG5
                     )
                 }
@@ -108,11 +101,9 @@ fun BoxScope.HomeJoinContainer(
                     enabled = textFieldState.text.isNotEmpty(),
                     onClick = onJoin,
                 ) {
-                    Text(
+                    MSText(
                         text = "합류",
-                        fontFamily = pretendard,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.dp.toSp(),
+                        fontSize = 16.dp,
                         color = MSTheme.color.white
                     )
                 }

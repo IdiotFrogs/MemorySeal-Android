@@ -17,7 +17,6 @@ import androidx.compose.foundation.text.input.OutputTransformation
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -89,10 +88,10 @@ fun MSTextField(
                 contentAlignment = Alignment.CenterStart
             ) {
                 if (textFieldState.text.isEmpty()) {
-                    Text(
+                    MSText(
                         text = hint,
                         color = MSTheme.color.greyG3,
-                        fontSize = 16.dp.toSp(),
+                        fontSize = 16.dp,
                         fontWeight = FontWeight.Normal,
                         lineHeight = 16.dp.toSp() * 1.6,
                     )
