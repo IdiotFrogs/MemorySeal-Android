@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSMenuFab
@@ -94,6 +95,8 @@ fun HomeScreen() {
                 .align(Alignment.BottomEnd)
                 .padding(end = 20.dp, bottom = 24.dp),
             expanded = expanded,
+            hasFab = true,
+            offset = DpOffset(x = 0.dp, y = (-16).dp),
             menuList = menuList,
             onClick = { expanded = !expanded },
             onDismiss = { expanded = false },

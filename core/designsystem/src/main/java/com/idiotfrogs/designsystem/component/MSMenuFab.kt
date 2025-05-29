@@ -48,6 +48,8 @@ import com.idiotfrogs.resource.pretendard
 fun MSMenuFab(
     modifier: Modifier = Modifier,
     expanded: Boolean,
+    hasFab: Boolean,
+    offset: DpOffset,
     menuList: List<MSMenuFabModel>,
     onClick: () -> Unit,
     onDismiss: () -> Unit,
@@ -57,7 +59,7 @@ fun MSMenuFab(
         contentAlignment = Alignment.BottomEnd
     ) {
         DropdownMenu(
-            offset = DpOffset(x = 0.dp, y = (-16).dp),
+            offset = offset,
             expanded = expanded,
             onDismissRequest = onDismiss,
             shadowElevation = 0.dp,
@@ -92,23 +94,25 @@ fun MSMenuFab(
                 }
             }
         }
-        FloatingActionButton(
-            modifier = Modifier.size(56.dp),
-            shape = CircleShape,
-            containerColor = if (expanded) MSTheme.color.white else MSTheme.color.primaryNormal,
-            elevation = FloatingActionButtonDefaults.elevation(
-                defaultElevation = 4.dp,
-                pressedElevation = 4.dp,
-                focusedElevation = 4.dp,
-                hoveredElevation = 4.dp
-            ),
-            onClick = onClick
-        ) {
-            val imageRes = if (expanded) R.drawable.ic_close else R.drawable.ic_plus
-            Image(
-                painter = painterResource(imageRes),
-                contentDescription = "fab content"
-            )
+        if (hasFab) {
+            FloatingActionButton(
+                modifier = Modifier.size(56.dp),
+                shape = CircleShape,
+                containerColor = if (expanded) MSTheme.color.white else MSTheme.color.primaryNormal,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = 4.dp,
+                    pressedElevation = 4.dp,
+                    focusedElevation = 4.dp,
+                    hoveredElevation = 4.dp
+                ),
+                onClick = onClick
+            ) {
+                val imageRes = if (expanded) R.drawable.ic_close else R.drawable.ic_plus
+                Image(
+                    painter = painterResource(imageRes),
+                    contentDescription = "fab content"
+                )
+            }
         }
     }
 }
@@ -134,6 +138,8 @@ private fun MSMenuFabPreview() {
         floatingActionButton = {
             MSMenuFab(
                 expanded = expanded,
+                offset = DpOffset(x = 0.dp, y = ((-16).dp)),
+                hasFab = true,
                 menuList = menuList,
                 onClick = { expanded = !expanded },
                 onDismiss = { expanded = false },
