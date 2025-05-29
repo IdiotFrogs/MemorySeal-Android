@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,10 +30,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.resource.pretendard
 
 @Composable
 fun HomeTicket(
@@ -60,18 +58,14 @@ fun HomeTicket(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
+            MSText(
                 text = countdown,
-                fontFamily = pretendard,
-                fontWeight = FontWeight.Bold,
-                fontSize = 32.dp.toSp(),
-                color = MSTheme.color.black
+                fontSize = 32.dp,
             )
-            Text(
+            MSText(
                 text = targetDate,
-                fontFamily = pretendard,
                 fontWeight = FontWeight.Normal,
-                fontSize = 14.dp.toSp(),
+                fontSize = 14.dp,
                 color = MSTheme.color.greyG4
             )
         }
@@ -96,12 +90,9 @@ fun HomeTicket(
                 )
                 .padding(16.dp),
         ) {
-            Text(
+            MSText(
                 text = title,
-                fontFamily = pretendard,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.dp.toSp(),
-                color = MSTheme.color.black
+                fontSize = 16.dp,
             )
             Spacer(modifier = Modifier.height(8.dp))
             // TODO: 이미지 url 통해 로드

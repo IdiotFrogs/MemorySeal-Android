@@ -8,7 +8,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -16,12 +15,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.designsystem.util.toSp
-import com.idiotfrogs.resource.pretendard
 
 enum class HomeTab(val title: String) {
     CREATED("생성한 티켓"), JOINED("합류한 티켓")
@@ -80,12 +77,10 @@ fun HomeTabItem(
         unselectedContentColor = MSTheme.color.greyG3,
         onClick = onClick
     ) {
-        Text(
+        MSText(
             modifier = Modifier.padding(vertical = (9.5).dp),
             text = text,
-            fontFamily = pretendard,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.dp.toSp(),
+            fontSize = 16.dp,
         )
     }
 }

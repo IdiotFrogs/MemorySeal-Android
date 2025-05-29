@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -25,12 +24,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.idiotfrogs.auth.login.component.LoginButton
 import com.idiotfrogs.auth.login.component.LoginType
 import com.idiotfrogs.auth.util.LocalLoginManager
+import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
-import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.resource.hsSantokki
-import com.idiotfrogs.resource.pretendard
 
 @Composable
 fun LoginRoute(
@@ -78,20 +76,17 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(80.dp))
-            Text(
+            MSText(
                 text = "메실",
                 fontFamily = hsSantokki,
                 fontWeight = FontWeight.Normal,
-                fontSize = 56.dp.toSp(),
-                color = MSTheme.color.black
+                fontSize = 56.dp,
             )
             Spacer(modifier = Modifier.height(32.dp))
-            Text(
+            MSText(
                 text = "익을수록 달콤한 기억",
-                fontFamily = pretendard,
                 fontWeight = FontWeight.Medium,
-                fontSize = 16.dp.toSp(),
-                color = MSTheme.color.black
+                fontSize = 16.dp,
             )
             Spacer(modifier = Modifier.height(32.dp))
             Image(

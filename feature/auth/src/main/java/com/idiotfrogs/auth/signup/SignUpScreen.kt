@@ -24,7 +24,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -42,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.idiotfrogs.designsystem.component.MSButton
+import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
@@ -49,7 +49,6 @@ import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
 import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.resource.pretendard
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
@@ -120,14 +119,12 @@ fun SignUpScreen(
                 contentDescription = "Back"
             )
             Spacer(modifier = Modifier.height(24.dp))
-            Text(
+            MSText(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 20.dp),
                 text = "프로필",
-                fontFamily = pretendard,
-                fontWeight = FontWeight.Bold,
-                fontSize = 24.dp.toSp()
+                fontSize = 24.dp
             )
         }
         Spacer(modifier = Modifier.height(19.dp))
@@ -159,14 +156,13 @@ fun SignUpScreen(
             )
 
             Spacer(modifier = Modifier.height(24.dp))
-            Text(
+            MSText(
                 modifier = Modifier
                     .align(Alignment.Start)
                     .padding(horizontal = 20.dp),
                 text = "별명",
-                fontFamily = pretendard,
                 fontWeight = FontWeight.Medium,
-                fontSize = 12.dp.toSp()
+                fontSize = 12.dp
             )
             Spacer(modifier = Modifier.height(8.dp))
             MSTextField(
@@ -189,11 +185,10 @@ fun SignUpScreen(
                         contentDescription = "Warning",
                         tint = MSTheme.color.red
                     )
-                    Text(
+                    MSText(
                         text = "별명을 입력하면 시작할 수 있습니다.",
-                        fontFamily = pretendard,
                         fontWeight = FontWeight.Medium,
-                        fontSize = 12.dp.toSp(),
+                        fontSize = 12.dp,
                         color = MSTheme.color.red
                     )
                 }
@@ -212,11 +207,9 @@ fun SignUpScreen(
                 ),
             isRounded = !isShowKeyboard,
             content = {
-                Text(
+                MSText(
                     text = "이 프로필로 할게요!",
-                    fontFamily = pretendard,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.dp.toSp(),
+                    fontSize = 16.dp,
                     lineHeight = 16.dp.toSp() * 1.6
                 )
             },
