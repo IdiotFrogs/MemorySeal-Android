@@ -1,13 +1,7 @@
 package com.idiotfrogs.auth.signup
 
-import android.net.Uri
-import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,8 +19,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,8 +37,10 @@ import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
+import com.idiotfrogs.designsystem.util.keyboardAutoScroll
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
+import com.idiotfrogs.designsystem.util.rememberPickerState
 import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
@@ -81,22 +75,10 @@ fun SignUpScreen(
     val textFieldState = rememberTextFieldState()
     val isShowKeyboard = rememberKeyboardVisibility()
     val scrollState = rememberScrollState()
+    val (imageUri, launchImagePicker) = rememberPickerState()
 
     val focusManager = LocalFocusManager.current
-
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val getImage = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { imageUri = it }
-    )
-
     var isShowError by remember { mutableStateOf(false) }
-
-    LaunchedEffect(isShowKeyboard) {
-        if (isShowKeyboard) {
-            scrollState.scrollTo(scrollState.maxValue)
-        }
-    }
 
     Column(
         modifier = Modifier
@@ -105,6 +87,7 @@ fun SignUpScreen(
             .noRippleClickable { focusManager.clearFocus() }
             .systemBarsPadding()
             .imePadding()
+            .keyboardAutoScroll(scrollState)
             .padding(
                 top = 16.dp,
                 bottom = if (isShowKeyboard) 0.dp else 32.dp
@@ -140,7 +123,7 @@ fun SignUpScreen(
                 GlideImage(
                     imageModel = { imageUri },
                     modifier = Modifier
-                        .noRippleClickable { getImage.launch("image/*") }
+                        .noRippleClickable { launchImagePicker() }
                         .size(128.dp)
                         .clip(CircleShape)
                         .align(Alignment.CenterHorizontally),
@@ -148,7 +131,7 @@ fun SignUpScreen(
                 )
             } ?: Image(
                 modifier = Modifier
-                    .noRippleClickable { getImage.launch("image/*") }
+                    .noRippleClickable { launchImagePicker() }
                     .size(128.dp)
                     .align(Alignment.CenterHorizontally),
                 painter = painterResource(R.drawable.img_empty_profile),
@@ -226,7 +209,7 @@ fun SignUpScreen(
 
 @DevicePreview
 @Composable
-private fun LoginScreenPreview() {
+private fun SignUpScreenPreview() {
     SignUpScreen(
         navigateToBack = { },
         signUp = { }
