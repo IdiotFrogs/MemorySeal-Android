@@ -13,7 +13,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonElevation
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,7 +74,7 @@ private fun MSButtonEnabledPreview() {
         modifier = Modifier.fillMaxWidth(),
         onClick = {}
     ) {
-        Text(text = "Button")
+        MSText(text = "Button")
     }
 }
 
@@ -87,7 +86,7 @@ private fun MSButtonDisabledPreview() {
         enabled = false,
         onClick = {}
     ) {
-        Text("Button")
+        MSText("Button")
     }
 }
 
@@ -99,7 +98,7 @@ private fun MSRectangularButtonEnabledPreview() {
         isRounded = false,
         onClick = {}
     ) {
-        Text(text = "Button")
+        MSText(text = "Button")
     }
 }
 
@@ -112,7 +111,7 @@ private fun MSRectangularButtonDisabledPreview() {
         isRounded = false,
         onClick = {}
     ) {
-        Text("Button")
+        MSText("Button")
     }
 }
 
@@ -126,6 +125,6 @@ private fun MSAnimationButtonDisabledPreview() {
         isRounded = isRounded,
         onClick = { isRounded = !isRounded }
     ) {
-        Text("Button")
+        MSText("Button")
     }
 }
