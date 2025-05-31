@@ -30,7 +30,11 @@ fun MSButton(
     enabled: Boolean = true,
     isRounded: Boolean = true,
     colors: ButtonColors = ButtonDefaults.buttonColors(
-        containerColor = MSTheme.color.greyG5,
+        containerColor = if (isRounded) {
+            MSTheme.color.primaryNormal
+        } else {
+            MSTheme.color.primaryDark
+        },
         disabledContainerColor = MSTheme.color.greyG4
     ),
     pressColors: ButtonColors = ButtonDefaults.buttonColors(
