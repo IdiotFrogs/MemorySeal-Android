@@ -7,6 +7,7 @@ plugins {
 
 dependencies {
     implementation(project(":feature:auth"))
+    implementation(project(":feature:create"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:data"))
     implementation(project(":core:navigation"))
