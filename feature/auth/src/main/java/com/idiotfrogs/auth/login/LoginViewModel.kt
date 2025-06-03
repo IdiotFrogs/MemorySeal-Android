@@ -35,7 +35,7 @@ class LoginViewModel @Inject constructor(): ViewModel() {
 
     private val safeScope = viewModelScope + coroutineExceptionHandler
 
-    private fun fetchInitUi() {
+    fun fetchInitUi() {
         safeScope.launch {
             _uiState.emit(LoginUiState.UiLoaded)
         }
