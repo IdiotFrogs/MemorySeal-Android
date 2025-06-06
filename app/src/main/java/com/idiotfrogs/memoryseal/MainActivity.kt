@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.idiotfrogs.auth.login.LoginRoute
 import com.idiotfrogs.auth.signup.SignUpRoute
 import com.idiotfrogs.auth.util.LocalLoginManager
+import com.idiotfrogs.create.CreateScreen
 import com.idiotfrogs.data.LoginManager
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.navigation.Routes
@@ -57,6 +58,9 @@ class MainActivity : ComponentActivity() {
                                     navigateToErrorScreen = {},
                                     navigateToMainScreen = {}
                                 )
+                            }
+                            composable<Routes.Create> {
+                                CreateScreen()
                             }
                         }
                     }
