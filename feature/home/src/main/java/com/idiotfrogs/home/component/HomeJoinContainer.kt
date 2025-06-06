@@ -1,6 +1,8 @@
 package com.idiotfrogs.home.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -19,6 +21,7 @@ import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +41,8 @@ fun BoxScope.HomeJoinContainer(
     onCancel: () -> Unit,
     onJoin: () -> Unit,
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(isShow) {
@@ -69,7 +74,9 @@ fun BoxScope.HomeJoinContainer(
             MSTextField(
                 modifier = Modifier.fillMaxWidth(),
                 textFieldState = textFieldState,
-                hint = "예. #23923"
+                hint = "예. #23923",
+                isFocused = isFocused,
+                interactionSource = interactionSource
             )
             Spacer(modifier = Modifier.height(24.dp))
             Row(

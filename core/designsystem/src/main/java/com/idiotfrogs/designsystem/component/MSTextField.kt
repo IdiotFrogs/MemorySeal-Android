@@ -3,6 +3,7 @@ package com.idiotfrogs.designsystem.component
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -18,6 +19,8 @@ import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -30,7 +33,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
 import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.pretendard
 
@@ -39,6 +41,7 @@ fun MSTextField(
     modifier: Modifier = Modifier,
     textFieldState: TextFieldState,
     hint: String,
+    isFocused: Boolean,
     enabled: Boolean = true,
     readOnly: Boolean = false,
     inputTransformation: InputTransformation? = null,
@@ -58,7 +61,6 @@ fun MSTextField(
     outputTransformation: OutputTransformation? = null,
     scrollState: ScrollState = rememberScrollState()
 ) {
-    val isShowKeyboard = rememberKeyboardVisibility()
     BasicTextField(
         state = textFieldState,
         modifier = modifier,
@@ -80,7 +82,7 @@ fun MSTextField(
                     .border(
                         width = 1.dp,
                         color = when {
-                            (enabled && !isShowKeyboard) || !enabled -> MSTheme.color.greyG2
+                            (enabled && !isFocused) || !enabled -> MSTheme.color.greyG2
                             else -> MSTheme.color.greyG5
                         },
                         shape = RoundedCornerShape(12.dp)
@@ -108,9 +110,13 @@ fun MSTextField(
 @Composable
 private fun MSTextFieldPreview() {
     val textFieldState = rememberTextFieldState()
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
     MSTextField(
         modifier = Modifier.fillMaxWidth(),
         hint = "별명을 입력해주세요.",
+        isFocused = isFocused,
         textFieldState = textFieldState
     )
 }
@@ -119,10 +125,14 @@ private fun MSTextFieldPreview() {
 @Composable
 private fun MSTextFieldDisabledPreview() {
     val textFieldState = rememberTextFieldState()
+    val interactionSource = remember { MutableInteractionSource() }
+    val isFocused by interactionSource.collectIsFocusedAsState()
+
     MSTextField(
         modifier = Modifier.fillMaxWidth(),
         enabled = false,
         hint = "별명을 입력해주세요.",
+        isFocused = isFocused,
         textFieldState = textFieldState
     )
 }
