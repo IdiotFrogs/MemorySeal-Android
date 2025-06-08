@@ -24,7 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.idiotfrogs.auth.login.component.LoginButton
 import com.idiotfrogs.auth.login.component.LoginType
-import com.idiotfrogs.auth.util.LocalLoginManager
+import com.idiotfrogs.auth.util.rememberLoginManager
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
@@ -38,23 +38,18 @@ fun LoginRoute(
     navigateToSignUpScreen: () -> Unit,
 ) {
     val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
-    val loginManager = LocalLoginManager.current
+    val loginManager = rememberLoginManager()
 
     when (val state = uiState) {
         LoginUiState.Init -> Unit // 화면 로딩 로직 및 자동 로그인
         LoginUiState.UiLoaded -> {
-            if (loginManager != null) {
-                LoginScreen(
-                    googleLogin = {
-                        loginViewModel.socialLogin { loginManager.googleLogin() }
-                    },
-                    appleLogin = {
-                        loginViewModel.socialLogin { loginManager.appleLogin() }
-                    }
-                )
-            } else {
-                navigateToErrorScreen("LoginManager is null")
-            }
+            LoginScreen(
+                googleLogin = {
+                    loginViewModel.socialLogin { loginManager.googleLogin() } },
+                appleLogin = {
+                    loginViewModel.socialLogin { loginManager.appleLogin() }
+                }
+            )
         }
         is LoginUiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
         LoginUiState.LoginSuccess -> navigateToSignUpScreen()
