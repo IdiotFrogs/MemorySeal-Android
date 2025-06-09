@@ -3,8 +3,6 @@ package com.idiotfrogs.designsystem.component
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -25,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,6 +36,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.model.MSMenuFabModel
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.rememberFocusState
 import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.resource.pretendard
@@ -67,8 +65,7 @@ fun MSMenuFab(
         ) {
             CompositionLocalProvider(LocalRippleConfiguration provides null) {
                 menuList.forEach {
-                    val msMenuFabInteractionSource = remember { MutableInteractionSource() }
-                    val msMenuFabIsPressed by msMenuFabInteractionSource.collectIsPressedAsState()
+                    val (msMenuFabInteractionSource, msMenuFabIsPressed) = rememberFocusState()
 
                     DropdownMenuItem(
                         modifier = Modifier
