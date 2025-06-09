@@ -3,8 +3,6 @@ package com.idiotfrogs.create
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -21,8 +19,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -37,6 +33,7 @@ import com.idiotfrogs.designsystem.component.MSDetailHeader
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.keyboardAutoScroll
 import com.idiotfrogs.designsystem.util.noRippleClickable
+import com.idiotfrogs.designsystem.util.rememberFocusState
 import com.idiotfrogs.designsystem.util.rememberPickerState
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
@@ -49,11 +46,8 @@ fun CreateScreen(modifier: Modifier = Modifier) {
     val (imageUri, launchImagePicker) = rememberPickerState()
     val enabled = titleTextFieldState.text.isNotEmpty() && contentTextFieldState.text.isNotEmpty()
 
-    val titleInteractionSource = remember { MutableInteractionSource() }
-    val titleIsFocused by titleInteractionSource.collectIsFocusedAsState()
-
-    val contentInteractionSource = remember { MutableInteractionSource() }
-    val contentIsFocused by contentInteractionSource.collectIsFocusedAsState()
+    val (titleInteractionSource, titleIsFocused) = rememberFocusState()
+    val (contentInteractionSource, contentIsFocused) = rememberFocusState()
 
     Column(
         modifier = modifier
