@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.model.MSMenuFabModel
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.designsystem.util.rememberFocusState
+import com.idiotfrogs.designsystem.util.rememberPressState
 import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.resource.pretendard
@@ -65,7 +65,7 @@ fun MSMenuFab(
         ) {
             CompositionLocalProvider(LocalRippleConfiguration provides null) {
                 menuList.forEach {
-                    val (msMenuFabInteractionSource, msMenuFabIsPressed) = rememberFocusState()
+                    val (msMenuFabInteractionSource, msMenuFabIsPressed) = rememberPressState()
 
                     DropdownMenuItem(
                         modifier = Modifier

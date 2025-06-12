@@ -2,8 +2,6 @@ package com.idiotfrogs.auth.signup
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -78,9 +76,6 @@ fun SignUpScreen(
     val isShowKeyboard = rememberKeyboardVisibility()
     val scrollState = rememberScrollState()
     val (imageUri, launchImagePicker) = rememberPickerState()
-
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
 
     val focusManager = LocalFocusManager.current
     var isShowError by remember { mutableStateOf(false) }
@@ -158,8 +153,6 @@ fun SignUpScreen(
                     .padding(horizontal = 20.dp),
                 textFieldState = textFieldState,
                 hint = "별명을 입력해주세요.",
-                isFocused = isFocused,
-                interactionSource = interactionSource
             )
             if (isShowError) {
                 Row(

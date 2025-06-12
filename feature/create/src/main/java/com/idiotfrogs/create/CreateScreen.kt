@@ -33,7 +33,6 @@ import com.idiotfrogs.designsystem.component.MSDetailHeader
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.keyboardAutoScroll
 import com.idiotfrogs.designsystem.util.noRippleClickable
-import com.idiotfrogs.designsystem.util.rememberFocusState
 import com.idiotfrogs.designsystem.util.rememberPickerState
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
@@ -45,9 +44,6 @@ fun CreateScreen(modifier: Modifier = Modifier) {
     val scrollState = rememberScrollState()
     val (imageUri, launchImagePicker) = rememberPickerState()
     val enabled = titleTextFieldState.text.isNotEmpty() && contentTextFieldState.text.isNotEmpty()
-
-    val (titleInteractionSource, titleIsFocused) = rememberFocusState()
-    val (contentInteractionSource, contentIsFocused) = rememberFocusState()
 
     Column(
         modifier = modifier
@@ -104,8 +100,6 @@ fun CreateScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth(),
                 textFieldState = titleTextFieldState,
                 hint = "제목을 입력해주세요.",
-                isFocused = titleIsFocused,
-                interactionSource = titleInteractionSource
             )
             Spacer(Modifier.height(16.dp))
             MSText(
@@ -119,8 +113,6 @@ fun CreateScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth(),
                 textFieldState = contentTextFieldState,
                 hint = "설명을 입력해주세요.",
-                isFocused = contentIsFocused,
-                interactionSource = contentInteractionSource
             )
             Spacer(Modifier.height(16.dp))
             MSText(
