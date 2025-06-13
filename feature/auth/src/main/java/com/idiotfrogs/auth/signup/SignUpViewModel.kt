@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -40,13 +39,14 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
 
     private fun fetchInitUi() {
         safeScope.launch {
+            _uiState.emit(SignUpUiState.Init)
+            // TODO UI 로딩에 필요한 작업
             _uiState.emit(SignUpUiState.Success)
         }
     }
 
     fun signUp() {
         safeScope.launch {
-//            delay(1000)
             _event.emit(SignUpEvent.NavigateToHome)
         }
     }

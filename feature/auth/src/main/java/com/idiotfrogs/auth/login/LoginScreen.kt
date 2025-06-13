@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,12 +42,6 @@ fun LoginRoute(
             when (event) {
                 LoginEvent.NavigateToSignUp -> navigateToSignUpScreen()
             }
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            loginViewModel.fetchInitUi()
         }
     }
 
