@@ -69,7 +69,7 @@ fun BoxScope.HomeJoinContainer(
             MSTextField(
                 modifier = Modifier.fillMaxWidth(),
                 textFieldState = textFieldState,
-                hint = "예. #23923"
+                hint = "예. #23923",
             )
             Spacer(modifier = Modifier.height(24.dp))
             Row(

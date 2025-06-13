@@ -102,7 +102,7 @@ fun CreateScreen(
             MSTextField(
                 modifier = Modifier.fillMaxWidth(),
                 textFieldState = titleTextFieldState,
-                hint = "제목을 입력해주세요."
+                hint = "제목을 입력해주세요.",
             )
             Spacer(Modifier.height(16.dp))
             MSText(
@@ -115,7 +115,7 @@ fun CreateScreen(
             MSTextField(
                 modifier = Modifier.fillMaxWidth(),
                 textFieldState = contentTextFieldState,
-                hint = "설명을 입력해주세요."
+                hint = "설명을 입력해주세요.",
             )
             Spacer(Modifier.height(16.dp))
             MSText(

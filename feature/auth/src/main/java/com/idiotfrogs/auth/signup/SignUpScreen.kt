@@ -142,7 +142,6 @@ fun SignUpScreen(
                 painter = painterResource(R.drawable.img_empty_profile),
                 contentDescription = "Profile"
             )
-
             Spacer(modifier = Modifier.height(24.dp))
             MSText(
                 modifier = Modifier
@@ -158,7 +157,7 @@ fun SignUpScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
                 textFieldState = textFieldState,
-                hint = "별명을 입력해주세요."
+                hint = "별명을 입력해주세요.",
             )
             if (isShowError) {
                 Row(

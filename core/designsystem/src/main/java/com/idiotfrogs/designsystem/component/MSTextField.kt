@@ -30,17 +30,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
+import com.idiotfrogs.designsystem.util.rememberFocusState
 import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.pretendard
 
 @Composable
 fun MSTextField(
     modifier: Modifier = Modifier,
-    textFieldState: TextFieldState,
     hint: String,
     enabled: Boolean = true,
     readOnly: Boolean = false,
+    textFieldState: TextFieldState = rememberTextFieldState(),
+    focusState: Pair<MutableInteractionSource, Boolean> = rememberFocusState(),
     inputTransformation: InputTransformation? = null,
     textStyle: TextStyle = TextStyle(
         color = MSTheme.color.greyG5,
@@ -53,12 +54,12 @@ fun MSTextField(
     onKeyboardAction: KeyboardActionHandler? = null,
     lineLimits: TextFieldLineLimits = TextFieldLineLimits.SingleLine,
     onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,
-    interactionSource: MutableInteractionSource? = null,
     cursorBrush: Brush = SolidColor(Color.Black),
     outputTransformation: OutputTransformation? = null,
     scrollState: ScrollState = rememberScrollState()
 ) {
-    val isShowKeyboard = rememberKeyboardVisibility()
+    val (interactionSource, isFocused) = focusState
+
     BasicTextField(
         state = textFieldState,
         modifier = modifier,
@@ -80,7 +81,7 @@ fun MSTextField(
                     .border(
                         width = 1.dp,
                         color = when {
-                            (enabled && !isShowKeyboard) || !enabled -> MSTheme.color.greyG2
+                            (enabled && !isFocused) || !enabled -> MSTheme.color.greyG2
                             else -> MSTheme.color.greyG5
                         },
                         shape = RoundedCornerShape(12.dp)
@@ -107,22 +108,18 @@ fun MSTextField(
 @Preview
 @Composable
 private fun MSTextFieldPreview() {
-    val textFieldState = rememberTextFieldState()
     MSTextField(
         modifier = Modifier.fillMaxWidth(),
         hint = "별명을 입력해주세요.",
-        textFieldState = textFieldState
     )
 }
 
 @Preview
 @Composable
 private fun MSTextFieldDisabledPreview() {
-    val textFieldState = rememberTextFieldState()
     MSTextField(
         modifier = Modifier.fillMaxWidth(),
         enabled = false,
         hint = "별명을 입력해주세요.",
-        textFieldState = textFieldState
     )
 }
