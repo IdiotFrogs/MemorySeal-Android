@@ -1,5 +1,6 @@
 package com.idiotfrogs.auth.signup
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -48,9 +49,9 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun SignUpRoute(
     signUpViewModel: SignUpViewModel = viewModel(),
-    navigateToBack: () -> Unit,
+    navigateToLogin: () -> Unit,
     navigateToErrorScreen: (String) -> Unit,
-    navigateToMainScreen: () -> Unit,
+    navigateToHomeScreen: () -> Unit,
 ) {
     val uiState by signUpViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -58,18 +59,18 @@ fun SignUpRoute(
         SignUpUiState.Init -> Unit // 화면 로딩 로직
         SignUpUiState.UiLoaded -> {
             SignUpScreen(
-                navigateToBack = navigateToBack,
+                navigateToLogin = navigateToLogin,
                 signUpViewModel::signUp,
             )
         }
         is SignUpUiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
-        SignUpUiState.SignUpSuccess -> navigateToMainScreen()
+        SignUpUiState.SignUpSuccess -> navigateToHomeScreen()
     }
 }
 
 @Composable
 fun SignUpScreen(
-    navigateToBack: () -> Unit,
+    navigateToLogin: () -> Unit,
     signUp: () -> Unit,
 ) {
     val textFieldState = rememberTextFieldState()
@@ -79,6 +80,10 @@ fun SignUpScreen(
 
     val focusManager = LocalFocusManager.current
     var isShowError by remember { mutableStateOf(false) }
+
+    BackHandler {
+        navigateToLogin()
+    }
 
     Column(
         modifier = Modifier
@@ -97,7 +102,7 @@ fun SignUpScreen(
             Icon(
                 modifier = Modifier
                     .padding(start = 20.dp)
-                    .noRippleClickable { navigateToBack() },
+                    .noRippleClickable { navigateToLogin() },
                 painter = painterResource(R.drawable.ic_chevron_left),
                 contentDescription = "Back"
             )
@@ -211,7 +216,7 @@ fun SignUpScreen(
 @Composable
 private fun SignUpScreenPreview() {
     SignUpScreen(
-        navigateToBack = { },
+        navigateToLogin = { },
         signUp = { }
     )
 }

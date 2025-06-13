@@ -2,7 +2,6 @@ package com.idiotfrogs.memoryseal
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,6 +19,7 @@ import com.idiotfrogs.auth.util.LocalLoginManager
 import com.idiotfrogs.create.CreateScreen
 import com.idiotfrogs.data.LoginManager
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.home.HomeScreen
 import com.idiotfrogs.navigation.Routes
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -48,19 +48,46 @@ class MainActivity : ComponentActivity() {
                                 LoginRoute(
                                     navigateToErrorScreen = {},
                                     navigateToSignUpScreen = {
-                                        navController.navigate(Routes.SignUp)
+                                        navController.navigate(Routes.SignUp) {
+                                            popUpTo(Routes.Login) {
+                                                inclusive = true
+                                            }
+                                        }
                                     }
                                 )
                             }
                             composable<Routes.SignUp> {
                                 SignUpRoute(
-                                    navigateToBack = {},
+                                    navigateToLogin = {
+                                        navController.navigate(Routes.Login) {
+                                            popUpTo(Routes.SignUp) {
+                                                inclusive = true
+                                            }
+                                        }
+                                    },
                                     navigateToErrorScreen = {},
-                                    navigateToMainScreen = {}
+                                    navigateToHomeScreen = {
+                                        navController.navigate(Routes.Home) {
+                                            popUpTo(Routes.SignUp) {
+                                                inclusive = true
+                                            }
+                                        }
+                                    }
+                                )
+                            }
+                            composable<Routes.Home> {
+                                HomeScreen(
+                                    navigateToCreate = {
+                                        navController.navigate(Routes.Create)
+                                    }
                                 )
                             }
                             composable<Routes.Create> {
-                                CreateScreen()
+                                CreateScreen(
+                                    navigateToBack = {
+                                        navController.popBackStack()
+                                    }
+                                )
                             }
                         }
                     }
