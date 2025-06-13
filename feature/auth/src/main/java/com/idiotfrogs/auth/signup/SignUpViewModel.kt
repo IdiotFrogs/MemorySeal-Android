@@ -2,6 +2,7 @@ package com.idiotfrogs.auth.signup
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.idiotfrogs.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor() : ViewModel() {
-    private val _uiState = MutableStateFlow<SignUpUiState>(SignUpUiState.Init)
+    private val _uiState = MutableStateFlow<UiState>(UiState.Init)
     val uiState = _uiState
         .onStart {
             fetchInitUi()
@@ -24,7 +25,7 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            SignUpUiState.Init
+            UiState.Init
         )
 
     private val _event = MutableSharedFlow<SignUpEvent>()
@@ -32,16 +33,16 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
 
     // TODO: 공통 error 처리 CEH 분리
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        _uiState.value = SignUpUiState.Error(throwable.message)
+        _uiState.value = UiState.Error(throwable.message)
     }
 
     private val safeScope = viewModelScope + coroutineExceptionHandler
 
     private fun fetchInitUi() {
         safeScope.launch {
-            _uiState.emit(SignUpUiState.Init)
+            _uiState.emit(UiState.Init)
             // TODO UI 로딩에 필요한 작업
-            _uiState.emit(SignUpUiState.Success)
+            _uiState.emit(UiState.Success)
         }
     }
 
@@ -50,12 +51,6 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
             _event.emit(SignUpEvent.NavigateToHome)
         }
     }
-}
-
-sealed interface SignUpUiState {
-    data object Init : SignUpUiState
-    data object Success : SignUpUiState
-    data class Error(val errorMessage: String?) : SignUpUiState
 }
 
 sealed interface SignUpEvent {

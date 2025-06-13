@@ -46,6 +46,7 @@ import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
 import com.idiotfrogs.designsystem.util.rememberPickerState
 import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
+import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
@@ -66,14 +67,14 @@ fun SignUpRoute(
     val uiState by signUpViewModel.uiState.collectAsStateWithLifecycle()
 
     when (val state = uiState) {
-        SignUpUiState.Init -> Unit // 화면 로딩 로직
-        SignUpUiState.Success -> {
+        UiState.Init -> Unit // 화면 로딩 로직
+        UiState.Success -> {
             SignUpScreen(
                 navigateToBack = navigateToBack,
                 signUpViewModel::signUp,
             )
         }
-        is SignUpUiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
+        is UiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
     }
 }
 

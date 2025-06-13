@@ -30,6 +30,7 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.resource.hsSantokki
+import com.idiotfrogs.util.UiState
 
 @Composable
 fun LoginRoute(
@@ -49,8 +50,8 @@ fun LoginRoute(
     val loginManager = rememberLoginManager()
 
     when (val state = uiState) {
-        LoginUiState.Init -> Unit // 화면 로딩 로직 및 자동 로그인
-        LoginUiState.Success -> {
+        UiState.Init -> Unit // 화면 로딩 로직 및 자동 로그인
+        UiState.Success -> {
             LoginScreen(
                 googleLogin = {
                     loginViewModel.socialLogin { loginManager.googleLogin() } },
@@ -59,7 +60,7 @@ fun LoginRoute(
                 }
             )
         }
-        is LoginUiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
+        is UiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
     }
 }
 

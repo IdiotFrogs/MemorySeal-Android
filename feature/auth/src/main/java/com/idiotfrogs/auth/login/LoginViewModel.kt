@@ -3,6 +3,7 @@ package com.idiotfrogs.auth.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.idiotfrogs.domain.exception.LoginCancelledException
+import com.idiotfrogs.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -17,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(): ViewModel() {
-    private val _uiState = MutableStateFlow<LoginUiState>(LoginUiState.Init)
+    private val _uiState = MutableStateFlow<UiState>(UiState.Init)
     val uiState = _uiState
         .onStart {
             fetchInitUi()
@@ -25,7 +26,7 @@ class LoginViewModel @Inject constructor(): ViewModel() {
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5_000),
-            LoginUiState.Init
+            UiState.Init
         )
 
     private val _event = MutableSharedFlow<LoginEvent>()
@@ -34,7 +35,7 @@ class LoginViewModel @Inject constructor(): ViewModel() {
     // TODO: 공통 error 처리 CEH 분리
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         if (throwable !is LoginCancelledException) {
-            _uiState.value = LoginUiState.Error(throwable.message)
+            _uiState.value = UiState.Error(throwable.message)
         }
     }
 
@@ -42,9 +43,9 @@ class LoginViewModel @Inject constructor(): ViewModel() {
 
     private fun fetchInitUi() {
         safeScope.launch {
-            _uiState.emit(LoginUiState.Init)
+            _uiState.emit(UiState.Init)
             // TODO UI 로딩에 필요한 작업
-            _uiState.emit(LoginUiState.Success)
+            _uiState.emit(UiState.Success)
         }
     }
 
@@ -54,12 +55,6 @@ class LoginViewModel @Inject constructor(): ViewModel() {
             _event.emit(LoginEvent.NavigateToSignUp)
         }
     }
-}
-
-sealed interface LoginUiState {
-    data object Init : LoginUiState
-    data object Success : LoginUiState
-    data class Error(val errorMessage: String?) : LoginUiState
 }
 
 sealed interface LoginEvent {
