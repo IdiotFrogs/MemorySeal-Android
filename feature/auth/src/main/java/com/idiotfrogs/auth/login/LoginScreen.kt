@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,12 +38,26 @@ fun LoginRoute(
     navigateToErrorScreen: (String) -> Unit,
     navigateToSignUpScreen: () -> Unit,
 ) {
+    LaunchedEffect(Unit) {
+        loginViewModel.event.collect { event ->
+            when (event) {
+                LoginEvent.NavigateToSignUp -> navigateToSignUpScreen()
+            }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            loginViewModel.fetchInitUi()
+        }
+    }
+
     val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
     val loginManager = rememberLoginManager()
 
     when (val state = uiState) {
         LoginUiState.Init -> Unit // 화면 로딩 로직 및 자동 로그인
-        LoginUiState.UiLoaded -> {
+        LoginUiState.Success -> {
             LoginScreen(
                 googleLogin = {
                     loginViewModel.socialLogin { loginManager.googleLogin() } },
@@ -52,13 +67,6 @@ fun LoginRoute(
             )
         }
         is LoginUiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
-        LoginUiState.LoginSuccess -> navigateToSignUpScreen()
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            loginViewModel.fetchInitUi()
-        }
     }
 }
 

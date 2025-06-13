@@ -20,6 +20,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.idiotfrogs.auth.login.LoginEvent
 import com.idiotfrogs.designsystem.component.MSButton
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
@@ -49,28 +51,35 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun SignUpRoute(
     signUpViewModel: SignUpViewModel = viewModel(),
-    navigateToLogin: () -> Unit,
+    navigateToBack: () -> Unit,
     navigateToErrorScreen: (String) -> Unit,
     navigateToHomeScreen: () -> Unit,
 ) {
+    LaunchedEffect(Unit) {
+        signUpViewModel.event.collect { event ->
+            when (event) {
+                SignUpEvent.NavigateToHome -> navigateToHomeScreen()
+            }
+        }
+    }
+
     val uiState by signUpViewModel.uiState.collectAsStateWithLifecycle()
 
     when (val state = uiState) {
         SignUpUiState.Init -> Unit // 화면 로딩 로직
-        SignUpUiState.UiLoaded -> {
+        SignUpUiState.Success -> {
             SignUpScreen(
-                navigateToLogin = navigateToLogin,
+                navigateToBack = navigateToBack,
                 signUpViewModel::signUp,
             )
         }
         is SignUpUiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
-        SignUpUiState.SignUpSuccess -> navigateToHomeScreen()
     }
 }
 
 @Composable
 fun SignUpScreen(
-    navigateToLogin: () -> Unit,
+    navigateToBack: () -> Unit,
     signUp: () -> Unit,
 ) {
     val textFieldState = rememberTextFieldState()
@@ -80,10 +89,6 @@ fun SignUpScreen(
 
     val focusManager = LocalFocusManager.current
     var isShowError by remember { mutableStateOf(false) }
-
-    BackHandler {
-        navigateToLogin()
-    }
 
     Column(
         modifier = Modifier
@@ -102,7 +107,7 @@ fun SignUpScreen(
             Icon(
                 modifier = Modifier
                     .padding(start = 20.dp)
-                    .noRippleClickable { navigateToLogin() },
+                    .noRippleClickable { navigateToBack() },
                 painter = painterResource(R.drawable.ic_chevron_left),
                 contentDescription = "Back"
             )
@@ -215,7 +220,7 @@ fun SignUpScreen(
 @Composable
 private fun SignUpScreenPreview() {
     SignUpScreen(
-        navigateToLogin = { },
+        navigateToBack = { },
         signUp = { }
     )
 }

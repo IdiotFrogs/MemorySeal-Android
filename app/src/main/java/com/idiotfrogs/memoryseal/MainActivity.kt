@@ -49,7 +49,13 @@ class MainActivity : ComponentActivity() {
                             SignUpRoute(
                                 navigateToBack = { navController.popBackStack() },
                                 navigateToErrorScreen = {},
-                                navigateToHomeScreen = { navController.navigate(Routes.Home) }
+                                navigateToHomeScreen = {
+                                    navController.navigate(Routes.Home) {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
                             )
                         }
                         composable<Routes.Home> {
