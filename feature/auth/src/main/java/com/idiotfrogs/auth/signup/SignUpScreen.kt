@@ -1,5 +1,6 @@
 package com.idiotfrogs.auth.signup
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.idiotfrogs.auth.login.LoginEvent
 import com.idiotfrogs.designsystem.component.MSButton
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
@@ -43,6 +46,7 @@ import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
 import com.idiotfrogs.designsystem.util.rememberPickerState
 import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.resource.R
+import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
@@ -50,20 +54,27 @@ fun SignUpRoute(
     signUpViewModel: SignUpViewModel = viewModel(),
     navigateToBack: () -> Unit,
     navigateToErrorScreen: (String) -> Unit,
-    navigateToMainScreen: () -> Unit,
+    navigateToHomeScreen: () -> Unit,
 ) {
+    LaunchedEffect(Unit) {
+        signUpViewModel.event.collect { event ->
+            when (event) {
+                SignUpEvent.NavigateToHome -> navigateToHomeScreen()
+            }
+        }
+    }
+
     val uiState by signUpViewModel.uiState.collectAsStateWithLifecycle()
 
     when (val state = uiState) {
-        SignUpUiState.Init -> Unit // 화면 로딩 로직
-        SignUpUiState.UiLoaded -> {
+        UiState.Init -> Unit // 화면 로딩 로직
+        UiState.Success -> {
             SignUpScreen(
                 navigateToBack = navigateToBack,
                 signUpViewModel::signUp,
             )
         }
-        is SignUpUiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
-        SignUpUiState.SignUpSuccess -> navigateToMainScreen()
+        is UiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
     }
 }
 

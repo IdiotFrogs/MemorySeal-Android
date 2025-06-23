@@ -13,4 +13,7 @@ android {
 dependencies {
     "implementation"(project(":common:resource"))
     "implementation"(project(":core:designsystem"))
+    "implementation"(project(":core:data"))
+    "implementation"(project(":core:domain"))
+    "implementation"(project(":core:util"))
 }

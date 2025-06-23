@@ -16,6 +16,7 @@ import com.idiotfrogs.auth.login.LoginRoute
 import com.idiotfrogs.auth.signup.SignUpRoute
 import com.idiotfrogs.create.CreateScreen
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.home.HomeScreen
 import com.idiotfrogs.navigation.Routes
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -46,13 +47,26 @@ class MainActivity : ComponentActivity() {
                         }
                         composable<Routes.SignUp> {
                             SignUpRoute(
-                                navigateToBack = {},
+                                navigateToBack = { navController.popBackStack() },
                                 navigateToErrorScreen = {},
-                                navigateToMainScreen = {}
+                                navigateToHomeScreen = {
+                                    navController.navigate(Routes.Home) {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            )
+                        }
+                        composable<Routes.Home> {
+                            HomeScreen(
+                                navigateToCreate = { navController.navigate(Routes.Create) }
                             )
                         }
                         composable<Routes.Create> {
-                            CreateScreen()
+                            CreateScreen(
+                                navigateToBack = { navController.popBackStack() }
+                            )
                         }
                     }
                 }

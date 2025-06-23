@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +30,7 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.resource.hsSantokki
+import com.idiotfrogs.util.UiState
 
 @Composable
 fun LoginRoute(
@@ -37,12 +38,20 @@ fun LoginRoute(
     navigateToErrorScreen: (String) -> Unit,
     navigateToSignUpScreen: () -> Unit,
 ) {
+    LaunchedEffect(Unit) {
+        loginViewModel.event.collect { event ->
+            when (event) {
+                LoginEvent.NavigateToSignUp -> navigateToSignUpScreen()
+            }
+        }
+    }
+
     val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
     val loginManager = rememberLoginManager()
 
     when (val state = uiState) {
-        LoginUiState.Init -> Unit // 화면 로딩 로직 및 자동 로그인
-        LoginUiState.UiLoaded -> {
+        UiState.Init -> Unit // 화면 로딩 로직 및 자동 로그인
+        UiState.Success -> {
             LoginScreen(
                 googleLogin = {
                     loginViewModel.socialLogin { loginManager.googleLogin() } },
@@ -51,14 +60,7 @@ fun LoginRoute(
                 }
             )
         }
-        is LoginUiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
-        LoginUiState.LoginSuccess -> navigateToSignUpScreen()
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            loginViewModel.fetchInitUi()
-        }
+        is UiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
     }
 }
 
