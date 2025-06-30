@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -32,7 +33,11 @@ class MainActivity : ComponentActivity() {
             MSTheme {
                 val navController = rememberNavController()
 
-                Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
+                Scaffold(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .imePadding()
+                ) { _ ->
                     NavHost(
                         navController = navController,
                         startDestination = Routes.Login

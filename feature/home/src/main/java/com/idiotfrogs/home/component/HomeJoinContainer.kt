@@ -29,7 +29,6 @@ import com.idiotfrogs.designsystem.component.MSButton
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.designsystem.util.advancedImePadding
 
 @Composable
 fun BoxScope.HomeJoinContainer(
@@ -53,7 +52,6 @@ fun BoxScope.HomeJoinContainer(
                 .align(Alignment.BottomCenter)
                 .focusRequester(focusRequester)
                 .fillMaxWidth()
-                .advancedImePadding()
                 .background(
                     color = MSTheme.color.white,
                     shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
