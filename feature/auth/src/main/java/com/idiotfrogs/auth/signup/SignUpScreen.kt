@@ -194,7 +194,6 @@ fun SignUpScreen(
                 .padding(
                     horizontal = if (isShowKeyboard) 0.dp else 20.dp
                 ),
-            isRounded = !isShowKeyboard,
             content = {
                 MSText(
                     text = "이 프로필로 할게요!",
