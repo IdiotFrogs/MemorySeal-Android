@@ -1,5 +1,6 @@
 package com.idiotfrogs.auth.signup
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -187,13 +188,15 @@ fun SignUpScreen(
             }
         }
 
+        val horizontalPadding by animateDpAsState(
+            targetValue = if (isShowKeyboard) 0.dp else 20.dp
+        )
+
         MSButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .padding(
-                    horizontal = if (isShowKeyboard) 0.dp else 20.dp
-                ),
+                .padding(horizontal = horizontalPadding),
             isRounded = !isShowKeyboard,
             content = {
                 MSText(
