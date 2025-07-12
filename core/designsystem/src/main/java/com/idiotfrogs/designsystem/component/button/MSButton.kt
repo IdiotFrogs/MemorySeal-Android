@@ -1,4 +1,4 @@
-package com.idiotfrogs.designsystem.component
+package com.idiotfrogs.designsystem.component.button
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -21,6 +21,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DisableRippleEffect
 
@@ -30,16 +31,12 @@ fun MSButton(
     enabled: Boolean = true,
     isRounded: Boolean = true,
     colors: ButtonColors = ButtonDefaults.buttonColors(
-        containerColor = if (isRounded) {
-            MSTheme.color.primaryNormal
-        } else {
-            MSTheme.color.primaryDark
-        },
-        disabledContainerColor = MSTheme.color.greyG4
+        containerColor = MSTheme.color.primaryNormal,
+        disabledContainerColor = MSTheme.color.primaryLight
     ),
     pressColors: ButtonColors = ButtonDefaults.buttonColors(
-        containerColor = MSTheme.color.black,
-        disabledContainerColor = MSTheme.color.greyG4
+        containerColor = MSTheme.color.primaryDark,
+        disabledContainerColor = MSTheme.color.primaryLight
     ),
     elevation: ButtonElevation? = null,
     border: BorderStroke? = null,
