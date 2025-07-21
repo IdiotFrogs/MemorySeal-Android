@@ -5,9 +5,9 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 // Primary
-private val PrimaryLight = Color(0xFF9EE5B0)
+private val PrimaryLight = Color(0xFFCFF2D8)
 private val PrimaryNormal = Color(0xFF34C759)
-private val PrimaryDark = Color(0xFF2EAE4D)
+private val PrimaryDark = Color(0xFF048F27)
 
 // Grey
 private val GreyG1 = Color(0xFFE6E6E6)

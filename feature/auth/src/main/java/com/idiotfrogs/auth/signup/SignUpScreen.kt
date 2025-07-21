@@ -1,5 +1,6 @@
 package com.idiotfrogs.auth.signup
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -32,7 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.idiotfrogs.designsystem.component.MSButton
+import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
@@ -187,13 +188,15 @@ fun SignUpScreen(
             }
         }
 
+        val horizontalPadding by animateDpAsState(
+            targetValue = if (isShowKeyboard) 0.dp else 20.dp
+        )
+
         MSButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .padding(
-                    horizontal = if (isShowKeyboard) 0.dp else 20.dp
-                ),
+                .padding(horizontal = horizontalPadding),
             isRounded = !isShowKeyboard,
             content = {
                 MSText(
