@@ -32,7 +32,9 @@ import com.idiotfrogs.home.component.HomeTabBar
 import com.idiotfrogs.home.component.HomeTicket
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    navigateToCreate: () -> Unit,
+) {
     var expanded by remember { mutableStateOf(false) }
     var currentTab by remember { mutableStateOf(HomeTab.CREATED) }
     var showJoinContainer by remember { mutableStateOf(false) }
@@ -44,7 +46,7 @@ fun HomeScreen() {
     val menuList by remember {
         mutableStateOf(
             listOf(
-                MSMenuFabModel("새 티켓 생성하기") { /** TODO: 타임 티켓 생성 */ },
+                MSMenuFabModel("새 티켓 생성하기") { navigateToCreate() },
                 MSMenuFabModel("참여코드로 합류하기") {
                     expanded = false
                     showJoinContainer = true
@@ -113,5 +115,5 @@ fun HomeScreen() {
 @DevicePreview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    HomeScreen(navigateToCreate = {})
 }

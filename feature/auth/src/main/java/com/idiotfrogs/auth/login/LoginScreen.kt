@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,12 +24,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.idiotfrogs.auth.login.component.LoginButton
 import com.idiotfrogs.auth.login.component.LoginType
-import com.idiotfrogs.auth.util.LocalLoginManager
+import com.idiotfrogs.auth.util.rememberLoginManager
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.resource.hsSantokki
+import com.idiotfrogs.util.UiState
 
 @Composable
 fun LoginRoute(
@@ -36,27 +38,29 @@ fun LoginRoute(
     navigateToErrorScreen: (String) -> Unit,
     navigateToSignUpScreen: () -> Unit,
 ) {
-    val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
-    val loginManager = LocalLoginManager.current
-
-    when (val state = uiState) {
-        LoginUiState.Init -> Unit // 화면 로딩 로직 및 자동 로그인
-        LoginUiState.UiLoaded -> {
-            if (loginManager != null) {
-                LoginScreen(
-                    googleLogin = {
-                        loginViewModel.socialLogin { loginManager.googleLogin() }
-                    },
-                    appleLogin = {
-                        loginViewModel.socialLogin { loginManager.appleLogin() }
-                    }
-                )
-            } else {
-                navigateToErrorScreen("LoginManager is null")
+    LaunchedEffect(Unit) {
+        loginViewModel.event.collect { event ->
+            when (event) {
+                LoginEvent.NavigateToSignUp -> navigateToSignUpScreen()
             }
         }
-        is LoginUiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
-        LoginUiState.LoginSuccess -> navigateToSignUpScreen()
+    }
+
+    val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
+    val loginManager = rememberLoginManager()
+
+    when (val state = uiState) {
+        UiState.Init -> Unit // 화면 로딩 로직 및 자동 로그인
+        UiState.Success -> {
+            LoginScreen(
+                googleLogin = {
+                    loginViewModel.socialLogin { loginManager.googleLogin() } },
+                appleLogin = {
+                    loginViewModel.socialLogin { loginManager.appleLogin() }
+                }
+            )
+        }
+        is UiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
     }
 }
 

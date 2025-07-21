@@ -14,7 +14,11 @@ fun rememberPickerState(mimeType: String = "image/*"): Pair<Uri?, () -> Unit> {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
-    ) { imageUri = it }
+    ) { newUri ->
+        if (newUri != null) {
+            imageUri = newUri
+        }
+    }
     val launch = { launcher.launch(mimeType) }
     return imageUri to launch
 }
@@ -24,7 +28,11 @@ fun rememberMultiPickerState(mimeType: String = "image/*"): Pair<List<Uri>, () -
     var imageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
-    ) { imageUris = it }
+    ) { newUris ->
+        if (newUris.isNotEmpty()) {
+            imageUris = newUris
+        }
+    }
     val launch = { launcher.launch(mimeType) }
     return imageUris to launch
 }

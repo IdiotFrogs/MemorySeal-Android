@@ -1,13 +1,12 @@
 plugins {
-    id("convention.android.feature")
+    id("convention.android.library")
 }
 
 android {
-    namespace = "com.idiotfrogs.auth"
+    namespace = "com.idiotfrogs.util"
 }
 
 dependencies {
-    implementation(libs.androidx.navigation)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)

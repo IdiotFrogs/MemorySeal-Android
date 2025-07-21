@@ -38,7 +38,10 @@ import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun CreateScreen(modifier: Modifier = Modifier) {
+fun CreateScreen(
+    modifier: Modifier = Modifier,
+    navigateToBack: () -> Unit,
+) {
     val titleTextFieldState = rememberTextFieldState()
     val contentTextFieldState = rememberTextFieldState()
     val scrollState = rememberScrollState()
@@ -57,7 +60,7 @@ fun CreateScreen(modifier: Modifier = Modifier) {
         MSDetailHeader(
             title = "타임 티켓 생성하기",
             paddingValues = PaddingValues(vertical = 16.dp),
-            navigateToBack = {}
+            navigateToBack = navigateToBack
         )
         Spacer(Modifier.height(24.dp))
         Column(
@@ -99,7 +102,7 @@ fun CreateScreen(modifier: Modifier = Modifier) {
             MSTextField(
                 modifier = Modifier.fillMaxWidth(),
                 textFieldState = titleTextFieldState,
-                hint = "제목을 입력해주세요."
+                hint = "제목을 입력해주세요.",
             )
             Spacer(Modifier.height(16.dp))
             MSText(
@@ -112,7 +115,7 @@ fun CreateScreen(modifier: Modifier = Modifier) {
             MSTextField(
                 modifier = Modifier.fillMaxWidth(),
                 textFieldState = contentTextFieldState,
-                hint = "설명을 입력해주세요."
+                hint = "설명을 입력해주세요.",
             )
             Spacer(Modifier.height(16.dp))
             MSText(
@@ -147,5 +150,7 @@ fun CreateScreen(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun CreateScreenPreview() {
-    CreateScreen()
+    CreateScreen(
+        navigateToBack = { }
+    )
 }
