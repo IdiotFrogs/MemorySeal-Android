@@ -1,6 +1,5 @@
 package com.idiotfrogs.auth.signup
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -34,7 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.idiotfrogs.auth.login.LoginEvent
 import com.idiotfrogs.designsystem.component.MSButton
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
@@ -97,7 +94,6 @@ fun SignUpScreen(
             .background(MSTheme.color.bgNormal)
             .noRippleClickable { focusManager.clearFocus() }
             .systemBarsPadding()
-            .imePadding()
             .keyboardAutoScroll(scrollState)
             .padding(
                 top = 16.dp,

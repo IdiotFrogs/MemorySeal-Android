@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -57,8 +56,7 @@ fun BoxScope.HomeJoinContainer(
                     color = MSTheme.color.white,
                     shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
                 )
-                .padding(horizontal = 20.dp, vertical = 24.dp)
-                .imePadding(),
+                .padding(horizontal = 20.dp, vertical = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             MSText(
