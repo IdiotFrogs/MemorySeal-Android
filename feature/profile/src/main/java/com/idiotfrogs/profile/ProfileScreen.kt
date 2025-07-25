@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.idiotfrogs.designsystem.component.MSDialog
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
@@ -37,9 +38,12 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun ProfileScreen(
     navigateToBack: () -> Unit,
+    navigateToLogin: () -> Unit,
 ) {
     // TODO: 추후 기존 프로필과 비교 로직 작성
     var isChanged by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
+    var showWithdrawDialog by remember { mutableStateOf(false) }
 
     val (imageUri, launchImagePicker) = rememberPickerState()
     val textFieldState = rememberTextFieldState()
@@ -115,6 +119,7 @@ fun ProfileScreen(
         )
         Spacer(modifier = Modifier.weight(1f))
         ProfileOption(
+            modifier = Modifier.noRippleClickable { showLogoutDialog = true },
             option = "로그아웃",
             trailingContent = {
                 Image(
@@ -125,6 +130,7 @@ fun ProfileScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
         ProfileOption(
+            modifier = Modifier.noRippleClickable { showWithdrawDialog = true },
             option = "회원탈퇴",
             optionColor = MSTheme.color.red,
             trailingContent = {
@@ -136,12 +142,43 @@ fun ProfileScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
+    MSDialog(
+        isShow = showLogoutDialog,
+        title = "로그아웃",
+        content = "메실에서 로그아웃 하시겠습니까?",
+        primaryText = "로그아웃",
+        secondaryText = "유지",
+        onAction = {
+            /** TODO: 로그아웃 로직 */
+            showLogoutDialog = false
+            navigateToLogin()
+        },
+        onDismiss = {
+            showLogoutDialog = false
+        }
+    )
+    MSDialog(
+        isShow = showWithdrawDialog,
+        title = "회원탈퇴",
+        content = "메실 회원을 탈퇴하시겠습니까?\n티켓에 저장된 내용은 삭제되지 않습니다.",
+        primaryText = "탈퇴",
+        secondaryText = "취소",
+        onAction = {
+            /** TODO: 탈퇴 로직 */
+            showWithdrawDialog = false
+            navigateToLogin()
+        },
+        onDismiss = {
+            showWithdrawDialog = false
+        }
+    )
 }
 
 @Preview
 @Composable
 fun ProfileScreenPreview() {
     ProfileScreen(
-        navigateToBack = { }
+        navigateToBack = { },
+        navigateToLogin = { }
     )
 }

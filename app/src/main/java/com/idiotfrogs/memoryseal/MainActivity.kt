@@ -76,8 +76,16 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable<Routes.Profile> {
-                            ProfileScreen (
-                                navigateToBack = { navController.popBackStack() }
+                            ProfileScreen(
+                                navigateToBack = { navController.popBackStack() },
+                                navigateToLogin = {
+                                    navController.navigate(Routes.Login) {
+                                        popUpTo<Routes.Home> {
+                                            inclusive = true
+                                        }
+                                        launchSingleTop = true
+                                    }
+                                }
                             )
                         }
                     }
