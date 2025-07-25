@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
@@ -34,7 +35,9 @@ import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    navigateToBack: () -> Unit,
+) {
     // TODO: 추후 기존 프로필과 비교 로직 작성
     var isChanged by remember { mutableStateOf(false) }
 
@@ -45,11 +48,16 @@ fun ProfileScreen() {
         modifier = Modifier
             .fillMaxSize()
             .background(MSTheme.color.white)
+            .systemBarsPadding()
             .padding(horizontal = 20.dp)
     ) {
         ProfileHeader(
             isChanged = isChanged,
-            onSave = { /** TODO: 저장 로직 */ }
+            onBack = { navigateToBack() },
+            onSave = {
+                /** TODO: 저장 로직 */
+                navigateToBack()
+            }
         )
         Spacer(modifier = Modifier.height(16.dp))
         imageUri?.let {
@@ -133,5 +141,7 @@ fun ProfileScreen() {
 @Preview
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen()
+    ProfileScreen(
+        navigateToBack = { }
+    )
 }

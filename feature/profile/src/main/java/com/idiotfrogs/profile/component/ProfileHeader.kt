@@ -25,6 +25,7 @@ import com.idiotfrogs.resource.R
 fun ProfileHeader(
     modifier: Modifier = Modifier,
     isChanged: Boolean,
+    onBack: () -> Unit,
     onSave: () -> Unit,
 ) {
     Row(
@@ -35,6 +36,7 @@ fun ProfileHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
+            modifier = Modifier.noRippleClickable(onBack),
             painter = painterResource(R.drawable.ic_chevron_left),
             contentDescription = "chevron left"
         )
@@ -61,6 +63,7 @@ fun ProfileHeaderPreview() {
     ProfileHeader(
         modifier = Modifier.padding(horizontal = 20.dp),
         isChanged = isChanged,
+        onBack = { },
         onSave = { isChanged = !isChanged }
     )
 }

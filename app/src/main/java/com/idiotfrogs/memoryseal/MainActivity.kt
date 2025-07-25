@@ -19,6 +19,7 @@ import com.idiotfrogs.create.CreateScreen
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.home.HomeScreen
 import com.idiotfrogs.navigation.Routes
+import com.idiotfrogs.profile.ProfileScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -65,11 +66,17 @@ class MainActivity : ComponentActivity() {
                         }
                         composable<Routes.Home> {
                             HomeScreen(
-                                navigateToCreate = { navController.navigate(Routes.Create) }
+                                navigateToCreate = { navController.navigate(Routes.Create) },
+                                navigateToProfile = { navController.navigate(Routes.Profile) }
                             )
                         }
                         composable<Routes.Create> {
                             CreateScreen(
+                                navigateToBack = { navController.popBackStack() }
+                            )
+                        }
+                        composable<Routes.Profile> {
+                            ProfileScreen (
                                 navigateToBack = { navController.popBackStack() }
                             )
                         }
