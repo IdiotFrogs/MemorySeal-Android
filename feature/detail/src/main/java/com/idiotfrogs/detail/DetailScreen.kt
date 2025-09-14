@@ -2,6 +2,7 @@ package com.idiotfrogs.detail
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,9 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,13 +27,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.idiotfrogs.designsystem.component.MSAnnotatedText
 import com.idiotfrogs.designsystem.component.MSDialog
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.detail.component.MembarListItem
 import com.idiotfrogs.detail.component.RoundedProgressBar
 import com.idiotfrogs.resource.R
 
@@ -54,7 +59,7 @@ fun DetailScreen(
     if (showVoteDialog) {
         MSDialog(
             title = "봉인 투표에 반대 하시겠습니까?",
-            content = "투표를 반대하면 투료를 다시 시작해야 합니다.",
+            content = "투표를 반대하면 투표를 다시 시작해야 합니다.",
             onConfirm = {
                 onVoteClicked(false)
                 showVoteDialog = false
@@ -114,6 +119,7 @@ fun DetailScreen(
                 color = MSTheme.color.white
             )
         }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -135,7 +141,7 @@ fun DetailScreen(
                 MSText(text = "티켓 봉인 투표")
                 Spacer(Modifier.height(8.dp))
                 if (isMember) {
-                    if (isVoteStart) {
+                    if (isVoteStart) { // TODO isVoteStart 변수 관리 방법 고민 필요
                         Spacer(Modifier.height(8.dp))
                         RoundedProgressBar(0.2f)
                         Spacer(Modifier.height(24.dp))
@@ -175,21 +181,128 @@ fun DetailScreen(
                         )
                     }
                 } else {
-                    MSButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = onSealClicked,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MSTheme.color.greyG5
-                        ),
-                        contentPadding = PaddingValues(11.dp)
-                    ) {
-                        MSText(
-                            text = "티켓 봉인하기",
-                            fontSize = 16.dp,
-                            color = MSTheme.color.white
-                        )
+                    if (isVoteStart) {
+                        Spacer(Modifier.height(8.dp))
+                        RoundedProgressBar(0.2f)
+                        Spacer(Modifier.height(24.dp))
+                        Row {
+                            MSButton(
+                                modifier = Modifier.weight(1f),
+                                onClick = { showVoteDialog = true },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MSTheme.color.greyG1
+                                ),
+                                contentPadding = PaddingValues(11.dp)
+                            ) {
+                                MSText(
+                                    text = "투표 취소",
+                                    fontSize = 16.dp,
+                                    color = MSTheme.color.greyG4
+                                )
+                            }
+                        }
+                    } else {
+                        MSButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = onSealClicked,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MSTheme.color.greyG5
+                            ),
+                            contentPadding = PaddingValues(11.dp)
+                        ) {
+                            MSText(
+                                text = "티켓 봉인하기",
+                                fontSize = 16.dp,
+                                color = MSTheme.color.white
+                            )
+                        }
                     }
                 }
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MSTheme.color.white)
+                .padding(horizontal = 20.dp, vertical = 24.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                MSText(
+                    text = "추억 메시지",
+                    color = MSTheme.color.greyG4
+                )
+                Image(
+                    modifier = Modifier.size(16.dp),
+                    painter = painterResource(R.drawable.ic_detail_rigt),
+                    contentDescription = "추억 메시지 상세 아이콘"
+                )
+            }
+            Spacer(Modifier.height(24.dp))
+            MSButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {},
+                contentPadding = PaddingValues(11.dp)
+            ) {
+                MSText(
+                    text = "시작하기",
+                    fontSize = 16.dp,
+                    color = MSTheme.color.white
+                )
+            }
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MSTheme.color.white)
+                .padding(horizontal = 20.dp, vertical = 24.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                MSAnnotatedText(
+                    text = buildAnnotatedString {
+                        append("멤버 ")
+                        withStyle(
+                            SpanStyle(color = MSTheme.color.primaryNormal)
+                        ) { append("7") }
+                    },
+                    color = MSTheme.color.greyG4
+                )
+                Image(
+                    modifier = Modifier.size(16.dp),
+                    painter = painterResource(R.drawable.ic_detail_rigt),
+                    contentDescription = "추억 메시지 상세 아이콘"
+                )
+            }
+            Spacer(Modifier.height(24.dp))
+            MembarListItem("파란 바나나 (나)", isMembar = false) // TODO 실제 본인 nickName 필요
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider(
+                thickness = 1.dp,
+                color = MSTheme.color.greyG1
+            )
+            repeat(6) { // TODO 테스트용 코드 -> 추 후 실제 list 변경 필요
+                Spacer(Modifier.height(16.dp))
+                MembarListItem(
+                    nickName = when (it) {
+                        0 -> "파란 바나나"
+                        1 -> "검정 복숭아"
+                        2 -> "별 모양 파인애플"
+                        3 -> "초코 체리"
+                        4 -> "자두 수박"
+                        else -> "민트 네모 수박"
+                    }
+                )
             }
         }
     }
