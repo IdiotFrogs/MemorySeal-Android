@@ -35,7 +35,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSAnnotatedText
 import com.idiotfrogs.designsystem.component.MSDialog
+import com.idiotfrogs.designsystem.component.MSMessageItem
 import com.idiotfrogs.designsystem.component.MSText
+import com.idiotfrogs.designsystem.component.MessageType
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.detail.component.MembarListItem
@@ -55,6 +57,7 @@ fun DetailScreen(
 ) {
     val scrollState = rememberScrollState()
     var showVoteDialog by remember { mutableStateOf(false) }
+    val messageList = listOf("")
 
     if (showVoteDialog) {
         MSDialog(
@@ -244,15 +247,29 @@ fun DetailScreen(
                 )
             }
             Spacer(Modifier.height(24.dp))
-            MSButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {},
-                contentPadding = PaddingValues(11.dp)
-            ) {
-                MSText(
-                    text = "시작하기",
-                    fontSize = 16.dp,
-                    color = MSTheme.color.white
+            if (messageList.isEmpty()) {
+                MSButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {},
+                    contentPadding = PaddingValues(11.dp)
+                ) {
+                    MSText(
+                        text = "시작하기",
+                        fontSize = 16.dp,
+                        color = MSTheme.color.white
+                    )
+                }
+            } else {
+                MSMessageItem(
+                    type = MessageType.TEXT,
+                    text = "테스트 문구 입니다.",
+                    isSeal = iSSeal
+                )
+                Spacer(Modifier.height(8.dp))
+                MSMessageItem(
+                    type = MessageType.PHOTO,
+                    imageList = messageList,
+                    isSeal = iSSeal
                 )
             }
         }
