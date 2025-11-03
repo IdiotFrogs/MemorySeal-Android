@@ -39,6 +39,7 @@ import com.idiotfrogs.home.component.HomeTicket
 @Composable
 fun HomeScreen(
     navigateToCreate: () -> Unit,
+    navigateToProfile: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var currentTab by remember { mutableStateOf(HomeTab.CREATED) }
@@ -79,7 +80,7 @@ fun HomeScreen(
                 .background(MSTheme.color.bgNormal)
                 .systemBarsPadding()
         ) {
-            HomeHeader()
+            HomeHeader(navigateToProfile = navigateToProfile)
             HomeTabBar(
                 selectedTab = currentTab,
                 onClick = { currentTab = it },
@@ -131,5 +132,8 @@ fun HomeScreen(
 @DevicePreview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(navigateToCreate = {})
+    HomeScreen(
+        navigateToProfile = {},
+        navigateToCreate = {}
+    )
 }
