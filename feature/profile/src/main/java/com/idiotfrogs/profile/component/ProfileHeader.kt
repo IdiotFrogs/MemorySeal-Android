@@ -23,8 +23,8 @@ import com.idiotfrogs.resource.R
 
 @Composable
 fun ProfileHeader(
-    modifier: Modifier = Modifier,
     isChanged: Boolean,
+    modifier: Modifier = Modifier,
     onBack: () -> Unit,
     onSave: () -> Unit,
 ) {
