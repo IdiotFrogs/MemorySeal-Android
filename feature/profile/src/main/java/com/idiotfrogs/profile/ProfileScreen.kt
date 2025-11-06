@@ -180,38 +180,6 @@ fun ProfileScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
-    if (showLogoutDialog) {
-        MSDialog(
-            title = "로그아웃",
-            content = "메실에서 로그아웃 하시겠습니까?",
-            confirmText = "로그아웃",
-            cancelText = "유지",
-            onConfirm = {
-                /** TODO: 로그아웃 로직 */
-                showLogoutDialog = false
-                navigateToLogin()
-            },
-            onCancel = {
-                showLogoutDialog = false
-            }
-        )
-    }
-    if (showWithdrawDialog) {
-        MSDialog(
-            title = "회원탈퇴",
-            content = "메실 회원을 탈퇴하시겠습니까?\n티켓에 저장된 내용은 삭제되지 않습니다.",
-            confirmText = "탈퇴",
-            cancelText = "취소",
-            onConfirm = {
-                /** TODO: 탈퇴 로직 */
-                showWithdrawDialog = false
-                navigateToLogin()
-            },
-            onCancel = {
-                showWithdrawDialog = false
-            }
-        )
-    }
 }
 
 @Preview
