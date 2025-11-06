@@ -14,10 +14,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.resource.R
 
 @Composable
-fun HomeHeader() {
+fun HomeHeader(
+    navigateToProfile: () -> Unit,
+) {
     Row(
         modifier = Modifier
             .background(color = MSTheme.color.white)
@@ -32,7 +35,9 @@ fun HomeHeader() {
         Spacer(modifier = Modifier.weight(1f))
         // TODO: 이미지 url 통해 로드
         Image(
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier
+                .noRippleClickable(navigateToProfile)
+                .size(32.dp),
             painter = painterResource(R.drawable.img_profile),
             contentDescription = "profile"
         )
@@ -42,5 +47,7 @@ fun HomeHeader() {
 @Preview
 @Composable
 private fun HomeHeaderPreview() {
-    HomeHeader()
+    HomeHeader(
+        navigateToProfile = {}
+    )
 }
