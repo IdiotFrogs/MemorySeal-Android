@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,13 +41,17 @@ fun ProfileScreen(
     navigateToBack: () -> Unit,
     navigateToLogin: () -> Unit,
 ) {
-    // TODO: 추후 기존 프로필과 비교 로직 작성
     var isChanged by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showWithdrawDialog by remember { mutableStateOf(false) }
 
     val (imageUri, launchImagePicker) = rememberPickerState()
     val textFieldState = rememberTextFieldState()
+
+    LaunchedEffect(textFieldState.text) {
+        // TODO: 추후 기존 프로필과 비교 로직 작성
+        isChanged = textFieldState.text.isNotEmpty()
+    }
 
     if (showLogoutDialog) {
         MSDialog(
@@ -175,7 +180,6 @@ fun ProfileScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
-
 }
 
 @Preview

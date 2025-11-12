@@ -1,5 +1,6 @@
 package com.idiotfrogs.home.component
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -31,6 +32,12 @@ fun HomeTabBar(
     onClick: (HomeTab) -> Unit,
 ) {
     val homeTabs = remember { HomeTab.entries }
+    val startInset by animateDpAsState(
+        targetValue = if (selectedTab.ordinal == 0) 20.dp else 0.dp
+    )
+    val endInset by animateDpAsState(
+        targetValue = if (selectedTab.ordinal == HomeTab.entries.lastIndex) 20.dp else 0.dp
+    )
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
         TabRow(
             selectedTabIndex = selectedTab.ordinal,
@@ -39,10 +46,7 @@ fun HomeTabBar(
                 TabRowDefaults.SecondaryIndicator(
                     modifier = Modifier
                         .tabIndicatorOffset(tabPositions[selectedTab.ordinal])
-                        .padding(
-                            start = if (selectedTab.ordinal == 0) 20.dp else 0.dp,
-                            end = if (selectedTab.ordinal == tabPositions.lastIndex) 20.dp else 0.dp
-                        ),
+                        .padding(start = startInset, end = endInset),
                     height = 2.dp,
                     color = MSTheme.color.black
                 )

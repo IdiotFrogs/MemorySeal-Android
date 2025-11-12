@@ -55,7 +55,10 @@ fun HomeScreen(
     val menuList by remember {
         mutableStateOf(
             listOf(
-                MSMenuFabModel("새 티켓 생성하기") { navigateToCreate() },
+                MSMenuFabModel("새 티켓 생성하기") {
+                    expanded = false
+                    navigateToCreate()
+                },
                 MSMenuFabModel("참여코드로 합류하기") {
                     expanded = false
                     showJoinContainer = true

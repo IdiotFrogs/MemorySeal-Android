@@ -47,7 +47,9 @@ fun ProfileHeader(
             color = MSTheme.color.black
         )
         MSText(
-            modifier = Modifier.noRippleClickable(onSave),
+            modifier = Modifier.noRippleClickable {
+                if (isChanged) onSave()
+            },
             text = "저장",
             fontWeight = FontWeight.Bold,
             fontSize = 14.dp,
