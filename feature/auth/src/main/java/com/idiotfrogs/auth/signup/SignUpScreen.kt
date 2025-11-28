@@ -52,9 +52,6 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun SignUpRoute(
     signUpViewModel: SignUpViewModel = viewModel(),
-//    navigateToBack: () -> Unit,
-//    navigateToErrorScreen: (String) -> Unit,
-//    navigateToHomeScreen: () -> Unit,
 ) {
     val navigator = LocalComposeMSNavigator.current
 

@@ -40,10 +40,7 @@ import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 
 @Composable
-fun HomeScreen(
-//    navigateToCreate: () -> Unit,
-//    navigateToProfile: () -> Unit,
-) {
+fun HomeScreen() {
     val navigator = LocalComposeMSNavigator.current
 
     var expanded by remember { mutableStateOf(false) }
@@ -141,8 +138,5 @@ fun HomeScreen(
 @DevicePreview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(
-//        navigateToProfile = {},
-//        navigateToCreate = {}
-    )
+    HomeScreen()
 }

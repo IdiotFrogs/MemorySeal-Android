@@ -37,8 +37,6 @@ import com.idiotfrogs.util.UiState
 @Composable
 fun LoginRoute(
     loginViewModel: LoginViewModel = viewModel(),
-//    navigateToErrorScreen: (String) -> Unit,
-//    navigateToSignUpScreen: () -> Unit,
 ) {
     val navigator = LocalComposeMSNavigator.current
 

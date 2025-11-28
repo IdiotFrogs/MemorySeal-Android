@@ -39,10 +39,7 @@ import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun ProfileScreen(
-//    navigateToBack: () -> Unit,
-//    navigateToLogin: () -> Unit,
-) {
+fun ProfileScreen() {
     val navigator = LocalComposeMSNavigator.current
 
     var isChanged by remember { mutableStateOf(false) }
@@ -189,8 +186,5 @@ fun ProfileScreen(
 @Preview
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen(
-//        navigateToBack = { },
-//        navigateToLogin = { }
-    )
+    ProfileScreen()
 }

@@ -38,10 +38,7 @@ import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun CreateScreen(
-    modifier: Modifier = Modifier,
-//    navigateToBack: () -> Unit,
-) {
+fun CreateScreen(modifier: Modifier = Modifier) {
     val navigator = LocalComposeMSNavigator.current
 
     val titleTextFieldState = rememberTextFieldState()
@@ -151,7 +148,5 @@ fun CreateScreen(
 @Preview
 @Composable
 fun CreateScreenPreview() {
-    CreateScreen(
-//        navigateToBack = { }
-    )
+    CreateScreen()
 }
