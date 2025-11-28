@@ -43,6 +43,8 @@ import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
 import com.idiotfrogs.designsystem.util.rememberPickerState
 import com.idiotfrogs.designsystem.util.toSp
+import com.idiotfrogs.navigation.LocalComposeMSNavigator
+import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
@@ -50,14 +52,16 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun SignUpRoute(
     signUpViewModel: SignUpViewModel = viewModel(),
-    navigateToBack: () -> Unit,
-    navigateToErrorScreen: (String) -> Unit,
-    navigateToHomeScreen: () -> Unit,
+//    navigateToBack: () -> Unit,
+//    navigateToErrorScreen: (String) -> Unit,
+//    navigateToHomeScreen: () -> Unit,
 ) {
+    val navigator = LocalComposeMSNavigator.current
+
     LaunchedEffect(Unit) {
         signUpViewModel.event.collect { event ->
             when (event) {
-                SignUpEvent.NavigateToHome -> navigateToHomeScreen()
+                SignUpEvent.NavigateToHome -> navigator.navigate(Routes.Home)
             }
         }
     }
@@ -68,11 +72,11 @@ fun SignUpRoute(
         UiState.Init -> Unit // 화면 로딩 로직
         UiState.Success -> {
             SignUpScreen(
-                navigateToBack = navigateToBack,
+                navigateToBack = { navigator.popBackStack() },
                 signUpViewModel::signUp,
             )
         }
-        is UiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
+        is UiState.Error -> Unit
     }
 }
 

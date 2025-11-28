@@ -28,6 +28,8 @@ import com.idiotfrogs.auth.util.rememberLoginManager
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
+import com.idiotfrogs.navigation.LocalComposeMSNavigator
+import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.resource.hsSantokki
 import com.idiotfrogs.util.UiState
@@ -35,13 +37,15 @@ import com.idiotfrogs.util.UiState
 @Composable
 fun LoginRoute(
     loginViewModel: LoginViewModel = viewModel(),
-    navigateToErrorScreen: (String) -> Unit,
-    navigateToSignUpScreen: () -> Unit,
+//    navigateToErrorScreen: (String) -> Unit,
+//    navigateToSignUpScreen: () -> Unit,
 ) {
+    val navigator = LocalComposeMSNavigator.current
+
     LaunchedEffect(Unit) {
         loginViewModel.event.collect { event ->
             when (event) {
-                LoginEvent.NavigateToSignUp -> navigateToSignUpScreen()
+                LoginEvent.NavigateToSignUp -> navigator.navigate(Routes.SignUp)
             }
         }
     }
@@ -60,7 +64,7 @@ fun LoginRoute(
                 }
             )
         }
-        is UiState.Error -> navigateToErrorScreen(state.errorMessage.toString())
+        is UiState.Error -> Unit
     }
 }
 

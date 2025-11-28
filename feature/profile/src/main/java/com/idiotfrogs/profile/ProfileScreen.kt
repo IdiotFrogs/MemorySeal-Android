@@ -31,6 +31,8 @@ import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberPickerState
+import com.idiotfrogs.navigation.LocalComposeMSNavigator
+import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.profile.component.ProfileHeader
 import com.idiotfrogs.profile.component.ProfileOption
 import com.idiotfrogs.resource.R
@@ -38,9 +40,11 @@ import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun ProfileScreen(
-    navigateToBack: () -> Unit,
-    navigateToLogin: () -> Unit,
+//    navigateToBack: () -> Unit,
+//    navigateToLogin: () -> Unit,
 ) {
+    val navigator = LocalComposeMSNavigator.current
+
     var isChanged by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showWithdrawDialog by remember { mutableStateOf(false) }
@@ -62,7 +66,7 @@ fun ProfileScreen(
             onConfirm = {
                 /** TODO: 로그아웃 로직 */
                 showLogoutDialog = false
-                navigateToLogin()
+                navigator.navigate(Routes.Login)
             },
             onCancel = {
                 showLogoutDialog = false
@@ -78,7 +82,7 @@ fun ProfileScreen(
             onConfirm = {
                 /** TODO: 탈퇴 로직 */
                 showWithdrawDialog = false
-                navigateToLogin()
+                navigator.navigate(Routes.Login)
             },
             onCancel = {
                 showWithdrawDialog = false
@@ -95,10 +99,10 @@ fun ProfileScreen(
     ) {
         ProfileHeader(
             isChanged = isChanged,
-            onBack = { navigateToBack() },
+            onBack = { navigator.popBackStack() },
             onSave = {
                 /** TODO: 저장 로직 */
-                navigateToBack()
+                navigator.popBackStack()
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -186,7 +190,7 @@ fun ProfileScreen(
 @Composable
 fun ProfileScreenPreview() {
     ProfileScreen(
-        navigateToBack = { },
-        navigateToLogin = { }
+//        navigateToBack = { },
+//        navigateToLogin = { }
     )
 }

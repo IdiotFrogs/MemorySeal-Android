@@ -39,8 +39,9 @@ fun HomeTicket(
     countdown: String,
     targetDate: String,
     title: String,
+    modifier: Modifier = Modifier,
 ) {
-    Column {
+    Column(modifier = modifier) {
         Row(
             modifier = Modifier
                 .shadow(

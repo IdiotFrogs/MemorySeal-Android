@@ -1,8 +1,9 @@
 package com.idiotfrogs.navigation
 
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-sealed interface Routes {
+sealed interface Routes: NavKey {
     @Serializable
     data object Login : Routes
     @Serializable
@@ -13,4 +14,10 @@ sealed interface Routes {
     data object Create : Routes
     @Serializable
     data object Profile : Routes
+    @Serializable
+    data object Friend : Routes
+    @Serializable
+    data class Detail(val id: Int) : Routes
+    @Serializable
+    data class Message(val id: Int) : Routes
 }

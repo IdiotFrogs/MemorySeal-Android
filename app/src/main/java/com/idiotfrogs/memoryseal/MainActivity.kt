@@ -8,16 +8,20 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.ui.NavDisplay
 import com.idiotfrogs.auth.login.LoginRoute
 import com.idiotfrogs.auth.signup.SignUpRoute
 import com.idiotfrogs.create.CreateScreen
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.home.HomeScreen
+import com.idiotfrogs.navigation.LocalComposeMSNavigator
+import com.idiotfrogs.navigation.MSNavigatorImpl
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.profile.ProfileScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,62 +36,35 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MSTheme {
-                val navController = rememberNavController()
+                val backStack = rememberNavBackStack(Routes.Login)
+                val navigator = remember(backStack) { MSNavigatorImpl(backStack) }
 
-                Scaffold(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .imePadding()
-                ) { _ ->
-                    NavHost(
-                        navController = navController,
-                        startDestination = Routes.Login
-                    ) {
-                        composable<Routes.Login> {
-                            LoginRoute(
-                                navigateToErrorScreen = {},
-                                navigateToSignUpScreen = {
-                                    navController.navigate(Routes.SignUp)
+                CompositionLocalProvider(
+                    LocalComposeMSNavigator provides navigator
+                ) {
+                    Scaffold(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .imePadding()
+                    ) { _ ->
+                        NavDisplay(
+                            backStack = backStack,
+                            entryProvider = entryProvider {
+                                entry<Routes.Login> { LoginRoute() }
+                                entry<Routes.SignUp> { SignUpRoute() }
+                                entry<Routes.Home> { HomeScreen() }
+                                entry<Routes.Create> { CreateScreen() }
+                                entry<Routes.Profile> { ProfileScreen() }
+                                entry<Routes.Detail> {
+                                    // TODO 코드 병합 후 추가하기
+                                    it.id
                                 }
-                            )
-                        }
-                        composable<Routes.SignUp> {
-                            SignUpRoute(
-                                navigateToBack = { navController.popBackStack() },
-                                navigateToErrorScreen = {},
-                                navigateToHomeScreen = {
-                                    navController.navigate(Routes.Home) {
-                                        popUpTo(navController.graph.startDestinationId) {
-                                            inclusive = true
-                                        }
-                                    }
+                                entry<Routes.Message> {
+                                    // TODO 메시지 화면 퍼블리싱 후 추가하기
+                                    it.id
                                 }
-                            )
-                        }
-                        composable<Routes.Home> {
-                            HomeScreen(
-                                navigateToCreate = { navController.navigate(Routes.Create) },
-                                navigateToProfile = { navController.navigate(Routes.Profile) }
-                            )
-                        }
-                        composable<Routes.Create> {
-                            CreateScreen(
-                                navigateToBack = { navController.popBackStack() }
-                            )
-                        }
-                        composable<Routes.Profile> {
-                            ProfileScreen(
-                                navigateToBack = { navController.popBackStack() },
-                                navigateToLogin = {
-                                    navController.navigate(Routes.Login) {
-                                        popUpTo<Routes.Home> {
-                                            inclusive = true
-                                        }
-                                        launchSingleTop = true
-                                    }
-                                }
-                            )
-                        }
+                            },
+                        )
                     }
                 }
             }

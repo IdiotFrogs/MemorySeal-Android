@@ -30,17 +30,22 @@ import com.idiotfrogs.designsystem.component.MSMenuFab
 import com.idiotfrogs.designsystem.model.MSMenuFabModel
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
+import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.home.component.HomeHeader
 import com.idiotfrogs.home.component.HomeJoinContainer
 import com.idiotfrogs.home.component.HomeTab
 import com.idiotfrogs.home.component.HomeTabBar
 import com.idiotfrogs.home.component.HomeTicket
+import com.idiotfrogs.navigation.LocalComposeMSNavigator
+import com.idiotfrogs.navigation.Routes
 
 @Composable
 fun HomeScreen(
-    navigateToCreate: () -> Unit,
-    navigateToProfile: () -> Unit,
+//    navigateToCreate: () -> Unit,
+//    navigateToProfile: () -> Unit,
 ) {
+    val navigator = LocalComposeMSNavigator.current
+
     var expanded by remember { mutableStateOf(false) }
     var currentTab by remember { mutableStateOf(HomeTab.CREATED) }
     var showJoinContainer by remember { mutableStateOf(false) }
@@ -57,7 +62,7 @@ fun HomeScreen(
             listOf(
                 MSMenuFabModel("새 티켓 생성하기") {
                     expanded = false
-                    navigateToCreate()
+                    navigator.navigate(Routes.Create)
                 },
                 MSMenuFabModel("참여코드로 합류하기") {
                     expanded = false
@@ -83,7 +88,7 @@ fun HomeScreen(
                 .background(MSTheme.color.bgNormal)
                 .systemBarsPadding()
         ) {
-            HomeHeader(navigateToProfile = navigateToProfile)
+            HomeHeader(navigateToProfile = { navigator.navigate(Routes.Profile) })
             HomeTabBar(
                 selectedTab = currentTab,
                 onClick = { currentTab = it },
@@ -99,7 +104,8 @@ fun HomeScreen(
                     HomeTicket(
                         countdown = "D-5",
                         targetDate = "2027. 10. 24.",
-                        title = "제목입니다."
+                        title = "제목입니다.",
+                        modifier = Modifier.noRippleClickable { navigator.navigate(Routes.Detail(it)) } // TODO 추 후 타임캡슐 ID로 변경 필요
                     )
                 }
             }
@@ -136,7 +142,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     HomeScreen(
-        navigateToProfile = {},
-        navigateToCreate = {}
+//        navigateToProfile = {},
+//        navigateToCreate = {}
     )
 }
