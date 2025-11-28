@@ -13,28 +13,6 @@ plugins {
     alias(libs.plugins.google.services) apply false
 }
 
-allprojects {
-    tasks.withType(org.jetbrains.kotlin.gradle.dsl.KotlinCompile::class.java).configureEach {
-        kotlinOptions {
-            if (project.findProperty("enableMultiModuleComposeReports") == "true") {
-                freeCompilerArgs +=
-                    listOf(
-                        "-P",
-                        "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=" +
-                            rootProject.buildDir.absolutePath + "/compose_metrics/",
-                    )
-
-                freeCompilerArgs +=
-                    listOf(
-                        "-P",
-                        "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
-                            rootProject.buildDir.absolutePath + "/compose_metrics/",
-                    )
-            }
-        }
-    }
-}
-
 subprojects { // TODO 추 후 libs.version.toml 파일에 접근하여 plugin, version 정보 가져오기
     apply(plugin = "io.gitlab.arturbosch.detekt")
 
