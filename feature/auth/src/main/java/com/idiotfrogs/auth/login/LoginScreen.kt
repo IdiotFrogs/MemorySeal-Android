@@ -56,9 +56,9 @@ fun LoginRoute(
         UiState.Success -> {
             LoginScreen(
                 googleLogin = {
-                    loginViewModel.socialLogin { loginManager.googleLogin() } },
+                    loginViewModel.socialLogin { loginManager?.googleLogin() } },
                 appleLogin = {
-                    loginViewModel.socialLogin { loginManager.appleLogin() }
+                    loginViewModel.socialLogin { loginManager?.appleLogin() }
                 }
             )
         }
