@@ -11,8 +11,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -40,8 +42,11 @@ import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MessageType
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.detail.component.MembarListItem
 import com.idiotfrogs.detail.component.RoundedProgressBar
+import com.idiotfrogs.navigation.LocalComposeMSNavigator
+import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 
 @Composable
@@ -55,6 +60,8 @@ fun DetailScreen(
     onVoteClicked: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val navigator = LocalComposeMSNavigator.current
+
     val scrollState = rememberScrollState()
     var showVoteDialog by remember { mutableStateOf(false) }
     val messageList = listOf("")
@@ -76,6 +83,7 @@ fun DetailScreen(
     Column (
         modifier = modifier
             .fillMaxSize()
+            .navigationBarsPadding()
             .background(MSTheme.color.bgNormal)
             .padding(0.dp)
             .verticalScroll(scrollState)
@@ -93,13 +101,16 @@ fun DetailScreen(
             )
             Image(
                 modifier = Modifier
+                    .systemBarsPadding()
                     .align(Alignment.TopStart)
-                    .padding(top = 20.dp, start = 20.dp),
+                    .padding(top = 20.dp, start = 20.dp)
+                    .noRippleClickable { navigator.popBackStack() },
                 painter = painterResource(R.drawable.img_close),
                 contentDescription = "Close"
             )
             Image(
                 modifier = Modifier
+                    .systemBarsPadding()
                     .align(Alignment.TopEnd)
                     .padding(top = 20.dp, end = 20.dp),
                 painter = painterResource(R.drawable.img_management),
@@ -296,7 +307,9 @@ fun DetailScreen(
                     color = MSTheme.color.greyG4
                 )
                 Image(
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier
+                        .size(16.dp)
+                        .noRippleClickable { navigator.navigate(Routes.Friend(0)) }, // TODO 추 후 실제 타임캡슐 id 필요
                     painter = painterResource(R.drawable.ic_detail_rigt),
                     contentDescription = "추억 메시지 상세 아이콘"
                 )

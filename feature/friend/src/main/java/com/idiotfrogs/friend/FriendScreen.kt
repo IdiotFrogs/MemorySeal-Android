@@ -1,7 +1,6 @@
 package com.idiotfrogs.friend
 
 import android.content.Intent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -19,7 +17,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.core.content.FileProvider
 import com.idiotfrogs.designsystem.component.MSDetailHeader
 import com.idiotfrogs.designsystem.component.MSMenuFab
 import com.idiotfrogs.designsystem.component.MSText
@@ -40,15 +36,16 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.friend.component.FriendListItem
 import com.idiotfrogs.friend.component.FriendTopNotification
+import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.resource.R
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun FriendScreen(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    val navigator = LocalComposeMSNavigator.current
 
     var isEmpty by remember { mutableStateOf(false) }
     var action by remember { mutableStateOf(FriendScreenActionState.IDLE) }
@@ -129,7 +126,7 @@ fun FriendScreen(
         ) {
             MSDetailHeader(
                 title = "맴버 추가",
-                navigateToBack = {},
+                navigateToBack = { navigator.popBackStack() },
                 paddingValues = PaddingValues(horizontal = 0.dp, vertical = 16.dp)
             ) {
                 Icon(

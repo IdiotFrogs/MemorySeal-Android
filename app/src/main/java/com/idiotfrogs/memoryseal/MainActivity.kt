@@ -19,6 +19,8 @@ import com.idiotfrogs.auth.login.LoginRoute
 import com.idiotfrogs.auth.signup.SignUpRoute
 import com.idiotfrogs.create.CreateScreen
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.detail.DetailScreen
+import com.idiotfrogs.friend.FriendScreen
 import com.idiotfrogs.home.HomeScreen
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.MSNavigatorImpl
@@ -56,11 +58,25 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Create> { CreateScreen() }
                                 entry<Routes.Profile> { ProfileScreen() }
                                 entry<Routes.Detail> {
-                                    // TODO 코드 병합 후 추가하기
+                                    DetailScreen(
+                                        title = "테스트 Title",
+                                        date = "2025-11-28",
+                                        isMember = true,
+                                        isVoteStart = true,
+                                        iSSeal = false,
+                                        onSealClicked = {},
+                                        onVoteClicked = {}
+                                    )
+                                    // TODO 추 후 데이터 구조 및 id 가져가서 정보 조회되게 수정 필요
                                     it.id
                                 }
                                 entry<Routes.Message> {
                                     // TODO 메시지 화면 퍼블리싱 후 추가하기
+                                    it.id
+                                }
+                                entry<Routes.Friend> {
+                                    FriendScreen()
+                                    // TODO 추 후 id 가져가서 정보 조회되게 수정 필요
                                     it.id
                                 }
                             },
