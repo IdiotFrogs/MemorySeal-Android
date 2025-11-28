@@ -51,9 +51,7 @@ fun FriendScreen(
     val context = LocalContext.current
 
     var isEmpty by remember { mutableStateOf(false) }
-    var isAccept by remember { mutableStateOf(false) }
-    var isReject by remember { mutableStateOf(false) }
-    var isCopy by remember { mutableStateOf(false) }
+    var action by remember { mutableStateOf(FriendScreenActionState.IDLE) }
     var expanded by remember { mutableStateOf(false) }
     val menuList by remember {
         mutableStateOf(
@@ -85,21 +83,15 @@ fun FriendScreen(
                 },
                 MSMenuFabModel("참여 코드 복사") {
                     expanded = false
-                    isCopy = true
+                    action = FriendScreenActionState.COPY
                 },
             )
         )
     }
 
-    LaunchedEffect(
-        isAccept,
-        isReject,
-        isCopy
-    ) {
+    LaunchedEffect(action) {
         delay(1000L)
-        isAccept = false
-        isReject = false
-        isCopy = false
+        action = FriendScreenActionState.IDLE
     }
 
     Box {
@@ -116,14 +108,14 @@ fun FriendScreen(
             onDismiss = { expanded = false },
         )
 
-        if (isAccept || isReject || isCopy) {
+        if (action != FriendScreenActionState.IDLE) {
             FriendTopNotification(
                 modifier = Modifier
+                    .padding(horizontal = 20.dp)
                     .align(Alignment.TopCenter)
                     .navigationBarsPadding()
                     .zIndex(1f),
-                isAccept = isAccept,
-                isCopy = isCopy
+                action = action,
             )
         }
 
@@ -175,8 +167,8 @@ fun FriendScreen(
                             4 -> "자두 수박"
                             else -> "민트 네모 수박"
                         },
-                        onAccept = { isAccept = true },
-                        onReject = { isReject = true }
+                        onAccept = { action = FriendScreenActionState.ACCEPT },
+                        onReject = { action = FriendScreenActionState.REJECT }
                     )
                     Spacer(Modifier.height(8.dp))
                 }

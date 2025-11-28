@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,17 +19,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.friend.FriendScreenActionState
 import com.idiotfrogs.resource.R
 
 @Composable
 fun FriendTopNotification(
+    action: FriendScreenActionState,
     modifier: Modifier = Modifier,
-    isAccept: Boolean = true,
-    isCopy: Boolean = false,
 ) {
     Row(
         modifier = modifier
-            .width(335.dp)
+            .fillMaxWidth()
             .shadow(
                 elevation = 8.dp,
                 shape = CircleShape,
@@ -44,7 +45,7 @@ fun FriendTopNotification(
     ) {
         Image(
             painter = painterResource(
-                if (isAccept || isCopy) R.drawable.img_friend_accept
+                if (action == FriendScreenActionState.ACCEPT || action == FriendScreenActionState.COPY) R.drawable.img_friend_accept
                 else R.drawable.img_friend_reject
             ),
             contentDescription = "알림",
@@ -52,9 +53,9 @@ fun FriendTopNotification(
         )
         Spacer(Modifier.width(8.dp))
         MSText(
-            text = when {
-                isAccept -> "참여 요청이 수락되었습니다."
-                isCopy -> "참여 코드 복사되었습니다."
+            text = when (action) {
+                FriendScreenActionState.ACCEPT -> "참여 요청이 수락되었습니다."
+                FriendScreenActionState.COPY -> "참여 코드 복사되었습니다."
                 else -> "참여 요청이 거절되었습니다."
             }
         )
@@ -64,5 +65,5 @@ fun FriendTopNotification(
 @Preview(showBackground = true)
 @Composable
 fun FriendTopNotificationPreview() {
-    FriendTopNotification()
+    FriendTopNotification(FriendScreenActionState.IDLE)
 }
