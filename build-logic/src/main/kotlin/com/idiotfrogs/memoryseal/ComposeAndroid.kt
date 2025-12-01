@@ -23,6 +23,8 @@ internal fun Project.configureComposeAndroid(commonExtension: CommonExtension<*,
             add("implementation", libs.findLibrary("androidx-activity-compose").get())
             add("implementation", libs.findLibrary("androidx-compose-material3").get())
             add("implementation", libs.findLibrary("androidx-navigation").get())
+            add("implementation", libs.findLibrary("androidx-navigation3-runtime").get())
+            add("implementation", libs.findLibrary("androidx-navigation3-ui").get())
 
             add("implementation", libs.findLibrary("landscapist-glide").get())
         }

@@ -33,14 +33,14 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.keyboardAutoScroll
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberPickerState
+import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun CreateScreen(
-    modifier: Modifier = Modifier,
-    navigateToBack: () -> Unit,
-) {
+fun CreateScreen(modifier: Modifier = Modifier) {
+    val navigator = LocalComposeMSNavigator.current
+
     val titleTextFieldState = rememberTextFieldState()
     val contentTextFieldState = rememberTextFieldState()
     val scrollState = rememberScrollState()
@@ -58,7 +58,7 @@ fun CreateScreen(
         MSDetailHeader(
             title = "타임 티켓 생성하기",
             paddingValues = PaddingValues(vertical = 16.dp),
-            navigateToBack = navigateToBack
+            navigateToBack = { navigator.popBackStack() }
         )
         Spacer(Modifier.height(24.dp))
         Column(
@@ -148,7 +148,5 @@ fun CreateScreen(
 @Preview
 @Composable
 fun CreateScreenPreview() {
-    CreateScreen(
-        navigateToBack = { }
-    )
+    CreateScreen()
 }

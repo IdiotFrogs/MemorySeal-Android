@@ -10,6 +10,9 @@ android {
 dependencies {
     implementation(libs.kotlinx.serialization.json)
 
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
