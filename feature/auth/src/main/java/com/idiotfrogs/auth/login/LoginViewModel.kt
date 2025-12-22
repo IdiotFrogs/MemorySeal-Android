@@ -2,7 +2,7 @@ package com.idiotfrogs.auth.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.idiotfrogs.domain.exception.LoginCancelledException
+import com.idiotfrogs.data.exception.LoginCancelledException
 import com.idiotfrogs.util.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler

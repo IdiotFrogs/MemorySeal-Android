@@ -23,16 +23,15 @@ dependencyResolutionManagement {
 rootProject.name = "MemorySeal"
 
 include(":app")
+include(":data")
+include(":domain")
 include(":common:extension")
 include(":common:resource")
 include(":common:notification")
 include(":core:navigation")
 include(":core:network")
-include(":core:data")
-include(":core:domain")
 include(":core:model")
 include(":core:designsystem")
-include(":core:datastore")
 include(":core:di")
 include(":core:util")
 include(":feature:auth")
