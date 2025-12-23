@@ -13,7 +13,6 @@ dependencies {
     implementation(project(":feature:detail"))
     implementation(project(":feature:friend"))
     implementation(project(":core:designsystem"))
-    implementation(project(":core:data"))
     implementation(project(":core:navigation"))
     implementation(project(":common:resource"))
 
