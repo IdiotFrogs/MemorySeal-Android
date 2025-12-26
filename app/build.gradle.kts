@@ -15,6 +15,7 @@ dependencies {
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))
     implementation(project(":common:resource"))
+    implementation(project(":core:di"))
 
     implementation(libs.androidx.core.splash)
 

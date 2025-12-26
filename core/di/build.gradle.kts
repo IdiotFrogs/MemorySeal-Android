@@ -8,6 +8,14 @@ android {
 }
 
 dependencies {
+    implementation(project(":data"))
+    implementation(project(":core:network"))
+
+    implementation(libs.retrofit)
+    implementation(libs.okhttp.logging.interceptor)
+    implementation(libs.retrofit.kotlin.serialization)
+    implementation(libs.kotlinx.serialization.json)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
 }
