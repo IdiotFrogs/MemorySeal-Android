@@ -1,4 +1,4 @@
-package com.idiotfrogs.data.remote
+package com.skogkatt.social_login
 
 import android.content.Context
 import androidx.credentials.CredentialManager
@@ -11,9 +11,8 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthWebException
 import com.google.firebase.auth.OAuthProvider
-import com.idiotfrogs.data.BuildConfig
-import com.idiotfrogs.data.exception.LoginCancelledException
 import com.idiotfrogs.data.datasource.auth.AuthDataSource
+import com.idiotfrogs.data.exception.LoginCancelledException
 import com.idiotfrogs.extension.findActivity
 import com.idiotfrogs.model.auth.AuthTokenRequest
 import dagger.hilt.android.qualifiers.ActivityContext
