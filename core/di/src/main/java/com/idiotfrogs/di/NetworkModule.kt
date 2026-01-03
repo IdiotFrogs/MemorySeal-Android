@@ -19,9 +19,7 @@ import javax.inject.Singleton
 object NetworkModule {
     @Provides
     @Singleton
-    fun providesJson() = Json {
-        ignoreUnknownKeys = true
-    }
+    fun providesJson() = Json {}
 
     @Provides
     @Singleton

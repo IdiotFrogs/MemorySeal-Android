@@ -1,7 +1,7 @@
 package com.idiotfrogs.di
 
-import com.idiotfrogs.data.repository.auth.AuthRepository
-import com.idiotfrogs.data.repository.auth.AuthRepositoryImpl
+import com.idiotfrogs.data.datasource.auth.AuthDataSource
+import com.idiotfrogs.data.datasource.auth.AuthDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -9,9 +9,9 @@ import dagger.hilt.components.SingletonComponent
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface RepositoryModule {
+interface DataSourceModule {
     @Binds
-    fun bindsAuthRepository(
-        authRepositoryImpl: AuthRepositoryImpl
-    ): AuthRepository
+    fun bindsAuthDataSource(
+        authDataSourceImpl: AuthDataSourceImpl
+    ): AuthDataSource
 }
