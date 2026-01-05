@@ -7,6 +7,10 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:model"))
+
+    implementation(libs.retrofit)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)

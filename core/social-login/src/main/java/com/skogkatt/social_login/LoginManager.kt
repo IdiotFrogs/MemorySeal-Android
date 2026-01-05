@@ -1,4 +1,4 @@
-package com.idiotfrogs.data.remote
+package com.skogkatt.social_login
 
 import android.content.Context
 import androidx.credentials.CredentialManager
@@ -11,9 +11,10 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthWebException
 import com.google.firebase.auth.OAuthProvider
-import com.idiotfrogs.data.BuildConfig
+import com.idiotfrogs.data.datasource.auth.AuthDataSource
 import com.idiotfrogs.data.exception.LoginCancelledException
 import com.idiotfrogs.extension.findActivity
+import com.idiotfrogs.model.auth.AuthTokenRequest
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -24,7 +25,8 @@ import kotlin.coroutines.resumeWithException
 @ActivityScoped
 class LoginManager @Inject constructor(
     // 필요한 파라미터? (ex. 내부저장소 로직)
-    @ActivityContext private val context: Context
+    @ActivityContext private val context: Context,
+    private val authDataSource: AuthDataSource
 ) {
     suspend fun googleLogin() {
         val credentialManager = CredentialManager.create(context)
@@ -48,8 +50,11 @@ class LoginManager @Inject constructor(
                 ?: throw Exception("Unexpected type of credential")
 
             val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-            // TODO: idToken 관련 처리
-        } catch (exception: GetCredentialCancellationException) {
+
+            val tokenResponse = authDataSource.socialGoogleLogin(
+                AuthTokenRequest(googleIdTokenCredential.idToken)
+            )
+        } catch (_: GetCredentialCancellationException) {
             throw LoginCancelledException()
         } catch (exception: Exception) {
             throw exception

@@ -1,5 +1,6 @@
 plugins {
     id("convention.android.library")
+    id("convention.android.hilt")
 }
 
 android {
@@ -8,6 +9,7 @@ android {
 
 dependencies {
     implementation(project(":data"))
+    implementation(project(":core:model"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

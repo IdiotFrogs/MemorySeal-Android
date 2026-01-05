@@ -7,6 +7,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:social-login"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
