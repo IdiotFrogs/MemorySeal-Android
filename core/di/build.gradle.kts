@@ -21,6 +21,8 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":core:network"))
 
+    implementation(libs.androidx.datastore)
+
     implementation(libs.retrofit)
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.retrofit.kotlin.serialization)

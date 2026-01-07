@@ -1,6 +1,7 @@
 package com.idiotfrogs.di
 
 import com.idiotfrogs.network.AuthService
+import com.idiotfrogs.network.interceptor.TokenInterceptor
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,8 +24,9 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun providesOkHttpClient() =
+    fun providesOkHttpClient(tokenInterceptor: TokenInterceptor) =
         OkHttpClient.Builder()
+            .addInterceptor(tokenInterceptor)
             .addInterceptor(HttpLoggingInterceptor().apply { level = Level.BODY })
             .build()
 
