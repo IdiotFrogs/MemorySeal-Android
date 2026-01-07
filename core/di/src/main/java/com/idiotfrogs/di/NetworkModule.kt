@@ -2,6 +2,8 @@ package com.idiotfrogs.di
 
 import com.idiotfrogs.network.AuthService
 import com.idiotfrogs.network.interceptor.TokenInterceptor
+import com.idiotfrogs.network.util.BaseClient
+import com.idiotfrogs.network.util.TokenClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,6 +26,12 @@ object NetworkModule {
 
     @Provides
     @Singleton
+    @TokenClient
+    fun provideOkHttpClient() = OkHttpClient.Builder().build()
+
+    @Provides
+    @Singleton
+    @BaseClient
     fun providesOkHttpClient(tokenInterceptor: TokenInterceptor) =
         OkHttpClient.Builder()
             .addInterceptor(tokenInterceptor)
@@ -34,7 +42,7 @@ object NetworkModule {
     @Singleton
     fun providesRetrofit(
         json: Json,
-        okHttpClient: OkHttpClient
+        @BaseClient okHttpClient: OkHttpClient
     ): Retrofit =
         Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)

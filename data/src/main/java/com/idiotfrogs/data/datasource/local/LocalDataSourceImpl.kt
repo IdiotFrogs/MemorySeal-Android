@@ -33,4 +33,10 @@ class LocalDataSourceImpl @Inject constructor(
             preferences[REFRESH_TOKEN_KEY] = refreshToken
         }
     }
+
+    override suspend fun clearTokens() {
+        dataStore.edit { preferences ->
+            preferences.clear()
+        }
+    }
 }

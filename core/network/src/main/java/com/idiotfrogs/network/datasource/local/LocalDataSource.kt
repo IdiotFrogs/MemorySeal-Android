@@ -7,4 +7,5 @@ interface LocalDataSource {
     val refreshToken: Flow<String?>
 
     suspend fun setTokens(accessToken: String, refreshToken: String)
+    suspend fun clearTokens()
 }
