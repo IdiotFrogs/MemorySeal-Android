@@ -56,7 +56,12 @@ class LoginManager @Inject constructor(
                 AuthTokenRequest(googleIdTokenCredential.idToken)
             )
 
-            localDataSource.setTokens(tokenResponse.accessToken, tokenResponse.refreshToken)
+            localDataSource.setTokens(
+                accessToken = tokenResponse.accessToken,
+                refreshToken = tokenResponse.refreshToken,
+                accessTokenExpiresIn = tokenResponse.accessTokenExpiresIn,
+                refreshTokenExpiresIn = tokenResponse.refreshTokenExpiresIn
+            )
         } catch (_: GetCredentialCancellationException) {
             throw LoginCancelledException()
         } catch (exception: Exception) {
