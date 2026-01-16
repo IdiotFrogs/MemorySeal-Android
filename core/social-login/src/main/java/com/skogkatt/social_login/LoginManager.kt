@@ -60,7 +60,6 @@ class LoginManager @Inject constructor(
                 accessToken = tokenResponse.accessToken,
                 refreshToken = tokenResponse.refreshToken,
                 accessTokenExpiresIn = tokenResponse.accessTokenExpiresIn,
-                refreshTokenExpiresIn = tokenResponse.refreshTokenExpiresIn
             )
         } catch (_: GetCredentialCancellationException) {
             throw LoginCancelledException()

@@ -32,7 +32,6 @@ class TokenInterceptor @Inject constructor(
 
         val tokenResponse = runBlocking { getTokenResponse() }
         val currentTime = System.currentTimeMillis()
-        if (currentTime >= tokenResponse.refreshTokenExpiresIn) throw TokenExpiredException()
 
         var currentAccessToken = tokenResponse.accessToken
 
@@ -59,7 +58,6 @@ class TokenInterceptor @Inject constructor(
                         newTokenResponse.accessToken,
                         newTokenResponse.refreshToken,
                         newTokenResponse.accessTokenExpiresIn,
-                        newTokenResponse.refreshTokenExpiresIn
                     )
                 }
 
@@ -79,9 +77,8 @@ class TokenInterceptor @Inject constructor(
             localDataSource.accessToken,
             localDataSource.refreshToken,
             localDataSource.accessTokenExpiresIn,
-            localDataSource.refreshTokenExpiresIn
-        ) { access, refresh, accessExp, refreshExp ->
-            AuthTokenResponse(access, refresh, accessExp, refreshExp)
+        ) { access, refresh, accessExp ->
+            AuthTokenResponse(access, refresh, accessExp)
         }.first()
     }
 }
