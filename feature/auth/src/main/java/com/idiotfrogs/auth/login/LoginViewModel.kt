@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.idiotfrogs.data.exception.LoginCancelledException
 import com.idiotfrogs.util.UiState
+import com.idiotfrogs.util.exception.LoginRequiredException
+import com.idiotfrogs.util.global.AppSideEffect
+import com.idiotfrogs.util.global.EventBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,8 +37,10 @@ class LoginViewModel @Inject constructor(): ViewModel() {
 
     // TODO: 공통 error 처리 CEH 분리
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        if (throwable !is LoginCancelledException) {
-            _uiState.value = UiState.Error(throwable.message)
+        when (throwable) {
+            is LoginRequiredException -> EventBus.postSideEffect(AppSideEffect.LoginRequired)
+            is LoginCancelledException -> Unit
+            else -> _uiState.value = UiState.Error(throwable.message)
         }
     }
 

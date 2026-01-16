@@ -3,7 +3,7 @@ package com.idiotfrogs.network.interceptor
 import com.idiotfrogs.model.auth.AuthTokenResponse
 import com.idiotfrogs.network.BuildConfig
 import com.idiotfrogs.network.datasource.local.LocalDataSource
-import com.idiotfrogs.network.exception.TokenExpiredException
+import com.idiotfrogs.util.exception.LoginRequiredException
 import com.idiotfrogs.network.util.TokenClient
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
@@ -48,7 +48,7 @@ class TokenInterceptor @Inject constructor(
                 // 토큰 재발급 실패
                 if (!reissueResponse.isSuccessful) {
                     runBlocking { localDataSource.clearTokens() }
-                    throw TokenExpiredException()
+                    throw LoginRequiredException()
                 }
                 val raw = reissueResponse.body?.string().orEmpty()
                 val newTokenResponse = json.decodeFromString(AuthTokenResponse.serializer(), raw)
