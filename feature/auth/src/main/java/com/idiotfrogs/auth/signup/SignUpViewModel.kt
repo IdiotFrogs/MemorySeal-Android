@@ -1,22 +1,19 @@
 package com.idiotfrogs.auth.signup
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.idiotfrogs.util.UiState
+import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.plus
 import javax.inject.Inject
 
 @HiltViewModel
-class SignUpViewModel @Inject constructor() : ViewModel() {
+class SignUpViewModel @Inject constructor() : BaseViewModel() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Init)
     val uiState = _uiState
         .onStart {
@@ -32,14 +29,8 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
     val event = _event.asSharedFlow()
 
     // TODO: 공통 error 처리 CEH 분리
-    private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        _uiState.value = UiState.Error(throwable.message)
-    }
-
-    private val safeScope = viewModelScope + coroutineExceptionHandler
-
     private fun fetchInitUi() {
-        safeScope.launch {
+        safeLaunch {
             _uiState.emit(UiState.Init)
             // TODO UI 로딩에 필요한 작업
             _uiState.emit(UiState.Success)
@@ -47,8 +38,14 @@ class SignUpViewModel @Inject constructor() : ViewModel() {
     }
 
     fun signUp() {
-        safeScope.launch {
+        safeLaunch {
             _event.emit(SignUpEvent.NavigateToHome)
+        }
+    }
+
+    override fun handleError(throwable: Throwable) {
+        when (throwable) {
+            else -> _uiState.value = UiState.Error(throwable.message)
         }
     }
 }
