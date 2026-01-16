@@ -3,8 +3,8 @@ package com.idiotfrogs.util.base
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.idiotfrogs.util.exception.LoginRequiredException
-import com.idiotfrogs.util.global.AppSideEffect
-import com.idiotfrogs.util.global.EventBus
+import com.idiotfrogs.util.sideEffect.AppSideEffect
+import com.idiotfrogs.util.sideEffect.MSSideEffect
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -12,9 +12,8 @@ import kotlinx.coroutines.plus
 
 abstract class BaseViewModel : ViewModel() {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
-        when (throwable) {
-            is LoginRequiredException -> EventBus.postSideEffect(AppSideEffect.LoginRequired)
-            else -> handleError(throwable)
+        if (throwable is LoginRequiredException) {
+            MSSideEffect.postSideEffect(AppSideEffect.LoginRequired)
         }
     }
 
@@ -23,6 +22,4 @@ abstract class BaseViewModel : ViewModel() {
     protected fun safeLaunch(block: suspend CoroutineScope.() -> Unit) {
         safeScope.launch(block = block)
     }
-
-    protected abstract fun handleError(throwable: Throwable)
 }

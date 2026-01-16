@@ -11,7 +11,6 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthWebException
 import com.google.firebase.auth.OAuthProvider
-import com.idiotfrogs.data.exception.LoginCancelledException
 import com.idiotfrogs.extension.findActivity
 import com.idiotfrogs.model.auth.AuthTokenRequest
 import com.idiotfrogs.network.datasource.auth.AuthDataSource
@@ -62,7 +61,7 @@ class LoginManager @Inject constructor(
                 accessTokenExpiresIn = tokenResponse.accessTokenExpiresIn,
             )
         } catch (_: GetCredentialCancellationException) {
-            throw LoginCancelledException()
+            // 사용자가 로그인을 취소한 경우
         } catch (exception: Exception) {
             throw exception
         }
@@ -88,7 +87,7 @@ class LoginManager @Inject constructor(
                 val exception = requireNotNull(authResult.exception) { "Unknown Error" }
                 if (exception is FirebaseAuthWebException &&
                     exception.errorCode == ERROR_WEB_CONTEXT_CANCELED) {
-                    continuation.resumeWithException(LoginCancelledException())
+                    continuation.resume(Unit)
                 } else {
                     continuation.resumeWithException(exception)
                 }

@@ -1,7 +1,6 @@
 package com.idiotfrogs.auth.login
 
 import androidx.lifecycle.viewModelScope
-import com.idiotfrogs.data.exception.LoginCancelledException
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,13 +41,6 @@ class LoginViewModel @Inject constructor(): BaseViewModel() {
         safeLaunch {
             loginCallback()
             _event.emit(LoginEvent.NavigateToSignUp)
-        }
-    }
-
-    override fun handleError(throwable: Throwable) {
-        when (throwable) {
-            is LoginCancelledException -> Unit
-            else -> _uiState.value = UiState.Error(throwable.message)
         }
     }
 }

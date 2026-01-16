@@ -2,8 +2,8 @@ package com.idiotfrogs.memoryseal
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.idiotfrogs.util.global.AppSideEffect
-import com.idiotfrogs.util.global.EventBus
+import com.idiotfrogs.util.sideEffect.AppSideEffect
+import com.idiotfrogs.util.sideEffect.MSSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -21,7 +21,7 @@ class MainViewModel @Inject constructor(): ViewModel() {
 
     private fun collectAppSideEffect() {
         viewModelScope.launch {
-            EventBus.appSideEffect.collect { sideEffect ->
+            MSSideEffect.appSideEffect.collect { sideEffect ->
                 when (sideEffect) {
                     AppSideEffect.LoginRequired -> _event.emit(MainEvent.NavigateToLogin)
                 }
