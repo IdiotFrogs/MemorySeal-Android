@@ -42,12 +42,6 @@ class SignUpViewModel @Inject constructor() : BaseViewModel() {
             _event.emit(SignUpEvent.NavigateToHome)
         }
     }
-
-    override fun handleError(throwable: Throwable) {
-        when (throwable) {
-            else -> _uiState.value = UiState.Error(throwable.message)
-        }
-    }
 }
 
 sealed interface SignUpEvent {
