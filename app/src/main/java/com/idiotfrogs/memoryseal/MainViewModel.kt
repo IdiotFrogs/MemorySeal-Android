@@ -15,11 +15,7 @@ class MainViewModel @Inject constructor(): ViewModel() {
     private val _event = MutableSharedFlow<MainEvent>()
     val event = _event.asSharedFlow()
 
-    init {
-        collectAppSideEffect()
-    }
-
-    private fun collectAppSideEffect() {
+    fun collectAppSideEffect() {
         viewModelScope.launch {
             MSSideEffect.appSideEffect.collect { sideEffect ->
                 when (sideEffect) {

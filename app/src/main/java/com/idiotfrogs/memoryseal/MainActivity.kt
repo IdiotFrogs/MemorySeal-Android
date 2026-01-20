@@ -39,6 +39,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         enableEdgeToEdge()
+        mainViewModel.collectAppSideEffect()
         setContent {
             MSTheme {
                 val backStack = rememberNavBackStack(Routes.Login)
