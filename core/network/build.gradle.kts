@@ -20,6 +20,7 @@ android {
 dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:util"))
+    implementation(project(":core:local"))
 
     implementation(libs.retrofit)
     implementation(libs.okhttp)

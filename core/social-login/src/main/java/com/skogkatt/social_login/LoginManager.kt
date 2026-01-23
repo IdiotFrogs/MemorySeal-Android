@@ -5,6 +5,7 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialCancellationException
+import com.ediotfrogs.local.LocalDataSource
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.AuthResult
@@ -13,8 +14,7 @@ import com.google.firebase.auth.FirebaseAuthWebException
 import com.google.firebase.auth.OAuthProvider
 import com.idiotfrogs.extension.findActivity
 import com.idiotfrogs.model.auth.AuthTokenRequest
-import com.idiotfrogs.network.datasource.auth.AuthDataSource
-import com.idiotfrogs.network.datasource.local.LocalDataSource
+import com.idiotfrogs.data.datasource.auth.AuthDataSource
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.suspendCancellableCoroutine

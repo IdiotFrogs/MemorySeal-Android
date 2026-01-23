@@ -1,4 +1,4 @@
-package com.idiotfrogs.network
+package com.idiotfrogs.network.service
 
 import com.idiotfrogs.model.auth.AuthTokenRequest
 import com.idiotfrogs.model.auth.AuthTokenResponse

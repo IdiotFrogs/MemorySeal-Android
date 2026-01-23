@@ -12,8 +12,6 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":common:extension"))
 
-    implementation(libs.androidx.datastore)
-
     implementation(libs.okhttp)
 
     implementation(libs.androidx.core.ktx)

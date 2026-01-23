@@ -1,4 +1,4 @@
-package com.idiotfrogs.network.datasource.local
+package com.ediotfrogs.local
 
 import kotlinx.coroutines.flow.Flow
 
