@@ -3,7 +3,7 @@ package com.idiotfrogs.auth.util
 import androidx.activity.compose.LocalActivity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import com.skogkatt.social_login.LoginManager
+import com.idiotfrogs.social_login.LoginManager
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors

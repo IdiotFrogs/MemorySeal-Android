@@ -1,4 +1,4 @@
-package com.skogkatt.social_login
+package com.idiotfrogs.social_login
 
 import org.junit.Test
 

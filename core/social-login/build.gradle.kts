@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.skogkatt.social_login"
+    namespace = "com.idiotfrogs.social_login"
 
     buildFeatures {
         buildConfig = true

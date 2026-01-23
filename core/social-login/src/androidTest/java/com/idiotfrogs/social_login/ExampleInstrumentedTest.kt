@@ -1,4 +1,4 @@
-package com.skogkatt.social_login
+package com.idiotfrogs.social_login
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
