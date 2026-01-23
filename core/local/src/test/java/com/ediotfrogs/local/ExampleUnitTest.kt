@@ -1,4 +1,4 @@
-package com.idiotfrogs.widget
+package com.ediotfrogs.local
 
 import org.junit.Test
 
