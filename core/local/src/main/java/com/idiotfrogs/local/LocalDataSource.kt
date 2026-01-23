@@ -1,4 +1,4 @@
-package com.ediotfrogs.local
+package com.idiotfrogs.local
 
 import kotlinx.coroutines.flow.Flow
 

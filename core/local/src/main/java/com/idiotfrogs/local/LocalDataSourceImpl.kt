@@ -1,4 +1,4 @@
-package com.ediotfrogs.local
+package com.idiotfrogs.local
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

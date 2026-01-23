@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ediotfrogs.local"
+    namespace = "com.idiotfrogs.local"
 }
 
 dependencies {

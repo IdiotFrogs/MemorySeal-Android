@@ -1,6 +1,6 @@
 package com.idiotfrogs.network.interceptor
 
-import com.ediotfrogs.local.LocalDataSource
+import com.idiotfrogs.local.LocalDataSource
 import com.idiotfrogs.model.auth.AuthTokenResponse
 import com.idiotfrogs.network.BuildConfig
 import com.idiotfrogs.util.exception.LoginRequiredException

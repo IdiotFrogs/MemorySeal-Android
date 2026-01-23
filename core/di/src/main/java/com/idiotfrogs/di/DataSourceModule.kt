@@ -1,7 +1,7 @@
 package com.idiotfrogs.di
 
-import com.ediotfrogs.local.LocalDataSource
-import com.ediotfrogs.local.LocalDataSourceImpl
+import com.idiotfrogs.local.LocalDataSource
+import com.idiotfrogs.local.LocalDataSourceImpl
 import com.idiotfrogs.data.datasource.auth.AuthDataSource
 import com.idiotfrogs.data.datasource.auth.AuthDataSourceImpl
 import dagger.Binds
