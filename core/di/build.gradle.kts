@@ -20,6 +20,7 @@ android {
 dependencies {
     implementation(project(":data"))
     implementation(project(":core:network"))
+    implementation(project(":core:local"))
 
     implementation(libs.androidx.datastore)
 

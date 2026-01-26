@@ -1,8 +1,8 @@
 package com.idiotfrogs.network.interceptor
 
+import com.idiotfrogs.local.LocalDataSource
 import com.idiotfrogs.model.auth.AuthTokenResponse
 import com.idiotfrogs.network.BuildConfig
-import com.idiotfrogs.network.datasource.local.LocalDataSource
 import com.idiotfrogs.util.exception.LoginRequiredException
 import com.idiotfrogs.network.util.TokenClient
 import kotlinx.coroutines.flow.combine

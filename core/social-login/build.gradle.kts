@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.skogkatt.social_login"
+    namespace = "com.idiotfrogs.social_login"
 
     buildFeatures {
         buildConfig = true
@@ -21,6 +21,7 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":core:network"))
     implementation(project(":core:model"))
+    implementation(project(":core:local"))
     implementation(project(":common:extension"))
 
     // 구글 로그인

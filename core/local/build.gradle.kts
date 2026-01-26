@@ -4,16 +4,12 @@ plugins {
 }
 
 android {
-    namespace = "com.idiotfrogs.data"
+    namespace = "com.idiotfrogs.local"
 }
 
 dependencies {
-    implementation(project(":core:model"))
-    implementation(project(":core:network"))
-    implementation(project(":common:extension"))
-
-    implementation(libs.okhttp)
-
+    implementation(libs.androidx.datastore)
+    
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
