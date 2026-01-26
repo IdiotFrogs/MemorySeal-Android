@@ -4,6 +4,8 @@ import com.idiotfrogs.local.LocalDataSource
 import com.idiotfrogs.local.LocalDataSourceImpl
 import com.idiotfrogs.data.datasource.auth.AuthDataSource
 import com.idiotfrogs.data.datasource.auth.AuthDataSourceImpl
+import com.idiotfrogs.data.datasource.user.UserDataSource
+import com.idiotfrogs.data.datasource.user.UserDataSourceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -21,4 +23,9 @@ interface DataSourceModule {
     fun bindsAuthDataSource(
         authDataSourceImpl: AuthDataSourceImpl
     ): AuthDataSource
+
+    @Binds
+    fun bindsUserDataSource(
+        userDataSourceImpl: UserDataSourceImpl
+    ): UserDataSource
 }

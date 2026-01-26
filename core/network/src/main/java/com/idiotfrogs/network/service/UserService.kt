@@ -1,0 +1,23 @@
+package com.idiotfrogs.network.service
+
+import com.idiotfrogs.model.user.UserResponse
+import com.idiotfrogs.model.user.UserUpdateRequest
+import okhttp3.MultipartBody
+import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.PUT
+import retrofit2.http.Part
+import retrofit2.http.Path
+
+interface UserService {
+    @GET("users/me")
+    suspend fun getMyProfile(): UserResponse
+
+    @PUT("users/{userId}")
+    @Multipart
+    suspend fun updateMyProfile(
+        @Path("userId") userId: Long,
+        @Part("profileImage") profileImage: MultipartBody.Part,
+        @Part("userUpdateDto") userUpdateRequest: UserUpdateRequest
+    ): UserResponse
+}
