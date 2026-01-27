@@ -20,6 +20,9 @@ android {
 dependencies {
     implementation(project(":data"))
     implementation(project(":core:network"))
+    implementation(project(":core:local"))
+
+    implementation(libs.androidx.datastore)
 
     implementation(libs.retrofit)
     implementation(libs.okhttp.logging.interceptor)

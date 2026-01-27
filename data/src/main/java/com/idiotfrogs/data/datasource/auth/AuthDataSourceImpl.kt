@@ -2,7 +2,7 @@ package com.idiotfrogs.data.datasource.auth
 
 import com.idiotfrogs.model.auth.AuthTokenRequest
 import com.idiotfrogs.model.auth.AuthTokenResponse
-import com.idiotfrogs.network.AuthService
+import com.idiotfrogs.network.service.AuthService
 import javax.inject.Inject
 
 class AuthDataSourceImpl @Inject constructor(

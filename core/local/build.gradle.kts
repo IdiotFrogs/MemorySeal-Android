@@ -1,14 +1,15 @@
 plugins {
     id("convention.android.library")
+    id("convention.android.hilt")
 }
 
 android {
-    namespace = "com.idiotfrogs.util"
+    namespace = "com.idiotfrogs.local"
 }
 
 dependencies {
-    implementation(libs.androidx.activity.compose)
-
+    implementation(libs.androidx.datastore)
+    
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
