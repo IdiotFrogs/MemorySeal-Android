@@ -1,5 +1,6 @@
 package com.idiotfrogs.auth.signup
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
@@ -10,6 +11,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,7 +39,9 @@ class SignUpViewModel @Inject constructor() : BaseViewModel() {
         }
     }
 
-    fun signUp() {
+    fun signUp(file: File?) {
+        file?.let { Log.d("test", it.name) }
+        // TODO: 파일 업로드, etc..
         safeLaunch {
             _event.emit(SignUpEvent.NavigateToHome)
         }

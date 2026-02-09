@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,11 +44,13 @@ import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
 import com.idiotfrogs.designsystem.util.rememberPickerState
 import com.idiotfrogs.designsystem.util.toSp
+import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
+import java.io.File
 
 @Composable
 fun SignUpRoute(
@@ -80,8 +83,10 @@ fun SignUpRoute(
 @Composable
 fun SignUpScreen(
     navigateToBack: () -> Unit,
-    signUp: () -> Unit,
+    signUp: (file: File?) -> Unit,
 ) {
+    val context = LocalContext.current
+
     val textFieldState = rememberTextFieldState()
     val isShowKeyboard = rememberKeyboardVisibility()
     val scrollState = rememberScrollState()
@@ -210,7 +215,8 @@ fun SignUpScreen(
                 if (textFieldState.text.isEmpty()) {
                     isShowError = true
                 } else {
-                    signUp()
+                    val imageFile = imageUri?.toFile(context, "profileImage")
+                    signUp(imageFile)
                 }
             }
         )
