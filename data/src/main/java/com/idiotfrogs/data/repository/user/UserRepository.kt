@@ -12,4 +12,9 @@ interface UserRepository {
         profileImage: File,
         userUpdateRequest: UserUpdateRequest
     ): UserResponse
+
+    suspend fun signUp(
+        nickname: String,
+        profileImage: File,
+    ): UserResponse
 }

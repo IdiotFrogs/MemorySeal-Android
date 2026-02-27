@@ -12,4 +12,9 @@ interface UserDataSource {
         profileImage: MultipartBody.Part,
         userUpdateRequest: UserUpdateRequest
     ): UserResponse
+
+    suspend fun signUp(
+        nickname: String,
+        profileImage: MultipartBody.Part
+    ): UserResponse
 }

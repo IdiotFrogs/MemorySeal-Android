@@ -24,4 +24,14 @@ class UserDataSourceImpl @Inject constructor(
             userUpdateRequest = userUpdateRequest
         )
     }
+
+    override suspend fun signUp(
+        nickname: String,
+        profileImage: MultipartBody.Part
+    ): UserResponse {
+        return userService.signUp(
+            nickname = nickname,
+            profileImage = profileImage
+        )
+    }
 }

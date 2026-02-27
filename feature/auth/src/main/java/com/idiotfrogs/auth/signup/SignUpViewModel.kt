@@ -2,6 +2,7 @@ package com.idiotfrogs.auth.signup
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.idiotfrogs.domain.usecase.user.SignUpUseCase
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,9 @@ import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
-class SignUpViewModel @Inject constructor() : BaseViewModel() {
+class SignUpViewModel @Inject constructor(
+    private val signUpUseCase: SignUpUseCase
+) : BaseViewModel() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Init)
     val uiState = _uiState
         .onStart {
@@ -39,11 +42,16 @@ class SignUpViewModel @Inject constructor() : BaseViewModel() {
         }
     }
 
-    fun signUp(file: File?) {
-        file?.let { Log.d("test", it.name) }
-        // TODO: 파일 업로드, etc..
+    fun signUp(nickname: String, file: File?) {
+        Log.d("CHSCHS", "nickname: $nickname, file: ${file?.name}")
+        if (file == null) return
+
         safeLaunch {
-            _event.emit(SignUpEvent.NavigateToHome)
+            runCatching { signUpUseCase(nickname, file) }
+                .onSuccess { _event.emit(SignUpEvent.NavigateToHome) }
+                .onFailure {
+                    Log.d("CHSCHS", it.message.toString())
+                }
         }
     }
 }

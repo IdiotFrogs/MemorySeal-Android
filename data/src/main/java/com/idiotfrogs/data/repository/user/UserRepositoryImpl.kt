@@ -29,4 +29,16 @@ class UserRepositoryImpl @Inject constructor(
             userUpdateRequest = userUpdateRequest
         )
     }
+
+    override suspend fun signUp(
+        nickname: String,
+        profileImage: File
+    ): UserResponse {
+        val imageRequestBody = profileImage.asRequestBody("image/jpeg".toMediaType())
+        val imagePart = MultipartBody.Part.createFormData("profileImage", profileImage.name, imageRequestBody)
+        return userDataSource.signUp(
+            nickname = nickname,
+            profileImage = imagePart
+        )
+    }
 }
