@@ -1,5 +1,6 @@
 package com.idiotfrogs.network.service
 
+import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.model.user.UserResponse
 import com.idiotfrogs.model.user.UserUpdateRequest
 import okhttp3.MultipartBody
@@ -13,7 +14,7 @@ import retrofit2.http.Query
 
 interface UserService {
     @GET("users/me")
-    suspend fun getMyProfile(): UserResponse
+    suspend fun getMyProfile(): ProfileResponse
 
     @PUT("users/{userId}")
     @Multipart

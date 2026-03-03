@@ -44,6 +44,7 @@ fun LoginRoute(
         loginViewModel.event.collect { event ->
             when (event) {
                 LoginEvent.NavigateToSignUp -> navigator.navigate(Routes.SignUp)
+                LoginEvent.NavigateToHome -> navigator.navigate(Routes.Home)
             }
         }
     }

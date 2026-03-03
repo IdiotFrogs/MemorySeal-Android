@@ -1,5 +1,6 @@
 package com.idiotfrogs.data.datasource.user
 
+import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.model.user.UserResponse
 import com.idiotfrogs.model.user.UserUpdateRequest
 import com.idiotfrogs.network.service.UserService
@@ -9,7 +10,7 @@ import javax.inject.Inject
 class UserDataSourceImpl @Inject constructor(
     private val userService: UserService
 ) : UserDataSource {
-    override suspend fun getMyProfile(): UserResponse {
+    override suspend fun getMyProfile(): ProfileResponse {
         return userService.getMyProfile()
     }
 

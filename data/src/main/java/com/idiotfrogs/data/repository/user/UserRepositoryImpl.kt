@@ -1,6 +1,7 @@
 package com.idiotfrogs.data.repository.user
 
 import com.idiotfrogs.data.datasource.user.UserDataSource
+import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.model.user.UserResponse
 import com.idiotfrogs.model.user.UserUpdateRequest
 import okhttp3.MediaType.Companion.toMediaType
@@ -12,7 +13,7 @@ import javax.inject.Inject
 class UserRepositoryImpl @Inject constructor(
     private val userDataSource: UserDataSource
 ) : UserRepository {
-    override suspend fun getMyProfile(): UserResponse {
+    override suspend fun getMyProfile(): ProfileResponse {
         return userDataSource.getMyProfile()
     }
 
