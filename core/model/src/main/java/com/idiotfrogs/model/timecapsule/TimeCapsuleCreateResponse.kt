@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 data class TimeCapsuleCreateResponse(
     val id: Long,
     val title: String,
-    val description: String,
+    val description: String?,
     val openedAt: LocalDateTime,
     val timeCapsuleStatus: String,
     val mainImageUrl: String
