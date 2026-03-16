@@ -2,6 +2,7 @@ package com.idiotfrogs.di
 
 import com.idiotfrogs.network.service.AuthService
 import com.idiotfrogs.network.interceptor.TokenInterceptor
+import com.idiotfrogs.network.service.UserService
 import com.idiotfrogs.network.util.BaseClient
 import com.idiotfrogs.network.util.TokenClient
 import dagger.Module
@@ -22,7 +23,9 @@ import javax.inject.Singleton
 object NetworkModule {
     @Provides
     @Singleton
-    fun providesJson() = Json {}
+    fun providesJson() = Json {
+        ignoreUnknownKeys = true
+    }
 
     @Provides
     @Singleton
@@ -54,4 +57,9 @@ object NetworkModule {
     @Singleton
     fun providesAuthService(retrofit: Retrofit): AuthService =
         retrofit.create(AuthService::class.java)
+
+    @Provides
+    @Singleton
+    fun providesUserService(retrofit: Retrofit): UserService =
+        retrofit.create(UserService::class.java)
 }
