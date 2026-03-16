@@ -9,6 +9,7 @@ android {
 dependencies {
     implementation(project(":core:social-login"))
     implementation(project(":core:util"))
+    implementation(project(":core:model"))
     implementation(project(":common:extension"))
 
     implementation(libs.androidx.core.ktx)

@@ -83,7 +83,7 @@ fun SignUpRoute(
 @Composable
 fun SignUpScreen(
     navigateToBack: () -> Unit,
-    signUp: (file: File?) -> Unit,
+    signUp: (nickname: String, file: File?) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -216,7 +216,7 @@ fun SignUpScreen(
                     isShowError = true
                 } else {
                     val imageFile = imageUri?.toFile(context, "profileImage")
-                    signUp(imageFile)
+                    signUp(textFieldState.text.toString(), imageFile)
                 }
             }
         )
@@ -228,6 +228,6 @@ fun SignUpScreen(
 private fun SignUpScreenPreview() {
     SignUpScreen(
         navigateToBack = { },
-        signUp = { }
+        signUp = { _, _ -> }
     )
 }

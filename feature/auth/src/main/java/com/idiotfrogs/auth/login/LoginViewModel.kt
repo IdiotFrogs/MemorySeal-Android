@@ -1,6 +1,7 @@
 package com.idiotfrogs.auth.login
 
 import androidx.lifecycle.viewModelScope
+import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,7 +14,9 @@ import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(): BaseViewModel() {
+class LoginViewModel @Inject constructor(
+    private val getMyProfileUseCase: GetMyProfileUseCase
+): BaseViewModel() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Init)
     val uiState = _uiState
         .onStart {
@@ -40,11 +43,17 @@ class LoginViewModel @Inject constructor(): BaseViewModel() {
     fun socialLogin(loginCallback: suspend () -> Unit) {
         safeLaunch {
             loginCallback()
-            _event.emit(LoginEvent.NavigateToSignUp)
+            val isOnboarding = getMyProfileUseCase().isOnboarding
+            if (isOnboarding) {
+                _event.emit(LoginEvent.NavigateToHome)
+            } else {
+                _event.emit(LoginEvent.NavigateToSignUp)
+            }
         }
     }
 }
 
 sealed interface LoginEvent {
     data object NavigateToSignUp : LoginEvent
+    data object NavigateToHome : LoginEvent
 }
