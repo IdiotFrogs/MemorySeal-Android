@@ -4,6 +4,8 @@ import com.idiotfrogs.local.LocalDataSource
 import com.idiotfrogs.local.LocalDataSourceImpl
 import com.idiotfrogs.data.datasource.auth.AuthDataSource
 import com.idiotfrogs.data.datasource.auth.AuthDataSourceImpl
+import com.idiotfrogs.data.datasource.timecapsule.TimeCapsuleDataSource
+import com.idiotfrogs.data.datasource.timecapsule.TimeCapsuleDataSourceImpl
 import com.idiotfrogs.data.datasource.user.UserDataSource
 import com.idiotfrogs.data.datasource.user.UserDataSourceImpl
 import dagger.Binds
@@ -28,4 +30,9 @@ interface DataSourceModule {
     fun bindsUserDataSource(
         userDataSourceImpl: UserDataSourceImpl
     ): UserDataSource
+
+    @Binds
+    fun bindsTimeCapsuleDataSource(
+        timeCapsuleDataSourceImpl: TimeCapsuleDataSourceImpl
+    ): TimeCapsuleDataSource
 }

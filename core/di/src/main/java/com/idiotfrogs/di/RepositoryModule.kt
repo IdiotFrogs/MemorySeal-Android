@@ -1,5 +1,7 @@
 package com.idiotfrogs.di
 
+import com.idiotfrogs.data.repository.timecapsule.TimeCapsuleRepository
+import com.idiotfrogs.data.repository.timecapsule.TimeCapsuleRepositoryImpl
 import com.idiotfrogs.data.repository.user.UserRepository
 import com.idiotfrogs.data.repository.user.UserRepositoryImpl
 import dagger.Binds
@@ -14,4 +16,9 @@ interface RepositoryModule {
     fun bindsUserRepository(
         userRepositoryImpl: UserRepositoryImpl
     ): UserRepository
+
+    @Binds
+    fun bindsTimeCapsuleRepository(
+        timeCapsuleRepositoryImpl: TimeCapsuleRepositoryImpl
+    ): TimeCapsuleRepository
 }

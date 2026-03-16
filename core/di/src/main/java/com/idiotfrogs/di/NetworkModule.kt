@@ -2,6 +2,7 @@ package com.idiotfrogs.di
 
 import com.idiotfrogs.network.service.AuthService
 import com.idiotfrogs.network.interceptor.TokenInterceptor
+import com.idiotfrogs.network.service.TimeCapsuleService
 import com.idiotfrogs.network.service.UserService
 import com.idiotfrogs.network.util.BaseClient
 import com.idiotfrogs.network.util.TokenClient
@@ -62,4 +63,9 @@ object NetworkModule {
     @Singleton
     fun providesUserService(retrofit: Retrofit): UserService =
         retrofit.create(UserService::class.java)
+
+    @Provides
+    @Singleton
+    fun providesTimeCapsuleService(retrofit: Retrofit): TimeCapsuleService =
+        retrofit.create(TimeCapsuleService::class.java)
 }
