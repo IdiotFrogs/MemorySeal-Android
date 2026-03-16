@@ -8,6 +8,7 @@ android {
 
 dependencies {
     implementation(project(":common:extension"))
+    implementation(libs.kotlinx.datetime)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

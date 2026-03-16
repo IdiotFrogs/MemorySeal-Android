@@ -1,7 +1,7 @@
 package com.idiotfrogs.model.timecapsule
 
+import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
-import java.time.LocalDateTime
 
 @Serializable
 data class TimeCapsuleCreateResponse(
