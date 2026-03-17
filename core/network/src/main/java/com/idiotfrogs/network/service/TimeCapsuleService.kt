@@ -13,7 +13,7 @@ interface TimeCapsuleService {
     @POST("time-capsules/create")
     @Multipart
     suspend fun createTimeCapsule(
-        @Body timeCapsuleCreateDto: TimeCapsuleCreateRequest,
+        @Part("timeCapsuleCreateDto") timeCapsuleCreateDto: TimeCapsuleCreateRequest,
         @Part mainImage: MultipartBody.Part
     ): TimeCapsuleCreateResponse
 
