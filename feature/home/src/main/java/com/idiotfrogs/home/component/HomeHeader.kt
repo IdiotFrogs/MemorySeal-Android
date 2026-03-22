@@ -38,7 +38,7 @@ fun HomeHeader(
             modifier = Modifier
                 .noRippleClickable(navigateToProfile)
                 .size(32.dp),
-            painter = painterResource(R.drawable.img_profile),
+            painter = painterResource(R.drawable.img_profile_32),
             contentDescription = "profile"
         )
     }

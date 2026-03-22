@@ -1,4 +1,4 @@
-package com.idiotfrogs.profile
+package com.idiotfrogs.profile.editprofile
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -37,7 +37,6 @@ import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.profile.component.ProfileHeader
-import com.idiotfrogs.profile.component.ProfileOption
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -139,51 +138,6 @@ fun ProfileScreen() {
             modifier = Modifier.fillMaxWidth(),
             textFieldState = textFieldState,
             hint = ""
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        ProfileOption(
-            option = "앱 버전",
-            trailingContent = {
-                MSText(
-                    text = "v0.2",
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.dp,
-                    color = MSTheme.color.greyG4
-                )
-            }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        ProfileOption(
-            option = "이용 약관",
-            trailingContent = {
-                Image(
-                    painter = painterResource(R.drawable.ic_chevron_right),
-                    contentDescription = "terms"
-                )
-            }
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        ProfileOption(
-            modifier = Modifier.noRippleClickable { showLogoutDialog = true },
-            option = "로그아웃",
-            trailingContent = {
-                Image(
-                    painter = painterResource(R.drawable.ic_chevron_right),
-                    contentDescription = "terms"
-                )
-            }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        ProfileOption(
-            modifier = Modifier.noRippleClickable { showWithdrawDialog = true },
-            option = "회원탈퇴",
-            optionColor = MSTheme.color.red,
-            trailingContent = {
-                Image(
-                    painter = painterResource(R.drawable.ic_chevron_right),
-                    contentDescription = "logout"
-                )
-            }
         )
         Spacer(modifier = Modifier.height(16.dp))
     }

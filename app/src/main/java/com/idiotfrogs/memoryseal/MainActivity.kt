@@ -27,7 +27,7 @@ import com.idiotfrogs.home.HomeScreen
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.MSNavigatorImpl
 import com.idiotfrogs.navigation.Routes
-import com.idiotfrogs.profile.ProfileScreen
+import com.idiotfrogs.profile.editprofile.ProfileScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

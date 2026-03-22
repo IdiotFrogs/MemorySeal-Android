@@ -1,13 +1,15 @@
 package com.idiotfrogs.profile.component
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -16,40 +18,54 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.resource.R
 
 @Composable
-fun ProfileHeader() {
+fun ProfileHeader(
+    isChanged: Boolean,
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit,
+    onSave: () -> Unit,
+) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .background(MSTheme.color.white)
-            .padding(horizontal = 20.dp, vertical = 16.dp),
+            .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.noRippleClickable(onBack),
             painter = painterResource(R.drawable.ic_chevron_left),
-            contentDescription = "chevron_left",
+            contentDescription = "chevron left"
         )
         MSText(
             text = "프로필",
             fontWeight = FontWeight.Bold,
             fontSize = 14.dp,
-            color = MSTheme.color.greyG5
+            color = MSTheme.color.black
         )
         MSText(
-            text = "설정",
-            fontWeight = FontWeight.Medium,
+            modifier = Modifier.noRippleClickable {
+                if (isChanged) onSave()
+            },
+            text = "저장",
+            fontWeight = FontWeight.Bold,
             fontSize = 14.dp,
-            color = MSTheme.color.greyG3
+            color = if (isChanged) MSTheme.color.primaryNormal else MSTheme.color.greyG2,
         )
     }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
-private fun ProfileHeaderPreview() {
-    ProfileHeader()
+fun EditProfileHeaderPreview() {
+    var isChanged by remember { mutableStateOf(false) }
+    ProfileHeader(
+        modifier = Modifier.padding(horizontal = 20.dp),
+        isChanged = isChanged,
+        onBack = { },
+        onSave = { isChanged = !isChanged }
+    )
 }

@@ -31,7 +31,7 @@ fun MembarListItem(
     ) {
         Image( // TODO 추 후 AsyncImage 변경 필요
             modifier = Modifier.size(48.dp),
-            painter = painterResource(R.drawable.img_profile),
+            painter = painterResource(R.drawable.img_profile_32),
             contentDescription = "프로필"
         )
         Spacer(Modifier.width(8.dp))
