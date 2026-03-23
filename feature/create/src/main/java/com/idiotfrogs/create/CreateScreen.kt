@@ -44,7 +44,12 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.todayIn
 import java.io.File
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Composable
 fun CreateRoute(
@@ -69,6 +74,7 @@ fun CreateRoute(
 }
 
 
+@OptIn(ExperimentalTime::class)
 @Composable
 private fun CreateScreen(
     modifier: Modifier = Modifier,
@@ -81,9 +87,11 @@ private fun CreateScreen(
     val contentTextFieldState = rememberTextFieldState()
     val scrollState = rememberScrollState()
     val (imageUri, launchImagePicker) = rememberPickerState()
-    val selectedDate = remember { mutableStateOf<LocalDateTime?>(null) }
 
-    val enabled = titleTextFieldState.text.isNotEmpty() && imageUri != null && selectedDate.value != null
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault()).atTime(0, 0, 0, 0)
+    val selectedDate = remember { mutableStateOf(today) }
+
+    val enabled = titleTextFieldState.text.isNotEmpty() && imageUri != null
 
     Column(
         modifier = modifier
@@ -173,13 +181,11 @@ private fun CreateScreen(
             ),
             onClick = {
                 val file = imageUri?.toFile(context, "mainImage")
-                val openedAt = selectedDate.value
-                if (file != null && openedAt != null) {
+                if (file != null) {
                     onCreateClick(
                         titleTextFieldState.text.toString(),
-//                        contentTextFieldState.text.toString(),
                         contentTextFieldState.text.toString().takeIf { it.isNotEmpty() },
-                        openedAt,
+                        selectedDate.value,
                         file
                     )
                 }
