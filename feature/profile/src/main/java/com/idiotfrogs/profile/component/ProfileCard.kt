@@ -29,7 +29,10 @@ fun ProfileCard(
 ) {
     Row(
         modifier = modifier
-            .background(MSTheme.color.white)
+            .background(
+                color = MSTheme.color.white,
+                shape = RoundedCornerShape(10.dp)
+            )
             .padding(horizontal = 16.dp, vertical = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
