@@ -10,6 +10,7 @@ dependencies {
     implementation(project(":feature:home"))
     implementation(project(":feature:create"))
     implementation(project(":feature:profile"))
+    implementation(project(":feature:setting"))
     implementation(project(":feature:detail"))
     implementation(project(":feature:friend"))
     implementation(project(":core:designsystem"))

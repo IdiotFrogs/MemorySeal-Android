@@ -41,7 +41,7 @@ fun ProfileScreen() {
         ProfileHeader(
             modifier = Modifier.zIndex(1f),
             onBack = { navigator.popBackStack() },
-            onSetting = { /** TODO: 설정 페이지 구현 시 함께 작업 */ }
+            onSetting = { navigator.navigate(Routes.Setting) }
         )
         LazyVerticalGrid(
             modifier = Modifier

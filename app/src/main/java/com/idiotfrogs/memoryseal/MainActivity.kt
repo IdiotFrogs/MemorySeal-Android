@@ -29,6 +29,7 @@ import com.idiotfrogs.navigation.MSNavigatorImpl
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.profile.editprofile.EditProfileScreen
 import com.idiotfrogs.profile.profile.ProfileScreen
+import com.idiotfrogs.setting.SettingScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -74,6 +75,7 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Create> { CreateScreen() }
                                 entry<Routes.Profile> { ProfileScreen() }
                                 entry<Routes.EditProfile> { EditProfileScreen() }
+                                entry<Routes.Setting> { SettingScreen() }
                                 entry<Routes.Detail> {
                                     DetailScreen(
                                         title = "테스트 Title",
