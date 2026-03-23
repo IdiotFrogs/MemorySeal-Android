@@ -15,6 +15,10 @@ sealed interface Routes: NavKey {
     @Serializable
     data object Profile : Routes
     @Serializable
+    data object EditProfile : Routes
+    @Serializable
+    data object Setting : Routes
+    @Serializable
     data class Friend(val id: Int) : Routes
     @Serializable
     data class Detail(val id: Long) : Routes
