@@ -1,6 +1,5 @@
 package com.idiotfrogs.create
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -19,6 +18,9 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -26,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.component.MSCalender
 import com.idiotfrogs.designsystem.component.MSText
@@ -37,11 +40,40 @@ import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberPickerState
 import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
+import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.datetime.LocalDateTime
+import java.io.File
 
 @Composable
-fun CreateScreen(modifier: Modifier = Modifier) {
+fun CreateRoute(
+    viewModel: CreateViewModel = viewModel(),
+) {
+    val navigator = LocalComposeMSNavigator.current
+
+    LaunchedEffect(Unit) {
+        viewModel.event.collect { event ->
+            when (event) {
+                is CreateEvent.Success -> {
+                    navigator.navigate(Routes.Detail(event.response.id))
+                    navigator.popBackStack()
+                }
+            }
+        }
+    }
+
+    CreateScreen(
+        onCreateClick = viewModel::createTimeCapsule,
+    )
+}
+
+
+@Composable
+private fun CreateScreen(
+    modifier: Modifier = Modifier,
+    onCreateClick: (title: String, description: String?, openedAt: LocalDateTime, mainImage: File) -> Unit,
+) {
     val navigator = LocalComposeMSNavigator.current
 
     val context = LocalContext.current
@@ -49,7 +81,9 @@ fun CreateScreen(modifier: Modifier = Modifier) {
     val contentTextFieldState = rememberTextFieldState()
     val scrollState = rememberScrollState()
     val (imageUri, launchImagePicker) = rememberPickerState()
-    val enabled = titleTextFieldState.text.isNotEmpty() && contentTextFieldState.text.isNotEmpty()
+    val selectedDate = remember { mutableStateOf<LocalDateTime?>(null) }
+
+    val enabled = titleTextFieldState.text.isNotEmpty() && imageUri != null && selectedDate.value != null
 
     Column(
         modifier = modifier
@@ -60,7 +94,7 @@ fun CreateScreen(modifier: Modifier = Modifier) {
             .keyboardAutoScroll(scrollState)
     ) {
         MSDetailHeader(
-            title = "타임 티켓 생성하기",
+            title = "타임 티켓 생성",
             paddingValues = PaddingValues(vertical = 16.dp),
             navigateToBack = { navigator.popBackStack() }
         )
@@ -127,7 +161,7 @@ fun CreateScreen(modifier: Modifier = Modifier) {
                 color = MSTheme.color.greyG5
             )
             Spacer(Modifier.height(8.dp))
-            MSCalender {  }
+            MSCalender { selectedDate.value = it }
             Spacer(Modifier.height(24.dp))
         }
         MSButton(
@@ -139,11 +173,20 @@ fun CreateScreen(modifier: Modifier = Modifier) {
             ),
             onClick = {
                 val file = imageUri?.toFile(context, "mainImage")
-                Log.d("test", file?.name.toString())
+                val openedAt = selectedDate.value
+                if (file != null && openedAt != null) {
+                    onCreateClick(
+                        titleTextFieldState.text.toString(),
+//                        contentTextFieldState.text.toString(),
+                        contentTextFieldState.text.toString().takeIf { it.isNotEmpty() },
+                        openedAt,
+                        file
+                    )
+                }
             }
         ) {
             MSText(
-                text = "오픈 날짜",
+                text = "생성",
                 fontSize = 12.dp,
                 fontWeight = FontWeight.Medium,
                 color = if (enabled) MSTheme.color.white else MSTheme.color.greyG3
@@ -155,5 +198,5 @@ fun CreateScreen(modifier: Modifier = Modifier) {
 @Preview
 @Composable
 fun CreateScreenPreview() {
-    CreateScreen()
+    CreateScreen(onCreateClick = { _, _, _, _ -> })
 }
