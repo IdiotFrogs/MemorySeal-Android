@@ -35,42 +35,54 @@ import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.resource.R
-import java.time.LocalDate
-import java.time.YearMonth
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.atTime
+import kotlinx.datetime.isoDayNumber
+import kotlinx.datetime.minusMonth
+import kotlinx.datetime.number
+import kotlinx.datetime.onDay
+import kotlinx.datetime.plusMonth
+import kotlinx.datetime.yearMonth
 import kotlin.math.ceil
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun MSCalender(
-    onDateSelected: (LocalDate) -> Unit
+    onDateSelected: (LocalDateTime) -> Unit
 ) {
-    val selectedDate = remember { mutableStateOf(LocalDate.now()) }
-    var currentYearMonth by remember { mutableStateOf(YearMonth.now()) }
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val selectedDate = remember { mutableStateOf(today) }
+    var currentYearMonth by remember { mutableStateOf(YearMonth(today.year, today.month)) }
 
-    val today = LocalDate.now()
-    val currentMonth = YearMonth.from(today)
+    val currentMonth = today.yearMonth
     val canGoToPrevMonth = currentYearMonth > currentMonth
 
     val daysOfWeek = listOf("일", "월", "화", "수", "목", "금", "토")
 
-    val firstDayOfMonth = currentYearMonth.atDay(1)
-    val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7 // 일요일 = 0
+    val firstDayOfMonth = currentYearMonth.firstDay
+    val firstDayOfWeek = firstDayOfMonth.dayOfWeek.isoDayNumber % 7  // 일요일 = 0
 
-    val prevMonth = currentYearMonth.minusMonths(1)
-    val prevMonthLength = prevMonth.lengthOfMonth()
+    val prevMonth = currentYearMonth.minusMonth()
+    val prevMonthLength = prevMonth.numberOfDays
     val leadingDates = (0 until firstDayOfWeek).map {
-        prevMonth.atDay(prevMonthLength - firstDayOfWeek + it + 1)
+        prevMonth.onDay(prevMonthLength - firstDayOfWeek + it + 1)
     }
 
-    val currentMonthDates = (1..currentYearMonth.lengthOfMonth()).map {
-        currentYearMonth.atDay(it)
+    val currentMonthDates = (1..currentYearMonth.numberOfDays).map {
+        currentYearMonth.onDay(it)
     }
 
     val totalCells = leadingDates.size + currentMonthDates.size
     val rowCount = ceil(totalCells / 7.0).toInt()
 
     val trailingCount = rowCount * 7 - totalCells
-    val nextMonth = currentYearMonth.plusMonths(1)
-    val trailingDates = (1..trailingCount).map { nextMonth.atDay(it) }
+    val nextMonth = currentYearMonth.plusMonth()
+    val trailingDates = (1..trailingCount).map { nextMonth.onDay(it) }
 
     val dates = leadingDates + currentMonthDates + trailingDates
 
@@ -84,14 +96,14 @@ fun MSCalender(
             modifier = Modifier.fillMaxWidth()
         ) {
             MSText(
-                text = "${currentYearMonth.year}년 ${currentYearMonth.monthValue}월",
+                text = "${currentYearMonth.year}년 ${currentYearMonth.month.number}월",
                 fontSize = 14.dp,
                 color = MSTheme.color.greyG5
             )
             Spacer(Modifier.weight(1f))
             Icon(
                 modifier = Modifier.noRippleClickable {
-                    if (canGoToPrevMonth) currentYearMonth = currentYearMonth.minusMonths(1)
+                    if (canGoToPrevMonth) currentYearMonth = currentYearMonth.minusMonth()
                 },
                 painter = painterResource(R.drawable.ic_calender_before),
                 contentDescription = "이전 달",
@@ -100,7 +112,7 @@ fun MSCalender(
             Spacer(Modifier.width(8.dp))
             Icon(
                 modifier = Modifier.noRippleClickable {
-                    currentYearMonth = currentYearMonth.plusMonths(1)
+                    currentYearMonth = currentYearMonth.plusMonth()
                 },
                 painter = painterResource(R.drawable.ic_calender_after),
                 contentDescription = "다음 달"
@@ -135,9 +147,9 @@ fun MSCalender(
                 .height((rowCount * 50).dp)
         ) {
             items(dates) { date ->
-                val isCurrentMonth = date.month == currentYearMonth.month
+                val isCurrentMonth = date.yearMonth == currentYearMonth
                 val isSelected = date == selectedDate.value
-                val isPast = date.isBefore(today)
+                val isPast = date < today
 
                 Box(
                     modifier = Modifier
@@ -153,18 +165,18 @@ fun MSCalender(
                             if (!isPast) {
                                 selectedDate.value = date
 
-                                val selectedMonth = YearMonth.from(date)
+                                val selectedMonth = date.yearMonth
                                 if (selectedMonth != currentYearMonth) {
                                     currentYearMonth = selectedMonth
                                 }
 
-                                onDateSelected(date)
+                                onDateSelected(date.atTime(0, 0, 0, 0))
                             }
                         },
                     contentAlignment = Alignment.Center
                 ) {
                     MSText(
-                        text = date.dayOfMonth.toString(),
+                        text = date.day.toString(),
                         color = when {
                             isSelected -> MSTheme.color.white
                             isCurrentMonth -> MSTheme.color.greyG5
