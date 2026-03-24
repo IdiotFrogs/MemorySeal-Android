@@ -129,9 +129,9 @@ private fun CreateScreen(
                 )
             } ?: Image(
                 modifier = Modifier
+                    .noRippleClickable { launchImagePicker() }
                     .border(1.dp, MSTheme.color.greyG2, RoundedCornerShape(12.dp))
-                    .padding(48.dp)
-                    .noRippleClickable { launchImagePicker() },
+                    .padding(48.dp),
                 painter = painterResource(R.drawable.ic_photo),
                 contentDescription = "사진"
             )
