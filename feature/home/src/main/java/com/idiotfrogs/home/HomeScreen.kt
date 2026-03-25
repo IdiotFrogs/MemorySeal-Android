@@ -102,7 +102,7 @@ fun HomeScreen() {
                         countdown = "D-5",
                         targetDate = "2027. 10. 24.",
                         title = "제목입니다.",
-                        modifier = Modifier.noRippleClickable { navigator.navigate(Routes.Detail(it)) } // TODO 추 후 타임캡슐 ID로 변경 필요
+                        modifier = Modifier.noRippleClickable { navigator.navigate(Routes.Detail(it.toLong())) } // TODO 추 후 타임캡슐 ID로 변경 필요
                     )
                 }
             }

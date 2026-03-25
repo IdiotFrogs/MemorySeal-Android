@@ -19,7 +19,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.idiotfrogs.auth.login.LoginRoute
 import com.idiotfrogs.auth.signup.SignUpRoute
-import com.idiotfrogs.create.CreateScreen
+import com.idiotfrogs.create.CreateRoute
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.detail.DetailScreen
 import com.idiotfrogs.friend.FriendScreen
@@ -72,7 +72,7 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Login> { LoginRoute() }
                                 entry<Routes.SignUp> { SignUpRoute() }
                                 entry<Routes.Home> { HomeScreen() }
-                                entry<Routes.Create> { CreateScreen() }
+                                entry<Routes.Create> { CreateRoute() }
                                 entry<Routes.Profile> { ProfileScreen() }
                                 entry<Routes.EditProfile> { EditProfileScreen() }
                                 entry<Routes.Setting> { SettingScreen() }
