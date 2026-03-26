@@ -58,7 +58,7 @@ jobs:
       - run: chmod +x gradlew
       - run: echo '${{ secrets.LOCAL_PROPERTIES }}' > ./local.properties
       - run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > ${{ github.workspace }}/app/google-services.json
-      - run: ./gradlew assembleDebug --stacktrace
+      - run: ./gradlew build
 
   notify:
     runs-on: ubuntu-latest
