@@ -61,8 +61,8 @@ fun CreateRoute(
         viewModel.event.collect { event ->
             when (event) {
                 is CreateEvent.Success -> {
-                    navigator.navigate(Routes.Detail(event.response.id))
                     navigator.popBackStack()
+                    navigator.navigate(Routes.Detail(event.response.id))
                 }
             }
         }
