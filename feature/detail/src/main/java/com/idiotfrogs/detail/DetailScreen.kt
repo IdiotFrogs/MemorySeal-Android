@@ -152,7 +152,21 @@ fun DetailScreen(
             )
             if (!iSSeal) {
                 Spacer(Modifier.height(24.dp))
-                MSText(text = "티켓 봉인 투표")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    MSText(text = "티켓 봉인 투표")
+                    MSAnnotatedText(
+                        text = buildAnnotatedString {
+                            append("1  ")
+                            withStyle(
+                                SpanStyle(color = MSTheme.color.greyG4)
+                            ) { append("/  7") }
+                        },
+                        color = MSTheme.color.primaryNormal
+                    )
+                }
                 Spacer(Modifier.height(8.dp))
                 if (isMember) {
                     if (isVoteStart) { // TODO isVoteStart 변수 관리 방법 고민 필요
