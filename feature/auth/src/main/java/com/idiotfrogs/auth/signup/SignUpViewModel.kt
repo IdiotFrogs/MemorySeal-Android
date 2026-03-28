@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase
-) : BaseViewModel() {
+) : BaseViewModel<SignUpAction>() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Init)
     val uiState = _uiState
         .onStart {
@@ -33,7 +33,12 @@ class SignUpViewModel @Inject constructor(
     private val _event = MutableSharedFlow<SignUpEvent>()
     val event = _event.asSharedFlow()
 
-    // TODO: 공통 error 처리 CEH 분리
+    override fun onAction(action: SignUpAction) {
+        when (action) {
+            is SignUpAction.SignUp -> signUp(action.nickname, action.file)
+        }
+    }
+
     private fun fetchInitUi() {
         safeLaunch {
             _uiState.emit(UiState.Init)
@@ -42,7 +47,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun signUp(nickname: String, file: File?) {
+    private fun signUp(nickname: String, file: File?) {
         Log.d("CHSCHS", "nickname: $nickname, file: ${file?.name}")
         if (file == null) return
 
@@ -54,6 +59,10 @@ class SignUpViewModel @Inject constructor(
                 }
         }
     }
+}
+
+sealed interface SignUpAction {
+    data class SignUp(val nickname: String, val file: File?): SignUpAction
 }
 
 sealed interface SignUpEvent {

@@ -50,7 +50,6 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
-import java.io.File
 
 @Composable
 fun SignUpRoute(
@@ -68,12 +67,12 @@ fun SignUpRoute(
 
     val uiState by signUpViewModel.uiState.collectAsStateWithLifecycle()
 
-    when (val state = uiState) {
+    when (uiState) {
         UiState.Init -> Unit // 화면 로딩 로직
         UiState.Success -> {
             SignUpScreen(
                 navigateToBack = { navigator.popBackStack() },
-                signUpViewModel::signUp,
+                signUpViewModel::onAction,
             )
         }
         is UiState.Error -> Unit
@@ -83,7 +82,7 @@ fun SignUpRoute(
 @Composable
 fun SignUpScreen(
     navigateToBack: () -> Unit,
-    signUp: (nickname: String, file: File?) -> Unit,
+    onAction: (SignUpAction) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -216,7 +215,7 @@ fun SignUpScreen(
                     isShowError = true
                 } else {
                     val imageFile = imageUri?.toFile(context, "profileImage")
-                    signUp(textFieldState.text.toString(), imageFile)
+                    onAction(SignUpAction.SignUp(textFieldState.text.toString(), imageFile))
                 }
             }
         )
@@ -228,6 +227,6 @@ fun SignUpScreen(
 private fun SignUpScreenPreview() {
     SignUpScreen(
         navigateToBack = { },
-        signUp = { _, _ -> }
+        onAction = { }
     )
 }

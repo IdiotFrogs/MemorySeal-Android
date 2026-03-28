@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val getMyProfileUseCase: GetMyProfileUseCase
-): BaseViewModel() {
+): BaseViewModel<LoginAction>() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Init)
     val uiState = _uiState
         .onStart {
@@ -31,6 +31,11 @@ class LoginViewModel @Inject constructor(
     private val _event = MutableSharedFlow<LoginEvent>()
     val event = _event.asSharedFlow()
 
+    override fun onAction(action: LoginAction) {
+        when (action) {
+            is LoginAction.SocialLogin -> socialLogin(action.loginCallback)
+        }
+    }
 
     private fun fetchInitUi() {
         safeLaunch {
@@ -40,7 +45,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    fun socialLogin(loginCallback: suspend () -> Unit) {
+    private fun socialLogin(loginCallback: suspend () -> Unit) {
         safeLaunch {
             loginCallback()
             val isOnboarding = getMyProfileUseCase().isOnboarding
@@ -51,6 +56,10 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
+}
+
+sealed interface LoginAction {
+    data class SocialLogin(val loginCallback: suspend () -> Unit): LoginAction
 }
 
 sealed interface LoginEvent {

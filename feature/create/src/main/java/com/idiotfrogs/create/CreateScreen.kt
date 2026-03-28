@@ -43,11 +43,9 @@ import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.todayIn
-import java.io.File
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -69,7 +67,7 @@ fun CreateRoute(
     }
 
     CreateScreen(
-        onCreateClick = viewModel::createTimeCapsule,
+        onAction = viewModel::onAction
     )
 }
 
@@ -78,7 +76,7 @@ fun CreateRoute(
 @Composable
 private fun CreateScreen(
     modifier: Modifier = Modifier,
-    onCreateClick: (title: String, description: String?, openedAt: LocalDateTime, mainImage: File) -> Unit,
+    onAction: (CreateAction) -> Unit
 ) {
     val navigator = LocalComposeMSNavigator.current
 
@@ -182,11 +180,13 @@ private fun CreateScreen(
             onClick = {
                 val file = imageUri?.toFile(context, "mainImage")
                 if (file != null) {
-                    onCreateClick(
-                        titleTextFieldState.text.toString(),
-                        contentTextFieldState.text.toString().takeIf { it.isNotEmpty() },
-                        selectedDate.value,
-                        file
+                    onAction(
+                        CreateAction.CreateTimeCapsule(
+                            titleTextFieldState.text.toString(),
+                            contentTextFieldState.text.toString().takeIf { it.isNotEmpty() },
+                            selectedDate.value,
+                            file
+                        )
                     )
                 }
             }
@@ -204,5 +204,5 @@ private fun CreateScreen(
 @Preview
 @Composable
 fun CreateScreenPreview() {
-    CreateScreen(onCreateClick = { _, _, _, _ -> })
+    CreateScreen(onAction = {})
 }
