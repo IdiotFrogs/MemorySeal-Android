@@ -27,6 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
@@ -40,8 +41,28 @@ import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun EditProfileScreen() {
+fun EditProfileRoute(
+    editProfileViewModel: EditProfileViewModel = viewModel()
+) {
     val navigator = LocalComposeMSNavigator.current
+
+    LaunchedEffect(Unit) {
+        editProfileViewModel.event.collect { event ->
+            when (event) {
+                EditProfileEvent.NavigateToBack -> navigator.popBackStack()
+            }
+        }
+    }
+
+    EditProfileScreen(
+        onAction = editProfileViewModel::onAction
+    )
+}
+
+@Composable
+fun EditProfileScreen(
+    onAction: (EditProfileAction) -> Unit
+) {
     val context = LocalContext.current
 
     var isChanged by remember { mutableStateOf(false) }
@@ -75,12 +96,12 @@ fun EditProfileScreen() {
     ) {
         ProfileHeader(
             isChanged = isChanged,
-            onBack = { navigator.popBackStack() },
+            onBack = { onAction(EditProfileAction.NavigateToBack) },
             onSave = {
                 val file = imageUri?.toFile(context, "profileImage")
                 Log.d("test", file?.name.toString())
                 /** TODO: 저장 로직 */
-                navigator.popBackStack()
+                onAction(EditProfileAction.NavigateToBack)
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -120,5 +141,5 @@ fun EditProfileScreen() {
 @Preview
 @Composable
 fun EditProfileScreenPreview() {
-    EditProfileScreen()
+    EditProfileScreen(onAction = {})
 }

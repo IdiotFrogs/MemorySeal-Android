@@ -36,6 +36,7 @@ class SignUpViewModel @Inject constructor(
     override fun onAction(action: SignUpAction) {
         when (action) {
             is SignUpAction.SignUp -> signUp(action.nickname, action.file)
+            SignUpAction.NavigateToBack -> navigateToBack()
         }
     }
 
@@ -59,12 +60,18 @@ class SignUpViewModel @Inject constructor(
                 }
         }
     }
+
+    private fun navigateToBack() {
+        safeLaunch { _event.emit(SignUpEvent.NavigateToBack) }
+    }
 }
 
 sealed interface SignUpAction {
     data class SignUp(val nickname: String, val file: File?): SignUpAction
+    data object NavigateToBack : SignUpAction
 }
 
 sealed interface SignUpEvent {
     data object NavigateToHome : SignUpEvent
+    data object NavigateToBack : SignUpEvent
 }

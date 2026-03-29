@@ -40,7 +40,7 @@ import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberPickerState
 import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
-import com.idiotfrogs.navigation.Routes
+import com.idiotfrogs.navigation.Routes.*
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.datetime.TimeZone
@@ -60,8 +60,9 @@ fun CreateRoute(
             when (event) {
                 is CreateEvent.Success -> {
                     navigator.popBackStack()
-                    navigator.navigate(Routes.Detail(event.response.id))
+                    navigator.navigate(Detail(event.response.id))
                 }
+                CreateEvent.NavigateToBack -> navigator.popBackStack()
             }
         }
     }
@@ -78,8 +79,6 @@ private fun CreateScreen(
     modifier: Modifier = Modifier,
     onAction: (CreateAction) -> Unit
 ) {
-    val navigator = LocalComposeMSNavigator.current
-
     val context = LocalContext.current
     val titleTextFieldState = rememberTextFieldState()
     val contentTextFieldState = rememberTextFieldState()
@@ -102,7 +101,7 @@ private fun CreateScreen(
         MSDetailHeader(
             title = "타임 티켓 생성",
             paddingValues = PaddingValues(vertical = 16.dp),
-            navigateToBack = { navigator.popBackStack() }
+            navigateToBack = { onAction(CreateAction.NavigateToBack) }
         )
         Spacer(Modifier.height(24.dp))
         Column(

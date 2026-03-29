@@ -23,6 +23,7 @@ class CreateViewModel @Inject constructor(
             is CreateAction.CreateTimeCapsule -> createTimeCapsule(
                 action.title, action.description, action.openedAt, action.mainImage
             )
+            CreateAction.NavigateToBack -> navigateToBack()
         }
     }
 
@@ -42,6 +43,10 @@ class CreateViewModel @Inject constructor(
             _event.emit(CreateEvent.Success(response))
         }
     }
+
+    private fun navigateToBack() {
+        safeLaunch { _event.emit(CreateEvent.NavigateToBack) }
+    }
 }
 
 sealed interface CreateAction {
@@ -51,8 +56,11 @@ sealed interface CreateAction {
         val openedAt: LocalDateTime,
         val mainImage: File
     ): CreateAction
+
+    data object NavigateToBack : CreateAction
 }
 
 sealed interface CreateEvent {
     data class Success(val response: TimeCapsuleCreateResponse) : CreateEvent
+    data object NavigateToBack : CreateEvent
 }

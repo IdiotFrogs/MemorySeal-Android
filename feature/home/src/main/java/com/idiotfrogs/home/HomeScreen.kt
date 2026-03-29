@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSMenuFab
 import com.idiotfrogs.designsystem.model.MSMenuFabModel
@@ -40,9 +41,30 @@ import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 
 @Composable
-fun HomeScreen() {
+fun HomeRoute(
+    homeViewModel: HomeViewModel = viewModel()
+) {
     val navigator = LocalComposeMSNavigator.current
 
+    LaunchedEffect(Unit) {
+        homeViewModel.event.collect { event ->
+            when (event) {
+                HomeEvent.NavigateToCreate -> navigator.navigate(Routes.Create)
+                HomeEvent.NavigateToProfile -> navigator.navigate(Routes.Profile)
+                is HomeEvent.NavigateToDetail -> navigator.navigate(Routes.Detail(event.id))
+            }
+        }
+    }
+
+    HomeScreen(
+        onAction = homeViewModel::onAction
+    )
+}
+
+@Composable
+fun HomeScreen(
+    onAction: (HomeAction) -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
     var currentTab by remember { mutableStateOf(HomeTab.CREATED) }
     var showJoinContainer by remember { mutableStateOf(false) }
@@ -59,7 +81,7 @@ fun HomeScreen() {
             listOf(
                 MSMenuFabModel("새 티켓 생성하기") {
                     expanded = false
-                    navigator.navigate(Routes.Create)
+                    onAction(HomeAction.NavigateToCreate)
                 },
                 MSMenuFabModel("참여코드로 합류하기") {
                     expanded = false
@@ -85,7 +107,7 @@ fun HomeScreen() {
                 .background(MSTheme.color.bgNormal)
                 .systemBarsPadding()
         ) {
-            HomeHeader(navigateToProfile = { navigator.navigate(Routes.Profile) })
+            HomeHeader(navigateToProfile = { onAction(HomeAction.NavigateToProfile) })
             HomeTabBar(
                 selectedTab = currentTab,
                 onClick = { currentTab = it },
@@ -102,7 +124,7 @@ fun HomeScreen() {
                         countdown = "D-5",
                         targetDate = "2027. 10. 24.",
                         title = "제목입니다.",
-                        modifier = Modifier.noRippleClickable { navigator.navigate(Routes.Detail(it.toLong())) } // TODO 추 후 타임캡슐 ID로 변경 필요
+                        modifier = Modifier.noRippleClickable { onAction(HomeAction.NavigateToDetail(it.toLong())) } // TODO 추 후 타임캡슐 ID로 변경 필요
                     )
                 }
             }
@@ -138,5 +160,5 @@ fun HomeScreen() {
 @DevicePreview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen()
+    HomeScreen(onAction = {})
 }

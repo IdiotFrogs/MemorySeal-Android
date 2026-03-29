@@ -61,6 +61,7 @@ fun SignUpRoute(
         signUpViewModel.event.collect { event ->
             when (event) {
                 SignUpEvent.NavigateToHome -> navigator.navigate(Routes.Home)
+                SignUpEvent.NavigateToBack -> navigator.popBackStack()
             }
         }
     }
@@ -71,7 +72,6 @@ fun SignUpRoute(
         UiState.Init -> Unit // 화면 로딩 로직
         UiState.Success -> {
             SignUpScreen(
-                navigateToBack = { navigator.popBackStack() },
                 signUpViewModel::onAction,
             )
         }
@@ -81,7 +81,6 @@ fun SignUpRoute(
 
 @Composable
 fun SignUpScreen(
-    navigateToBack: () -> Unit,
     onAction: (SignUpAction) -> Unit,
 ) {
     val context = LocalContext.current
@@ -110,7 +109,7 @@ fun SignUpScreen(
             Icon(
                 modifier = Modifier
                     .padding(start = 20.dp)
-                    .noRippleClickable { navigateToBack() },
+                    .noRippleClickable { onAction(SignUpAction.NavigateToBack) },
                 painter = painterResource(R.drawable.ic_chevron_left),
                 contentDescription = "Back"
             )
@@ -226,7 +225,6 @@ fun SignUpScreen(
 @Composable
 private fun SignUpScreenPreview() {
     SignUpScreen(
-        navigateToBack = { },
         onAction = { }
     )
 }

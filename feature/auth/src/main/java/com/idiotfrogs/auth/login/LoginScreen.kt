@@ -58,7 +58,7 @@ fun LoginRoute(
         UiState.Success -> {
             LoginScreen(
                 loginManager = loginManager,
-                loginViewModel::onAction,
+                onAction = loginViewModel::onAction,
             )
         }
         is UiState.Error -> Unit

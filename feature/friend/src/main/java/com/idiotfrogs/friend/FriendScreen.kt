@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.idiotfrogs.designsystem.component.MSDetailHeader
 import com.idiotfrogs.designsystem.component.MSMenuFab
 import com.idiotfrogs.designsystem.component.MSText
@@ -41,11 +42,28 @@ import com.idiotfrogs.resource.R
 import kotlinx.coroutines.delay
 
 @Composable
+fun FriendRoute(
+    friendViewModel: FriendViewModel = viewModel()
+) {
+    val navigator = LocalComposeMSNavigator.current
+
+    LaunchedEffect(Unit) {
+        friendViewModel.event.collect { event ->
+            when (event) {
+                FriendEvent.NavigateToBack -> navigator.popBackStack()
+            }
+        }
+    }
+
+    FriendScreen(onAction = friendViewModel::onAction)
+}
+
+@Composable
 fun FriendScreen(
     modifier: Modifier = Modifier,
+    onAction: (FriendAction) -> Unit,
 ) {
     val context = LocalContext.current
-    val navigator = LocalComposeMSNavigator.current
 
     var isEmpty by remember { mutableStateOf(false) }
     var action by remember { mutableStateOf(FriendScreenActionState.IDLE) }
@@ -126,7 +144,7 @@ fun FriendScreen(
         ) {
             MSDetailHeader(
                 title = "맴버 추가",
-                navigateToBack = { navigator.popBackStack() },
+                navigateToBack = { onAction(FriendAction.NavigateToBack) },
                 paddingValues = PaddingValues(horizontal = 0.dp, vertical = 16.dp)
             ) {
                 Icon(
@@ -177,5 +195,5 @@ fun FriendScreen(
 @Preview
 @Composable
 fun FriendScreenPreview() {
-    FriendScreen()
+    FriendScreen(onAction = {})
 }
