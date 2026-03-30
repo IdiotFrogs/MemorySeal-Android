@@ -1,6 +1,7 @@
 package com.idiotfrogs.data.repository.timecapsule
 
 import com.idiotfrogs.data.datasource.timecapsule.TimeCapsuleDataSource
+import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import okhttp3.MediaType.Companion.toMediaType
@@ -22,5 +23,9 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
             timeCapsuleCreateDto,
             imagePart
         )
+    }
+
+    override suspend fun getMyTimeCapsule(): List<MyTimeCapsuleResponse> {
+        return timeCapsuleDataSource.getMyTimeCapsule()
     }
 }

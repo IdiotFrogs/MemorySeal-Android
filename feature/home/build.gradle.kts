@@ -7,9 +7,13 @@ android {
 }
 
 dependencies {
+    implementation(project(":common:extension"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext)
     androidTestImplementation(libs.androidx.test.espresso)
+
+    implementation(libs.kotlinx.datetime)
 }

@@ -70,7 +70,7 @@ fun SignUpRoute(
 
     when (uiState) {
         UiState.Init -> Unit // 화면 로딩 로직
-        UiState.Success -> {
+        is UiState.Success -> {
             SignUpScreen(
                 signUpViewModel::onAction,
             )

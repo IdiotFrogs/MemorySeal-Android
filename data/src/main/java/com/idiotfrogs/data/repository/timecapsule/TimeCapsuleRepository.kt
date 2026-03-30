@@ -1,5 +1,6 @@
 package com.idiotfrogs.data.repository.timecapsule
 
+import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import java.io.File
@@ -9,4 +10,6 @@ interface TimeCapsuleRepository {
         timeCapsuleCreateDto: TimeCapsuleCreateRequest,
         mainImage: File
     ): TimeCapsuleCreateResponse
+
+    suspend fun getMyTimeCapsule(): List<MyTimeCapsuleResponse>
 }

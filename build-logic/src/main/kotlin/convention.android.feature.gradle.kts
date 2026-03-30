@@ -16,5 +16,6 @@ dependencies {
     "implementation"(project(":common:resource"))
     "implementation"(project(":core:designsystem"))
     "implementation"(project(":core:util"))
+    "implementation"(project(":core:model"))
     implementation(project(":core:navigation"))
 }
