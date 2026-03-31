@@ -36,7 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSAnnotatedText
 import com.idiotfrogs.designsystem.component.MSDialog
 import com.idiotfrogs.designsystem.component.MSMessageItem
@@ -53,7 +53,7 @@ import com.idiotfrogs.resource.R
 
 @Composable
 fun DetailRoute(
-    detailViewModel: DetailViewModel = viewModel(),
+    detailViewModel: DetailViewModel = hiltViewModel(),
     title: String,
     date: String, // TODO 추 후 날짜 로직 설계 후 변경 필요
     isMember: Boolean,

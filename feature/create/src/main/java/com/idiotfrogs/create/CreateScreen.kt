@@ -28,7 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.component.MSCalender
 import com.idiotfrogs.designsystem.component.MSText
@@ -51,7 +51,7 @@ import kotlin.time.ExperimentalTime
 
 @Composable
 fun CreateRoute(
-    viewModel: CreateViewModel = viewModel(),
+    viewModel: CreateViewModel = hiltViewModel(),
 ) {
     val navigator = LocalComposeMSNavigator.current
 
