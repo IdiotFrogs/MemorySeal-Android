@@ -20,8 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.idiotfrogs.auth.login.component.LoginButton
 import com.idiotfrogs.auth.login.component.LoginType
 import com.idiotfrogs.auth.util.rememberLoginManager
@@ -32,11 +32,12 @@ import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.resource.hsSantokki
+import com.idiotfrogs.social_login.LoginManager
 import com.idiotfrogs.util.UiState
 
 @Composable
 fun LoginRoute(
-    loginViewModel: LoginViewModel = viewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel(),
 ) {
     val navigator = LocalComposeMSNavigator.current
 
@@ -52,15 +53,12 @@ fun LoginRoute(
     val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
     val loginManager = rememberLoginManager()
 
-    when (val state = uiState) {
+    when (uiState) {
         UiState.Init -> Unit // 화면 로딩 로직 및 자동 로그인
         UiState.Success -> {
             LoginScreen(
-                googleLogin = {
-                    loginViewModel.socialLogin { loginManager?.googleLogin() } },
-                appleLogin = {
-                    loginViewModel.socialLogin { loginManager?.appleLogin() }
-                }
+                loginManager = loginManager,
+                onAction = loginViewModel::onAction,
             )
         }
         is UiState.Error -> Unit
@@ -69,8 +67,8 @@ fun LoginRoute(
 
 @Composable
 fun LoginScreen(
-    googleLogin: () -> Unit,
-    appleLogin: () -> Unit,
+    loginManager: LoginManager?,
+    onAction: (LoginAction) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -115,11 +113,15 @@ fun LoginScreen(
         ) {
             LoginButton(
                 loginType = LoginType.GOOGLE,
-                onClick = googleLogin
+                onClick = {
+                    loginManager?.let { onAction(LoginAction.SocialLogin(it::appleLogin)) }
+                }
             )
             LoginButton(
                 loginType = LoginType.APPLE,
-                onClick = appleLogin
+                onClick = {
+                    loginManager?.let { onAction(LoginAction.SocialLogin(it::googleLogin)) }
+                }
             )
         }
     }
@@ -130,7 +132,7 @@ fun LoginScreen(
 @Composable
 private fun LoginScreenPreview() {
     LoginScreen(
-        googleLogin = {},
-        appleLogin = {},
+        loginManager = null,
+        onAction = {}
     )
 }

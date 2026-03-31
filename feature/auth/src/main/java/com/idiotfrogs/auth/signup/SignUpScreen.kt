@@ -32,8 +32,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
@@ -50,11 +50,10 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
-import java.io.File
 
 @Composable
 fun SignUpRoute(
-    signUpViewModel: SignUpViewModel = viewModel(),
+    signUpViewModel: SignUpViewModel = hiltViewModel(),
 ) {
     val navigator = LocalComposeMSNavigator.current
 
@@ -62,18 +61,18 @@ fun SignUpRoute(
         signUpViewModel.event.collect { event ->
             when (event) {
                 SignUpEvent.NavigateToHome -> navigator.navigate(Routes.Home)
+                SignUpEvent.NavigateToBack -> navigator.popBackStack()
             }
         }
     }
 
     val uiState by signUpViewModel.uiState.collectAsStateWithLifecycle()
 
-    when (val state = uiState) {
+    when (uiState) {
         UiState.Init -> Unit // 화면 로딩 로직
         UiState.Success -> {
             SignUpScreen(
-                navigateToBack = { navigator.popBackStack() },
-                signUpViewModel::signUp,
+                signUpViewModel::onAction,
             )
         }
         is UiState.Error -> Unit
@@ -82,8 +81,7 @@ fun SignUpRoute(
 
 @Composable
 fun SignUpScreen(
-    navigateToBack: () -> Unit,
-    signUp: (nickname: String, file: File?) -> Unit,
+    onAction: (SignUpAction) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -111,7 +109,7 @@ fun SignUpScreen(
             Icon(
                 modifier = Modifier
                     .padding(start = 20.dp)
-                    .noRippleClickable { navigateToBack() },
+                    .noRippleClickable { onAction(SignUpAction.NavigateToBack) },
                 painter = painterResource(R.drawable.ic_chevron_left),
                 contentDescription = "Back"
             )
@@ -216,7 +214,7 @@ fun SignUpScreen(
                     isShowError = true
                 } else {
                     val imageFile = imageUri?.toFile(context, "profileImage")
-                    signUp(textFieldState.text.toString(), imageFile)
+                    onAction(SignUpAction.SignUp(textFieldState.text.toString(), imageFile))
                 }
             }
         )
@@ -227,7 +225,6 @@ fun SignUpScreen(
 @Composable
 private fun SignUpScreenPreview() {
     SignUpScreen(
-        navigateToBack = { },
-        signUp = { _, _ -> }
+        onAction = { }
     )
 }

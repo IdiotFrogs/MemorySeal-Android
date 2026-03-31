@@ -14,12 +14,20 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateViewModel @Inject constructor(
     private val createTimeCapsuleUseCase: CreateTimeCapsuleUseCase
-): BaseViewModel() {
+): BaseViewModel<CreateAction>() {
     private val _event = MutableSharedFlow<CreateEvent>()
     val event = _event.asSharedFlow()
 
+    override fun onAction(action: CreateAction) {
+        when (action) {
+            is CreateAction.CreateTimeCapsule -> createTimeCapsule(
+                action.title, action.description, action.openedAt, action.mainImage
+            )
+            CreateAction.NavigateToBack -> navigateToBack()
+        }
+    }
 
-    fun createTimeCapsule(
+    private fun createTimeCapsule(
         title: String,
         description: String?,
         openedAt: LocalDateTime,
@@ -35,8 +43,24 @@ class CreateViewModel @Inject constructor(
             _event.emit(CreateEvent.Success(response))
         }
     }
+
+    private fun navigateToBack() {
+        safeLaunch { _event.emit(CreateEvent.NavigateToBack) }
+    }
+}
+
+sealed interface CreateAction {
+    data class CreateTimeCapsule(
+        val title: String,
+        val description: String?,
+        val openedAt: LocalDateTime,
+        val mainImage: File
+    ): CreateAction
+
+    data object NavigateToBack : CreateAction
 }
 
 sealed interface CreateEvent {
     data class Success(val response: TimeCapsuleCreateResponse) : CreateEvent
+    data object NavigateToBack : CreateEvent
 }

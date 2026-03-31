@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDialog
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
@@ -23,9 +25,30 @@ import com.idiotfrogs.setting.component.SettingItem
 import com.idiotfrogs.setting.component.SettingType
 
 @Composable
-fun SettingScreen() {
+fun SettingRoute(
+    settingViewModel: SettingViewModel = hiltViewModel()
+) {
     val navigator = LocalComposeMSNavigator.current
 
+    LaunchedEffect(Unit) {
+        settingViewModel.event.collect { event ->
+            when (event) {
+                SettingEvent.NavigateToLogin -> navigator.navigate(Routes.Login)
+                SettingEvent.NavigateToBack -> navigator.popBackStack()
+            }
+        }
+    }
+
+
+    SettingScreen(
+        onAction = settingViewModel::onAction
+    )
+}
+
+@Composable
+fun SettingScreen(
+    onAction: (SettingAction) -> Unit
+) {
     var showLogoutDialog by remember { mutableStateOf(false) }
     var showWithdrawDialog by remember { mutableStateOf(false) }
 
@@ -38,7 +61,7 @@ fun SettingScreen() {
             onConfirm = {
                 /** TODO: 로그아웃 로직 */
                 showLogoutDialog = false
-                navigator.navigate(Routes.Login)
+                onAction(SettingAction.NavigateToLogin)
             },
             onCancel = { showLogoutDialog = false }
         )
@@ -53,7 +76,7 @@ fun SettingScreen() {
             onConfirm = {
                 /** TODO: 탈퇴 로직 */
                 showWithdrawDialog = false
-                navigator.navigate(Routes.Login)
+                onAction(SettingAction.NavigateToLogin)
             },
             onCancel = { showWithdrawDialog = false }
         )
@@ -65,7 +88,7 @@ fun SettingScreen() {
             .background(MSTheme.color.white)
             .systemBarsPadding(),
     ) {
-        SettingHeader(onBack = { navigator.popBackStack() })
+        SettingHeader(onBack = { onAction(SettingAction.NavigateToBack) })
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -99,5 +122,5 @@ fun SettingScreen() {
 @Preview
 @Composable
 private fun SettingScreenPreview() {
-    SettingScreen()
+    SettingScreen(onAction = {})
 }

@@ -28,7 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.component.MSCalender
 import com.idiotfrogs.designsystem.component.MSText
@@ -40,20 +40,18 @@ import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberPickerState
 import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
-import com.idiotfrogs.navigation.Routes
+import com.idiotfrogs.navigation.Routes.*
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.todayIn
-import java.io.File
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @Composable
 fun CreateRoute(
-    viewModel: CreateViewModel = viewModel(),
+    viewModel: CreateViewModel = hiltViewModel(),
 ) {
     val navigator = LocalComposeMSNavigator.current
 
@@ -62,14 +60,15 @@ fun CreateRoute(
             when (event) {
                 is CreateEvent.Success -> {
                     navigator.popBackStack()
-                    navigator.navigate(Routes.Detail(event.response.id))
+                    navigator.navigate(Detail(event.response.id))
                 }
+                CreateEvent.NavigateToBack -> navigator.popBackStack()
             }
         }
     }
 
     CreateScreen(
-        onCreateClick = viewModel::createTimeCapsule,
+        onAction = viewModel::onAction
     )
 }
 
@@ -78,10 +77,8 @@ fun CreateRoute(
 @Composable
 private fun CreateScreen(
     modifier: Modifier = Modifier,
-    onCreateClick: (title: String, description: String?, openedAt: LocalDateTime, mainImage: File) -> Unit,
+    onAction: (CreateAction) -> Unit
 ) {
-    val navigator = LocalComposeMSNavigator.current
-
     val context = LocalContext.current
     val titleTextFieldState = rememberTextFieldState()
     val contentTextFieldState = rememberTextFieldState()
@@ -104,7 +101,7 @@ private fun CreateScreen(
         MSDetailHeader(
             title = "타임 티켓 생성",
             paddingValues = PaddingValues(vertical = 16.dp),
-            navigateToBack = { navigator.popBackStack() }
+            navigateToBack = { onAction(CreateAction.NavigateToBack) }
         )
         Spacer(Modifier.height(24.dp))
         Column(
@@ -182,11 +179,13 @@ private fun CreateScreen(
             onClick = {
                 val file = imageUri?.toFile(context, "mainImage")
                 if (file != null) {
-                    onCreateClick(
-                        titleTextFieldState.text.toString(),
-                        contentTextFieldState.text.toString().takeIf { it.isNotEmpty() },
-                        selectedDate.value,
-                        file
+                    onAction(
+                        CreateAction.CreateTimeCapsule(
+                            titleTextFieldState.text.toString(),
+                            contentTextFieldState.text.toString().takeIf { it.isNotEmpty() },
+                            selectedDate.value,
+                            file
+                        )
                     )
                 }
             }
@@ -204,5 +203,5 @@ private fun CreateScreen(
 @Preview
 @Composable
 fun CreateScreenPreview() {
-    CreateScreen(onCreateClick = { _, _, _, _ -> })
+    CreateScreen(onAction = {})
 }

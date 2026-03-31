@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSAnnotatedText
 import com.idiotfrogs.designsystem.component.MSDialog
 import com.idiotfrogs.designsystem.component.MSMessageItem
@@ -50,6 +52,40 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 
 @Composable
+fun DetailRoute(
+    detailViewModel: DetailViewModel = hiltViewModel(),
+    title: String,
+    date: String, // TODO 추 후 날짜 로직 설계 후 변경 필요
+    isMember: Boolean,
+    isVoteStart: Boolean,
+    iSSeal: Boolean,
+    onSealClicked: () -> Unit,
+    onVoteClicked: (Boolean) -> Unit,
+) {
+    val navigator = LocalComposeMSNavigator.current
+
+    LaunchedEffect(Unit) {
+        detailViewModel.event.collect { event ->
+            when (event) {
+                DetailEvent.NavigateToBack -> navigator.popBackStack()
+                is DetailEvent.NavigateToFriend -> navigator.navigate(Routes.Friend(event.id))
+            }
+        }
+    }
+
+    DetailScreen(
+        title = title,
+        date = date,
+        isMember = isMember,
+        isVoteStart = isVoteStart,
+        iSSeal = iSSeal,
+        onSealClicked = onSealClicked,
+        onVoteClicked = onVoteClicked,
+        onAction = detailViewModel::onAction
+    )
+}
+
+@Composable
 fun DetailScreen(
     title: String,
     date: String, // TODO 추 후 날짜 로직 설계 후 변경 필요
@@ -58,9 +94,10 @@ fun DetailScreen(
     iSSeal: Boolean,
     onSealClicked: () -> Unit,
     onVoteClicked: (Boolean) -> Unit,
+    onAction: (DetailAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val navigator = LocalComposeMSNavigator.current
+
 
     val scrollState = rememberScrollState()
     var showVoteDialog by remember { mutableStateOf(false) }
@@ -104,7 +141,7 @@ fun DetailScreen(
                     .systemBarsPadding()
                     .align(Alignment.TopStart)
                     .padding(top = 20.dp, start = 20.dp)
-                    .noRippleClickable { navigator.popBackStack() },
+                    .noRippleClickable { onAction(DetailAction.NavigateToBack) },
                 painter = painterResource(R.drawable.img_close),
                 contentDescription = "Close"
             )
@@ -323,7 +360,7 @@ fun DetailScreen(
                 Image(
                     modifier = Modifier
                         .size(16.dp)
-                        .noRippleClickable { navigator.navigate(Routes.Friend(0)) }, // TODO 추 후 실제 타임캡슐 id 필요
+                        .noRippleClickable { onAction(DetailAction.NavigateToFriend(0)) }, // TODO 추 후 실제 타임캡슐 id 필요
                     painter = painterResource(R.drawable.ic_detail_rigt),
                     contentDescription = "추억 메시지 상세 아이콘"
                 )
@@ -362,6 +399,7 @@ fun DetailScreenPreview() {
         true,
         false,
         {},
-        {}
+        {},
+        onAction = {}
     )
 }

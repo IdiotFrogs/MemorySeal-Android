@@ -13,12 +13,14 @@ import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
@@ -30,9 +32,30 @@ import com.idiotfrogs.profile.component.ProfileTicketCard
 const val HeaderHeight = 56
 
 @Composable
-fun ProfileScreen() {
+fun ProfileRoute(
+    profileViewModel: ProfileViewModel = hiltViewModel()
+) {
     val navigator = LocalComposeMSNavigator.current
 
+    LaunchedEffect(Unit) {
+        profileViewModel.event.collect { event ->
+            when (event) {
+                ProfileEvent.NavigateToBack -> navigator.popBackStack()
+                ProfileEvent.NavigateToEditProfile -> navigator.navigate(Routes.EditProfile)
+                ProfileEvent.NavigateToSetting -> navigator.navigate(Routes.Setting)
+            }
+        }
+    }
+
+    ProfileScreen(
+        onAction = profileViewModel::onAction
+    )
+}
+
+@Composable
+fun ProfileScreen(
+    onAction: (ProfileAction) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -40,8 +63,8 @@ fun ProfileScreen() {
     ) {
         ProfileHeader(
             modifier = Modifier.zIndex(1f),
-            onBack = { navigator.popBackStack() },
-            onSetting = { navigator.navigate(Routes.Setting) }
+            onBack = { onAction(ProfileAction.NavigateToBack) },
+            onSetting = { onAction(ProfileAction.NavigateToSetting) }
         )
         LazyVerticalGrid(
             modifier = Modifier
@@ -56,7 +79,7 @@ fun ProfileScreen() {
                 ProfileCard(
                     modifier = Modifier.padding(top = (HeaderHeight + 24).dp),
                     nickname = "용감한 사자처럼",
-                    onEditClick = { navigator.navigate(Routes.EditProfile) }
+                    onEditClick = { onAction(ProfileAction.NavigateToEditProfile) }
                 )
             }
             maxLineItem {
@@ -93,5 +116,5 @@ private fun LazyGridScope.maxLineItem(
 @Preview
 @Composable
 private fun ProfileScreenPreview() {
-    ProfileScreen()
+    ProfileScreen(onAction = {})
 }

@@ -21,15 +21,15 @@ import com.idiotfrogs.auth.login.LoginRoute
 import com.idiotfrogs.auth.signup.SignUpRoute
 import com.idiotfrogs.create.CreateRoute
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.detail.DetailScreen
-import com.idiotfrogs.friend.FriendScreen
-import com.idiotfrogs.home.HomeScreen
+import com.idiotfrogs.detail.DetailRoute
+import com.idiotfrogs.friend.FriendRoute
+import com.idiotfrogs.home.HomeRoute
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.MSNavigatorImpl
 import com.idiotfrogs.navigation.Routes
-import com.idiotfrogs.profile.editprofile.EditProfileScreen
-import com.idiotfrogs.profile.profile.ProfileScreen
-import com.idiotfrogs.setting.SettingScreen
+import com.idiotfrogs.profile.editprofile.EditProfileRoute
+import com.idiotfrogs.profile.profile.ProfileRoute
+import com.idiotfrogs.setting.SettingRoute
 import dagger.hilt.android.AndroidEntryPoint
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -71,13 +71,13 @@ class MainActivity : ComponentActivity() {
                             entryProvider = entryProvider {
                                 entry<Routes.Login> { LoginRoute() }
                                 entry<Routes.SignUp> { SignUpRoute() }
-                                entry<Routes.Home> { HomeScreen() }
+                                entry<Routes.Home> { HomeRoute() }
                                 entry<Routes.Create> { CreateRoute() }
-                                entry<Routes.Profile> { ProfileScreen() }
-                                entry<Routes.EditProfile> { EditProfileScreen() }
-                                entry<Routes.Setting> { SettingScreen() }
+                                entry<Routes.Profile> { ProfileRoute() }
+                                entry<Routes.EditProfile> { EditProfileRoute() }
+                                entry<Routes.Setting> { SettingRoute() }
                                 entry<Routes.Detail> {
-                                    DetailScreen(
+                                    DetailRoute(
                                         title = "테스트 Title",
                                         date = "2025-11-28",
                                         isMember = true,
@@ -94,7 +94,7 @@ class MainActivity : ComponentActivity() {
                                     it.id
                                 }
                                 entry<Routes.Friend> {
-                                    FriendScreen()
+                                    FriendRoute()
                                     // TODO 추 후 id 가져가서 정보 조회되게 수정 필요
                                     it.id
                                 }
