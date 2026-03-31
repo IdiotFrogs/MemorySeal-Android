@@ -15,7 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDialog
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
@@ -26,7 +26,7 @@ import com.idiotfrogs.setting.component.SettingType
 
 @Composable
 fun SettingRoute(
-    settingViewModel: SettingViewModel = viewModel()
+    settingViewModel: SettingViewModel = hiltViewModel()
 ) {
     val navigator = LocalComposeMSNavigator.current
 

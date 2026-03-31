@@ -32,8 +32,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
@@ -53,7 +53,7 @@ import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun SignUpRoute(
-    signUpViewModel: SignUpViewModel = viewModel(),
+    signUpViewModel: SignUpViewModel = hiltViewModel(),
 ) {
     val navigator = LocalComposeMSNavigator.current
 

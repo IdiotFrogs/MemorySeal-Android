@@ -28,7 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDetailHeader
 import com.idiotfrogs.designsystem.component.MSMenuFab
 import com.idiotfrogs.designsystem.component.MSText
@@ -43,7 +43,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun FriendRoute(
-    friendViewModel: FriendViewModel = viewModel()
+    friendViewModel: FriendViewModel = hiltViewModel()
 ) {
     val navigator = LocalComposeMSNavigator.current
 
