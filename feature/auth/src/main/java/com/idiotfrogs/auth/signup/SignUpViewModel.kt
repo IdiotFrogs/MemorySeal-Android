@@ -44,7 +44,7 @@ class SignUpViewModel @Inject constructor(
         safeLaunch {
             _uiState.emit(UiState.Init)
             // TODO UI 로딩에 필요한 작업
-            _uiState.emit(UiState.Success())
+            _uiState.emit(UiState.Success)
         }
     }
 

@@ -2,6 +2,8 @@ package com.idiotfrogs.home
 
 import androidx.lifecycle.viewModelScope
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
+import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,6 +11,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -29,14 +32,18 @@ class HomeViewModel @Inject constructor(
             UiState.Init
         )
 
+    private val _capsules = MutableStateFlow<Map<TimeCapsuleRole, List<MyTimeCapsuleResponse>>>(emptyMap())
+    val capsules = _capsules.asStateFlow()
 
     private val _event = MutableSharedFlow<HomeEvent>()
     val event = _event.asSharedFlow()
 
     private fun fetchInitUi() {
         safeLaunch {
-            val result = getMyTimeCapsuleUseCase()
-            _uiState.update { UiState.Success(data = result) }
+            _capsules.update { getMyTimeCapsuleUseCase() }
+            if (_capsules.value.isNotEmpty()) {
+                _uiState.update { UiState.Success }
+            }
         }
     }
 
@@ -61,6 +68,10 @@ class HomeViewModel @Inject constructor(
     }
 
 }
+
+data class Capsules(
+    val capsules: Map<TimeCapsuleRole, List<MyTimeCapsuleResponse>>
+)
 
 sealed interface HomeAction {
     data object NavigateToCreate : HomeAction
