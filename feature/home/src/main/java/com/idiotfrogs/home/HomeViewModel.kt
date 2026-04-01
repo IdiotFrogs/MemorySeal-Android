@@ -1,17 +1,57 @@
 package com.idiotfrogs.home
 
+import androidx.lifecycle.viewModelScope
+import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
+import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
+import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
+import com.idiotfrogs.model.user.ProfileResponse
+import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-
+    private val getMyTimeCapsuleUseCase: GetMyTimeCapsuleUseCase,
+    private val getMyProfileUseCase: GetMyProfileUseCase,
 ): BaseViewModel<HomeAction>() {
+    private val _uiState = MutableStateFlow<UiState>(UiState.Init)
+    val uiState = _uiState
+        .onStart {
+            fetchInitUi()
+        }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5_000),
+            UiState.Init
+        )
+
+    private val _data = MutableStateFlow(Data())
+    val data = _data.asStateFlow()
+
     private val _event = MutableSharedFlow<HomeEvent>()
     val event = _event.asSharedFlow()
+
+    private fun fetchInitUi() {
+        safeLaunch {
+            val capsules = async { getMyTimeCapsuleUseCase() }
+            val user = async { getMyProfileUseCase() }
+            _data.update { it.copy(user = user.await(), capsules = capsules.await()) }
+            if (_data.value.user != null) {
+                _uiState.update { UiState.Success }
+            }
+        }
+    }
 
     override fun onAction(action: HomeAction) {
         when (action) {
@@ -34,6 +74,11 @@ class HomeViewModel @Inject constructor(
     }
 
 }
+
+data class Data(
+    val user: ProfileResponse? = null,
+    val capsules: Map<TimeCapsuleRole, List<MyTimeCapsuleResponse>> = emptyMap()
+)
 
 sealed interface HomeAction {
     data object NavigateToCreate : HomeAction

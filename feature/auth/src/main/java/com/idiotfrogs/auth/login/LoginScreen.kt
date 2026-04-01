@@ -55,7 +55,7 @@ fun LoginRoute(
 
     when (uiState) {
         UiState.Init -> Unit // 화면 로딩 로직 및 자동 로그인
-        UiState.Success -> {
+        is UiState.Success -> {
             LoginScreen(
                 loginManager = loginManager,
                 onAction = loginViewModel::onAction,

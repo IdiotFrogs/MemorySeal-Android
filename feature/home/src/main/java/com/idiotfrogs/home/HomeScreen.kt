@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSMenuFab
@@ -37,14 +39,20 @@ import com.idiotfrogs.home.component.HomeJoinContainer
 import com.idiotfrogs.home.component.HomeTab
 import com.idiotfrogs.home.component.HomeTabBar
 import com.idiotfrogs.home.component.HomeTicket
+import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
+import com.idiotfrogs.util.UiState
+import com.idiotfrogs.extension.toDday
+import com.idiotfrogs.extension.toYearMonthDay
 
 @Composable
 fun HomeRoute(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val navigator = LocalComposeMSNavigator.current
+    val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
+    val data by homeViewModel.data.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         homeViewModel.event.collect { event ->
@@ -57,13 +65,17 @@ fun HomeRoute(
     }
 
     HomeScreen(
+        uiState = uiState,
+        data = data,
         onAction = homeViewModel::onAction
     )
 }
 
 @Composable
 fun HomeScreen(
-    onAction: (HomeAction) -> Unit
+    uiState: UiState,
+    data: Data,
+    onAction: (HomeAction) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var currentTab by remember { mutableStateOf(HomeTab.CREATED) }
@@ -100,65 +112,101 @@ fun HomeScreen(
         }
     }
 
-    Box {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MSTheme.color.bgNormal)
-                .systemBarsPadding()
-        ) {
-            HomeHeader(navigateToProfile = { onAction(HomeAction.NavigateToProfile) })
-            HomeTabBar(
-                selectedTab = currentTab,
-                onClick = { currentTab = it },
-            )
-            LazyColumn(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                contentPadding = PaddingValues(top = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-
+    when (uiState) {
+        is UiState.Error -> TODO()
+        UiState.Init -> {}
+        is UiState.Success -> {
+            Box {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MSTheme.color.bgNormal)
+                        .systemBarsPadding()
                 ) {
-                items(5) {
-                    HomeTicket(
-                        countdown = "D-5",
-                        targetDate = "2027. 10. 24.",
-                        title = "제목입니다.",
-                        modifier = Modifier.noRippleClickable { onAction(HomeAction.NavigateToDetail(it.toLong())) } // TODO 추 후 타임캡슐 ID로 변경 필요
+                    HomeHeader(
+                        profileUrl = data.user?.profileImageUrl,
+                        navigateToProfile = { onAction(HomeAction.NavigateToProfile) }
                     )
+                    HomeTabBar(
+                        selectedTab = currentTab,
+                        onClick = { currentTab = it },
+                    )
+                    if (currentTab == HomeTab.CREATED) {
+                        val host = data.capsules[TimeCapsuleRole.HOST] ?: return
+                        LazyColumn(
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            contentPadding = PaddingValues(top = 24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            items(host) {
+                                HomeTicket(
+                                    countdown = it.openAt.toDday(),
+                                    targetDate = it.openAt.toYearMonthDay(),
+                                    title = it.title,
+                                    modifier = Modifier.noRippleClickable {
+                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuldId))
+                                    }
+                                )
+                            }
+                        }
+                    } else {
+                        val contributor = data.capsules[TimeCapsuleRole.CONTRIBUTOR] ?: return
+                        LazyColumn(
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            contentPadding = PaddingValues(top = 24.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            items(contributor) {
+                                HomeTicket(
+                                    countdown = it.openAt.toDday(),
+                                    targetDate = it.openAt.toYearMonthDay(),
+                                    title = it.title,
+                                    modifier = Modifier.noRippleClickable {
+                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuldId))
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
+                MSDim(
+                    visible = showDim,
+                    onDismiss = {
+                        expanded = false
+                        showJoinContainer = false
+                    }
+                )
+                MSMenuFab(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .navigationBarsPadding()
+                        .padding(end = 20.dp, bottom = 24.dp),
+                    expanded = expanded,
+                    hasFab = true,
+                    offset = DpOffset(x = 0.dp, y = (-16).dp),
+                    menuList = menuList,
+                    onClick = { expanded = !expanded },
+                    onDismiss = { expanded = false },
+                )
+                HomeJoinContainer(
+                    isShow = showJoinContainer,
+                    textFieldState = textFieldState,
+                    onJoin = { /** TODO: 타임 티켓 참여 */ },
+                    onCancel = { showJoinContainer = false }
+                )
             }
         }
-        MSDim(
-            visible = showDim,
-            onDismiss = {
-                expanded = false
-                showJoinContainer = false
-            }
-        )
-        MSMenuFab(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .navigationBarsPadding()
-                .padding(end = 20.dp, bottom = 24.dp),
-            expanded = expanded,
-            hasFab = true,
-            offset = DpOffset(x = 0.dp, y = (-16).dp),
-            menuList = menuList,
-            onClick = { expanded = !expanded },
-            onDismiss = { expanded = false },
-        )
-        HomeJoinContainer(
-            isShow = showJoinContainer,
-            textFieldState = textFieldState,
-            onJoin = { /** TODO: 타임 티켓 참여 */ },
-            onCancel = { showJoinContainer = false }
-        )
     }
 }
 
 @DevicePreview
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(onAction = {})
+    HomeScreen(
+        uiState = UiState.Init,
+        data = Data(),
+        onAction = {},
+    )
 }
