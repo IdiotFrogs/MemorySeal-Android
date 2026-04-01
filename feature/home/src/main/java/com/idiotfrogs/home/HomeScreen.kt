@@ -39,7 +39,6 @@ import com.idiotfrogs.home.component.HomeJoinContainer
 import com.idiotfrogs.home.component.HomeTab
 import com.idiotfrogs.home.component.HomeTabBar
 import com.idiotfrogs.home.component.HomeTicket
-import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
@@ -53,7 +52,7 @@ fun HomeRoute(
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
-    val capsules by homeViewModel.capsules.collectAsStateWithLifecycle()
+    val data by homeViewModel.data.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         homeViewModel.event.collect { event ->
@@ -67,7 +66,7 @@ fun HomeRoute(
 
     HomeScreen(
         uiState = uiState,
-        capsules = capsules,
+        data = data,
         onAction = homeViewModel::onAction
     )
 }
@@ -75,7 +74,7 @@ fun HomeRoute(
 @Composable
 fun HomeScreen(
     uiState: UiState,
-    capsules: Map<TimeCapsuleRole, List<MyTimeCapsuleResponse>>,
+    data: Data,
     onAction: (HomeAction) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -124,13 +123,16 @@ fun HomeScreen(
                         .background(MSTheme.color.bgNormal)
                         .systemBarsPadding()
                 ) {
-                    HomeHeader(navigateToProfile = { onAction(HomeAction.NavigateToProfile) })
+                    HomeHeader(
+                        profileUrl = data.user?.profileImageUrl,
+                        navigateToProfile = { onAction(HomeAction.NavigateToProfile) }
+                    )
                     HomeTabBar(
                         selectedTab = currentTab,
                         onClick = { currentTab = it },
                     )
                     if (currentTab == HomeTab.CREATED) {
-                        val host = capsules[TimeCapsuleRole.HOST] ?: return
+                        val host = data.capsules[TimeCapsuleRole.HOST] ?: return
                         LazyColumn(
                             modifier = Modifier.padding(horizontal = 20.dp),
                             contentPadding = PaddingValues(top = 24.dp),
@@ -149,7 +151,7 @@ fun HomeScreen(
                             }
                         }
                     } else {
-                        val contributor = capsules[TimeCapsuleRole.CONTRIBUTOR] ?: return
+                        val contributor = data.capsules[TimeCapsuleRole.CONTRIBUTOR] ?: return
                         LazyColumn(
                             modifier = Modifier.padding(horizontal = 20.dp),
                             contentPadding = PaddingValues(top = 24.dp),
@@ -204,7 +206,7 @@ fun HomeScreen(
 fun HomeScreenPreview() {
     HomeScreen(
         uiState = UiState.Init,
-        capsules = emptyMap(),
+        data = Data(),
         onAction = {},
     )
 }

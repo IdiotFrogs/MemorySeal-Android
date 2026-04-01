@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -16,9 +18,11 @@ import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.resource.R
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun HomeHeader(
+    profileUrl: String?,
     navigateToProfile: () -> Unit,
 ) {
     Row(
@@ -33,14 +37,23 @@ fun HomeHeader(
             color = MSTheme.color.greyG5
         )
         Spacer(modifier = Modifier.weight(1f))
-        // TODO: 이미지 url 통해 로드
-        Image(
-            modifier = Modifier
-                .noRippleClickable(navigateToProfile)
-                .size(32.dp),
-            painter = painterResource(R.drawable.img_profile_32),
-            contentDescription = "profile"
-        )
+        profileUrl?.let {
+            GlideImage(
+                modifier = Modifier
+                    .noRippleClickable(navigateToProfile)
+                    .size(32.dp)
+                    .clip(CircleShape),
+                imageModel = { profileUrl }
+            )
+        } ?: run {
+            Image(
+                modifier = Modifier
+                    .noRippleClickable(navigateToProfile)
+                    .size(32.dp),
+                painter = painterResource(R.drawable.img_profile_32),
+                contentDescription = "profile"
+            )
+        }
     }
 }
 
@@ -48,6 +61,7 @@ fun HomeHeader(
 @Composable
 private fun HomeHeaderPreview() {
     HomeHeader(
-        navigateToProfile = {}
+        profileUrl = "",
+        navigateToProfile = {},
     )
 }

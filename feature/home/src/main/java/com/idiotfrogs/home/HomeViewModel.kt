@@ -2,11 +2,14 @@ package com.idiotfrogs.home
 
 import androidx.lifecycle.viewModelScope
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
+import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
+import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -19,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getMyTimeCapsuleUseCase: GetMyTimeCapsuleUseCase
+    private val getMyTimeCapsuleUseCase: GetMyTimeCapsuleUseCase,
+    private val getMyProfileUseCase: GetMyProfileUseCase,
 ): BaseViewModel<HomeAction>() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Init)
     val uiState = _uiState
@@ -32,16 +36,18 @@ class HomeViewModel @Inject constructor(
             UiState.Init
         )
 
-    private val _capsules = MutableStateFlow<Map<TimeCapsuleRole, List<MyTimeCapsuleResponse>>>(emptyMap())
-    val capsules = _capsules.asStateFlow()
+    private val _data = MutableStateFlow(Data())
+    val data = _data.asStateFlow()
 
     private val _event = MutableSharedFlow<HomeEvent>()
     val event = _event.asSharedFlow()
 
     private fun fetchInitUi() {
         safeLaunch {
-            _capsules.update { getMyTimeCapsuleUseCase() }
-            if (_capsules.value.isNotEmpty()) {
+            val capsules = async { getMyTimeCapsuleUseCase() }
+            val user = async { getMyProfileUseCase() }
+            _data.update { it.copy(user = user.await(), capsules = capsules.await()) }
+            if (_data.value.user != null) {
                 _uiState.update { UiState.Success }
             }
         }
@@ -69,8 +75,9 @@ class HomeViewModel @Inject constructor(
 
 }
 
-data class Capsules(
-    val capsules: Map<TimeCapsuleRole, List<MyTimeCapsuleResponse>>
+data class Data(
+    val user: ProfileResponse? = null,
+    val capsules: Map<TimeCapsuleRole, List<MyTimeCapsuleResponse>> = emptyMap()
 )
 
 sealed interface HomeAction {
