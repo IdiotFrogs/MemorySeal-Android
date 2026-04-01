@@ -114,13 +114,13 @@ fun LoginScreen(
             LoginButton(
                 loginType = LoginType.GOOGLE,
                 onClick = {
-                    loginManager?.let { onAction(LoginAction.SocialLogin(it::appleLogin)) }
+                    loginManager?.let { onAction(LoginAction.SocialLogin(it::googleLogin)) }
                 }
             )
             LoginButton(
                 loginType = LoginType.APPLE,
                 onClick = {
-                    loginManager?.let { onAction(LoginAction.SocialLogin(it::googleLogin)) }
+                    loginManager?.let { onAction(LoginAction.SocialLogin(it::appleLogin)) }
                 }
             )
         }
