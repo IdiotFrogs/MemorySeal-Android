@@ -14,8 +14,10 @@ dependencies {
     "implementation"(project(":data"))
     "implementation"(project(":domain"))
     "implementation"(project(":common:resource"))
+    "implementation"(project(":common:extension"))
     "implementation"(project(":core:designsystem"))
     "implementation"(project(":core:util"))
     "implementation"(project(":core:model"))
-    implementation(project(":core:navigation"))
+    "implementation"(project(":core:model"))
+    "implementation"(project(":core:navigation"))
 }
