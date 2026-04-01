@@ -1,36 +1,37 @@
 package com.idiotfrogs.profile.profile
 
+import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.syntax.simple.reduce
+import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
 
-): BaseViewModel<ProfileAction>() {
-    private val _event = MutableSharedFlow<ProfileEvent>()
-    val event = _event.asSharedFlow()
+) : BaseViewModel<ProfileAction>(), ContainerHost<UiState<Unit>, ProfileSideEffect> {
+
+    override val container: Container<UiState<Unit>, ProfileSideEffect> = container(
+        initialState = UiState.Init,
+        onCreate = {
+            safeLaunch {
+                // TODO 초기 데이터 로딩
+                intent { reduce { UiState.Success(Unit) } }
+            }
+        }
+    )
 
     override fun onAction(action: ProfileAction) {
         when (action) {
-            ProfileAction.NavigateToEditProfile -> navigateToEditProfile()
-            ProfileAction.NavigateToSetting -> navigateToSetting()
-            ProfileAction.NavigateToBack -> navigateToBack()
+            ProfileAction.NavigateToEditProfile -> intent { postSideEffect(ProfileSideEffect.NavigateToEditProfile) }
+            ProfileAction.NavigateToSetting -> intent { postSideEffect(ProfileSideEffect.NavigateToSetting) }
+            ProfileAction.NavigateToBack -> intent { postSideEffect(ProfileSideEffect.NavigateToBack) }
         }
-    }
-
-    private fun navigateToSetting() {
-        safeLaunch { _event.emit(ProfileEvent.NavigateToSetting) }
-    }
-
-    private fun navigateToEditProfile() {
-        safeLaunch { _event.emit(ProfileEvent.NavigateToEditProfile) }
-    }
-
-    private fun navigateToBack() {
-        safeLaunch { _event.emit(ProfileEvent.NavigateToBack) }
     }
 }
 
@@ -40,8 +41,8 @@ sealed interface ProfileAction {
     data object NavigateToBack : ProfileAction
 }
 
-sealed interface ProfileEvent {
-    data object NavigateToSetting : ProfileEvent
-    data object NavigateToEditProfile : ProfileEvent
-    data object NavigateToBack : ProfileEvent
+sealed interface ProfileSideEffect {
+    data object NavigateToSetting : ProfileSideEffect
+    data object NavigateToEditProfile : ProfileSideEffect
+    data object NavigateToBack : ProfileSideEffect
 }

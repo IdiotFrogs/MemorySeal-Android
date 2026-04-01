@@ -3,27 +3,30 @@ package com.idiotfrogs.create
 import com.idiotfrogs.domain.usecase.timecapsule.CreateTimeCapsuleUseCase
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
+import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.datetime.LocalDateTime
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.viewmodel.container
 import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
 class CreateViewModel @Inject constructor(
     private val createTimeCapsuleUseCase: CreateTimeCapsuleUseCase
-): BaseViewModel<CreateAction>() {
-    private val _event = MutableSharedFlow<CreateEvent>()
-    val event = _event.asSharedFlow()
+) : BaseViewModel<CreateAction>(), ContainerHost<UiState<Unit>, CreateSideEffect> {
+    override val container: Container<UiState<Unit>, CreateSideEffect> = container(UiState.Success(Unit))
 
     override fun onAction(action: CreateAction) {
         when (action) {
             is CreateAction.CreateTimeCapsule -> createTimeCapsule(
                 action.title, action.description, action.openedAt, action.mainImage
             )
-            CreateAction.NavigateToBack -> navigateToBack()
+            CreateAction.NavigateToBack -> intent { postSideEffect(CreateSideEffect.NavigateToBack) }
         }
     }
 
@@ -39,13 +42,14 @@ class CreateViewModel @Inject constructor(
                 description = description,
                 openedAt = openedAt
             )
-            val response = createTimeCapsuleUseCase(request, mainImage)
-            _event.emit(CreateEvent.Success(response))
-        }
-    }
+            val result = createTimeCapsuleUseCase(request, mainImage)
 
-    private fun navigateToBack() {
-        safeLaunch { _event.emit(CreateEvent.NavigateToBack) }
+            result.onSuccess { response ->
+                intent { postSideEffect(CreateSideEffect.NavigateToDetail(response)) }
+            }.onFailure { e ->
+                // TODO: 에러 처리 (토스트 등)
+            }
+        }
     }
 }
 
@@ -55,12 +59,12 @@ sealed interface CreateAction {
         val description: String?,
         val openedAt: LocalDateTime,
         val mainImage: File
-    ): CreateAction
+    ) : CreateAction
 
     data object NavigateToBack : CreateAction
 }
 
-sealed interface CreateEvent {
-    data class Success(val response: TimeCapsuleCreateResponse) : CreateEvent
-    data object NavigateToBack : CreateEvent
+sealed interface CreateSideEffect {
+    data class NavigateToDetail(val response: TimeCapsuleCreateResponse) : CreateSideEffect
+    data object NavigateToBack : CreateSideEffect
 }

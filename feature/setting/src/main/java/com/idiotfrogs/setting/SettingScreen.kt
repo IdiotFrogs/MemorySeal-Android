@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,26 +22,31 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.setting.component.SettingHeader
 import com.idiotfrogs.setting.component.SettingItem
 import com.idiotfrogs.setting.component.SettingType
+import com.idiotfrogs.util.UiState
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun SettingRoute(
-    settingViewModel: SettingViewModel = hiltViewModel()
+    viewModel: SettingViewModel = hiltViewModel()
 ) {
     val navigator = LocalComposeMSNavigator.current
+    val uiState by viewModel.collectAsState()
 
-    LaunchedEffect(Unit) {
-        settingViewModel.event.collect { event ->
-            when (event) {
-                SettingEvent.NavigateToLogin -> navigator.navigate(Routes.Login)
-                SettingEvent.NavigateToBack -> navigator.popBackStack()
-            }
+    viewModel.collectSideEffect { event ->
+        when (event) {
+            SettingSideEffect.NavigateToLogin -> navigator.navigate(Routes.Login)
+            SettingSideEffect.NavigateToBack -> navigator.popBackStack()
         }
     }
 
-
-    SettingScreen(
-        onAction = settingViewModel::onAction
-    )
+    when (uiState) {
+        UiState.Init -> Unit
+        is UiState.Success -> {
+            SettingScreen(onAction = viewModel::onAction)
+        }
+        is UiState.Error -> Unit
+    }
 }
 
 @Composable

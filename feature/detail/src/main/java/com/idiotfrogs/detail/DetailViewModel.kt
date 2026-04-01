@@ -1,33 +1,36 @@
 package com.idiotfrogs.detail
 
+import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.syntax.simple.reduce
+import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
 
-): BaseViewModel<DetailAction>() {
-    private val _event = MutableSharedFlow<DetailEvent>()
-    val event = _event.asSharedFlow()
+) : BaseViewModel<DetailAction>(), ContainerHost<UiState<Unit>, DetailSideEffect> {
+    override val container: Container<UiState<Unit>, DetailSideEffect> = container(
+        initialState = UiState.Init,
+        onCreate = {
+            safeLaunch {
+                // TODO 초기 데이터 로딩
+                intent { reduce { UiState.Success(Unit) } }
+            }
+        }
+    )
 
     override fun onAction(action: DetailAction) {
         when (action) {
-            is DetailAction.NavigateToFriend -> navigateToFriend(action.id)
-            DetailAction.NavigateToBack -> navigateToBack()
+            is DetailAction.NavigateToFriend -> intent { postSideEffect(DetailSideEffect.NavigateToFriend(action.id)) }
+            DetailAction.NavigateToBack -> intent { postSideEffect(DetailSideEffect.NavigateToBack) }
         }
     }
-
-    private fun navigateToFriend(id: Int) {
-        safeLaunch { _event.emit(DetailEvent.NavigateToFriend(id)) }
-    }
-
-    private fun navigateToBack() {
-        safeLaunch { _event.emit(DetailEvent.NavigateToBack) }
-    }
-
 }
 
 sealed interface DetailAction {
@@ -35,7 +38,7 @@ sealed interface DetailAction {
     data object NavigateToBack : DetailAction
 }
 
-sealed interface DetailEvent {
-    data class NavigateToFriend(val id: Int): DetailEvent
-    data object NavigateToBack : DetailEvent
+sealed interface DetailSideEffect {
+    data class NavigateToFriend(val id: Int) : DetailSideEffect
+    data object NavigateToBack : DetailSideEffect
 }

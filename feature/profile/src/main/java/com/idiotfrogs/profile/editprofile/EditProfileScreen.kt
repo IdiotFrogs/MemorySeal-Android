@@ -27,7 +27,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
@@ -38,25 +38,31 @@ import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.profile.component.EditProfileBottomSheet
 import com.idiotfrogs.profile.component.ProfileHeader
 import com.idiotfrogs.resource.R
+import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun EditProfileRoute(
-    editProfileViewModel: EditProfileViewModel = viewModel()
+    viewModel: EditProfileViewModel = hiltViewModel()
 ) {
     val navigator = LocalComposeMSNavigator.current
+    val uiState by viewModel.collectAsState()
 
-    LaunchedEffect(Unit) {
-        editProfileViewModel.event.collect { event ->
-            when (event) {
-                EditProfileEvent.NavigateToBack -> navigator.popBackStack()
-            }
+    viewModel.collectSideEffect { event ->
+        when (event) {
+            EditProfileSideEffect.NavigateToBack -> navigator.popBackStack()
         }
     }
 
-    EditProfileScreen(
-        onAction = editProfileViewModel::onAction
-    )
+    when (uiState) {
+        UiState.Init -> Unit
+        is UiState.Success -> {
+            EditProfileScreen(onAction = viewModel::onAction)
+        }
+        is UiState.Error -> Unit
+    }
 }
 
 @Composable

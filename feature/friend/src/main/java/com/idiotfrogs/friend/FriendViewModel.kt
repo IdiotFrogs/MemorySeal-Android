@@ -1,26 +1,35 @@
 package com.idiotfrogs.friend
 
+import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.syntax.simple.reduce
+import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
 @HiltViewModel
 class FriendViewModel @Inject constructor(
 
-): BaseViewModel<FriendAction>() {
-    private val _event = MutableSharedFlow<FriendEvent>()
-    val event = _event.asSharedFlow()
+) : BaseViewModel<FriendAction>(), ContainerHost<UiState<Unit>, FriendSideEffect> {
+
+    override val container: Container<UiState<Unit>, FriendSideEffect> = container(
+        initialState = UiState.Init,
+        onCreate = {
+            safeLaunch {
+                // TODO 초기 데이터 로딩
+                intent { reduce { UiState.Success(Unit) } }
+            }
+        }
+    )
 
     override fun onAction(action: FriendAction) {
         when (action) {
-            FriendAction.NavigateToBack -> navigateToBack()
+            FriendAction.NavigateToBack -> intent { postSideEffect(FriendSideEffect.NavigateToBack) }
         }
-    }
-
-    private fun navigateToBack() {
-        safeLaunch { _event.emit(FriendEvent.NavigateToBack) }
     }
 }
 
@@ -28,6 +37,6 @@ sealed interface FriendAction {
     data object NavigateToBack : FriendAction
 }
 
-sealed interface FriendEvent {
-    data object NavigateToBack : FriendEvent
+sealed interface FriendSideEffect {
+    data object NavigateToBack : FriendSideEffect
 }

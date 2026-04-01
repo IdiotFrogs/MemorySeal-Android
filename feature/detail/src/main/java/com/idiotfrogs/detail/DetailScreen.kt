@@ -21,7 +21,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,10 +49,13 @@ import com.idiotfrogs.detail.component.RoundedProgressBar
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
+import com.idiotfrogs.util.UiState
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun DetailRoute(
-    detailViewModel: DetailViewModel = hiltViewModel(),
+    viewModel: DetailViewModel = hiltViewModel(),
     title: String,
     date: String, // TODO 추 후 날짜 로직 설계 후 변경 필요
     isMember: Boolean,
@@ -63,26 +65,31 @@ fun DetailRoute(
     onVoteClicked: (Boolean) -> Unit,
 ) {
     val navigator = LocalComposeMSNavigator.current
+    val uiState by viewModel.collectAsState()
 
-    LaunchedEffect(Unit) {
-        detailViewModel.event.collect { event ->
-            when (event) {
-                DetailEvent.NavigateToBack -> navigator.popBackStack()
-                is DetailEvent.NavigateToFriend -> navigator.navigate(Routes.Friend(event.id))
-            }
+    viewModel.collectSideEffect { event ->
+        when (event) {
+            DetailSideEffect.NavigateToBack -> navigator.popBackStack()
+            is DetailSideEffect.NavigateToFriend -> navigator.navigate(Routes.Friend(event.id))
         }
     }
 
-    DetailScreen(
-        title = title,
-        date = date,
-        isMember = isMember,
-        isVoteStart = isVoteStart,
-        iSSeal = iSSeal,
-        onSealClicked = onSealClicked,
-        onVoteClicked = onVoteClicked,
-        onAction = detailViewModel::onAction
-    )
+    when (uiState) {
+        UiState.Init -> Unit
+        is UiState.Success -> {
+            DetailScreen(
+                title = title,
+                date = date,
+                isMember = isMember,
+                isVoteStart = isVoteStart,
+                iSSeal = iSSeal,
+                onSealClicked = onSealClicked,
+                onVoteClicked = onVoteClicked,
+                onAction = viewModel::onAction
+            )
+        }
+        is UiState.Error -> Unit
+    }
 }
 
 @Composable

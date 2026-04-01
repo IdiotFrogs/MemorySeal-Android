@@ -18,7 +18,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -42,10 +42,13 @@ import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes.*
 import com.idiotfrogs.resource.R
+import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.todayIn
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -54,22 +57,27 @@ fun CreateRoute(
     viewModel: CreateViewModel = hiltViewModel(),
 ) {
     val navigator = LocalComposeMSNavigator.current
+    val uiState by viewModel.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.event.collect { event ->
-            when (event) {
-                is CreateEvent.Success -> {
-                    navigator.popBackStack()
-                    navigator.navigate(Detail(event.response.id))
-                }
-                CreateEvent.NavigateToBack -> navigator.popBackStack()
+    viewModel.collectSideEffect { event ->
+        when (event) {
+            is CreateSideEffect.NavigateToDetail -> {
+                navigator.popBackStack()
+                navigator.navigate(Detail(event.response.id))
             }
+            CreateSideEffect.NavigateToBack -> navigator.popBackStack()
         }
     }
 
-    CreateScreen(
-        onAction = viewModel::onAction
-    )
+    when (uiState) {
+        UiState.Init -> Unit // 화면 로딩 로직
+        is UiState.Success -> {
+            CreateScreen(
+                onAction = viewModel::onAction
+            )
+        }
+        is UiState.Error -> Unit
+    }
 }
 
 
