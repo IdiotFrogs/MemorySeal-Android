@@ -149,11 +149,11 @@ fun HomeScreen(
                         ) {
                             items(host) {
                                 HomeTicket(
-                                    countdown = it.openAt.toDday(),
-                                    targetDate = it.openAt.toYearMonthDay(),
+                                    countdown = it.openedAt.toDday(),
+                                    targetDate = it.openedAt.toYearMonthDay(),
                                     title = it.title,
                                     modifier = Modifier.noRippleClickable {
-                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuldId))
+                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
                                     }
                                 )
                             }
@@ -168,11 +168,11 @@ fun HomeScreen(
                         ) {
                             items(contributor) {
                                 HomeTicket(
-                                    countdown = it.openAt.toDday(),
-                                    targetDate = it.openAt.toYearMonthDay(),
+                                    countdown = it.openedAt.toDday(),
+                                    targetDate = it.openedAt.toYearMonthDay(),
                                     title = it.title,
                                     modifier = Modifier.noRippleClickable {
-                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuldId))
+                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
                                     }
                                 )
                             }
