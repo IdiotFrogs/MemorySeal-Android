@@ -2,6 +2,8 @@ package com.idiotfrogs.detail
 
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.sideEffect.RefreshEvent
+import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.ContainerHost
@@ -21,6 +23,13 @@ class DetailViewModel @Inject constructor(
             safeLaunch {
                 // TODO 초기 데이터 로딩
                 intent { reduce { UiState.Success(Unit) } }
+
+                RefreshSideEffect.events.collect {
+                    if (it is RefreshEvent.Detail) {
+                        // TODO 해당 id를 통해 fetchDetail(it.id)
+                        it.id
+                    }
+                }
             }
         }
     )

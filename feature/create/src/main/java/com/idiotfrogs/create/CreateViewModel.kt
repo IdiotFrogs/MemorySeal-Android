@@ -5,6 +5,8 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.sideEffect.RefreshEvent
+import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.datetime.LocalDateTime
 import org.orbitmvi.orbit.Container
@@ -45,6 +47,7 @@ class CreateViewModel @Inject constructor(
             val result = createTimeCapsuleUseCase(request, mainImage)
 
             result.onSuccess { response ->
+                RefreshSideEffect.tryEmit(RefreshEvent.Home)
                 intent { postSideEffect(CreateSideEffect.NavigateToDetail(response)) }
             }.onFailure { e ->
                 // TODO: 에러 처리 (토스트 등)

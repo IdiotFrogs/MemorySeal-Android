@@ -7,6 +7,8 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.sideEffect.RefreshEvent
+import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import org.orbitmvi.orbit.Container
@@ -25,10 +27,13 @@ class HomeViewModel @Inject constructor(
 
     override val container: Container<UiState<HomeData>, HomeSideEffect> = container(
         initialState = UiState.Init,
-        onCreate = { fetchInitUi() }
+        onCreate = {
+            fetchHome()
+            RefreshSideEffect.events.collect { if (it is RefreshEvent.Home) fetchHome() }
+        }
     )
 
-    private fun fetchInitUi() {
+    private fun fetchHome() {
         safeLaunch {
             val userDeferred = async { getMyProfileUseCase() }
             val capsulesDeferred = async { getMyTimeCapsuleUseCase() }
