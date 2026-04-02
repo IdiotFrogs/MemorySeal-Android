@@ -1,6 +1,5 @@
 package com.idiotfrogs.home
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSMenuFab
@@ -63,8 +61,6 @@ fun HomeRoute(
             is HomeSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(it.id))
         }
     }
-
-
 
     when (uiState) {
         UiState.Init -> {}
