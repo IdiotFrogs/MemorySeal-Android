@@ -8,6 +8,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.activity.compose)
+    implementation(libs.orbit.viewmodel)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

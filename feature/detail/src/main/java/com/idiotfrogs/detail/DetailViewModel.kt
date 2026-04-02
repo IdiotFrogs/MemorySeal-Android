@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(
 
-) : BaseViewModel<DetailAction>(), ContainerHost<UiState<Unit>, DetailSideEffect> {
+) : BaseViewModel<UiState<Unit>, DetailSideEffect, DetailAction>() {
     override val container: Container<UiState<Unit>, DetailSideEffect> = container(
         initialState = UiState.Init,
         onCreate = {

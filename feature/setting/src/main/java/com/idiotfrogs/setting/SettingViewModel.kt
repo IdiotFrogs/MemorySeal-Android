@@ -13,7 +13,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
 
-) : BaseViewModel<SettingAction>(), ContainerHost<UiState<Unit>, SettingSideEffect> {
+) : BaseViewModel<UiState<Unit>, SettingSideEffect, SettingAction>() {
 
     override val container: Container<UiState<Unit>, SettingSideEffect> = container(UiState.Success(Unit))
 

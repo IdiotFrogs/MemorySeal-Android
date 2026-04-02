@@ -23,7 +23,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getMyTimeCapsuleUseCase: GetMyTimeCapsuleUseCase,
     private val getMyProfileUseCase: GetMyProfileUseCase,
-): BaseViewModel<HomeAction>(), ContainerHost<UiState<HomeData>, HomeSideEffect> {
+): BaseViewModel<UiState<HomeData>, HomeSideEffect, HomeAction>() {
 
     override val container: Container<UiState<HomeData>, HomeSideEffect> = container(
         initialState = UiState.Init,

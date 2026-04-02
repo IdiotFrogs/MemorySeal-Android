@@ -10,7 +10,6 @@ import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.datetime.LocalDateTime
 import org.orbitmvi.orbit.Container
-import org.orbitmvi.orbit.ContainerHost
 import org.orbitmvi.orbit.syntax.simple.intent
 import org.orbitmvi.orbit.syntax.simple.postSideEffect
 import org.orbitmvi.orbit.viewmodel.container
@@ -20,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateViewModel @Inject constructor(
     private val createTimeCapsuleUseCase: CreateTimeCapsuleUseCase
-) : BaseViewModel<CreateAction>(), ContainerHost<UiState<Unit>, CreateSideEffect> {
+) : BaseViewModel<UiState<Unit>, CreateSideEffect, CreateAction>() {
     override val container: Container<UiState<Unit>, CreateSideEffect> = container(UiState.Success(Unit))
 
     override fun onAction(action: CreateAction) {

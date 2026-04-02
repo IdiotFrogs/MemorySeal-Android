@@ -14,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FriendViewModel @Inject constructor(
 
-) : BaseViewModel<FriendAction>(), ContainerHost<UiState<Unit>, FriendSideEffect> {
+) : BaseViewModel<UiState<Unit>, FriendSideEffect, FriendAction>() {
 
     override val container: Container<UiState<Unit>, FriendSideEffect> = container(
         initialState = UiState.Init,

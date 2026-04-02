@@ -14,7 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
 
-) : BaseViewModel<EditProfileAction>(), ContainerHost<UiState<Unit>, EditProfileSideEffect> {
+) : BaseViewModel<UiState<Unit>, EditProfileSideEffect, EditProfileAction>() {
 
     override val container: Container<UiState<Unit>, EditProfileSideEffect> = container(
         initialState = UiState.Init,

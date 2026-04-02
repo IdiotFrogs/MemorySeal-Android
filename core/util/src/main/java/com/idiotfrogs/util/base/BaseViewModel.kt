@@ -10,8 +10,9 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import org.orbitmvi.orbit.ContainerHost
 
-abstract class BaseViewModel<ACTION> : ViewModel() {
+abstract class BaseViewModel<STATE: Any, SIDE_EFFECT: Any, ACTION> : ViewModel(), ContainerHost<STATE, SIDE_EFFECT> {
     private val coroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
         if (throwable is LoginRequiredException) {
             MSSideEffect.postSideEffect(AppSideEffect.LoginRequired)

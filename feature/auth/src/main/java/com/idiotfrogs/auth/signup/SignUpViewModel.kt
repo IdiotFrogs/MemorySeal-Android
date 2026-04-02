@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val signUpUseCase: SignUpUseCase
-) : BaseViewModel<SignUpAction>(), ContainerHost<UiState<Unit>, SignUpSideEffect> {
+) : BaseViewModel<UiState<Unit>, SignUpSideEffect, SignUpAction>() {
 
     override val container: Container<UiState<Unit>, SignUpSideEffect> = container(UiState.Success(Unit))
 
