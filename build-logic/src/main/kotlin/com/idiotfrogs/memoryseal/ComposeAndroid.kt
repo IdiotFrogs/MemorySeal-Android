@@ -8,6 +8,10 @@ import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginE
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 
 internal fun Project.configureComposeAndroid(commonExtension: CommonExtension<*, *, *, *, *, *>) {
+    with(plugins) {
+        apply("com.github.skydoves.compose.stability.analyzer")
+    }
+
     commonExtension.apply {
         buildFeatures {
             compose = true
