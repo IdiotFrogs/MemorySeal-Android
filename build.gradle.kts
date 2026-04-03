@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.baselineprofile) apply false
     alias(libs.plugins.detekt)
     alias(libs.plugins.google.services) apply false
+    alias(libs.plugins.stability.analyzer) apply false
 }
 
 subprojects { // TODO 추 후 libs.version.toml 파일에 접근하여 plugin, version 정보 가져오기
