@@ -1,32 +1,27 @@
 package com.idiotfrogs.setting
 
-import androidx.lifecycle.ViewModel
+import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
 
-): BaseViewModel<SettingAction>() {
-    private val _event = MutableSharedFlow<SettingEvent>()
-    val event = _event.asSharedFlow()
+) : BaseViewModel<UiState<Unit>, SettingSideEffect, SettingAction>() {
+
+    override val container: Container<UiState<Unit>, SettingSideEffect> = container(UiState.Success(Unit))
 
     override fun onAction(action: SettingAction) {
         when (action) {
-            SettingAction.NavigateToLogin -> navigateToLogin()
-            SettingAction.NavigateToBack -> navigateToBack()
+            SettingAction.NavigateToLogin -> intent { postSideEffect(SettingSideEffect.NavigateToLogin) }
+            SettingAction.NavigateToBack -> intent { postSideEffect(SettingSideEffect.NavigateToBack) }
         }
-    }
-
-    private fun navigateToLogin() {
-        safeLaunch { _event.emit(SettingEvent.NavigateToLogin) }
-    }
-
-    private fun navigateToBack() {
-        safeLaunch { _event.emit(SettingEvent.NavigateToBack) }
     }
 }
 
@@ -35,7 +30,7 @@ sealed interface SettingAction {
     data object NavigateToBack : SettingAction
 }
 
-sealed interface SettingEvent {
-    data object NavigateToLogin : SettingEvent
-    data object NavigateToBack : SettingEvent
+sealed interface SettingSideEffect {
+    data object NavigateToLogin : SettingSideEffect
+    data object NavigateToBack : SettingSideEffect
 }

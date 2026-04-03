@@ -1,5 +1,6 @@
 package com.idiotfrogs.auth.login
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -34,31 +35,30 @@ import com.idiotfrogs.resource.R
 import com.idiotfrogs.resource.hsSantokki
 import com.idiotfrogs.social_login.LoginManager
 import com.idiotfrogs.util.UiState
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun LoginRoute(
-    loginViewModel: LoginViewModel = hiltViewModel(),
+    viewModel: LoginViewModel = hiltViewModel(),
 ) {
     val navigator = LocalComposeMSNavigator.current
+    val uiState by viewModel.collectAsState()
+    val loginManager = rememberLoginManager()
 
-    LaunchedEffect(Unit) {
-        loginViewModel.event.collect { event ->
-            when (event) {
-                LoginEvent.NavigateToSignUp -> navigator.navigate(Routes.SignUp)
-                LoginEvent.NavigateToHome -> navigator.navigate(Routes.Home)
-            }
+    viewModel.collectSideEffect { event ->
+        when (event) {
+            LoginSideEffect.NavigateToSignUp -> navigator.navigate(Routes.SignUp)
+            LoginSideEffect.NavigateToHome -> navigator.navigate(Routes.Home)
         }
     }
-
-    val uiState by loginViewModel.uiState.collectAsStateWithLifecycle()
-    val loginManager = rememberLoginManager()
 
     when (uiState) {
         UiState.Init -> Unit // 화면 로딩 로직 및 자동 로그인
         is UiState.Success -> {
             LoginScreen(
                 loginManager = loginManager,
-                onAction = loginViewModel::onAction,
+                onAction = viewModel::onAction,
             )
         }
         is UiState.Error -> Unit
@@ -114,13 +114,13 @@ fun LoginScreen(
             LoginButton(
                 loginType = LoginType.GOOGLE,
                 onClick = {
-                    loginManager?.let { onAction(LoginAction.SocialLogin(it::appleLogin)) }
+                    loginManager?.let { onAction(LoginAction.SocialLogin(it::googleLogin)) }
                 }
             )
             LoginButton(
                 loginType = LoginType.APPLE,
                 onClick = {
-                    loginManager?.let { onAction(LoginAction.SocialLogin(it::googleLogin)) }
+                    loginManager?.let { onAction(LoginAction.SocialLogin(it::appleLogin)) }
                 }
             )
         }

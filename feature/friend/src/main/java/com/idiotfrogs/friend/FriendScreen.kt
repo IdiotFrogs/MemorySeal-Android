@@ -39,23 +39,31 @@ import com.idiotfrogs.friend.component.FriendListItem
 import com.idiotfrogs.friend.component.FriendTopNotification
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.resource.R
+import com.idiotfrogs.util.UiState
 import kotlinx.coroutines.delay
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun FriendRoute(
-    friendViewModel: FriendViewModel = hiltViewModel()
+    viewModel: FriendViewModel = hiltViewModel()
 ) {
     val navigator = LocalComposeMSNavigator.current
+    val uiState by viewModel.collectAsState()
 
-    LaunchedEffect(Unit) {
-        friendViewModel.event.collect { event ->
-            when (event) {
-                FriendEvent.NavigateToBack -> navigator.popBackStack()
-            }
+    viewModel.collectSideEffect { event ->
+        when (event) {
+            FriendSideEffect.NavigateToBack -> navigator.popBackStack()
         }
     }
 
-    FriendScreen(onAction = friendViewModel::onAction)
+    when (uiState) {
+        UiState.Init -> Unit
+        is UiState.Success -> {
+            FriendScreen(onAction = viewModel::onAction)
+        }
+        is UiState.Error -> Unit
+    }
 }
 
 @Composable

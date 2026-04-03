@@ -1,6 +1,5 @@
 package com.idiotfrogs.home
 
-import androidx.lifecycle.viewModelScope
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
@@ -8,74 +7,71 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.sideEffect.RefreshEvent
+import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.syntax.simple.reduce
+import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getMyTimeCapsuleUseCase: GetMyTimeCapsuleUseCase,
     private val getMyProfileUseCase: GetMyProfileUseCase,
-): BaseViewModel<HomeAction>() {
-    private val _uiState = MutableStateFlow<UiState>(UiState.Init)
-    val uiState = _uiState
-        .onStart {
-            fetchInitUi()
+): BaseViewModel<UiState<HomeData>, HomeSideEffect, HomeAction>() {
+
+    override val container: Container<UiState<HomeData>, HomeSideEffect> = container(
+        initialState = UiState.Init,
+        onCreate = {
+            fetchHome()
+            RefreshSideEffect.events.collect { if (it is RefreshEvent.Home) fetchHome() }
         }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
-            UiState.Init
-        )
+    )
 
-    private val _data = MutableStateFlow(Data())
-    val data = _data.asStateFlow()
-
-    private val _event = MutableSharedFlow<HomeEvent>()
-    val event = _event.asSharedFlow()
-
-    private fun fetchInitUi() {
+    private fun fetchHome() {
         safeLaunch {
-            val capsules = async { getMyTimeCapsuleUseCase() }
-            val user = async { getMyProfileUseCase() }
-            _data.update { it.copy(user = user.await(), capsules = capsules.await()) }
-            if (_data.value.user != null) {
-                _uiState.update { UiState.Success }
+            val userDeferred = async { getMyProfileUseCase() }
+            val capsulesDeferred = async { getMyTimeCapsuleUseCase() }
+
+            val userResult = userDeferred.await()
+            val capsulesResult = capsulesDeferred.await()
+
+            val results = listOf(userResult, capsulesResult)
+
+            intent {
+                if (results.any { it.isFailure }) {
+                    reduce { UiState.Error(results.first { it.isFailure }.exceptionOrNull()?.message) }
+                } else {
+                    reduce {
+                        UiState.Success(
+                            HomeData(
+                                user = userResult.getOrNull(),
+                                capsules = capsulesResult.getOrNull() ?: emptyMap(),
+                            )
+                        )
+                    }
+                }
             }
         }
     }
 
     override fun onAction(action: HomeAction) {
-        when (action) {
-            HomeAction.NavigateToCreate -> navigateToCreate()
-            HomeAction.NavigateToProfile -> navigateToProfile()
-            is HomeAction.NavigateToDetail -> navigateToDetail(action.id)
+        intent {
+            when (action) {
+                HomeAction.NavigateToCreate -> postSideEffect(HomeSideEffect.NavigateToCreate)
+                HomeAction.NavigateToProfile -> postSideEffect(HomeSideEffect.NavigateToProfile)
+                is HomeAction.NavigateToDetail -> postSideEffect(HomeSideEffect.NavigateToDetail(action.id))
+            }
         }
     }
-
-    private fun navigateToCreate() {
-        safeLaunch { _event.emit(HomeEvent.NavigateToCreate) }
-    }
-
-    private fun navigateToProfile() {
-        safeLaunch { _event.emit(HomeEvent.NavigateToProfile) }
-    }
-
-    private fun navigateToDetail(id: Long) {
-        safeLaunch { _event.emit(HomeEvent.NavigateToDetail(id)) }
-    }
-
 }
 
-data class Data(
+data class HomeData(
     val user: ProfileResponse? = null,
     val capsules: Map<TimeCapsuleRole, List<MyTimeCapsuleResponse>> = emptyMap()
 )
@@ -86,8 +82,8 @@ sealed interface HomeAction {
     data class NavigateToDetail(val id: Long) : HomeAction
 }
 
-sealed interface HomeEvent {
-    data object NavigateToCreate : HomeEvent
-    data object NavigateToProfile : HomeEvent
-    data class NavigateToDetail(val id: Long) : HomeEvent
+sealed interface HomeSideEffect {
+    data object NavigateToCreate : HomeSideEffect
+    data object NavigateToProfile : HomeSideEffect
+    data class NavigateToDetail(val id: Long) : HomeSideEffect
 }

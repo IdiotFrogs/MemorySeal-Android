@@ -1,35 +1,31 @@
 package com.idiotfrogs.auth.login
 
-import androidx.lifecycle.viewModelScope
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.stateIn
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.ContainerHost
+import org.orbitmvi.orbit.syntax.simple.intent
+import org.orbitmvi.orbit.syntax.simple.postSideEffect
+import org.orbitmvi.orbit.syntax.simple.reduce
+import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val getMyProfileUseCase: GetMyProfileUseCase
-): BaseViewModel<LoginAction>() {
-    private val _uiState = MutableStateFlow<UiState>(UiState.Init)
-    val uiState = _uiState
-        .onStart {
-            fetchInitUi()
-        }
-        .stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5_000),
-            UiState.Init
-        )
+) : BaseViewModel<UiState<Unit>, LoginSideEffect, LoginAction>() {
 
-    private val _event = MutableSharedFlow<LoginEvent>()
-    val event = _event.asSharedFlow()
+    override val container: Container<UiState<Unit>, LoginSideEffect> = container(
+        initialState = UiState.Init,
+        onCreate = {
+            safeLaunch {
+                // TODO 자동 로그인 체크
+                intent { reduce { UiState.Success(Unit) } }
+            }
+        }
+    )
 
     override fun onAction(action: LoginAction) {
         when (action) {
@@ -37,22 +33,18 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun fetchInitUi() {
-        safeLaunch {
-            _uiState.emit(UiState.Init)
-            // TODO UI 로딩에 필요한 작업
-            _uiState.emit(UiState.Success)
-        }
-    }
-
     private fun socialLogin(loginCallback: suspend () -> Unit) {
         safeLaunch {
             loginCallback()
-            val isOnboarding = getMyProfileUseCase().isOnboarding
-            if (isOnboarding) {
-                _event.emit(LoginEvent.NavigateToHome)
-            } else {
-                _event.emit(LoginEvent.NavigateToSignUp)
+            val result = getMyProfileUseCase()
+
+            result.onSuccess { profile ->
+                intent {
+                    if (profile.isOnboarding) postSideEffect(LoginSideEffect.NavigateToHome)
+                    else postSideEffect(LoginSideEffect.NavigateToSignUp)
+                }
+            }.onFailure {
+                intent { reduce { UiState.Error(errorMessage = it.message) } }
             }
         }
     }
@@ -62,7 +54,7 @@ sealed interface LoginAction {
     data class SocialLogin(val loginCallback: suspend () -> Unit): LoginAction
 }
 
-sealed interface LoginEvent {
-    data object NavigateToSignUp : LoginEvent
-    data object NavigateToHome : LoginEvent
+sealed interface LoginSideEffect {
+    data object NavigateToSignUp : LoginSideEffect
+    data object NavigateToHome : LoginSideEffect
 }

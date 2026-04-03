@@ -13,7 +13,7 @@ import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -28,28 +28,34 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.profile.component.ProfileCard
 import com.idiotfrogs.profile.component.ProfileHeader
 import com.idiotfrogs.profile.component.ProfileTicketCard
+import com.idiotfrogs.util.UiState
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 const val HeaderHeight = 56
 
 @Composable
 fun ProfileRoute(
-    profileViewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val navigator = LocalComposeMSNavigator.current
+    val uiState by viewModel.collectAsState()
 
-    LaunchedEffect(Unit) {
-        profileViewModel.event.collect { event ->
-            when (event) {
-                ProfileEvent.NavigateToBack -> navigator.popBackStack()
-                ProfileEvent.NavigateToEditProfile -> navigator.navigate(Routes.EditProfile)
-                ProfileEvent.NavigateToSetting -> navigator.navigate(Routes.Setting)
-            }
+    viewModel.collectSideEffect { event ->
+        when (event) {
+            ProfileSideEffect.NavigateToBack -> navigator.popBackStack()
+            ProfileSideEffect.NavigateToEditProfile -> navigator.navigate(Routes.EditProfile)
+            ProfileSideEffect.NavigateToSetting -> navigator.navigate(Routes.Setting)
         }
     }
 
-    ProfileScreen(
-        onAction = profileViewModel::onAction
-    )
+    when (uiState) {
+        UiState.Init -> Unit
+        is UiState.Success -> {
+            ProfileScreen(onAction = viewModel::onAction)
+        }
+        is UiState.Error -> Unit
+    }
 }
 
 @Composable

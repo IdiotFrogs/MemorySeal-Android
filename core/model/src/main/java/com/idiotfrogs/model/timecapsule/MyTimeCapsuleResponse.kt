@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MyTimeCapsuleResponse(
-    val timeCapsuldId: Long,
+    val timeCapsuleId: Long,
     val title: String,
-    val openAt: LocalDateTime,
+    val openedAt: LocalDateTime,
     val timeCapsuleStatus: TimeCapsuleStatus,
     val role: TimeCapsuleRole
 )

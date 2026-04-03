@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSMenuFab
@@ -45,36 +44,39 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.extension.toDday
 import com.idiotfrogs.extension.toYearMonthDay
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun HomeRoute(
-    homeViewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel()
 ) {
     val navigator = LocalComposeMSNavigator.current
-    val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
-    val data by homeViewModel.data.collectAsStateWithLifecycle()
+    val uiState by viewModel.collectAsState()
 
-    LaunchedEffect(Unit) {
-        homeViewModel.event.collect { event ->
-            when (event) {
-                HomeEvent.NavigateToCreate -> navigator.navigate(Routes.Create)
-                HomeEvent.NavigateToProfile -> navigator.navigate(Routes.Profile)
-                is HomeEvent.NavigateToDetail -> navigator.navigate(Routes.Detail(event.id))
-            }
+    viewModel.collectSideEffect {
+        when (it) {
+            HomeSideEffect.NavigateToCreate -> navigator.navigate(Routes.Create)
+            HomeSideEffect.NavigateToProfile -> navigator.navigate(Routes.Profile)
+            is HomeSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(it.id))
         }
     }
 
-    HomeScreen(
-        uiState = uiState,
-        data = data,
-        onAction = homeViewModel::onAction
-    )
+    when (uiState) {
+        UiState.Init -> {}
+        is UiState.Success -> {
+            HomeScreen(
+                uiState = uiState,
+                onAction = viewModel::onAction
+            )
+        }
+        is UiState.Error -> {}
+    }
 }
 
 @Composable
 fun HomeScreen(
-    uiState: UiState,
-    data: Data,
+    uiState: UiState<HomeData>,
     onAction: (HomeAction) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -113,9 +115,11 @@ fun HomeScreen(
     }
 
     when (uiState) {
-        is UiState.Error -> TODO()
+        is UiState.Error -> {}
         UiState.Init -> {}
         is UiState.Success -> {
+            val data = uiState.data
+
             Box {
                 Column(
                     modifier = Modifier
@@ -141,11 +145,11 @@ fun HomeScreen(
                         ) {
                             items(host) {
                                 HomeTicket(
-                                    countdown = it.openAt.toDday(),
-                                    targetDate = it.openAt.toYearMonthDay(),
+                                    countdown = it.openedAt.toDday(),
+                                    targetDate = it.openedAt.toYearMonthDay(),
                                     title = it.title,
                                     modifier = Modifier.noRippleClickable {
-                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuldId))
+                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
                                     }
                                 )
                             }
@@ -160,11 +164,11 @@ fun HomeScreen(
                         ) {
                             items(contributor) {
                                 HomeTicket(
-                                    countdown = it.openAt.toDday(),
-                                    targetDate = it.openAt.toYearMonthDay(),
+                                    countdown = it.openedAt.toDday(),
+                                    targetDate = it.openedAt.toYearMonthDay(),
                                     title = it.title,
                                     modifier = Modifier.noRippleClickable {
-                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuldId))
+                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
                                     }
                                 )
                             }
@@ -206,7 +210,6 @@ fun HomeScreen(
 fun HomeScreenPreview() {
     HomeScreen(
         uiState = UiState.Init,
-        data = Data(),
         onAction = {},
     )
 }

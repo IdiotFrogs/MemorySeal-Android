@@ -19,7 +19,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +32,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
@@ -50,30 +48,27 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun SignUpRoute(
-    signUpViewModel: SignUpViewModel = hiltViewModel(),
+    viewModel: SignUpViewModel = hiltViewModel(),
 ) {
     val navigator = LocalComposeMSNavigator.current
+    val uiState by viewModel.collectAsState()
 
-    LaunchedEffect(Unit) {
-        signUpViewModel.event.collect { event ->
-            when (event) {
-                SignUpEvent.NavigateToHome -> navigator.navigate(Routes.Home)
-                SignUpEvent.NavigateToBack -> navigator.popBackStack()
-            }
+    viewModel.collectSideEffect { event ->
+        when (event) {
+            SignUpSideEffect.NavigateToHome -> navigator.navigate(Routes.Home)
+            SignUpSideEffect.NavigateToBack -> navigator.popBackStack()
         }
     }
-
-    val uiState by signUpViewModel.uiState.collectAsStateWithLifecycle()
 
     when (uiState) {
         UiState.Init -> Unit // 화면 로딩 로직
         is UiState.Success -> {
-            SignUpScreen(
-                signUpViewModel::onAction,
-            )
+            SignUpScreen(onAction = viewModel::onAction,)
         }
         is UiState.Error -> Unit
     }
