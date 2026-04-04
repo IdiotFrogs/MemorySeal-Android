@@ -49,7 +49,10 @@ fun LoginRoute(
     viewModel.collectSideEffect { event ->
         when (event) {
             LoginSideEffect.NavigateToSignUp -> navigator.navigate(Routes.SignUp)
-            LoginSideEffect.NavigateToHome -> navigator.navigate(Routes.Home)
+            LoginSideEffect.NavigateToHome -> {
+                navigator.clear()
+                navigator.navigate(Routes.Home)
+            }
         }
     }
 
