@@ -136,7 +136,7 @@ fun HomeScreen(
                         onClick = { currentTab = it },
                     )
                     if (currentTab == HomeTab.CREATED) {
-                        val host = data.capsules[TimeCapsuleRole.HOST] ?: return
+                        val host = data.capsules[TimeCapsuleRole.HOST].orEmpty()
                         LazyColumn(
                             modifier = Modifier.padding(horizontal = 20.dp),
                             contentPadding = PaddingValues(top = 24.dp),
@@ -145,17 +145,18 @@ fun HomeScreen(
                         ) {
                             items(host) {
                                 HomeTicket(
+                                    modifier = Modifier.noRippleClickable {
+                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
+                                    },
                                     countdown = it.openedAt.toDday(),
                                     targetDate = it.openedAt.toYearMonthDay(),
                                     title = it.title,
-                                    modifier = Modifier.noRippleClickable {
-                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
-                                    }
+                                    imageUrl = it.mainImageUrl
                                 )
                             }
                         }
                     } else {
-                        val contributor = data.capsules[TimeCapsuleRole.CONTRIBUTOR] ?: return
+                        val contributor = data.capsules[TimeCapsuleRole.CONTRIBUTOR].orEmpty()
                         LazyColumn(
                             modifier = Modifier.padding(horizontal = 20.dp),
                             contentPadding = PaddingValues(top = 24.dp),
@@ -164,12 +165,13 @@ fun HomeScreen(
                         ) {
                             items(contributor) {
                                 HomeTicket(
+                                    modifier = Modifier.noRippleClickable {
+                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
+                                    },
                                     countdown = it.openedAt.toDday(),
                                     targetDate = it.openedAt.toYearMonthDay(),
                                     title = it.title,
-                                    modifier = Modifier.noRippleClickable {
-                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
-                                    }
+                                    imageUrl = ""
                                 )
                             }
                         }
