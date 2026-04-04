@@ -15,6 +15,7 @@ import com.google.firebase.auth.OAuthProvider
 import com.idiotfrogs.extension.findActivity
 import com.idiotfrogs.model.auth.AuthTokenRequest
 import com.idiotfrogs.data.datasource.auth.AuthDataSource
+import com.idiotfrogs.util.exception.LoginCancelledException
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -62,6 +63,7 @@ class LoginManager @Inject constructor(
             )
         } catch (_: GetCredentialCancellationException) {
             // 사용자가 로그인을 취소한 경우
+            throw LoginCancelledException()
         } catch (exception: Exception) {
             throw exception
         }
@@ -87,7 +89,7 @@ class LoginManager @Inject constructor(
                 val exception = requireNotNull(authResult.exception) { "Unknown Error" }
                 if (exception is FirebaseAuthWebException &&
                     exception.errorCode == ERROR_WEB_CONTEXT_CANCELED) {
-                    continuation.resume(Unit)
+                    continuation.resume(LoginCancelledException())
                 } else {
                     continuation.resumeWithException(exception)
                 }

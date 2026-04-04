@@ -47,7 +47,7 @@ class LoginViewModel @Inject constructor(
 }
 
 sealed interface LoginAction {
-    data class SocialLogin(val loginCallback: suspend () -> Unit): LoginAction
+    data class SocialLogin(val loginCallback: suspend () -> Unit) : LoginAction
 }
 
 sealed interface LoginSideEffect {

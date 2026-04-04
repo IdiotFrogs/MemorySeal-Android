@@ -22,6 +22,7 @@ dependencies {
     implementation(project(":core:network"))
     implementation(project(":core:model"))
     implementation(project(":core:local"))
+    implementation(project(":core:util"))
     implementation(project(":common:extension"))
 
     // 구글 로그인
