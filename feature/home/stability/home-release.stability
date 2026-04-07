@@ -12,11 +12,11 @@ public fun com.idiotfrogs.home.HomeRoute(viewModel: com.idiotfrogs.home.HomeView
     - viewModel: UNSTABLE (has mutable properties or unstable members)
 
 @Composable
-public fun com.idiotfrogs.home.HomeScreen(uiState: com.idiotfrogs.util.UiState<com.idiotfrogs.home.HomeData>, onAction: kotlin.Function1<com.idiotfrogs.home.HomeAction, kotlin.Unit>): kotlin.Unit
-  skippable: false
+public fun com.idiotfrogs.home.HomeScreen(data: com.idiotfrogs.home.HomeData, onAction: kotlin.Function1<com.idiotfrogs.home.HomeAction, kotlin.Unit>): kotlin.Unit
+  skippable: true
   restartable: true
   params:
-    - uiState: UNSTABLE (has mutable properties or unstable members)
+    - data: STABLE (marked @Stable or @Immutable)
     - onAction: STABLE (function type)
 
 @Composable
