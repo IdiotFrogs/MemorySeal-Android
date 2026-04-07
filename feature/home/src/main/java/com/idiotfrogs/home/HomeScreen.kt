@@ -62,11 +62,11 @@ fun HomeRoute(
         }
     }
 
-    when (uiState) {
+    when (val state = uiState) {
         UiState.Init -> {}
         is UiState.Success -> {
             HomeScreen(
-                uiState = uiState,
+                data = state.data,
                 onAction = viewModel::onAction
             )
         }
@@ -76,7 +76,7 @@ fun HomeRoute(
 
 @Composable
 fun HomeScreen(
-    uiState: UiState<HomeData>,
+    data: HomeData,
     onAction: (HomeAction) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -114,96 +114,88 @@ fun HomeScreen(
         }
     }
 
-    when (uiState) {
-        is UiState.Error -> {}
-        UiState.Init -> {}
-        is UiState.Success -> {
-            val data = uiState.data
-
-            Box {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MSTheme.color.bgNormal)
-                        .systemBarsPadding()
+    Box {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MSTheme.color.bgNormal)
+                .systemBarsPadding()
+        ) {
+            HomeHeader(
+                profileUrl = data.user?.profileImageUrl,
+                navigateToProfile = { onAction(HomeAction.NavigateToProfile) }
+            )
+            HomeTabBar(
+                selectedTab = currentTab,
+                onClick = { currentTab = it },
+            )
+            if (currentTab == HomeTab.CREATED) {
+                val host = data.capsules[TimeCapsuleRole.HOST].orEmpty()
+                LazyColumn(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    contentPadding = PaddingValues(top = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    HomeHeader(
-                        profileUrl = data.user?.profileImageUrl,
-                        navigateToProfile = { onAction(HomeAction.NavigateToProfile) }
-                    )
-                    HomeTabBar(
-                        selectedTab = currentTab,
-                        onClick = { currentTab = it },
-                    )
-                    if (currentTab == HomeTab.CREATED) {
-                        val host = data.capsules[TimeCapsuleRole.HOST].orEmpty()
-                        LazyColumn(
-                            modifier = Modifier.padding(horizontal = 20.dp),
-                            contentPadding = PaddingValues(top = 24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                        ) {
-                            items(host) {
-                                HomeTicket(
-                                    modifier = Modifier.noRippleClickable {
-                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
-                                    },
-                                    countdown = it.openedAt.toDday(),
-                                    targetDate = it.openedAt.toYearMonthDay(),
-                                    title = it.title,
-                                    imageUrl = it.mainImageUrl
-                                )
-                            }
-                        }
-                    } else {
-                        val contributor = data.capsules[TimeCapsuleRole.CONTRIBUTOR].orEmpty()
-                        LazyColumn(
-                            modifier = Modifier.padding(horizontal = 20.dp),
-                            contentPadding = PaddingValues(top = 24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp),
-                        ) {
-                            items(contributor) {
-                                HomeTicket(
-                                    modifier = Modifier.noRippleClickable {
-                                        onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
-                                    },
-                                    countdown = it.openedAt.toDday(),
-                                    targetDate = it.openedAt.toYearMonthDay(),
-                                    title = it.title,
-                                    imageUrl = ""
-                                )
-                            }
-                        }
+                    items(host) {
+                        HomeTicket(
+                            modifier = Modifier.noRippleClickable {
+                                onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
+                            },
+                            countdown = it.openedAt.toDday(),
+                            targetDate = it.openedAt.toYearMonthDay(),
+                            title = it.title,
+                            imageUrl = it.mainImageUrl
+                        )
                     }
                 }
-                MSDim(
-                    visible = showDim,
-                    onDismiss = {
-                        expanded = false
-                        showJoinContainer = false
+            } else {
+                val contributor = data.capsules[TimeCapsuleRole.CONTRIBUTOR].orEmpty()
+                LazyColumn(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    contentPadding = PaddingValues(top = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    items(contributor) {
+                        HomeTicket(
+                            modifier = Modifier.noRippleClickable {
+                                onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
+                            },
+                            countdown = it.openedAt.toDday(),
+                            targetDate = it.openedAt.toYearMonthDay(),
+                            title = it.title,
+                            imageUrl = ""
+                        )
                     }
-                )
-                MSMenuFab(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .navigationBarsPadding()
-                        .padding(end = 20.dp, bottom = 24.dp),
-                    expanded = expanded,
-                    hasFab = true,
-                    offset = DpOffset(x = 0.dp, y = (-16).dp),
-                    menuList = menuList,
-                    onClick = { expanded = !expanded },
-                    onDismiss = { expanded = false },
-                )
-                HomeJoinContainer(
-                    isShow = showJoinContainer,
-                    textFieldState = textFieldState,
-                    onJoin = { /** TODO: 타임 티켓 참여 */ },
-                    onCancel = { showJoinContainer = false }
-                )
+                }
             }
         }
+        MSDim(
+            visible = showDim,
+            onDismiss = {
+                expanded = false
+                showJoinContainer = false
+            }
+        )
+        MSMenuFab(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .navigationBarsPadding()
+                .padding(end = 20.dp, bottom = 24.dp),
+            expanded = expanded,
+            hasFab = true,
+            offset = DpOffset(x = 0.dp, y = (-16).dp),
+            menuList = menuList,
+            onClick = { expanded = !expanded },
+            onDismiss = { expanded = false },
+        )
+        HomeJoinContainer(
+            isShow = showJoinContainer,
+            textFieldState = textFieldState,
+            onJoin = { /** TODO: 타임 티켓 참여 */ },
+            onCancel = { showJoinContainer = false }
+        )
     }
 }
 
@@ -211,7 +203,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     HomeScreen(
-        uiState = UiState.Init,
+        data = HomeData(),
         onAction = {},
     )
 }
