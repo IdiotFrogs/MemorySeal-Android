@@ -60,7 +60,10 @@ fun SignUpRoute(
 
     viewModel.collectSideEffect { event ->
         when (event) {
-            SignUpSideEffect.NavigateToHome -> navigator.navigate(Routes.Home)
+            SignUpSideEffect.NavigateToHome -> {
+                navigator.clear()
+                navigator.navigate(Routes.Home)
+            }
             SignUpSideEffect.NavigateToBack -> navigator.popBackStack()
         }
     }

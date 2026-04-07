@@ -6,6 +6,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":feature:splash"))
     implementation(project(":feature:auth"))
     implementation(project(":feature:home"))
     implementation(project(":feature:create"))

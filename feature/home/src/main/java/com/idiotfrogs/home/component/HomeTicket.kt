@@ -33,12 +33,14 @@ import androidx.compose.ui.zIndex
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.resource.R
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun HomeTicket(
     countdown: String,
     targetDate: String,
     title: String,
+    imageUrl: String?,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -96,13 +98,19 @@ fun HomeTicket(
                 fontSize = 16.dp,
             )
             Spacer(modifier = Modifier.height(8.dp))
-            // TODO: 이미지 url 통해 로드
-            Image(
-                modifier = Modifier.fillMaxSize(),
-                painter = painterResource(R.drawable.img_sample),
-                contentDescription = "thumbnail",
-                contentScale = ContentScale.Crop
-            )
+            imageUrl?.let {
+                GlideImage(
+                    modifier = Modifier.fillMaxSize(),
+                    imageModel = { imageUrl }
+                )
+            } ?: run {
+                Image(
+                    modifier = Modifier.fillMaxSize(),
+                    painter = painterResource(R.drawable.img_sample),
+                    contentDescription = "thumbnail",
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
     }
 }
@@ -147,7 +155,8 @@ private fun HomeTicketPreview() {
         HomeTicket(
             countdown = "D-5",
             targetDate = "2027. 10. 24.",
-            title = "제목입니다."
+            title = "제목입니다.",
+            imageUrl = ""
         )
     }
 }

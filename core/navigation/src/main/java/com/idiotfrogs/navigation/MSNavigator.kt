@@ -7,6 +7,7 @@ interface MSNavigator {
     fun navigate(routes: Routes)
     fun popBackStack()
     fun isLastRoutes(): Boolean
+    fun clear()
 }
 
 class MSNavigatorImpl(private val backStack: NavBackStack<NavKey>) : MSNavigator {
@@ -19,5 +20,6 @@ class MSNavigatorImpl(private val backStack: NavBackStack<NavKey>) : MSNavigator
             false
         }
     }
+    override fun clear() { backStack.clear() }
 }
 
