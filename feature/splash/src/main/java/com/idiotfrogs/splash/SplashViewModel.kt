@@ -20,30 +20,29 @@ class SplashViewModel @Inject constructor(
     override val container: Container<UiState<Unit>, SplashSideEffect> = container(
         initialState = UiState.Init,
         onCreate = {
-            safeLaunch {
-                /** todo: 데이터 로드 등 사전 작업 */
-                intent { reduce { UiState.Success(Unit) } }
-                autoLogin()
-            }
+            /** todo: 데이터 로드 등 사전 작업 */
+            intent { reduce { UiState.Success(Unit) } }
+            autoLogin()
         }
     )
 
     private fun autoLogin() {
-        intent {
+        safeLaunch {
             if (getAccessTokenUseCase.accessToken.firstOrNull() == null) {
-                postSideEffect(SplashSideEffect.NavigateToLogin)
+                intent { postSideEffect(SplashSideEffect.NavigateToLogin) }
             } else {
-                getMyProfileUseCase()
-                    .onSuccess {
+                val result = getMyProfileUseCase()
+                intent {
+                    result.onSuccess {
                         if (it.isOnboarding) {
                             postSideEffect(SplashSideEffect.NavigateToHome)
                         } else {
                             postSideEffect(SplashSideEffect.NavigateToSignUp)
                         }
-                    }
-                    .onFailure {
+                    }.onFailure {
                         postSideEffect(SplashSideEffect.NavigateToLogin)
                     }
+                }
             }
         }
     }

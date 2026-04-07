@@ -1,5 +1,6 @@
 package com.idiotfrogs.home
 
+import androidx.compose.runtime.Immutable
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
@@ -67,6 +68,7 @@ class HomeViewModel @Inject constructor(
     }
 }
 
+@Immutable
 data class HomeData(
     val user: ProfileResponse? = null,
     val capsules: Map<TimeCapsuleRole, List<MyTimeCapsuleResponse>> = emptyMap()
