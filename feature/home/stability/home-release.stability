@@ -65,12 +65,13 @@ public fun com.idiotfrogs.home.component.HomeTabItem(selected: kotlin.Boolean, t
     - onClick: STABLE (function type)
 
 @Composable
-public fun com.idiotfrogs.home.component.HomeTicket(countdown: kotlin.String, targetDate: kotlin.String, title: kotlin.String, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+public fun com.idiotfrogs.home.component.HomeTicket(countdown: kotlin.String, targetDate: kotlin.String, title: kotlin.String, imageUrl: kotlin.String?, modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: true
   restartable: true
   params:
     - countdown: STABLE (String is immutable)
     - targetDate: STABLE (String is immutable)
     - title: STABLE (String is immutable)
+    - imageUrl: STABLE (class with no mutable properties)
     - modifier: STABLE (marked @Stable or @Immutable)
 
