@@ -24,7 +24,7 @@ class TokenInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
         val path = request.url.encodedPath
-        val ignorePath = listOf("auth/login/google", "auth/reissue")
+        val ignorePath = listOf("auth/login/google", "auth/login/apple", "auth/reissue")
 
         if (ignorePath.any { path.endsWith(it) }) {
             return chain.proceed(request)

@@ -11,4 +11,8 @@ class AuthDataSourceImpl @Inject constructor(
     override suspend fun socialGoogleLogin(authTokenRequest: AuthTokenRequest): AuthTokenResponse {
         return authService.socialGoogleLogin(authTokenRequest)
     }
+
+    override suspend fun socialAppleLogin(authTokenRequest: AuthTokenRequest): AuthTokenResponse {
+        return authService.socialAppleLogin(authTokenRequest)
+    }
 }
