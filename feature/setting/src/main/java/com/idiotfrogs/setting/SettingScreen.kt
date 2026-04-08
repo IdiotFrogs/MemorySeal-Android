@@ -78,9 +78,8 @@ fun SettingScreen(
             confirmText = "탈퇴",
             cancelText = "취소",
             onConfirm = {
-                /** TODO: 탈퇴 로직 */
                 showWithdrawDialog = false
-                onAction(SettingAction.NavigateToLogin)
+                onAction(SettingAction.Withdraw)
             },
             onCancel = { showWithdrawDialog = false }
         )

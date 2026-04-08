@@ -8,6 +8,8 @@ import java.io.File
 interface UserRepository {
     suspend fun getMyProfile(): ProfileResponse
 
+    suspend fun withdraw()
+
     suspend fun updateMyProfile(
         userId: Long,
         profileImage: File,

@@ -8,6 +8,8 @@ import okhttp3.MultipartBody
 interface UserDataSource {
     suspend fun getMyProfile(): ProfileResponse
 
+    suspend fun withdraw()
+
     suspend fun updateMyProfile(
         userId: Long,
         profileImage: MultipartBody.Part,
