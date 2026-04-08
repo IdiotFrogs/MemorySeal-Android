@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSToast
+import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.friend.FriendScreenActionState
 import com.idiotfrogs.resource.R
 import dev.chrisbanes.haze.HazeState
@@ -40,7 +41,8 @@ fun FriendTopNotification(
                 FriendScreenActionState.ACCEPT -> "참여 요청이 수락되었습니다."
                 FriendScreenActionState.COPY -> "참여 코드 복사되었습니다."
                 else -> "참여 요청이 거절되었습니다."
-            }
+            },
+            color = MSTheme.color.white
         )
     }
 }
