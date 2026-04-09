@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,15 +34,15 @@ fun MSToast(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clip(CircleShape)
+            .clip(RoundedCornerShape(12.dp))
             .hazeEffect(hazeState) { blurRadius = 22.dp }
             .shadow(
                 elevation = 8.dp,
-                shape = CircleShape,
-                ambientColor = Color(0x10505050),
-                spotColor = Color(0x10505050)
+                shape = RoundedCornerShape(12.dp),
+                ambientColor = Color(0x29505050),  // 16% 투명도
+                spotColor = Color(0x29505050)  // 16% 투명도
             )
-            .background(Color(0x280B0B0B))
+            .background(Color(0x7A0B0B0B)) // 48% 투명도
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) { content() }
