@@ -35,6 +35,8 @@ internal fun Project.configureComposeAndroid(commonExtension: CommonExtension<*,
             add("implementation", libs.findLibrary("orbit-viewmodel").get())
 
             add("implementation", libs.findLibrary("landscapist-glide").get())
+
+            add("implementation", libs.findLibrary("haze").get())
         }
 
         extensions.configure<ComposeCompilerGradlePluginExtension> {
