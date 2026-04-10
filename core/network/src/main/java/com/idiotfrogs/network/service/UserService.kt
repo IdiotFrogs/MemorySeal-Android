@@ -4,6 +4,7 @@ import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.model.user.UserResponse
 import com.idiotfrogs.model.user.UserUpdateRequest
 import okhttp3.MultipartBody
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
@@ -15,6 +16,9 @@ import retrofit2.http.Query
 interface UserService {
     @GET("users/me")
     suspend fun getMyProfile(): ProfileResponse
+
+    @DELETE("users/me")
+    suspend fun withdraw()
 
     @PUT("users/{userId}")
     @Multipart

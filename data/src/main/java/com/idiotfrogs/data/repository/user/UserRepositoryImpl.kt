@@ -17,6 +17,10 @@ class UserRepositoryImpl @Inject constructor(
         return userDataSource.getMyProfile()
     }
 
+    override suspend fun withdraw() {
+        userDataSource.withdraw()
+    }
+
     override suspend fun updateMyProfile(
         userId: Long,
         profileImage: File,
