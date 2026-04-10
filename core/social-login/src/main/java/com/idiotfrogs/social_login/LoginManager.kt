@@ -8,20 +8,19 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import com.idiotfrogs.local.LocalDataSource
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthWebException
+import com.google.firebase.auth.OAuthCredential
 import com.google.firebase.auth.OAuthProvider
 import com.idiotfrogs.extension.findActivity
 import com.idiotfrogs.model.auth.AuthTokenRequest
 import com.idiotfrogs.data.datasource.auth.AuthDataSource
+import com.idiotfrogs.util.exception.EmptyTokenException
 import com.idiotfrogs.util.exception.LoginCancelledException
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.ActivityScoped
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
 
 @ActivityScoped
 class LoginManager @Inject constructor(
@@ -69,49 +68,42 @@ class LoginManager @Inject constructor(
         }
     }
 
-    suspend fun appleLogin() = suspendCancellableCoroutine { continuation ->
-        // TODO: 필요한 기본 값 범위를 넘는 OAuth 2.0 범위 추가 지정 (필요한 경우)
-        // TODO: 로그인 화면 언어를 추가로 설정해줘야 하는 경우 locale 설정
+    suspend fun appleLogin() {
         val provider = OAuthProvider.newBuilder("apple.com")
         val auth = FirebaseAuth.getInstance()
         val pending = auth.pendingAuthResult
 
         val task = pending.takeIf { it != null } ?: run {
-            val activity = context.findActivity() ?: throw  Exception("Activity is not available")
+            val activity = context.findActivity() ?: throw Exception("Activity is not available")
             auth.startActivityForSignInWithProvider(activity, provider.build())
         }
 
-        task.addOnCompleteListener { authResult ->
-            if (authResult.isSuccessful) {
-                authResult.result.sendUid()
-                continuation.resume(Unit)
+        try {
+            val authResult = task.await()
+            val credential = authResult.credential as? OAuthCredential
+            val appleIdToken = credential?.idToken.takeIf { it != null }
+                ?: throw EmptyTokenException()
+
+            val tokenResponse = authDataSource.socialAppleLogin(
+                AuthTokenRequest(appleIdToken)
+            )
+
+            localDataSource.setTokens(
+                accessToken = tokenResponse.accessToken,
+                refreshToken = tokenResponse.refreshToken,
+                accessTokenExpiresIn = tokenResponse.accessTokenExpiresIn,
+            )
+        } catch (exception: Exception) {
+            if (exception is FirebaseAuthWebException && exception.errorCode == ERROR_WEB_CONTEXT_CANCELED) {
+                // 사용자가 로그인을 취소한 경우
+                throw LoginCancelledException()
             } else {
-                val exception = requireNotNull(authResult.exception) { "Unknown Error" }
-                if (exception is FirebaseAuthWebException &&
-                    exception.errorCode == ERROR_WEB_CONTEXT_CANCELED) {
-                    continuation.resume(LoginCancelledException())
-                } else {
-                    continuation.resumeWithException(exception)
-                }
+                throw exception
             }
         }
     }
 
     companion object {
         const val ERROR_WEB_CONTEXT_CANCELED = "ERROR_WEB_CONTEXT_CANCELED"
-
-        private fun AuthResult.sendUid() {
-            this.user?.providerData?.takeIf { it.isNotEmpty() }?.let { providerData ->
-                providerData.forEach { userInfo ->
-                    if (userInfo.providerId == "apple.com") {
-                        // TODO: uid 관련 처리
-                        return@let
-                    }
-                }
-            } ?: run {
-                // User 또는 ProviderData가 null인 케이스
-                throw Exception("User or ProviderData is null")
-            }
-        }
     }
 }
