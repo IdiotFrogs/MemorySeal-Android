@@ -16,5 +16,5 @@ fun LocalDateTime.toDday(): String {
     val targetDate = this.date
     val diff = targetDate.toEpochDays() - today.toEpochDays()
 
-    return "D-$diff"
+    return if (diff == 0L) "D-day" else "D-$diff"
 }
