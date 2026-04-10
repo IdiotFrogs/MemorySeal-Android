@@ -56,6 +56,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun DetailRoute(
     viewModel: DetailViewModel = hiltViewModel(),
+    capsuleId: Long,
     title: String,
     date: String, // TODO 추 후 날짜 로직 설계 후 변경 필요
     isMember: Boolean,
@@ -71,6 +72,7 @@ fun DetailRoute(
         when (event) {
             DetailSideEffect.NavigateToBack -> navigator.popBackStack()
             is DetailSideEffect.NavigateToFriend -> navigator.navigate(Routes.Friend(event.id))
+            is DetailSideEffect.NavigateToManagement -> navigator.navigate(Routes.Management(event.id))
         }
     }
 
@@ -78,6 +80,7 @@ fun DetailRoute(
         UiState.Init -> Unit
         is UiState.Success -> {
             DetailScreen(
+                capsuleId = capsuleId,
                 title = title,
                 date = date,
                 isMember = isMember,
@@ -94,6 +97,7 @@ fun DetailRoute(
 
 @Composable
 fun DetailScreen(
+    capsuleId: Long,
     title: String,
     date: String, // TODO 추 후 날짜 로직 설계 후 변경 필요
     isMember: Boolean,
@@ -156,7 +160,8 @@ fun DetailScreen(
                 modifier = Modifier
                     .systemBarsPadding()
                     .align(Alignment.TopEnd)
-                    .padding(top = 20.dp, end = 20.dp),
+                    .padding(top = 20.dp, end = 20.dp)
+                    .noRippleClickable { onAction(DetailAction.NavigateToManagement(capsuleId)) },
                 painter = painterResource(R.drawable.img_management),
                 contentDescription = "Management"
             )
@@ -367,7 +372,7 @@ fun DetailScreen(
                 Image(
                     modifier = Modifier
                         .size(16.dp)
-                        .noRippleClickable { onAction(DetailAction.NavigateToFriend(0)) }, // TODO 추 후 실제 타임캡슐 id 필요
+                        .noRippleClickable { onAction(DetailAction.NavigateToFriend(capsuleId)) },
                     painter = painterResource(R.drawable.ic_detail_rigt),
                     contentDescription = "추억 메시지 상세 아이콘"
                 )
@@ -400,6 +405,7 @@ fun DetailScreen(
 @Composable
 fun DetailScreenPreview() {
     DetailScreen(
+        0L,
         "D-60",
         "2025. 02. 20. (목) ~ 2025. 04. 20. (일)",
         true,

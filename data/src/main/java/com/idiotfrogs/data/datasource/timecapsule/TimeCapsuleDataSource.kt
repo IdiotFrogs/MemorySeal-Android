@@ -12,4 +12,6 @@ interface TimeCapsuleDataSource {
     ): TimeCapsuleCreateResponse
 
     suspend fun getMyTimeCapsule(): List<MyTimeCapsuleResponse>
+
+    suspend fun deleteCapsule(capsuleId: Long)
 }

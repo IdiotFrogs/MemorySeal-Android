@@ -5,6 +5,28 @@
 //   ./gradlew :designsystem:stabilityDump
 
 @Composable
+public fun com.idiotfrogs.designsystem.component.MSActionContainer(title: kotlin.String, hint: kotlin.String, textFieldState: androidx.compose.foundation.text.input.TextFieldState, primaryButtonText: kotlin.String, onPrimaryClick: kotlin.Function0<kotlin.Unit>, onSecondaryClick: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, secondaryButtonText: kotlin.String, primaryButtonWeight: kotlin.Float, secondaryButtonWeight: kotlin.Float, primaryButtonColors: androidx.compose.material3.ButtonColors, primaryPressColors: androidx.compose.material3.ButtonColors, primaryTextColor: androidx.compose.ui.graphics.Color, secondaryButtonColors: androidx.compose.material3.ButtonColors, secondaryPressColors: androidx.compose.material3.ButtonColors, secondaryTextColor: androidx.compose.ui.graphics.Color): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - title: STABLE (String is immutable)
+    - hint: STABLE (String is immutable)
+    - textFieldState: STABLE (marked @Stable or @Immutable)
+    - primaryButtonText: STABLE (String is immutable)
+    - onPrimaryClick: STABLE (function type)
+    - onSecondaryClick: STABLE (function type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - secondaryButtonText: STABLE (String is immutable)
+    - primaryButtonWeight: STABLE (primitive type)
+    - secondaryButtonWeight: STABLE (primitive type)
+    - primaryButtonColors: STABLE (marked @Stable or @Immutable)
+    - primaryPressColors: STABLE (marked @Stable or @Immutable)
+    - primaryTextColor: STABLE (marked @Stable or @Immutable)
+    - secondaryButtonColors: STABLE (marked @Stable or @Immutable)
+    - secondaryPressColors: STABLE (marked @Stable or @Immutable)
+    - secondaryTextColor: STABLE (marked @Stable or @Immutable)
+
+@Composable
 public fun com.idiotfrogs.designsystem.component.MSAnnotatedText(text: androidx.compose.ui.text.AnnotatedString, modifier: androidx.compose.ui.Modifier, fontSize: androidx.compose.ui.unit.Dp, color: androidx.compose.ui.graphics.Color, fontFamily: androidx.compose.ui.text.font.FontFamily, fontWeight: androidx.compose.ui.text.font.FontWeight, letterSpacing: androidx.compose.ui.unit.TextUnit, textDecoration: androidx.compose.ui.text.style.TextDecoration?, textAlign: androidx.compose.ui.text.style.TextAlign?, lineHeight: androidx.compose.ui.unit.TextUnit, overflow: androidx.compose.ui.text.style.TextOverflow, softWrap: kotlin.Boolean, maxLines: kotlin.Int, minLines: kotlin.Int, style: androidx.compose.ui.text.TextStyle): kotlin.Unit
   skippable: true
   restartable: true

@@ -21,9 +21,11 @@ sealed interface Routes: NavKey {
     @Serializable
     data object Setting : Routes
     @Serializable
-    data class Friend(val id: Int) : Routes
+    data class Friend(val id: Long) : Routes
     @Serializable
     data class Detail(val id: Long) : Routes
     @Serializable
-    data class Message(val id: Int) : Routes
+    data class Message(val id: Long) : Routes
+    @Serializable
+    data class Management(val id: Long): Routes
 }

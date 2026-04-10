@@ -23,4 +23,8 @@ class TimeCapsuleDataSourceImpl @Inject constructor(
     override suspend fun getMyTimeCapsule(): List<MyTimeCapsuleResponse> {
         return timeCapsuleService.getMyTimeCapsule()
     }
+
+    override suspend fun deleteCapsule(capsuleId: Long) {
+        return timeCapsuleService.deleteCapsule(capsuleId)
+    }
 }

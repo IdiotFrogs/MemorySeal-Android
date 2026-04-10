@@ -23,6 +23,7 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.detail.DetailRoute
 import com.idiotfrogs.friend.FriendRoute
 import com.idiotfrogs.home.HomeRoute
+import com.idiotfrogs.management.ManagementRoute
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.MSNavigatorImpl
 import com.idiotfrogs.navigation.Routes
@@ -83,11 +84,10 @@ class MainActivity : ComponentActivity() {
                                         isMember = true,
                                         isVoteStart = true,
                                         iSSeal = false,
+                                        capsuleId = it.id,
                                         onSealClicked = {},
                                         onVoteClicked = {}
                                     )
-                                    // TODO 추 후 데이터 구조 및 id 가져가서 정보 조회되게 수정 필요
-                                    it.id
                                 }
                                 entry<Routes.Message> {
                                     // TODO 메시지 화면 퍼블리싱 후 추가하기
@@ -97,6 +97,9 @@ class MainActivity : ComponentActivity() {
                                     FriendRoute()
                                     // TODO 추 후 id 가져가서 정보 조회되게 수정 필요
                                     it.id
+                                }
+                                entry<Routes.Management> {
+                                    ManagementRoute(capsuleId = it.id)
                                 }
                             },
                         )

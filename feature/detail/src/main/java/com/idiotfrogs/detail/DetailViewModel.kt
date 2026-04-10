@@ -33,17 +33,20 @@ class DetailViewModel @Inject constructor(
     override fun onAction(action: DetailAction) {
         when (action) {
             is DetailAction.NavigateToFriend -> intent { postSideEffect(DetailSideEffect.NavigateToFriend(action.id)) }
+            is DetailAction.NavigateToManagement -> intent { postSideEffect(DetailSideEffect.NavigateToManagement(action.id)) }
             DetailAction.NavigateToBack -> intent { postSideEffect(DetailSideEffect.NavigateToBack) }
         }
     }
 }
 
 sealed interface DetailAction {
-    data class NavigateToFriend(val id: Int) : DetailAction
+    data class NavigateToFriend(val id: Long) : DetailAction
+    data class NavigateToManagement(val id: Long) : DetailAction
     data object NavigateToBack : DetailAction
 }
 
 sealed interface DetailSideEffect {
-    data class NavigateToFriend(val id: Int) : DetailSideEffect
+    data class NavigateToFriend(val id: Long) : DetailSideEffect
+    data class NavigateToManagement(val id: Long) : DetailSideEffect
     data object NavigateToBack : DetailSideEffect
 }
