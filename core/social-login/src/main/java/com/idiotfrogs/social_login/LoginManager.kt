@@ -15,6 +15,7 @@ import com.google.firebase.auth.OAuthProvider
 import com.idiotfrogs.extension.findActivity
 import com.idiotfrogs.model.auth.AuthTokenRequest
 import com.idiotfrogs.data.datasource.auth.AuthDataSource
+import com.idiotfrogs.util.exception.EmptyTokenException
 import com.idiotfrogs.util.exception.LoginCancelledException
 import dagger.hilt.android.qualifiers.ActivityContext
 import dagger.hilt.android.scopes.ActivityScoped
@@ -80,7 +81,8 @@ class LoginManager @Inject constructor(
         try {
             val authResult = task.await()
             val credential = authResult.credential as? OAuthCredential
-            val appleIdToken = requireNotNull(credential?.idToken) { "idToken is Empty!" }
+            val appleIdToken = credential?.idToken.takeIf { it != null }
+                ?: throw EmptyTokenException()
 
             val tokenResponse = authDataSource.socialAppleLogin(
                 AuthTokenRequest(appleIdToken)
