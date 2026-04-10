@@ -146,6 +146,15 @@ public fun com.idiotfrogs.designsystem.component.MSTextField(modifier: androidx.
     - scrollState: STABLE (marked @Stable or @Immutable)
 
 @Composable
+public fun com.idiotfrogs.designsystem.component.MSToast(hazeState: dev.chrisbanes.haze.HazeState, modifier: androidx.compose.ui.Modifier, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.RowScope, kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - hazeState: STABLE (marked @Stable or @Immutable)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - content: STABLE (composable function type)
+
+@Composable
 public fun com.idiotfrogs.designsystem.component.PatternRowsBigFirst(images: kotlin.collections.List<kotlin.String>): kotlin.Unit
   skippable: false
   restartable: true
