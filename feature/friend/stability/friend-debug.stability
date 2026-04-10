@@ -30,10 +30,11 @@ public fun com.idiotfrogs.friend.component.FriendListItem(nickName: kotlin.Strin
     - modifier: STABLE (marked @Stable or @Immutable)
 
 @Composable
-public fun com.idiotfrogs.friend.component.FriendTopNotification(action: com.idiotfrogs.friend.FriendScreenActionState, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+public fun com.idiotfrogs.friend.component.FriendTopNotification(hazeState: dev.chrisbanes.haze.HazeState, action: com.idiotfrogs.friend.FriendScreenActionState, modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: true
   restartable: true
   params:
+    - hazeState: STABLE (marked @Stable or @Immutable)
     - action: STABLE (class with no mutable properties)
     - modifier: STABLE (marked @Stable or @Immutable)
 

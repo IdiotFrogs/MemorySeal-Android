@@ -14,6 +14,10 @@ class UserDataSourceImpl @Inject constructor(
         return userService.getMyProfile()
     }
 
+    override suspend fun withdraw() {
+        userService.withdraw()
+    }
+
     override suspend fun updateMyProfile(
         userId: Long,
         profileImage: MultipartBody.Part,

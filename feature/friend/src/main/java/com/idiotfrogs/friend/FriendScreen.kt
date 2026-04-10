@@ -40,6 +40,8 @@ import com.idiotfrogs.friend.component.FriendTopNotification
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.util.UiState
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -73,6 +75,7 @@ fun FriendScreen(
 ) {
     val context = LocalContext.current
 
+    val hazeState = rememberHazeState()
     var isEmpty by remember { mutableStateOf(false) }
     var action by remember { mutableStateOf(FriendScreenActionState.IDLE) }
     var expanded by remember { mutableStateOf(false) }
@@ -136,8 +139,9 @@ fun FriendScreen(
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .align(Alignment.TopCenter)
-                    .navigationBarsPadding()
+                    .systemBarsPadding()
                     .zIndex(1f),
+                hazeState = hazeState,
                 action = action,
             )
         }
@@ -145,6 +149,7 @@ fun FriendScreen(
         Column(
             modifier = modifier
                 .fillMaxSize()
+                .hazeSource(hazeState)
                 .background(MSTheme.color.white)
                 .systemBarsPadding()
                 .padding(horizontal = 20.dp),
