@@ -1,0 +1,46 @@
+package com.idiotfrogs.management
+
+import com.idiotfrogs.domain.usecase.timecapsule.DeleteCapsuleUseCase
+import com.idiotfrogs.util.UiState
+import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.sideEffect.RefreshEvent
+import com.idiotfrogs.util.sideEffect.RefreshSideEffect
+import dagger.hilt.android.lifecycle.HiltViewModel
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.viewmodel.container
+import javax.inject.Inject
+
+@HiltViewModel
+class ManagementViewModel @Inject constructor(
+    private val deleteCapsuleUseCase: DeleteCapsuleUseCase,
+) : BaseViewModel<UiState<Unit>, ManagementSideEffect, ManagementAction>() {
+
+    override val container: Container<UiState<Unit>, ManagementSideEffect> = container(UiState.Success(Unit))
+
+    override fun onAction(action: ManagementAction) {
+        when (action) {
+            ManagementAction.NavigateToBack -> intent { postSideEffect(ManagementSideEffect.NavigateToBack) }
+            is ManagementAction.DeleteCapsule -> {
+                safeLaunch {
+                    deleteCapsuleUseCase(action.capsuleId).onSuccess {
+                        RefreshSideEffect.tryEmit(RefreshEvent.Home)
+                        intent { postSideEffect(ManagementSideEffect.NavigateToHome) }
+                    }.onFailure {
+                        // TODO 에러 Toast 작업?
+                    }
+                }
+            }
+        }
+    }
+}
+
+sealed interface ManagementAction {
+    data object NavigateToBack : ManagementAction
+
+    data class DeleteCapsule(val capsuleId: Long) : ManagementAction
+}
+
+sealed interface ManagementSideEffect {
+    data object NavigateToHome : ManagementSideEffect
+    data object NavigateToBack : ManagementSideEffect
+}
