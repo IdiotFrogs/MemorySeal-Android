@@ -9,7 +9,7 @@ public fun com.idiotfrogs.setting.SettingRoute(viewModel: com.idiotfrogs.setting
   skippable: false
   restartable: true
   params:
-    - viewModel: RUNTIME (requires runtime check)
+    - viewModel: UNSTABLE (has mutable properties or unstable members)
 
 @Composable
 public fun com.idiotfrogs.setting.SettingScreen(onAction: kotlin.Function1<com.idiotfrogs.setting.SettingAction, kotlin.Unit>): kotlin.Unit
