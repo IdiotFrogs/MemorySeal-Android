@@ -1,5 +1,6 @@
 package com.idiotfrogs.home
 
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -120,7 +121,10 @@ fun HomeScreen(
     val pagerState = rememberPagerState { HomeTab.entries.size }
 
     LaunchedEffect(currentTab) {
-        pagerState.animateScrollToPage(currentTab.ordinal)
+        pagerState.animateScrollToPage(
+            page = currentTab.ordinal,
+            animationSpec = tween()
+        )
     }
 
     LaunchedEffect(pagerState.currentPage) {
