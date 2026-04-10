@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -114,6 +117,16 @@ fun HomeScreen(
         }
     }
 
+    val pagerState = rememberPagerState { HomeTab.entries.size }
+
+    LaunchedEffect(currentTab) {
+        pagerState.animateScrollToPage(currentTab.ordinal)
+    }
+
+    LaunchedEffect(pagerState.currentPage) {
+        currentTab = HomeTab.entries[pagerState.currentPage]
+    }
+
     Box {
         Column(
             modifier = Modifier
@@ -129,15 +142,27 @@ fun HomeScreen(
                 selectedTab = currentTab,
                 onClick = { currentTab = it },
             )
-            if (currentTab == HomeTab.CREATED) {
-                val host = data.capsules[TimeCapsuleRole.HOST].orEmpty()
+            HorizontalPager(
+                state = pagerState,
+            ) { page ->
+                val tab = HomeTab.entries[page]
+                val role = when (tab) {
+                    HomeTab.CREATED -> TimeCapsuleRole.HOST
+                    HomeTab.JOINED -> TimeCapsuleRole.CONTRIBUTOR
+                }
+                val data = data.capsules[role].orEmpty()
+
                 LazyColumn(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    contentPadding = PaddingValues(top = 24.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(
+                        top = 24.dp,
+                        start = 16.dp,
+                        end = 16.dp
+                    ),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    items(host) {
+                    items(data) {
                         HomeTicket(
                             modifier = Modifier.noRippleClickable {
                                 onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
@@ -146,26 +171,6 @@ fun HomeScreen(
                             targetDate = it.openedAt.toYearMonthDay(),
                             title = it.title,
                             imageUrl = it.mainImageUrl
-                        )
-                    }
-                }
-            } else {
-                val contributor = data.capsules[TimeCapsuleRole.CONTRIBUTOR].orEmpty()
-                LazyColumn(
-                    modifier = Modifier.padding(horizontal = 20.dp),
-                    contentPadding = PaddingValues(top = 24.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    items(contributor) {
-                        HomeTicket(
-                            modifier = Modifier.noRippleClickable {
-                                onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
-                            },
-                            countdown = it.openedAt.toDday(),
-                            targetDate = it.openedAt.toYearMonthDay(),
-                            title = it.title,
-                            imageUrl = ""
                         )
                     }
                 }
