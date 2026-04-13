@@ -1,8 +1,10 @@
 package com.idiotfrogs.data.repository.timecapsule
 
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import java.io.File
 
 interface TimeCapsuleRepository {
@@ -13,5 +15,9 @@ interface TimeCapsuleRepository {
 
     suspend fun getMyTimeCapsule(): List<MyTimeCapsuleResponse>
 
-    suspend fun deleteCapsule(capsuleId: Long)
+    suspend fun deleteTimeCapsule(capsuleId: Long)
+
+    suspend fun getTimeCapsule(capsuleId: Long): TimeCapsuleResponse
+
+    suspend fun getTimesCapsuleCollaborators(capsuleId: Long): List<TimeCapsuleCollaboratorsResponse>
 }

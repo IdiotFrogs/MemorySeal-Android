@@ -79,14 +79,9 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Setting> { SettingRoute() }
                                 entry<Routes.Detail> {
                                     DetailRoute(
-                                        title = "테스트 Title",
-                                        date = "2025-11-28",
-                                        isMember = true,
-                                        isVoteStart = true,
+                                        isVoteStart = false,
                                         iSSeal = false,
                                         capsuleId = it.id,
-                                        onSealClicked = {},
-                                        onVoteClicked = {}
                                     )
                                 }
                                 entry<Routes.Message> {

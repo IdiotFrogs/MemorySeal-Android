@@ -1,8 +1,10 @@
 package com.idiotfrogs.network.service
 
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import okhttp3.MultipartBody
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -24,5 +26,11 @@ interface TimeCapsuleService {
     suspend fun getMyTimeCapsule(): List<MyTimeCapsuleResponse>
 
     @DELETE("time-capsules/{capsuleId}")
-    suspend fun deleteCapsule(@Path("capsuleId") capsuleId: Long)
+    suspend fun deleteTimeCapsule(@Path("capsuleId") capsuleId: Long)
+
+    @GET("time-capsules/{capsuleId}")
+    suspend fun getTimeCapsule(@Path("capsuleId") capsuleId: Long): TimeCapsuleResponse
+
+    @GET("time-capsules/{capsuleId}/collaborators")
+    suspend fun getTimesCapsuleCollaborators(@Path("capsuleId") capsuleId: Long): List<TimeCapsuleCollaboratorsResponse>
 }
