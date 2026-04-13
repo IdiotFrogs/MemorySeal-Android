@@ -1,5 +1,6 @@
 package com.idiotfrogs.detail
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -35,6 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSAnnotatedText
 import com.idiotfrogs.designsystem.component.MSDialog
@@ -46,24 +49,23 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.detail.component.MembarListItem
 import com.idiotfrogs.detail.component.RoundedProgressBar
+import com.idiotfrogs.extension.toDday
+import com.idiotfrogs.extension.toYearMonthDayWeek
+import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.util.UiState
+import com.skydoves.landscapist.glide.GlideImage
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun DetailRoute(
-    viewModel: DetailViewModel = hiltViewModel(),
     capsuleId: Long,
-    title: String,
-    date: String, // TODO 추 후 날짜 로직 설계 후 변경 필요
-    isMember: Boolean,
+    viewModel: DetailViewModel = hiltViewModel<DetailViewModel, DetailViewModel.Factory>(key = capsuleId.toString()) { it.create(capsuleId) },
     isVoteStart: Boolean,
     iSSeal: Boolean,
-    onSealClicked: () -> Unit,
-    onVoteClicked: (Boolean) -> Unit,
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
@@ -76,18 +78,14 @@ fun DetailRoute(
         }
     }
 
-    when (uiState) {
+    when (val state = uiState) {
         UiState.Init -> Unit
         is UiState.Success -> {
             DetailScreen(
+                data = state.data,
                 capsuleId = capsuleId,
-                title = title,
-                date = date,
-                isMember = isMember,
                 isVoteStart = isVoteStart,
                 iSSeal = iSSeal,
-                onSealClicked = onSealClicked,
-                onVoteClicked = onVoteClicked,
                 onAction = viewModel::onAction
             )
         }
@@ -97,29 +95,23 @@ fun DetailRoute(
 
 @Composable
 fun DetailScreen(
+    data: TimeCapsuleData,
     capsuleId: Long,
-    title: String,
-    date: String, // TODO 추 후 날짜 로직 설계 후 변경 필요
-    isMember: Boolean,
     isVoteStart: Boolean,
     iSSeal: Boolean,
-    onSealClicked: () -> Unit,
-    onVoteClicked: (Boolean) -> Unit,
     onAction: (DetailAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
-
-
     val scrollState = rememberScrollState()
     var showVoteDialog by remember { mutableStateOf(false) }
-    val messageList = listOf("")
+    val messageList = emptyList<String>()
 
     if (showVoteDialog) {
         MSDialog(
             title = "봉인 투표에 반대 하시겠습니까?",
             content = "투표를 반대하면 투표를 다시 시작해야 합니다.",
             onConfirm = {
-                onVoteClicked(false)
+                onAction(DetailAction.SealVote(false))
                 showVoteDialog = false
             },
             onCancel = { showVoteDialog = false },
@@ -141,7 +133,12 @@ fun DetailScreen(
                 .fillMaxWidth()
                 .height(420.dp)
         ) {
-            Image( // TODO 추 후 AsyncImage로 수정 필요
+            data.capsule?.mainImageUrl?.let {
+                GlideImage(
+                    modifier = Modifier.matchParentSize(),
+                    imageModel = { it }
+                )
+            } ?: Image(
                 modifier = Modifier.matchParentSize(),
                 painter = painterResource(R.drawable.img_sample),
                 contentDescription = "Thumbnail",
@@ -165,11 +162,18 @@ fun DetailScreen(
                 painter = painterResource(R.drawable.img_management),
                 contentDescription = "Management"
             )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .height(110.dp)
+                    .background(Brush.verticalGradient(colors = listOf(Color.Transparent, Color.Black)))
+            )
             MSText(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(start = 20.dp, bottom = 38.dp),
-                text = title,
+                text = data.capsule?.openedAt.toDday(),
                 fontSize = 40.dp,
                 color = MSTheme.color.white
             )
@@ -177,7 +181,7 @@ fun DetailScreen(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(start = 20.dp, bottom = 24.dp),
-                text = date,
+                text = data.capsule?.createdAt.toYearMonthDayWeek() + " ~ " + data.capsule?.openedAt.toYearMonthDayWeek(),
                 fontSize = 12.dp,
                 color = MSTheme.color.white
             )
@@ -190,12 +194,12 @@ fun DetailScreen(
                 .padding(horizontal = 20.dp, vertical = 24.dp)
         ) {
             MSText(
-                text = "첫 여행, 첫 추억",
+                text = data.capsule?.title ?: "",
                 fontSize = 20.dp,
             )
             Spacer(Modifier.height(8.dp))
             MSText(
-                text = "처음 함께 떠났던 여행의 순간들을 담은 우리의 작은 시간 저장소.",
+                text = data.capsule?.description ?: "",
                 fontSize = 16.dp,
                 fontWeight = FontWeight.Normal
             )
@@ -211,13 +215,13 @@ fun DetailScreen(
                             append("1  ")
                             withStyle(
                                 SpanStyle(color = MSTheme.color.greyG4)
-                            ) { append("/  7") }
+                            ) { append("/  " + data.collaborators.size.toString()) }
                         },
                         color = MSTheme.color.primaryNormal
                     )
                 }
                 Spacer(Modifier.height(8.dp))
-                if (isMember) {
+                if (data.capsule?.userRole == TimeCapsuleRole.CONTRIBUTOR) {
                     if (isVoteStart) { // TODO isVoteStart 변수 관리 방법 고민 필요
                         Spacer(Modifier.height(8.dp))
                         RoundedProgressBar(0.2f)
@@ -240,7 +244,7 @@ fun DetailScreen(
                             Spacer(Modifier.width(8.dp))
                             MSButton(
                                 modifier = Modifier.weight(3f),
-                                onClick = { onVoteClicked(true) },
+                                onClick = { onAction(DetailAction.SealVote(true)) },
                                 contentPadding = PaddingValues(11.dp)
                             ) {
                                 MSText(
@@ -281,7 +285,7 @@ fun DetailScreen(
                     } else {
                         MSButton(
                             modifier = Modifier.fillMaxWidth(),
-                            onClick = onSealClicked,
+                            onClick = { onAction(DetailAction.SealVote(true)) },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MSTheme.color.greyG5
                             ),
@@ -328,7 +332,7 @@ fun DetailScreen(
                     contentPadding = PaddingValues(11.dp)
                 ) {
                     MSText(
-                        text = "시작하기",
+                        text = "등록하기",
                         fontSize = 16.dp,
                         color = MSTheme.color.white
                     )
@@ -356,6 +360,8 @@ fun DetailScreen(
                 .background(MSTheme.color.white)
                 .padding(horizontal = 20.dp, vertical = 24.dp)
         ) {
+            val myData = data.collaborators.firstOrNull { it.isMe }
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -365,7 +371,7 @@ fun DetailScreen(
                         append("멤버 ")
                         withStyle(
                             SpanStyle(color = MSTheme.color.primaryNormal)
-                        ) { append("7") }
+                        ) { append(data.collaborators.size.toString()) }
                     },
                     color = MSTheme.color.greyG4
                 )
@@ -378,23 +384,21 @@ fun DetailScreen(
                 )
             }
             Spacer(Modifier.height(24.dp))
-            MembarListItem("파란 바나나 (나)", isMembar = false) // TODO 실제 본인 nickName 필요
+            MembarListItem(
+                nickName = myData?.nickname + " (나)",
+                profileImageUrl = myData?.profileImageUrl ?: "",
+                isMembar = false
+            )
             Spacer(Modifier.height(16.dp))
             HorizontalDivider(
                 thickness = 1.dp,
                 color = MSTheme.color.greyG1
             )
-            repeat(6) { // TODO 테스트용 코드 -> 추 후 실제 list 변경 필요
+            data.collaborators.forEach {
                 Spacer(Modifier.height(16.dp))
                 MembarListItem(
-                    nickName = when (it) {
-                        0 -> "파란 바나나"
-                        1 -> "검정 복숭아"
-                        2 -> "별 모양 파인애플"
-                        3 -> "초코 체리"
-                        4 -> "자두 수박"
-                        else -> "민트 네모 수박"
-                    }
+                    nickName = it.nickname,
+                    profileImageUrl = it.profileImageUrl
                 )
             }
         }
@@ -405,14 +409,10 @@ fun DetailScreen(
 @Composable
 fun DetailScreenPreview() {
     DetailScreen(
+        TimeCapsuleData(null),
         0L,
-        "D-60",
-        "2025. 02. 20. (목) ~ 2025. 04. 20. (일)",
-        true,
         true,
         false,
-        {},
-        {},
         onAction = {}
     )
 }

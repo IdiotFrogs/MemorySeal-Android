@@ -2,8 +2,10 @@ package com.idiotfrogs.data.repository.timecapsule
 
 import com.idiotfrogs.data.datasource.timecapsule.TimeCapsuleDataSource
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -29,7 +31,15 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
         return timeCapsuleDataSource.getMyTimeCapsule()
     }
 
-    override suspend fun deleteCapsule(capsuleId: Long) {
-        return timeCapsuleDataSource.deleteCapsule(capsuleId)
+    override suspend fun deleteTimeCapsule(capsuleId: Long) {
+        return timeCapsuleDataSource.deleteTimeCapsule(capsuleId)
+    }
+
+    override suspend fun getTimeCapsule(capsuleId: Long): TimeCapsuleResponse {
+        return timeCapsuleDataSource.getTimeCapsule(capsuleId)
+    }
+
+    override suspend fun getTimesCapsuleCollaborators(capsuleId: Long): List<TimeCapsuleCollaboratorsResponse> {
+        return timeCapsuleDataSource.getTimesCapsuleCollaborators(capsuleId)
     }
 }
