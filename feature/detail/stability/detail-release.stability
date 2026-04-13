@@ -5,14 +5,14 @@
 //   ./gradlew :detail:stabilityDump
 
 @Composable
-public fun com.idiotfrogs.detail.DetailRoute(capsuleId: kotlin.Long, viewModel: com.idiotfrogs.detail.DetailViewModel, isVoteStart: kotlin.Boolean, iSSeal: kotlin.Boolean): kotlin.Unit
+public fun com.idiotfrogs.detail.DetailRoute(capsuleId: kotlin.Long, isVoteStart: kotlin.Boolean, iSSeal: kotlin.Boolean, viewModel: com.idiotfrogs.detail.DetailViewModel): kotlin.Unit
   skippable: false
   restartable: true
   params:
     - capsuleId: STABLE (primitive type)
-    - viewModel: UNSTABLE (has mutable properties or unstable members)
     - isVoteStart: STABLE (primitive type)
     - iSSeal: STABLE (primitive type)
+    - viewModel: UNSTABLE (has mutable properties or unstable members)
 
 @Composable
 public fun com.idiotfrogs.detail.DetailScreen(data: com.idiotfrogs.detail.TimeCapsuleData, capsuleId: kotlin.Long, isVoteStart: kotlin.Boolean, iSSeal: kotlin.Boolean, onAction: kotlin.Function1<com.idiotfrogs.detail.DetailAction, kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
