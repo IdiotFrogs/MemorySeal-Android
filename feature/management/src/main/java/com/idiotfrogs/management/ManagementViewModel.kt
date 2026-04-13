@@ -1,6 +1,6 @@
 package com.idiotfrogs.management
 
-import com.idiotfrogs.domain.usecase.timecapsule.DeleteCapsuleUseCase
+import com.idiotfrogs.domain.usecase.timecapsule.DeleteTimeCapsuleUseCase
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.sideEffect.RefreshEvent
@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ManagementViewModel @Inject constructor(
-    private val deleteCapsuleUseCase: DeleteCapsuleUseCase,
+    private val deleteTimeCapsuleUseCase: DeleteTimeCapsuleUseCase,
 ) : BaseViewModel<UiState<Unit>, ManagementSideEffect, ManagementAction>() {
 
     override val container: Container<UiState<Unit>, ManagementSideEffect> = container(UiState.Success(Unit))
@@ -22,7 +22,7 @@ class ManagementViewModel @Inject constructor(
             ManagementAction.NavigateToBack -> intent { postSideEffect(ManagementSideEffect.NavigateToBack) }
             is ManagementAction.DeleteCapsule -> {
                 safeLaunch {
-                    deleteCapsuleUseCase(action.capsuleId).onSuccess {
+                    deleteTimeCapsuleUseCase(action.capsuleId).onSuccess {
                         RefreshSideEffect.tryEmit(RefreshEvent.Home)
                         intent { postSideEffect(ManagementSideEffect.NavigateToHome) }
                     }.onFailure {
