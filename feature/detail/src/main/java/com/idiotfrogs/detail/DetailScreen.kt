@@ -63,9 +63,9 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun DetailRoute(
     capsuleId: Long,
-    viewModel: DetailViewModel = hiltViewModel<DetailViewModel, DetailViewModel.Factory>(key = capsuleId.toString()) { it.create(capsuleId) },
     isVoteStart: Boolean,
     iSSeal: Boolean,
+    viewModel: DetailViewModel = hiltViewModel<DetailViewModel, DetailViewModel.Factory>(key = capsuleId.toString()) { it.create(capsuleId) },
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
