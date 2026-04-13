@@ -207,18 +207,35 @@ fun DetailScreen(
                 Spacer(Modifier.height(24.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     MSText(text = "티켓 봉인 투표")
-                    MSAnnotatedText(
-                        text = buildAnnotatedString {
-                            append("1  ")
-                            withStyle(
-                                SpanStyle(color = MSTheme.color.greyG4)
-                            ) { append("/  " + data.collaborators.size.toString()) }
-                        },
-                        color = MSTheme.color.primaryNormal
-                    )
+                    if (isVoteStart) {
+                        MSAnnotatedText(
+                            text = buildAnnotatedString {
+                                append("1  ")
+                                withStyle(
+                                    SpanStyle(color = MSTheme.color.greyG4)
+                                ) { append("/  " + data.collaborators.size.toString()) }
+                            },
+                            color = MSTheme.color.primaryNormal
+                        )
+                    } else {
+                        MSButton(
+                            onClick = { onAction(DetailAction.SealVote(true)) },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MSTheme.color.greyG5
+                            ),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 7.5.dp)
+                        ) {
+                            MSText(
+                                text = "티켓 봉인하기",
+                                fontSize = 14.dp,
+                                color = MSTheme.color.white
+                            )
+                        }
+                    }
                 }
                 Spacer(Modifier.height(8.dp))
                 if (data.capsule?.userRole == TimeCapsuleRole.CONTRIBUTOR) {
@@ -281,21 +298,6 @@ fun DetailScreen(
                                     color = MSTheme.color.greyG4
                                 )
                             }
-                        }
-                    } else {
-                        MSButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = { onAction(DetailAction.SealVote(true)) },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MSTheme.color.greyG5
-                            ),
-                            contentPadding = PaddingValues(11.dp)
-                        ) {
-                            MSText(
-                                text = "티켓 봉인하기",
-                                fontSize = 16.dp,
-                                color = MSTheme.color.white
-                            )
                         }
                     }
                 }
