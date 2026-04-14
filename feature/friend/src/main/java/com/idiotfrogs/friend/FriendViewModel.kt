@@ -38,8 +38,10 @@ class FriendViewModel @AssistedInject constructor(
 
     private fun getTimeCapsuleInviteCode(capsuleId: Long) = safeLaunch {
         getTimeCapsuleInviteCodeUseCase(capsuleId).onSuccess {
-            intent { postSideEffect(FriendSideEffect.CopyInviteCode(it.code)) }
-            intent { postSideEffect(FriendSideEffect.ShowToast(FriendScreenActionState.COPY)) }
+            intent {
+                postSideEffect(FriendSideEffect.CopyInviteCode(it.code))
+                postSideEffect(FriendSideEffect.ShowToast(FriendScreenActionState.COPY))
+            }
         }.onFailure {
             // TODO 에러 처리 어떻게 할지 논의 필요.
         }
