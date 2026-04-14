@@ -89,9 +89,7 @@ class MainActivity : ComponentActivity() {
                                     it.id
                                 }
                                 entry<Routes.Friend> {
-                                    FriendRoute()
-                                    // TODO 추 후 id 가져가서 정보 조회되게 수정 필요
-                                    it.id
+                                    FriendRoute(it.id)
                                 }
                                 entry<Routes.Management> {
                                     ManagementRoute(capsuleId = it.id)

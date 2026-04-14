@@ -4,6 +4,7 @@ import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import okhttp3.MultipartBody
 import retrofit2.http.DELETE
@@ -33,4 +34,7 @@ interface TimeCapsuleService {
 
     @GET("time-capsules/{capsuleId}/collaborators")
     suspend fun getTimesCapsuleCollaborators(@Path("capsuleId") capsuleId: Long): List<TimeCapsuleCollaboratorsResponse>
+
+    @POST("time-capsules/{capsuleId}/invite")
+    suspend fun getTimeCapsuleInviteCode(@Path("capsuleId") capsuleId: Long): TimeCapsuleInviteCodeResponse
 }

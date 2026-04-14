@@ -5,6 +5,7 @@ import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -41,5 +42,9 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
 
     override suspend fun getTimesCapsuleCollaborators(capsuleId: Long): List<TimeCapsuleCollaboratorsResponse> {
         return timeCapsuleDataSource.getTimesCapsuleCollaborators(capsuleId)
+    }
+
+    override suspend fun getTimeCapsuleInviteCode(capsuleId: Long): TimeCapsuleInviteCodeResponse {
+        return timeCapsuleDataSource.getTimeCapsuleInviteCode(capsuleId)
     }
 }
