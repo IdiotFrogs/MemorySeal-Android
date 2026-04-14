@@ -3,12 +3,11 @@ package com.idiotfrogs.friend
 import android.content.ClipData
 import android.content.Intent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -168,7 +167,7 @@ fun FriendScreen(
             )
         }
 
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .hazeSource(hazeState)
@@ -177,48 +176,55 @@ fun FriendScreen(
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            MSDetailHeader(
-                title = "맴버 추가",
-                navigateToBack = { onAction(FriendAction.NavigateToBack) },
-                paddingValues = PaddingValues(horizontal = 0.dp, vertical = 16.dp)
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_plus),
-                    contentDescription = "Back",
-                    modifier = Modifier.noRippleClickable { expanded = true }
-                )
+            item {
+                MSDetailHeader(
+                    title = "멤버 추가",
+                    navigateToBack = { onAction(FriendAction.NavigateToBack) },
+                    paddingValues = PaddingValues(horizontal = 0.dp, vertical = 16.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_plus),
+                        contentDescription = "메뉴 열기",
+                        modifier = Modifier.noRippleClickable { expanded = true }
+                    )
+                }
             }
+
             if (pendingCollaborators.isEmpty()) {
-                Spacer(Modifier.height(25.dp))
-                Icon(
-                    painter = painterResource(R.drawable.img_friend_empty_plus),
-                    contentDescription = "emptyIcon",
-                    tint = MSTheme.color.greyG1,
-                    modifier = Modifier
-                        .align(Alignment.End)
-                        .padding(end = 40.dp)
-                )
-                Spacer(Modifier.height(32.dp))
-                MSText(
-                    text = "대기중인 맴버가 없습니다.\n" + "코드 또는 링크로 맴버를 초대해보세요.",
-                    color = MSTheme.color.greyG4,
-                    fontWeight = FontWeight.Normal,
-                    textAlign = TextAlign.Center
-                )
-            } else {
-                Spacer(Modifier.height(16.dp))
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(
-                        items = pendingCollaborators,
-                        key = { it.requestId },
-                    ) { item ->
-                        FriendListItem(
-                            nickName = item.nickname,
-                            profileImageUrl = item.profileImageUrl,
-                            onAccept = { onAction(FriendAction.ProcessRequest(item.requestId, true)) },
-                            onReject = { onAction(FriendAction.ProcessRequest(item.requestId, false)) },
+                item {
+                    Spacer(Modifier.height(25.dp))
+                    Box(Modifier.fillMaxWidth()) {
+                        Icon(
+                            painter = painterResource(R.drawable.img_friend_empty_plus),
+                            contentDescription = "emptyIcon",
+                            tint = MSTheme.color.greyG1,
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(end = 40.dp)
                         )
                     }
+                    Spacer(Modifier.height(32.dp))
+                    MSText(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "대기중인 멤버가 없습니다.\n코드 또는 링크로 멤버를 초대해보세요.",
+                        color = MSTheme.color.greyG4,
+                        fontWeight = FontWeight.Normal,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                item { Spacer(Modifier.height(16.dp)) }
+                items(
+                    items = pendingCollaborators,
+                    key = { it.requestId },
+                ) { item ->
+                    FriendListItem(
+                        modifier = Modifier.padding(bottom = 8.dp),
+                        nickName = item.nickname,
+                        profileImageUrl = item.profileImageUrl,
+                        onAccept = { onAction(FriendAction.ProcessRequest(item.requestId, true)) },
+                        onReject = { onAction(FriendAction.ProcessRequest(item.requestId, false)) },
+                    )
                 }
             }
         }
