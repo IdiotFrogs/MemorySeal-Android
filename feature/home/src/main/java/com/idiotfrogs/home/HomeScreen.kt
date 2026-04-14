@@ -1,18 +1,22 @@
 package com.idiotfrogs.home
 
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -28,11 +32,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSMenuFab
+import com.idiotfrogs.designsystem.component.MSText
+import com.idiotfrogs.designsystem.component.MSToast
 import com.idiotfrogs.designsystem.model.MSMenuFabModel
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
@@ -48,6 +56,10 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.extension.toDday
 import com.idiotfrogs.extension.toYearMonthDay
+import com.idiotfrogs.resource.R
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
+import kotlinx.coroutines.delay
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -57,12 +69,20 @@ fun HomeRoute(
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
+    var showToast by remember { mutableStateOf(false) }
+
+    LaunchedEffect(showToast) {
+        if (!showToast) return@LaunchedEffect
+        delay(2000L)
+        showToast = false
+    }
 
     viewModel.collectSideEffect {
         when (it) {
             HomeSideEffect.NavigateToCreate -> navigator.navigate(Routes.Create)
             HomeSideEffect.NavigateToProfile -> navigator.navigate(Routes.Profile)
             is HomeSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(it.id))
+            HomeSideEffect.ShowToast -> showToast = true
         }
     }
 
@@ -70,6 +90,7 @@ fun HomeRoute(
         UiState.Init -> {}
         is UiState.Success -> {
             HomeScreen(
+                showToast = showToast,
                 data = state.data,
                 onAction = viewModel::onAction
             )
@@ -80,9 +101,11 @@ fun HomeRoute(
 
 @Composable
 fun HomeScreen(
+    showToast: Boolean,
     data: HomeData,
     onAction: (HomeAction) -> Unit,
 ) {
+    val hazeState = rememberHazeState()
     var expanded by remember { mutableStateOf(false) }
     var currentTab by remember { mutableStateOf(HomeTab.CREATED) }
     var showJoinContainer by remember { mutableStateOf(false) }
@@ -132,11 +155,34 @@ fun HomeScreen(
     }
 
     Box {
+        if (showToast) {
+            MSToast(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .align(Alignment.BottomCenter)
+                    .systemBarsPadding()
+                    .zIndex(1f),
+                hazeState = hazeState,
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.img_friend_accept),
+                    contentDescription = "알림",
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                MSText(
+                    text = "타임 캡슐 참여 요청이 완료되었어요.",
+                    color = MSTheme.color.white
+                )
+            }
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MSTheme.color.bgNormal)
                 .systemBarsPadding()
+                .hazeSource(hazeState)
         ) {
             HomeHeader(
                 profileUrl = data.user?.profileImageUrl,
@@ -202,7 +248,7 @@ fun HomeScreen(
         HomeJoinContainer(
             isShow = showJoinContainer,
             textFieldState = textFieldState,
-            onJoin = { /** TODO: 타임 티켓 참여 */ },
+            onJoin = { onAction(HomeAction.RequestCollaborator(textFieldState.text.toString())) },
             onCancel = { showJoinContainer = false }
         )
     }
@@ -212,6 +258,7 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     HomeScreen(
+        showToast = false,
         data = HomeData(),
         onAction = {},
     )

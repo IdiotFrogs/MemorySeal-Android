@@ -1,12 +1,16 @@
 package com.idiotfrogs.network.service
 
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
+import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
+import com.idiotfrogs.model.timecapsule.RequestCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import okhttp3.MultipartBody
+import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -37,4 +41,16 @@ interface TimeCapsuleService {
 
     @POST("time-capsules/{capsuleId}/invite")
     suspend fun getTimeCapsuleInviteCode(@Path("capsuleId") capsuleId: Long): TimeCapsuleInviteCodeResponse
+
+    @GET("time-capsules/request/{capsuleId}/requests")
+    suspend fun getRequestCollaborators(@Path("capsuleId") capsuleId: Long): List<RequestCollaboratorsResponse>
+
+    @POST("time-capsules/join-request")
+    suspend fun requestCollaborator(@Body body: PendingCollaboratorsRequest)
+
+    @POST("time-capsules/request/{requestId}/process")
+    suspend fun processRequest(
+        @Path("requestId") requestId: Long,
+        @Body body: ProcessCollaboratorRequest
+    )
 }

@@ -1,6 +1,9 @@
 package com.idiotfrogs.data.repository.timecapsule
 
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
+import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
+import com.idiotfrogs.model.timecapsule.RequestCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
@@ -23,4 +26,10 @@ interface TimeCapsuleRepository {
     suspend fun getTimesCapsuleCollaborators(capsuleId: Long): List<TimeCapsuleCollaboratorsResponse>
 
     suspend fun getTimeCapsuleInviteCode(capsuleId: Long): TimeCapsuleInviteCodeResponse
+
+    suspend fun getRequestCollaborators(capsuleId: Long): List<RequestCollaboratorsResponse>
+
+    suspend fun requestCollaborator(body: PendingCollaboratorsRequest)
+
+    suspend fun processRequest(requestId: Long, body: ProcessCollaboratorRequest)
 }

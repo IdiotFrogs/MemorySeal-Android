@@ -1,6 +1,9 @@
 package com.idiotfrogs.data.datasource.timecapsule
 
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
+import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
+import com.idiotfrogs.model.timecapsule.RequestCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
@@ -41,5 +44,17 @@ class TimeCapsuleDataSourceImpl @Inject constructor(
 
     override suspend fun getTimeCapsuleInviteCode(capsuleId: Long): TimeCapsuleInviteCodeResponse {
         return timeCapsuleService.getTimeCapsuleInviteCode(capsuleId)
+    }
+
+    override suspend fun getRequestCollaborators(capsuleId: Long): List<RequestCollaboratorsResponse> {
+        return timeCapsuleService.getRequestCollaborators(capsuleId)
+    }
+
+    override suspend fun requestCollaborator(body: PendingCollaboratorsRequest) {
+        return timeCapsuleService.requestCollaborator(body)
+    }
+
+    override suspend fun processRequest(requestId: Long, body: ProcessCollaboratorRequest) {
+        return timeCapsuleService.processRequest(requestId , body)
     }
 }
