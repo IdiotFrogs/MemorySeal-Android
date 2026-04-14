@@ -8,6 +8,8 @@ import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
 import com.idiotfrogs.model.timecapsule.RequestCollaboratorsResponse
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.sideEffect.RefreshEvent
+import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -58,6 +60,7 @@ class FriendViewModel @AssistedInject constructor(
                 )
             }
             fetchFriend()
+            RefreshSideEffect.tryEmit(RefreshEvent.Detail(capsuleId))
         }.onFailure {
             // TODO 에러 처리 어떻게 할지 논의 필요.
         }
