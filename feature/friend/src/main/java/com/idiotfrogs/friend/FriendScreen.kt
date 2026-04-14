@@ -48,6 +48,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun FriendRoute(
+    capsuleId: Long,
     viewModel: FriendViewModel = hiltViewModel()
 ) {
     val navigator = LocalComposeMSNavigator.current
@@ -56,13 +57,17 @@ fun FriendRoute(
     viewModel.collectSideEffect { event ->
         when (event) {
             FriendSideEffect.NavigateToBack -> navigator.popBackStack()
+            is FriendSideEffect.CopyInviteCode -> {}
         }
     }
 
     when (uiState) {
         UiState.Init -> Unit
         is UiState.Success -> {
-            FriendScreen(onAction = viewModel::onAction)
+            FriendScreen(
+                capsuleId = capsuleId,
+                onAction = viewModel::onAction
+            )
         }
         is UiState.Error -> Unit
     }
@@ -70,6 +75,7 @@ fun FriendRoute(
 
 @Composable
 fun FriendScreen(
+    capsuleId: Long,
     modifier: Modifier = Modifier,
     onAction: (FriendAction) -> Unit,
 ) {
@@ -110,6 +116,7 @@ fun FriendScreen(
                 MSMenuFabModel("참여 코드 복사") {
                     expanded = false
                     action = FriendScreenActionState.COPY
+                    onAction(FriendAction.CopyInviteCode(capsuleId))
                 },
             )
         )
@@ -208,5 +215,8 @@ fun FriendScreen(
 @Preview
 @Composable
 fun FriendScreenPreview() {
-    FriendScreen(onAction = {})
+    FriendScreen(
+        capsuleId = 0L,
+        onAction = {}
+    )
 }
