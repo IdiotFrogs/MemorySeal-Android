@@ -13,20 +13,22 @@ public fun com.idiotfrogs.friend.FriendRoute(capsuleId: kotlin.Long, viewModel: 
     - viewModel: UNSTABLE (has mutable properties or unstable members)
 
 @Composable
-public fun com.idiotfrogs.friend.FriendScreen(capsuleId: kotlin.Long, modifier: androidx.compose.ui.Modifier, onAction: kotlin.Function1<com.idiotfrogs.friend.FriendAction, kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.friend.FriendScreen(capsuleId: kotlin.Long, toastState: com.idiotfrogs.friend.FriendScreenActionState, data: com.idiotfrogs.friend.CollaboratorsData, onAction: kotlin.Function1<com.idiotfrogs.friend.FriendAction, kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
   params:
     - capsuleId: STABLE (primitive type)
-    - modifier: STABLE (marked @Stable or @Immutable)
+    - toastState: STABLE (class with no mutable properties)
+    - data: STABLE (marked @Stable or @Immutable)
     - onAction: STABLE (function type)
 
 @Composable
-public fun com.idiotfrogs.friend.component.FriendListItem(nickName: kotlin.String, onAccept: kotlin.Function0<kotlin.Unit>, onReject: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+public fun com.idiotfrogs.friend.component.FriendListItem(nickName: kotlin.String, profileImageUrl: kotlin.String, onAccept: kotlin.Function0<kotlin.Unit>, onReject: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: true
   restartable: true
   params:
     - nickName: STABLE (String is immutable)
+    - profileImageUrl: STABLE (String is immutable)
     - onAccept: STABLE (function type)
     - onReject: STABLE (function type)
     - modifier: STABLE (marked @Stable or @Immutable)
