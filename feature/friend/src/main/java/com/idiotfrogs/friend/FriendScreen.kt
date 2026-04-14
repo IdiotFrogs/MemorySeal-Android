@@ -1,5 +1,6 @@
 package com.idiotfrogs.friend
 
+import android.content.ClipData
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ClipEntry
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,12 +55,16 @@ fun FriendRoute(
     viewModel: FriendViewModel = hiltViewModel()
 ) {
     val navigator = LocalComposeMSNavigator.current
+    val clipboard = LocalClipboard.current
     val uiState by viewModel.collectAsState()
 
     viewModel.collectSideEffect { event ->
         when (event) {
             FriendSideEffect.NavigateToBack -> navigator.popBackStack()
-            is FriendSideEffect.CopyInviteCode -> {}
+            is FriendSideEffect.CopyInviteCode -> {
+                val clipData = ClipData.newPlainText("inviteCode", event.code)
+                clipboard.setClipEntry(ClipEntry(clipData))
+            }
         }
     }
 
