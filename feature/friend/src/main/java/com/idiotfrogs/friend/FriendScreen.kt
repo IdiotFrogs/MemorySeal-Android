@@ -3,6 +3,7 @@ package com.idiotfrogs.friend
 import android.content.ClipData
 import android.content.Intent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +43,7 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.friend.component.FriendListItem
 import com.idiotfrogs.friend.component.FriendTopNotification
+import com.idiotfrogs.model.timecapsule.RequestStatus
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.util.UiState
@@ -52,11 +56,18 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun FriendRoute(
     capsuleId: Long,
-    viewModel: FriendViewModel = hiltViewModel()
+    viewModel: FriendViewModel = hiltViewModel<FriendViewModel, FriendViewModel.Factory>(key = capsuleId.toString()) { it.create(capsuleId) }
 ) {
     val navigator = LocalComposeMSNavigator.current
     val clipboard = LocalClipboard.current
     val uiState by viewModel.collectAsState()
+    var toastState by remember { mutableStateOf(FriendScreenActionState.IDLE) }
+
+    LaunchedEffect(toastState) {
+        if (toastState == FriendScreenActionState.IDLE) return@LaunchedEffect
+        delay(2000L)
+        toastState = FriendScreenActionState.IDLE
+    }
 
     viewModel.collectSideEffect { event ->
         when (event) {
@@ -65,14 +76,17 @@ fun FriendRoute(
                 val clipData = ClipData.newPlainText("inviteCode", event.code)
                 clipboard.setClipEntry(ClipEntry(clipData))
             }
+            is FriendSideEffect.ShowToast -> toastState = event.state
         }
     }
 
-    when (uiState) {
+    when (val state = uiState) {
         UiState.Init -> Unit
         is UiState.Success -> {
             FriendScreen(
                 capsuleId = capsuleId,
+                toastState = toastState,
+                data = state.data,
                 onAction = viewModel::onAction
             )
         }
@@ -83,14 +97,13 @@ fun FriendRoute(
 @Composable
 fun FriendScreen(
     capsuleId: Long,
-    modifier: Modifier = Modifier,
+    toastState: FriendScreenActionState,
+    data: CollaboratorsData,
     onAction: (FriendAction) -> Unit,
 ) {
     val context = LocalContext.current
 
     val hazeState = rememberHazeState()
-    var isEmpty by remember { mutableStateOf(false) }
-    var action by remember { mutableStateOf(FriendScreenActionState.IDLE) }
     var expanded by remember { mutableStateOf(false) }
     val menuList by remember {
         mutableStateOf(
@@ -122,17 +135,12 @@ fun FriendScreen(
                 },
                 MSMenuFabModel("참여 코드 복사") {
                     expanded = false
-                    action = FriendScreenActionState.COPY
                     onAction(FriendAction.CopyInviteCode(capsuleId))
                 },
             )
         )
     }
-
-    LaunchedEffect(action) {
-        delay(1000L)
-        action = FriendScreenActionState.IDLE
-    }
+    val pendingCollaborators = data.collaborators.filter { it.status == RequestStatus.PENDING }
 
     Box {
         MSMenuFab(
@@ -148,7 +156,7 @@ fun FriendScreen(
             onDismiss = { expanded = false },
         )
 
-        if (action != FriendScreenActionState.IDLE) {
+        if (toastState != FriendScreenActionState.IDLE) {
             FriendTopNotification(
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
@@ -156,12 +164,12 @@ fun FriendScreen(
                     .systemBarsPadding()
                     .zIndex(1f),
                 hazeState = hazeState,
-                action = action,
+                action = toastState,
             )
         }
 
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .hazeSource(hazeState)
                 .background(MSTheme.color.white)
@@ -180,7 +188,7 @@ fun FriendScreen(
                     modifier = Modifier.noRippleClickable { expanded = true }
                 )
             }
-            if (isEmpty) {
+            if (pendingCollaborators.isEmpty()) {
                 Spacer(Modifier.height(25.dp))
                 Icon(
                     painter = painterResource(R.drawable.img_friend_empty_plus),
@@ -198,21 +206,19 @@ fun FriendScreen(
                     textAlign = TextAlign.Center
                 )
             } else {
-                repeat(10) { // TODO 테스트용 코드 -> 추 후 실제 list 변경 필요
-                    Spacer(Modifier.height(8.dp))
-                    FriendListItem(
-                        nickName = when (it) {
-                            0 -> "파란 바나나"
-                            1 -> "검정 복숭아"
-                            2 -> "별 모양 파인애플"
-                            3 -> "초코 체리"
-                            4 -> "자두 수박"
-                            else -> "민트 네모 수박"
-                        },
-                        onAccept = { action = FriendScreenActionState.ACCEPT },
-                        onReject = { action = FriendScreenActionState.REJECT }
-                    )
-                    Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(16.dp))
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(
+                        items = pendingCollaborators,
+                        key = { it.requestId },
+                    ) { item ->
+                        FriendListItem(
+                            nickName = item.nickname,
+                            profileImageUrl = item.profileImageUrl,
+                            onAccept = { onAction(FriendAction.ProcessRequest(item.requestId, true)) },
+                            onReject = { onAction(FriendAction.ProcessRequest(item.requestId, false)) },
+                        )
+                    }
                 }
             }
         }
@@ -224,6 +230,8 @@ fun FriendScreen(
 fun FriendScreenPreview() {
     FriendScreen(
         capsuleId = 0L,
+        toastState = FriendScreenActionState.IDLE,
+        data = CollaboratorsData(),
         onAction = {}
     )
 }
