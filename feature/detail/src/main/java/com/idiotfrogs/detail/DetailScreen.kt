@@ -389,7 +389,7 @@ fun DetailScreen(
             MembarListItem(
                 nickName = myData?.nickname + " (나)",
                 profileImageUrl = myData?.profileImageUrl ?: "",
-                isMembar = false
+                isMembar = if (myData?.contributorRole == TimeCapsuleRole.HOST) false else true
             )
             Spacer(Modifier.height(16.dp))
             HorizontalDivider(
