@@ -7,6 +7,11 @@ android {
 }
 
 dependencies {
+    implementation(project(":common:resource"))
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)

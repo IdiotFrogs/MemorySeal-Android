@@ -20,6 +20,7 @@ dependencies {
     implementation(project(":core:util"))
     implementation(project(":core:di"))
     implementation(project(":common:resource"))
+    implementation(project(":common:notification"))
 
     implementation(libs.androidx.core.splash)
 
