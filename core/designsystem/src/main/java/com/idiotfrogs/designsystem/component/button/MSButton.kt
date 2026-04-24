@@ -1,13 +1,17 @@
 package com.idiotfrogs.designsystem.component.button
 
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -19,6 +23,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
@@ -40,7 +46,8 @@ fun MSButton(
     ),
     elevation: ButtonElevation? = null,
     border: BorderStroke? = null,
-    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    @DrawableRes borderResId: Int? = null,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     onClick: () -> Unit,
     content: @Composable (RowScope.() -> Unit),
@@ -53,18 +60,32 @@ fun MSButton(
     )
 
     DisableRippleEffect {
-        Button(
-            onClick = onClick,
+        Box(
             modifier = modifier,
-            enabled = enabled,
-            shape = RoundedCornerShape(cornerRadius),
-            colors = if (isPressed) pressColors else colors,
-            elevation = elevation,
-            border = border,
-            contentPadding = contentPadding,
-            interactionSource = interactionSource,
-            content = content
-        )
+            propagateMinConstraints = true,
+        ) {
+            Button(
+                onClick = onClick,
+                enabled = enabled,
+                modifier = Modifier.padding(if (borderResId != null) 2.dp else 0.dp),
+                shape = RoundedCornerShape(cornerRadius),
+                colors = if (isPressed) pressColors else colors,
+                elevation = elevation,
+                border = border,
+                contentPadding = contentPadding,
+                interactionSource = interactionSource,
+                content = content,
+            )
+
+            borderResId?.let { id ->
+                Image(
+                    painter = painterResource(id),
+                    contentDescription = null,
+                    modifier = Modifier.matchParentSize(),
+                    contentScale = ContentScale.FillBounds,
+                )
+            }
+        }
     }
 }
 

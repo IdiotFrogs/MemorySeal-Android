@@ -2,6 +2,7 @@ package com.idiotfrogs.designsystem.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,7 +33,7 @@ fun MSToast(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
@@ -42,10 +44,23 @@ fun MSToast(
                 ambientColor = Color(0x29505050),  // 16% 투명도
                 spotColor = Color(0x29505050)  // 16% 투명도
             )
-            .background(Color(0x7A0B0B0B)) // 48% 투명도
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) { content() }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(3.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color(0x7A0B0B0B)) // 48% 투명도
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) { content() }
+        Image(
+            modifier = Modifier.matchParentSize(),
+            painter = painterResource(R.drawable.img_toast_border),
+            contentDescription = "toast_border",
+            contentScale = ContentScale.FillBounds,
+        )
+    }
 }
 
 @Preview(showBackground = true)
