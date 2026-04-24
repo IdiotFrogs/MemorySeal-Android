@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.idiotfrogs.designsystem.component.MSActionContainer
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.resource.R
 
 @Composable
 fun BoxScope.ManagementDeleteContainer(
@@ -53,7 +54,9 @@ fun BoxScope.ManagementDeleteContainer(
                 containerColor = Color(0xFFDA1B1B),
                 disabledContainerColor = Color(0x33DA1B1B),  // 20% 투명도
             ),
-            primaryTextColor = if (textFieldState.text.isNotEmpty()) MSTheme.color.white else Color(0x59DA1B1B)  // 35% 투명도
+            primaryTextColor = if (textFieldState.text.isNotEmpty()) MSTheme.color.white else Color(0x59DA1B1B),  // 35% 투명도
+            secondaryBorderResId = R.drawable.img_button_sub_border,
+            primaryBorderResId = if (textFieldState.text.isNotEmpty()) R.drawable.img_button_primary_border else R.drawable.img_button_primary_border,  // TODO 추 후 UI에 맞는 border로 변경 필요 (작업시점 디자인 X)
         )
     }
 }

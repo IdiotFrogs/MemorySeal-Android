@@ -15,6 +15,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import com.idiotfrogs.designsystem.component.MSActionContainer
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.resource.R
 
 @Composable
 fun BoxScope.HomeJoinContainer(
@@ -45,7 +46,9 @@ fun BoxScope.HomeJoinContainer(
                 .focusRequester(focusRequester),
             secondaryButtonWeight = 1f,
             primaryButtonWeight = 3f,
-            primaryTextColor = if (textFieldState.text.isNotEmpty()) MSTheme.color.white else MSTheme.color.greyG3
+            primaryTextColor = if (textFieldState.text.isNotEmpty()) MSTheme.color.white else MSTheme.color.greyG3,
+            secondaryBorderResId = R.drawable.img_button_sub_border,
+            primaryBorderResId = if (textFieldState.text.isNotEmpty()) R.drawable.img_button_primary_short_border else R.drawable.img_button_primary_light_border
         )
     }
 }
