@@ -5,7 +5,7 @@
 //   ./gradlew :designsystem:stabilityDump
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.MSActionContainer(title: kotlin.String, hint: kotlin.String, textFieldState: androidx.compose.foundation.text.input.TextFieldState, primaryButtonText: kotlin.String, primaryBorderResId: kotlin.Int, secondaryBorderResId: kotlin.Int, onPrimaryClick: kotlin.Function0<kotlin.Unit>, onSecondaryClick: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, secondaryButtonText: kotlin.String, primaryButtonWeight: kotlin.Float, secondaryButtonWeight: kotlin.Float, primaryButtonColors: androidx.compose.material3.ButtonColors, primaryPressColors: androidx.compose.material3.ButtonColors, primaryTextColor: androidx.compose.ui.graphics.Color, secondaryButtonColors: androidx.compose.material3.ButtonColors, secondaryPressColors: androidx.compose.material3.ButtonColors, secondaryTextColor: androidx.compose.ui.graphics.Color): kotlin.Unit
+public fun com.idiotfrogs.designsystem.component.MSActionContainer(title: kotlin.String, hint: kotlin.String, textFieldState: androidx.compose.foundation.text.input.TextFieldState, primaryButtonText: kotlin.String, primaryWavyStrokeColor: androidx.compose.ui.graphics.Color, secondaryWavyStrokeColor: androidx.compose.ui.graphics.Color, onPrimaryClick: kotlin.Function0<kotlin.Unit>, onSecondaryClick: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, secondaryButtonText: kotlin.String, primaryButtonWeight: kotlin.Float, secondaryButtonWeight: kotlin.Float, primaryButtonColors: androidx.compose.material3.ButtonColors, primaryPressColors: androidx.compose.material3.ButtonColors, primaryTextColor: androidx.compose.ui.graphics.Color, secondaryButtonColors: androidx.compose.material3.ButtonColors, secondaryPressColors: androidx.compose.material3.ButtonColors, secondaryTextColor: androidx.compose.ui.graphics.Color): kotlin.Unit
   skippable: true
   restartable: true
   params:
@@ -13,8 +13,8 @@ public fun com.idiotfrogs.designsystem.component.MSActionContainer(title: kotlin
     - hint: STABLE (String is immutable)
     - textFieldState: STABLE (marked @Stable or @Immutable)
     - primaryButtonText: STABLE (String is immutable)
-    - primaryBorderResId: STABLE (primitive type)
-    - secondaryBorderResId: STABLE (primitive type)
+    - primaryWavyStrokeColor: STABLE (marked @Stable or @Immutable)
+    - secondaryWavyStrokeColor: STABLE (marked @Stable or @Immutable)
     - onPrimaryClick: STABLE (function type)
     - onSecondaryClick: STABLE (function type)
     - modifier: STABLE (marked @Stable or @Immutable)
@@ -208,7 +208,7 @@ public fun com.idiotfrogs.designsystem.component.TwoByTwo(images: kotlin.collect
     - images: RUNTIME (requires runtime check)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.button.MSButton(modifier: androidx.compose.ui.Modifier, enabled: kotlin.Boolean, isRounded: kotlin.Boolean, colors: androidx.compose.material3.ButtonColors, pressColors: androidx.compose.material3.ButtonColors, elevation: androidx.compose.material3.ButtonElevation?, border: androidx.compose.foundation.BorderStroke?, borderResId: kotlin.Int?, contentPadding: androidx.compose.foundation.layout.PaddingValues, interactionSource: androidx.compose.foundation.interaction.MutableInteractionSource, onClick: kotlin.Function0<kotlin.Unit>, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.RowScope, kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.designsystem.component.button.MSButton(modifier: androidx.compose.ui.Modifier, enabled: kotlin.Boolean, isRounded: kotlin.Boolean, colors: androidx.compose.material3.ButtonColors, pressColors: androidx.compose.material3.ButtonColors, elevation: androidx.compose.material3.ButtonElevation?, border: androidx.compose.foundation.BorderStroke?, wavyStrokeColor: androidx.compose.ui.graphics.Color?, contentPadding: androidx.compose.foundation.layout.PaddingValues, interactionSource: androidx.compose.foundation.interaction.MutableInteractionSource, onClick: kotlin.Function0<kotlin.Unit>, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.RowScope, kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
   params:
@@ -219,7 +219,7 @@ public fun com.idiotfrogs.designsystem.component.button.MSButton(modifier: andro
     - pressColors: STABLE (marked @Stable or @Immutable)
     - elevation: STABLE (marked @Stable or @Immutable)
     - border: STABLE (marked @Stable or @Immutable)
-    - borderResId: STABLE (class with no mutable properties)
+    - wavyStrokeColor: STABLE (marked @Stable or @Immutable)
     - contentPadding: STABLE (marked @Stable or @Immutable)
     - interactionSource: STABLE (marked @Stable or @Immutable)
     - onClick: STABLE (function type)
