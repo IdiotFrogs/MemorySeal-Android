@@ -1,17 +1,14 @@
 package com.idiotfrogs.designsystem.component.button
 
-import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -23,13 +20,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DisableRippleEffect
+import com.idiotfrogs.designsystem.util.wavyStroke
 
 @Composable
 fun MSButton(
@@ -46,7 +43,7 @@ fun MSButton(
     ),
     elevation: ButtonElevation? = null,
     border: BorderStroke? = null,
-    @DrawableRes borderResId: Int? = null,
+    wavyStrokeColor: Color? = null,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     onClick: () -> Unit,
@@ -61,13 +58,21 @@ fun MSButton(
 
     DisableRippleEffect {
         Box(
-            modifier = modifier,
+            modifier = modifier.then(
+                if (wavyStrokeColor != null) {
+                    Modifier.wavyStroke(
+                        color = wavyStrokeColor,
+                        cornerRadius = cornerRadius,
+                        fillColor = wavyStrokeColor,
+                        contentPadding = 5.dp
+                    )
+                } else Modifier
+            ),
             propagateMinConstraints = true,
         ) {
             Button(
                 onClick = onClick,
                 enabled = enabled,
-                modifier = Modifier.padding(if (borderResId != null) 2.dp else 0.dp),
                 shape = RoundedCornerShape(cornerRadius),
                 colors = if (isPressed) pressColors else colors,
                 elevation = elevation,
@@ -76,15 +81,6 @@ fun MSButton(
                 interactionSource = interactionSource,
                 content = content,
             )
-
-            borderResId?.let { id ->
-                Image(
-                    painter = painterResource(id),
-                    contentDescription = null,
-                    modifier = Modifier.matchParentSize(),
-                    contentScale = ContentScale.FillBounds,
-                )
-            }
         }
     }
 }

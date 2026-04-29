@@ -47,16 +47,16 @@ fun BoxScope.ManagementDeleteContainer(
                 .align(Alignment.BottomCenter)
                 .focusRequester(focusRequester),
             primaryButtonColors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFDA1B1B),
-                disabledContainerColor = Color(0x33DA1B1B),  // 20% 투명도
+                containerColor = Color(0xFFED1E1E),
+                disabledContainerColor = Color(0xFFF3BBBB),
             ),
             primaryPressColors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFDA1B1B),
-                disabledContainerColor = Color(0x33DA1B1B),  // 20% 투명도
+                containerColor = Color(0xFFED1E1E),
+                disabledContainerColor = Color(0xFFF3BBBB),
             ),
             primaryTextColor = if (textFieldState.text.isNotEmpty()) MSTheme.color.white else Color(0x59DA1B1B),  // 35% 투명도
-            secondaryBorderResId = R.drawable.img_button_sub_border,
-            primaryBorderResId = if (textFieldState.text.isNotEmpty()) R.drawable.img_button_primary_border else R.drawable.img_button_primary_border,  // TODO 추 후 UI에 맞는 border로 변경 필요 (작업시점 디자인 X)
+            secondaryWavyStrokeColor = MSTheme.color.greyG1,
+            primaryWavyStrokeColor = if (textFieldState.text.isNotEmpty()) Color(0xFFED1E1E) else Color(0xFFF3BBBB),
         )
     }
 }

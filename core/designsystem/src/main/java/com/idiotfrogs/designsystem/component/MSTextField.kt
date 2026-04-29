@@ -1,6 +1,5 @@
 package com.idiotfrogs.designsystem.component
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -22,8 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.rememberFocusState
 import com.idiotfrogs.designsystem.util.toSp
-import com.idiotfrogs.resource.R
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.pretendard
 
 @Composable
@@ -81,6 +78,11 @@ fun MSTextField(
                 modifier = Modifier
                     .heightIn(48.dp)
                     .fillMaxWidth()
+                    .wavyStroke(
+                        color = if (isFocused) MSTheme.color.primaryNormal else MSTheme.color.greyG1,
+                        amplitude = 1.5.dp,
+                        spacing = 5.dp,
+                    )
             ) {
                 Box(
                     modifier = Modifier
@@ -99,15 +101,6 @@ fun MSTextField(
                     }
                     innerTextField()
                 }
-                Image(
-                    painter = painterResource(
-                        if (isFocused) R.drawable.img_textfield_border
-                        else R.drawable.img_textfield_empty_border
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier.matchParentSize(),
-                    contentScale = ContentScale.FillBounds,
-                )
             }
         },
         scrollState = scrollState

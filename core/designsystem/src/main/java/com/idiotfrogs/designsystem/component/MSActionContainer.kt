@@ -27,8 +27,8 @@ fun MSActionContainer(
     hint: String,
     textFieldState: TextFieldState,
     primaryButtonText: String,
-    @DrawableRes primaryBorderResId: Int,
-    @DrawableRes secondaryBorderResId: Int,
+    @DrawableRes primaryWavyStrokeColor: Color,
+    @DrawableRes secondaryWavyStrokeColor: Color,
     onPrimaryClick: () -> Unit,
     onSecondaryClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -84,7 +84,7 @@ fun MSActionContainer(
                 onClick = onSecondaryClick,
                 colors = secondaryButtonColors,
                 pressColors = secondaryPressColors,
-                borderResId = secondaryBorderResId,
+                wavyStrokeColor = secondaryWavyStrokeColor,
             ) {
                 MSText(
                     text = secondaryButtonText,
@@ -100,7 +100,7 @@ fun MSActionContainer(
                 onClick = onPrimaryClick,
                 colors = primaryButtonColors,
                 pressColors = primaryPressColors,
-                borderResId = primaryBorderResId,
+                wavyStrokeColor = primaryWavyStrokeColor,
             ) {
                 MSText(
                     text = primaryButtonText,

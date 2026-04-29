@@ -47,8 +47,8 @@ fun BoxScope.HomeJoinContainer(
             secondaryButtonWeight = 1f,
             primaryButtonWeight = 3f,
             primaryTextColor = if (textFieldState.text.isNotEmpty()) MSTheme.color.white else MSTheme.color.greyG3,
-            secondaryBorderResId = R.drawable.img_button_sub_border,
-            primaryBorderResId = if (textFieldState.text.isNotEmpty()) R.drawable.img_button_primary_short_border else R.drawable.img_button_primary_light_border
+            secondaryWavyStrokeColor = MSTheme.color.greyG1,
+            primaryWavyStrokeColor = if (textFieldState.text.isNotEmpty()) MSTheme.color.primaryNormal else MSTheme.color.primaryLight,
         )
     }
 }
