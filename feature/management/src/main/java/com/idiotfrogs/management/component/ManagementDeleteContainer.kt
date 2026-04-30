@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.idiotfrogs.designsystem.component.MSActionContainer
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.resource.R
 
 @Composable
 fun BoxScope.ManagementDeleteContainer(
@@ -46,14 +47,16 @@ fun BoxScope.ManagementDeleteContainer(
                 .align(Alignment.BottomCenter)
                 .focusRequester(focusRequester),
             primaryButtonColors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFDA1B1B),
-                disabledContainerColor = Color(0x33DA1B1B),  // 20% 투명도
+                containerColor = Color(0xFFED1E1E),
+                disabledContainerColor = Color(0xFFF3BBBB),
             ),
             primaryPressColors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFDA1B1B),
-                disabledContainerColor = Color(0x33DA1B1B),  // 20% 투명도
+                containerColor = Color(0xFFED1E1E),
+                disabledContainerColor = Color(0xFFF3BBBB),
             ),
-            primaryTextColor = if (textFieldState.text.isNotEmpty()) MSTheme.color.white else Color(0x59DA1B1B)  // 35% 투명도
+            primaryTextColor = if (textFieldState.text.isNotEmpty()) MSTheme.color.white else Color(0x59DA1B1B),  // 35% 투명도
+            secondaryWavyStrokeColor = MSTheme.color.greyG1,
+            primaryWavyStrokeColor = if (textFieldState.text.isNotEmpty()) Color(0xFFED1E1E) else Color(0xFFF3BBBB),
         )
     }
 }

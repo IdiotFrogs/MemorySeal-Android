@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,11 +20,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DisableRippleEffect
+import com.idiotfrogs.designsystem.util.wavyStroke
 
 @Composable
 fun MSButton(
@@ -40,7 +43,8 @@ fun MSButton(
     ),
     elevation: ButtonElevation? = null,
     border: BorderStroke? = null,
-    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    wavyStrokeColor: Color? = null,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     onClick: () -> Unit,
     content: @Composable (RowScope.() -> Unit),
@@ -53,18 +57,31 @@ fun MSButton(
     )
 
     DisableRippleEffect {
-        Button(
-            onClick = onClick,
-            modifier = modifier,
-            enabled = enabled,
-            shape = RoundedCornerShape(cornerRadius),
-            colors = if (isPressed) pressColors else colors,
-            elevation = elevation,
-            border = border,
-            contentPadding = contentPadding,
-            interactionSource = interactionSource,
-            content = content
-        )
+        Box(
+            modifier = modifier.then(
+                if (wavyStrokeColor != null) {
+                    Modifier.wavyStroke(
+                        color = wavyStrokeColor,
+                        cornerRadius = cornerRadius,
+                        fillColor = wavyStrokeColor,
+                        contentPadding = 5.dp
+                    )
+                } else Modifier
+            ),
+            propagateMinConstraints = true,
+        ) {
+            Button(
+                onClick = onClick,
+                enabled = enabled,
+                shape = RoundedCornerShape(cornerRadius),
+                colors = if (isPressed) pressColors else colors,
+                elevation = elevation,
+                border = border,
+                contentPadding = contentPadding,
+                interactionSource = interactionSource,
+                content = content,
+            )
+        }
     }
 }
 

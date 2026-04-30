@@ -1,7 +1,6 @@
-// --- core/designsystem (예: MSActionContainer.kt) ---
-
 package com.idiotfrogs.designsystem.component
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,6 +27,8 @@ fun MSActionContainer(
     hint: String,
     textFieldState: TextFieldState,
     primaryButtonText: String,
+    primaryWavyStrokeColor: Color,
+    secondaryWavyStrokeColor: Color,
     onPrimaryClick: () -> Unit,
     onSecondaryClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -83,6 +84,7 @@ fun MSActionContainer(
                 onClick = onSecondaryClick,
                 colors = secondaryButtonColors,
                 pressColors = secondaryPressColors,
+                wavyStrokeColor = secondaryWavyStrokeColor,
             ) {
                 MSText(
                     text = secondaryButtonText,
@@ -98,6 +100,7 @@ fun MSActionContainer(
                 onClick = onPrimaryClick,
                 colors = primaryButtonColors,
                 pressColors = primaryPressColors,
+                wavyStrokeColor = primaryWavyStrokeColor,
             ) {
                 MSText(
                     text = primaryButtonText,
