@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -40,6 +41,13 @@ fun HomeHeader(
         profileUrl?.let {
             GlideImage(
                 modifier = Modifier
+                    .wavyStroke(
+                        color = MSTheme.color.greyG5,
+                        strokeWidth = 2.dp,
+                        cornerRadius = 16.dp,
+                        amplitude = (0.5).dp,
+                        spacing = 1.dp,
+                    )
                     .noRippleClickable(navigateToProfile)
                     .size(32.dp)
                     .clip(CircleShape),

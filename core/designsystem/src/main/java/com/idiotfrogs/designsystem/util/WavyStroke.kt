@@ -23,6 +23,7 @@ import kotlin.math.sin
 
 fun Modifier.wavyStroke(
     color: Color,
+    isBottom: Boolean = false, // 밑 줄만 그릴 건지
     strokeWidth: Dp = 3.dp,
     cornerRadius: Dp = 12.dp,
     amplitude: Dp = 2.dp,   // wavy가 얼마나 바깥/안쪽으로 흔들릴지 정하는 값입니다.
@@ -50,13 +51,26 @@ fun Modifier.wavyStroke(
                 .coerceAtLeast(0f)
                 .coerceAtMost(min(rect.width, rect.height) / 2f)
 
-            val path = makeWavyPath(
-                rect = rect,
-                cornerRadius = radius,
-                spacing = spacingPx,
-                amplitude = ampPx,
-                seed = seed + size.width.roundToInt() + size.height.roundToInt() * 1_000_003L,
-            )
+            val path = if (isBottom) {
+                makeBottomWavyPath(
+                    width = size.width,
+                    height = size.height,
+                    spacing = spacingPx,
+                    amplitude = ampPx,
+                    seed = seed,
+                    strokeWidth = strokePx,
+                )
+            } else {
+                makeWavyPath(
+                    rect = rect,
+                    cornerRadius = radius,
+                    spacing = spacingPx,
+                    amplitude = ampPx,
+                    seed = seed + size.width.roundToInt() + size.height.roundToInt() * 1_000_003L,
+                )
+            }
+
+
 
             onDrawWithContent {
                 fillColor?.let {
@@ -155,6 +169,49 @@ private fun makeWavyPath(
         }
 
         close()
+    }
+}
+
+private fun makeBottomWavyPath(
+    width: Float,
+    height: Float,
+    spacing: Float,
+    amplitude: Float,
+    seed: Long,
+    strokeWidth: Float,
+): Path {
+    val yBase = height - strokeWidth / 2f
+
+    val length = width
+    val count = max(1, (length / spacing).toInt())
+
+    var nextSeed = seed
+
+    val points = mutableListOf<Offset>()
+
+    repeat(count + 1) { i ->
+        val t = i / count.toFloat()
+        val x = width * t
+
+        nextSeed = nextSeed * 6364136223846793005L + 1442695040888963407L
+        val random = ((nextSeed ushr 1) % 2000L) / 1000f - 1f
+        val offset = random * amplitude
+
+        points += Offset(x, yBase + offset)
+    }
+
+    return Path().apply {
+        if (points.isEmpty()) return@apply
+
+        val start = midpoint(points.first(), points.getOrElse(1) { points.first() })
+        moveTo(start.x, start.y)
+
+        points.zipWithNext { current, next ->
+            val mid = midpoint(current, next)
+            quadraticTo(current.x, current.y, mid.x, mid.y)
+        }
+
+        lineTo(points.last().x, points.last().y)
     }
 }
 

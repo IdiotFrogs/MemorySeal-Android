@@ -1,13 +1,11 @@
 package com.idiotfrogs.home.component
 
-import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -20,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.wavyStroke
 
 enum class HomeTab(val title: String) {
     CREATED("생성한 티켓"), JOINED("합류한 티켓")
@@ -32,31 +31,24 @@ fun HomeTabBar(
     onClick: (HomeTab) -> Unit,
 ) {
     val homeTabs = remember { HomeTab.entries }
-    val startInset by animateDpAsState(
-        targetValue = if (selectedTab.ordinal == 0) 20.dp else 0.dp
-    )
-    val endInset by animateDpAsState(
-        targetValue = if (selectedTab.ordinal == HomeTab.entries.lastIndex) 20.dp else 0.dp
-    )
+
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
         TabRow(
             selectedTabIndex = selectedTab.ordinal,
             containerColor = MSTheme.color.white,
             indicator = { tabPositions ->
-                TabRowDefaults.SecondaryIndicator(
+                Box(
                     modifier = Modifier
                         .tabIndicatorOffset(tabPositions[selectedTab.ordinal])
-                        .padding(start = startInset, end = endInset),
-                    height = 2.dp,
-                    color = MSTheme.color.black
+                        .padding(start = 54.dp, end = 54.dp)
+                        .wavyStroke(
+                            color = MSTheme.color.greyG5,
+                            isBottom = true,
+                            spacing = 3.dp
+                    )
                 )
             },
-            divider = {
-                HorizontalDivider(
-                    thickness = 1.dp,
-                    color = MSTheme.color.greyG1
-                )
-            }
+            divider = {}
         ) {
             homeTabs.forEach { homeTab ->
                 HomeTabItem(
@@ -82,7 +74,7 @@ fun HomeTabItem(
         onClick = onClick
     ) {
         MSText(
-            modifier = Modifier.padding(vertical = (9.5).dp),
+            modifier = Modifier.padding(vertical = 16.dp),
             text = text,
             fontSize = 16.dp,
         )
