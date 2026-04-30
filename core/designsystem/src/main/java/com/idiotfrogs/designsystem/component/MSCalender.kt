@@ -1,9 +1,8 @@
 package com.idiotfrogs.designsystem.component
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,11 +11,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,15 +23,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.DevicePreview
 import com.idiotfrogs.designsystem.util.noRippleClickable
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.R
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -88,38 +85,51 @@ fun MSCalender(
 
     Column(
         modifier = Modifier
-            .border(1.dp, MSTheme.color.greyG2, RoundedCornerShape(12.dp))
-            .padding(12.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            MSText(
-                text = "${currentYearMonth.year}년 ${currentYearMonth.month.number}월",
-                fontSize = 14.dp,
-                color = MSTheme.color.greyG5
+            .wavyStroke(
+                color = MSTheme.color.greyG1,
+                fillColor = null,
+                contentPadding = 0.dp,
             )
-            Spacer(Modifier.weight(1f))
+            .padding(horizontal = 20.dp, vertical = 24.dp)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
             Icon(
-                modifier = Modifier.noRippleClickable {
-                    if (canGoToPrevMonth) currentYearMonth = currentYearMonth.minusMonth()
-                },
+                modifier = Modifier
+                    .size(20.dp)
+                    .align(Alignment.CenterStart)
+                    .noRippleClickable {
+                        if (canGoToPrevMonth) {
+                            currentYearMonth = currentYearMonth.minusMonth()
+                        }
+                    },
                 painter = painterResource(R.drawable.ic_calender_before),
                 contentDescription = "이전 달",
-                tint = if (canGoToPrevMonth) Color.Unspecified else MSTheme.color.greyG2
+//                tint = if (canGoToPrevMonth) Color.Unspecified else MSTheme.color.greyG2,
             )
-            Spacer(Modifier.width(8.dp))
+
+            MSText(
+                modifier = Modifier.align(Alignment.Center),
+                text = "${currentYearMonth.year}년 ${currentYearMonth.month.number}월",
+                fontSize = 16.dp,
+                color = MSTheme.color.greyG5,
+            )
+
             Icon(
-                modifier = Modifier.noRippleClickable {
-                    currentYearMonth = currentYearMonth.plusMonth()
-                },
+                modifier = Modifier
+                    .size(20.dp)
+                    .align(Alignment.CenterEnd)
+                    .noRippleClickable {
+                        currentYearMonth = currentYearMonth.plusMonth()
+                    },
                 painter = painterResource(R.drawable.ic_calender_after),
-                contentDescription = "다음 달"
+                contentDescription = "다음 달",
             )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -139,50 +149,64 @@ fun MSCalender(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(7),
-            userScrollEnabled = false,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height((rowCount * 50).dp)
-        ) {
-            items(dates) { date ->
-                val isCurrentMonth = date.yearMonth == currentYearMonth
-                val isSelected = date == selectedDate.value
-                val isPast = date < today
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val cellSize = maxWidth / 7
+            val gridHeight = cellSize * rowCount.toFloat()
 
-                Box(
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(
-                            when {
-                                isSelected -> MSTheme.color.primaryNormal
-                                else -> Color.Transparent
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(7),
+                userScrollEnabled = false,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(gridHeight)
+            ) {
+                items(dates) { date ->
+                    val isCurrentMonth = date.yearMonth == currentYearMonth
+                    val isSelected = date == selectedDate.value
+                    val isPast = date < today
+
+                    Box(
+                        modifier = Modifier
+                            .aspectRatio(1f)
+                            .then(
+                                if (isSelected) {
+                                    Modifier.wavyStroke(
+                                        color = MSTheme.color.primaryNormal,
+                                        fillColor = MSTheme.color.primaryNormal,
+                                        strokeWidth = 5.dp,
+                                        cornerRadius = 8.dp,
+                                        amplitude = 1.5.dp,
+                                        spacing = 4.dp,
+                                        contentPadding = 0.dp,
+                                        seed = date.day.toLong(),
+                                    )
+                                } else {
+                                    Modifier
+                                }
+                            )
+                            .noRippleClickable {
+                                if (!isPast) {
+                                    selectedDate.value = date
+
+                                    val selectedMonth = date.yearMonth
+                                    if (selectedMonth != currentYearMonth) {
+                                        currentYearMonth = selectedMonth
+                                    }
+
+                                    onDateSelected(date.atTime(0, 0, 0, 0))
+                                }
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        MSText(
+                            text = date.day.toString(),
+                            color = when {
+                                isSelected -> MSTheme.color.white
+                                isCurrentMonth -> MSTheme.color.greyG5
+                                else -> MSTheme.color.greyG2
                             }
                         )
-                        .noRippleClickable {
-                            if (!isPast) {
-                                selectedDate.value = date
-
-                                val selectedMonth = date.yearMonth
-                                if (selectedMonth != currentYearMonth) {
-                                    currentYearMonth = selectedMonth
-                                }
-
-                                onDateSelected(date.atTime(0, 0, 0, 0))
-                            }
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    MSText(
-                        text = date.day.toString(),
-                        color = when {
-                            isSelected -> MSTheme.color.white
-                            isCurrentMonth -> MSTheme.color.greyG5
-                            else -> MSTheme.color.greyG2
-                        }
-                    )
+                    }
                 }
             }
         }
@@ -190,7 +214,7 @@ fun MSCalender(
 }
 
 
-@Preview
+@DevicePreview
 @Composable
 private fun MsCalenderPreview() {
     Column(

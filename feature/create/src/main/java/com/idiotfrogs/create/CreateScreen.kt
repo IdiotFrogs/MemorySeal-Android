@@ -1,8 +1,9 @@
 package com.idiotfrogs.create
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -37,7 +39,9 @@ import com.idiotfrogs.designsystem.component.MSDetailHeader
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.keyboardAutoScroll
 import com.idiotfrogs.designsystem.util.noRippleClickable
+import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
 import com.idiotfrogs.designsystem.util.rememberPickerState
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes.*
@@ -92,94 +96,123 @@ private fun CreateScreen(
     val contentTextFieldState = rememberTextFieldState()
     val scrollState = rememberScrollState()
     val (imageUri, launchImagePicker) = rememberPickerState()
+    val isShowKeyboard = rememberKeyboardVisibility()
 
     val today = Clock.System.todayIn(TimeZone.currentSystemDefault()).atTime(0, 0, 0, 0)
     val selectedDate = remember { mutableStateOf(today) }
 
     val enabled = titleTextFieldState.text.isNotEmpty() && imageUri != null
 
+    val buttonHorizontalPadding by animateDpAsState(if (isShowKeyboard) 0.dp else 20.dp)
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MSTheme.color.white)
             .systemBarsPadding()
-            .padding(horizontal = 20.dp)
             .keyboardAutoScroll(scrollState)
     ) {
-        MSDetailHeader(
-            title = "타임 티켓 생성",
-            paddingValues = PaddingValues(vertical = 16.dp),
-            navigateToBack = { onAction(CreateAction.NavigateToBack) }
-        )
-        Spacer(Modifier.height(24.dp))
         Column(
             modifier = Modifier
-                .verticalScroll(state = scrollState)
-                .weight(1f),
+                .weight(1f)
+                .padding(horizontal = 20.dp)
         ) {
-            MSText(
-                text = "사진",
-                fontSize = 12.dp,
-                fontWeight = FontWeight.Medium,
-                color = MSTheme.color.greyG5
+            MSDetailHeader(
+                title = "타임 티켓 생성",
+                paddingValues = PaddingValues(vertical = 16.dp),
+                navigateToBack = { onAction(CreateAction.NavigateToBack) }
             )
-            Spacer(Modifier.height(8.dp))
-            imageUri?.let {
-                GlideImage(
-                    imageModel = { imageUri },
-                    modifier = Modifier
-                        .noRippleClickable { launchImagePicker() }
-                        .size(120.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                )
-            } ?: Image(
-                modifier = Modifier
-                    .noRippleClickable { launchImagePicker() }
-                    .border(1.dp, MSTheme.color.greyG2, RoundedCornerShape(12.dp))
-                    .padding(48.dp),
-                painter = painterResource(R.drawable.ic_photo),
-                contentDescription = "사진"
-            )
-            Spacer(Modifier.height(16.dp))
-            MSText(
-                text = "제목",
-                fontSize = 12.dp,
-                fontWeight = FontWeight.Medium,
-                color = MSTheme.color.greyG5
-            )
-            Spacer(Modifier.height(8.dp))
-            MSTextField(
-                modifier = Modifier.fillMaxWidth(),
-                textFieldState = titleTextFieldState,
-                hint = "제목을 입력해주세요.",
-            )
-            Spacer(Modifier.height(16.dp))
-            MSText(
-                text = "간단한 설명",
-                fontSize = 12.dp,
-                fontWeight = FontWeight.Medium,
-                color = MSTheme.color.greyG5
-            )
-            Spacer(Modifier.height(8.dp))
-            MSTextField(
-                modifier = Modifier.fillMaxWidth(),
-                textFieldState = contentTextFieldState,
-                hint = "설명을 입력해주세요.",
-            )
-            Spacer(Modifier.height(16.dp))
-            MSText(
-                text = "오픈 날짜",
-                fontSize = 12.dp,
-                fontWeight = FontWeight.Medium,
-                color = MSTheme.color.greyG5
-            )
-            Spacer(Modifier.height(8.dp))
-            MSCalender { selectedDate.value = it }
             Spacer(Modifier.height(24.dp))
+            Column(
+                modifier = Modifier
+                    .verticalScroll(state = scrollState)
+                    .weight(1f),
+            ) {
+                MSText(
+                    text = "사진",
+                    fontSize = 12.dp,
+                    fontWeight = FontWeight.Medium,
+                    color = MSTheme.color.greyG5
+                )
+                Spacer(Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .size(120.dp)
+                        .noRippleClickable { launchImagePicker() }
+                        .wavyStroke(
+                            color = if (imageUri != null) MSTheme.color.greyG5 else MSTheme.color.greyG1,
+                            fillColor = null,
+                            strokeWidth = 3.dp,
+                            cornerRadius = 12.dp,
+                            contentPadding = 0.dp,
+                            clipContent = true
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    imageUri?.let {
+                        GlideImage(
+                            imageModel = { imageUri },
+                            modifier = Modifier
+                                .matchParentSize()
+                                .clip(RoundedCornerShape(12.dp)),
+                        )
+                    } ?: Image(
+                        painter = painterResource(R.drawable.ic_add),
+                        contentDescription = "사진 추가",
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
+
+                Spacer(Modifier.height(16.dp))
+                MSText(
+                    text = "제목",
+                    fontSize = 12.dp,
+                    fontWeight = FontWeight.Medium,
+                    color = MSTheme.color.greyG5
+                )
+                Spacer(Modifier.height(8.dp))
+                MSTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    textFieldState = titleTextFieldState,
+                    hint = "제목을 입력해주세요.",
+                )
+                Spacer(Modifier.height(16.dp))
+                MSText(
+                    text = "간단한 설명",
+                    fontSize = 12.dp,
+                    fontWeight = FontWeight.Medium,
+                    color = MSTheme.color.greyG5
+                )
+                Spacer(Modifier.height(8.dp))
+                MSTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    textFieldState = contentTextFieldState,
+                    hint = "설명을 입력해주세요.",
+                )
+                Spacer(Modifier.height(16.dp))
+                MSText(
+                    text = "오픈 날짜",
+                    fontSize = 12.dp,
+                    fontWeight = FontWeight.Medium,
+                    color = MSTheme.color.greyG5
+                )
+                Spacer(Modifier.height(8.dp))
+                MSCalender { selectedDate.value = it }
+                Spacer(Modifier.height(24.dp))
+            }
         }
         MSButton(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .padding(horizontal = buttonHorizontalPadding),
             enabled = enabled,
+            isRounded = !isShowKeyboard,
+            wavyStrokeColor = if (enabled) {
+                MSTheme.color.primaryNormal
+            } else {
+                MSTheme.color.primaryLight
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = MSTheme.color.primaryNormal,
                 disabledContainerColor = MSTheme.color.primaryLight

@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.PI
@@ -30,6 +31,7 @@ fun Modifier.wavyStroke(
     seed: Long = 0xC0FFEE_BABEL,
     fillColor: Color? = null,
     contentPadding: Dp = 0.dp,
+    clipContent: Boolean = false,
 ): Modifier = this.then(
     Modifier
         .drawWithCache {
@@ -63,7 +65,13 @@ fun Modifier.wavyStroke(
                     drawPath(path = path, color = it)
                 }
 
-                drawContent()
+                if (clipContent) {
+                    clipPath(path) {
+                        this@onDrawWithContent.drawContent()
+                    }
+                } else {
+                    drawContent()
+                }
 
                 drawPath(
                     path = path,
