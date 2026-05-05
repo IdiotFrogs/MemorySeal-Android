@@ -76,7 +76,7 @@ fun MSTextField(
         decorator = { innerTextField ->
             Box(
                 modifier = Modifier
-                    .heightIn(48.dp)
+                    .heightIn(54.dp)  // UI : 48dp + 테두리 3+3 = 6dp => 54dp
                     .fillMaxWidth()
                     .wavyStroke(
                         color = if (isFocused) MSTheme.color.primaryNormal else MSTheme.color.greyG1,
@@ -87,7 +87,7 @@ fun MSTextField(
                 Box(
                     modifier = Modifier
                         .matchParentSize()
-                        .padding(12.dp),
+                        .padding(15.dp), // UI : 12dp + 테두리 3dp => 15dp
                     contentAlignment = Alignment.CenterStart,
                 ) {
                     if (textFieldState.text.isEmpty()) {
