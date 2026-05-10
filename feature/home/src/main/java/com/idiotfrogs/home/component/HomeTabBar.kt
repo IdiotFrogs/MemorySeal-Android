@@ -18,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.DrawType
 import com.idiotfrogs.designsystem.util.wavyStroke
 
 enum class HomeTab(val title: String) {
@@ -40,10 +41,10 @@ fun HomeTabBar(
                 Box(
                     modifier = Modifier
                         .tabIndicatorOffset(tabPositions[selectedTab.ordinal])
-                        .padding(start = 54.dp, end = 54.dp)
+                        .padding(horizontal = 54.dp)
                         .wavyStroke(
                             color = MSTheme.color.greyG5,
-                            isBottom = true,
+                            drawType = DrawType.BOTTOM,
                             spacing = 3.dp
                     )
                 )
