@@ -203,11 +203,11 @@ fun HomeScreen(
                 val data = data.capsules[role].orEmpty()
 
                 LazyColumn(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
                         top = 24.dp,
-                        start = 16.dp,
-                        end = 16.dp
+                        start = 20.dp,
+                        end = 20.dp
                     ),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(16.dp),

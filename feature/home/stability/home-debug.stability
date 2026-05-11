@@ -21,16 +21,6 @@ public fun com.idiotfrogs.home.HomeScreen(showToast: kotlin.Boolean, data: com.i
     - onAction: STABLE (function type)
 
 @Composable
-public fun com.idiotfrogs.home.component.DashedDivider(modifier: androidx.compose.ui.Modifier, color: androidx.compose.ui.graphics.Color, dashDp: androidx.compose.ui.unit.Dp, strokeDp: androidx.compose.ui.unit.Dp): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - modifier: STABLE (marked @Stable or @Immutable)
-    - color: STABLE (marked @Stable or @Immutable)
-    - dashDp: STABLE (marked @Stable or @Immutable)
-    - strokeDp: STABLE (marked @Stable or @Immutable)
-
-@Composable
 public fun com.idiotfrogs.home.component.HomeHeader(profileUrl: kotlin.String?, navigateToProfile: kotlin.Function0<kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true

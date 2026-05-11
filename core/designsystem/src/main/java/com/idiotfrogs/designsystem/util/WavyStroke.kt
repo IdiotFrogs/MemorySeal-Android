@@ -22,8 +22,11 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
+enum class DrawType { TOP, BOTTOM, START, END, ALL }
+
 fun Modifier.wavyStroke(
     color: Color,
+    drawType: DrawType = DrawType.ALL,
     strokeWidth: Dp = 3.dp,
     cornerRadius: Dp = 12.dp,
     amplitude: Dp = 2.dp,   // wavy가 얼마나 바깥/안쪽으로 흔들릴지 정하는 값입니다.
@@ -52,13 +55,47 @@ fun Modifier.wavyStroke(
                 .coerceAtLeast(0f)
                 .coerceAtMost(min(rect.width, rect.height) / 2f)
 
-            val path = makeWavyPath(
-                rect = rect,
-                cornerRadius = radius,
-                spacing = spacingPx,
-                amplitude = ampPx,
-                seed = seed + size.width.roundToInt() + size.height.roundToInt() * 1_000_003L,
-            )
+            val path = when (drawType) {
+                DrawType.TOP -> makeTopWavyPath(
+                    width = size.width,
+                    spacing = spacingPx,
+                    amplitude = ampPx,
+                    seed = seed,
+                    strokeWidth = strokePx,
+                )
+                DrawType.BOTTOM -> makeBottomWavyPath(
+                    width = size.width,
+                    height = size.height,
+                    spacing = spacingPx,
+                    amplitude = ampPx,
+                    seed = seed,
+                    strokeWidth = strokePx,
+                )
+                DrawType.START -> makeStartWavyPath(
+                    height = size.height,
+                    spacing = spacingPx,
+                    amplitude = ampPx,
+                    seed = seed,
+                    strokeWidth = strokePx,
+                )
+                DrawType.END -> makeEndWavyPath(
+                    width = size.width,
+                    height = size.height,
+                    spacing = spacingPx,
+                    amplitude = ampPx,
+                    seed = seed,
+                    strokeWidth = strokePx,
+                )
+                DrawType.ALL -> {
+                    makeWavyPath(
+                        rect = rect,
+                        cornerRadius = radius,
+                        spacing = spacingPx,
+                        amplitude = ampPx,
+                        seed = seed + size.width.roundToInt() + size.height.roundToInt() * 1_000_003L,
+                    )
+                }
+            }
 
             onDrawWithContent {
                 fillColor?.let {
@@ -163,6 +200,132 @@ private fun makeWavyPath(
         }
 
         close()
+    }
+}
+
+private fun makeTopWavyPath(
+    width: Float,
+    spacing: Float,
+    amplitude: Float,
+    seed: Long,
+    strokeWidth: Float,
+): Path {
+    val yBase = strokeWidth / 2f
+    val count = max(1, (width / spacing).toInt())
+
+    return makeSingleAxisWavyPath(
+        count = count,
+        amplitude = amplitude,
+        seed = seed,
+    ) { t, offset ->
+        Offset(
+            x = width * t,
+            y = yBase + offset,
+        )
+    }
+}
+
+private fun makeBottomWavyPath(
+    width: Float,
+    height: Float,
+    spacing: Float,
+    amplitude: Float,
+    seed: Long,
+    strokeWidth: Float,
+): Path {
+    val yBase = height - strokeWidth / 2f
+    val count = max(1, (width / spacing).toInt())
+
+    return makeSingleAxisWavyPath(
+        count = count,
+        amplitude = amplitude,
+        seed = seed,
+    ) { t, offset ->
+        Offset(
+            x = width * t,
+            y = yBase + offset,
+        )
+    }
+}
+
+private fun makeStartWavyPath(
+    height: Float,
+    spacing: Float,
+    amplitude: Float,
+    seed: Long,
+    strokeWidth: Float,
+): Path {
+    val xBase = strokeWidth / 2f
+    val count = max(1, (height / spacing).toInt())
+
+    return makeSingleAxisWavyPath(
+        count = count,
+        amplitude = amplitude,
+        seed = seed,
+    ) { t, offset ->
+        Offset(
+            x = xBase + offset,
+            y = height * t,
+        )
+    }
+}
+
+private fun makeEndWavyPath(
+    width: Float,
+    height: Float,
+    spacing: Float,
+    amplitude: Float,
+    seed: Long,
+    strokeWidth: Float,
+): Path {
+    val xBase = width - strokeWidth / 2f
+    val count = max(1, (height / spacing).toInt())
+
+    return makeSingleAxisWavyPath(
+        count = count,
+        amplitude = amplitude,
+        seed = seed,
+    ) { t, offset ->
+        Offset(
+            x = xBase + offset,
+            y = height * t,
+        )
+    }
+}
+
+/** 단일 Axis로 WavyPath를 그리는 공통함수 */
+private fun makeSingleAxisWavyPath(
+    count: Int,
+    amplitude: Float,
+    seed: Long,
+    pointAt: (t: Float, offset: Float) -> Offset,
+): Path {
+    var nextSeed = seed
+
+    val points = buildList {
+        repeat(count + 1) { i ->
+            val t = i / count.toFloat()
+
+            nextSeed = nextSeed * 6364136223846793005L + 1442695040888963407L
+            val random = ((nextSeed ushr 1) % 2000L) / 1000f - 1f
+            val offset = random * amplitude
+
+            add(pointAt(t, offset))
+        }
+    }
+
+    return Path().apply {
+        if (points.isEmpty()) return@apply
+
+        val start = midpoint(points.first(), points.getOrElse(1) { points.first() })
+        moveTo(start.x, start.y)
+
+        points.zipWithNext { current, next ->
+            val mid = midpoint(current, next)
+            quadraticTo(current.x, current.y, mid.x, mid.y)
+        }
+
+        lineTo(points.last().x, points.last().y)
     }
 }
 
