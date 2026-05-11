@@ -33,6 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -192,36 +194,64 @@ fun HomeScreen(
                 selectedTab = currentTab,
                 onClick = { currentTab = it },
             )
-            HorizontalPager(
-                state = pagerState,
-            ) { page ->
-                val tab = HomeTab.entries[page]
-                val role = when (tab) {
-                    HomeTab.CREATED -> TimeCapsuleRole.HOST
-                    HomeTab.JOINED -> TimeCapsuleRole.CONTRIBUTOR
-                }
-                val data = data.capsules[role].orEmpty()
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(
-                        top = 24.dp,
-                        start = 20.dp,
-                        end = 20.dp
-                    ),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+            if (data.capsules.isEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 90.dp),
+                    verticalArrangement = Arrangement.spacedBy(32.dp, alignment = Alignment.Bottom)
                 ) {
-                    items(data) {
-                        HomeTicket(
-                            modifier = Modifier.noRippleClickable {
-                                onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
-                            },
-                            countdown = it.openedAt.toDday(),
-                            targetDate = it.openedAt.toYearMonthDay(),
-                            title = it.title,
-                            imageUrl = it.mainImageUrl
-                        )
+                    MSText(
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(end = 15.dp),
+                        text = "생성된 티켓이 없습니다\n버튼을 눌러서 티켓을 추가해 보세요",
+                        fontSize = 14.dp,
+                        fontWeight = FontWeight.Normal,
+                        color = MSTheme.color.greyG4,
+                        textAlign = TextAlign.Center
+                    )
+                    Image(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(end = 107.dp)
+                            .size(width = 92.dp, height = 246.dp),
+                        painter = painterResource(R.drawable.img_home_empty),
+                        contentDescription = "empty_home"
+                    )
+                }
+            } else {
+                HorizontalPager(
+                    state = pagerState,
+                ) { page ->
+                    val tab = HomeTab.entries[page]
+                    val role = when (tab) {
+                        HomeTab.CREATED -> TimeCapsuleRole.HOST
+                        HomeTab.JOINED -> TimeCapsuleRole.CONTRIBUTOR
+                    }
+                    val data = data.capsules[role].orEmpty()
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(
+                            top = 24.dp,
+                            start = 20.dp,
+                            end = 20.dp
+                        ),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        items(data) {
+                            HomeTicket(
+                                modifier = Modifier.noRippleClickable {
+                                    onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
+                                },
+                                countdown = it.openedAt.toDday(),
+                                targetDate = it.openedAt.toYearMonthDay(),
+                                title = it.title,
+                                imageUrl = it.mainImageUrl
+                            )
+                        }
                     }
                 }
             }

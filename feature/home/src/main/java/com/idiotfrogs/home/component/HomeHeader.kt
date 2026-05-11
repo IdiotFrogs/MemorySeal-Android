@@ -47,6 +47,7 @@ fun HomeHeader(
                         cornerRadius = 16.dp,
                         amplitude = (0.5).dp,
                         spacing = 1.dp,
+                        clipContent = true
                     )
                     .noRippleClickable(navigateToProfile)
                     .size(32.dp)
