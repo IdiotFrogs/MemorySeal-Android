@@ -160,7 +160,7 @@ private fun CreateScreen(
                                 .clip(RoundedCornerShape(12.dp)),
                         )
                     } ?: Image(
-                        painter = painterResource(R.drawable.ic_add),
+                        painter = painterResource(R.drawable.ic_add_create),
                         contentDescription = "사진 추가",
                         modifier = Modifier.size(24.dp),
                     )
