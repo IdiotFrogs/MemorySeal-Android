@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,10 +22,12 @@ import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.resource.R
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun ProfileCard(
     modifier: Modifier = Modifier,
+    imageUrl: String?,
     nickname: String,
     onEditClick: () -> Unit,
 ) {
@@ -36,11 +40,21 @@ fun ProfileCard(
             .padding(horizontal = 16.dp, vertical = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            modifier = Modifier.size(54.dp),
-            painter = painterResource(R.drawable.img_profile_54),
-            contentDescription = "empty_profile"
-        )
+        imageUrl?.let {
+            GlideImage(
+                modifier = Modifier
+                    .size(54.dp)
+                    .clip(CircleShape),
+                imageModel = { it }
+            )
+        } ?: run {
+            Image(
+                modifier = Modifier.size(54.dp),
+                painter = painterResource(R.drawable.img_profile_54),
+                contentDescription = "empty_profile"
+            )
+        }
+
         Spacer(modifier = Modifier.width(10.dp))
         MSText(
             text = nickname,
@@ -84,6 +98,7 @@ fun ProfileCard(
 private fun ProfileCardPreview() {
     ProfileCard(
         nickname = "용감한사자처럼",
+        imageUrl = null,
         onEditClick = {}
     )
 }
