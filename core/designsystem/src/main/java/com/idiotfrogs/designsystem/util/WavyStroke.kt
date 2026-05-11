@@ -69,14 +69,14 @@ fun Modifier.wavyStroke(
                     seed = seed,
                     strokeWidth = strokePx,
                 )
-                DrawType.START -> makeLeftWavyPath(
+                DrawType.START -> makeStartWavyPath(
                     height = size.height,
                     spacing = spacingPx,
                     amplitude = ampPx,
                     seed = seed,
                     strokeWidth = strokePx,
                 )
-                DrawType.END -> makeRightWavyPath(
+                DrawType.END -> makeEndWavyPath(
                     width = size.width,
                     height = size.height,
                     spacing = spacingPx,
@@ -240,7 +240,7 @@ private fun makeBottomWavyPath(
     }
 }
 
-private fun makeLeftWavyPath(
+private fun makeStartWavyPath(
     height: Float,
     spacing: Float,
     amplitude: Float,
@@ -262,7 +262,7 @@ private fun makeLeftWavyPath(
     }
 }
 
-private fun makeRightWavyPath(
+private fun makeEndWavyPath(
     width: Float,
     height: Float,
     spacing: Float,
