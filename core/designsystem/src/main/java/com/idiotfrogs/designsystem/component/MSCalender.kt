@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -105,9 +106,9 @@ fun MSCalender(
                             currentYearMonth = currentYearMonth.minusMonth()
                         }
                     },
-                painter = painterResource(R.drawable.ic_calender_before),
+                painter = painterResource(R.drawable.ic_chevron_left),
                 contentDescription = "이전 달",
-//                tint = if (canGoToPrevMonth) Color.Unspecified else MSTheme.color.greyG2,
+                tint = if (canGoToPrevMonth) Color.Unspecified else MSTheme.color.greyG2,
             )
 
             MSText(
@@ -124,7 +125,7 @@ fun MSCalender(
                     .noRippleClickable {
                         currentYearMonth = currentYearMonth.plusMonth()
                     },
-                painter = painterResource(R.drawable.ic_calender_after),
+                painter = painterResource(R.drawable.ic_chevron_right),
                 contentDescription = "다음 달",
             )
         }

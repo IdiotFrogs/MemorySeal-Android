@@ -131,10 +131,11 @@ private fun CreateScreen(
                     .weight(1f),
             ) {
                 MSText(
+                    modifier = Modifier.padding(start = 6.dp),
                     text = "사진",
                     fontSize = 12.dp,
                     fontWeight = FontWeight.Medium,
-                    color = MSTheme.color.greyG5
+                    color = MSTheme.color.greyG3
                 )
                 Spacer(Modifier.height(8.dp))
                 Box(
@@ -167,10 +168,11 @@ private fun CreateScreen(
 
                 Spacer(Modifier.height(16.dp))
                 MSText(
+                    modifier = Modifier.padding(start = 6.dp),
                     text = "제목",
                     fontSize = 12.dp,
                     fontWeight = FontWeight.Medium,
-                    color = MSTheme.color.greyG5
+                    color = MSTheme.color.greyG3
                 )
                 Spacer(Modifier.height(8.dp))
                 MSTextField(
@@ -180,10 +182,11 @@ private fun CreateScreen(
                 )
                 Spacer(Modifier.height(16.dp))
                 MSText(
+                    modifier = Modifier.padding(start = 6.dp),
                     text = "간단한 설명",
                     fontSize = 12.dp,
                     fontWeight = FontWeight.Medium,
-                    color = MSTheme.color.greyG5
+                    color = MSTheme.color.greyG3
                 )
                 Spacer(Modifier.height(8.dp))
                 MSTextField(
@@ -193,10 +196,11 @@ private fun CreateScreen(
                 )
                 Spacer(Modifier.height(16.dp))
                 MSText(
+                    modifier = Modifier.padding(start = 6.dp),
                     text = "오픈 날짜",
                     fontSize = 12.dp,
                     fontWeight = FontWeight.Medium,
-                    color = MSTheme.color.greyG5
+                    color = MSTheme.color.greyG3
                 )
                 Spacer(Modifier.height(8.dp))
                 MSCalender { selectedDate.value = it }
