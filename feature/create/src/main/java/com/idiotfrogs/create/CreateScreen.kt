@@ -37,10 +37,12 @@ import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.component.MSDetailHeader
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.DrawType
 import com.idiotfrogs.designsystem.util.keyboardAutoScroll
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
 import com.idiotfrogs.designsystem.util.rememberPickerState
+import com.idiotfrogs.designsystem.util.wavyBackground
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
@@ -205,14 +207,15 @@ private fun CreateScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .padding(horizontal = buttonHorizontalPadding),
+                .padding(horizontal = buttonHorizontalPadding)
+                .wavyBackground(
+                    color = if (enabled) MSTheme.color.primaryNormal else MSTheme.color.primaryLight,
+                    drawType = if (isShowKeyboard) DrawType.TOP else DrawType.ALL,
+                    contentPadding = if (isShowKeyboard) 0.dp else 5.dp,
+                    clipContent = true,
+                ),
             enabled = enabled,
             isRounded = !isShowKeyboard,
-            wavyStrokeColor = if (enabled) {
-                MSTheme.color.primaryNormal
-            } else {
-                MSTheme.color.primaryLight
-            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = MSTheme.color.primaryNormal,
                 disabledContainerColor = MSTheme.color.primaryLight
