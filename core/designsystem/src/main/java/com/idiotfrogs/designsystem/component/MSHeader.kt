@@ -63,7 +63,7 @@ fun MSDetailHeaderPreview() {
             navigateToBack = {}
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_plus),
+                painter = painterResource(R.drawable.ic_add),
                 contentDescription = "Back"
             )
         }
