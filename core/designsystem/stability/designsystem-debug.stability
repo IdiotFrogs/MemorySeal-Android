@@ -5,7 +5,7 @@
 //   ./gradlew :designsystem:stabilityDump
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.MSActionContainer(title: kotlin.String, hint: kotlin.String, textFieldState: androidx.compose.foundation.text.input.TextFieldState, primaryButtonText: kotlin.String, primaryWavyStrokeColor: androidx.compose.ui.graphics.Color, secondaryWavyStrokeColor: androidx.compose.ui.graphics.Color, onPrimaryClick: kotlin.Function0<kotlin.Unit>, onSecondaryClick: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, secondaryButtonText: kotlin.String, primaryButtonWeight: kotlin.Float, secondaryButtonWeight: kotlin.Float, focusedBorderColor: androidx.compose.ui.graphics.Color, unfocusedBorderColor: androidx.compose.ui.graphics.Color, primaryButtonColors: androidx.compose.material3.ButtonColors, primaryPressColors: androidx.compose.material3.ButtonColors, primaryTextColor: androidx.compose.ui.graphics.Color, secondaryButtonColors: androidx.compose.material3.ButtonColors, secondaryPressColors: androidx.compose.material3.ButtonColors, secondaryTextColor: androidx.compose.ui.graphics.Color): kotlin.Unit
+public fun com.idiotfrogs.designsystem.component.MSActionContainer(title: kotlin.String, hint: kotlin.String, textFieldState: androidx.compose.foundation.text.input.TextFieldState, primaryButtonText: kotlin.String, primaryWavyStrokeColor: androidx.compose.ui.graphics.Color, secondaryWavyStrokeColor: androidx.compose.ui.graphics.Color, onPrimaryClick: kotlin.Function0<kotlin.Unit>, onSecondaryClick: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, primaryButtonEnabled: kotlin.Boolean, secondaryButtonText: kotlin.String, primaryButtonWeight: kotlin.Float, secondaryButtonWeight: kotlin.Float, focusedBorderColor: androidx.compose.ui.graphics.Color, unfocusedBorderColor: androidx.compose.ui.graphics.Color, primaryButtonColors: androidx.compose.material3.ButtonColors, primaryPressColors: androidx.compose.material3.ButtonColors, primaryTextColor: androidx.compose.ui.graphics.Color, secondaryButtonColors: androidx.compose.material3.ButtonColors, secondaryPressColors: androidx.compose.material3.ButtonColors, secondaryTextColor: androidx.compose.ui.graphics.Color): kotlin.Unit
   skippable: true
   restartable: true
   params:
@@ -18,6 +18,7 @@ public fun com.idiotfrogs.designsystem.component.MSActionContainer(title: kotlin
     - onPrimaryClick: STABLE (function type)
     - onSecondaryClick: STABLE (function type)
     - modifier: STABLE (marked @Stable or @Immutable)
+    - primaryButtonEnabled: STABLE (primitive type)
     - secondaryButtonText: STABLE (String is immutable)
     - primaryButtonWeight: STABLE (primitive type)
     - secondaryButtonWeight: STABLE (primitive type)
