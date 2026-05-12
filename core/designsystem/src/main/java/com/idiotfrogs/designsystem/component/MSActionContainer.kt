@@ -31,6 +31,7 @@ fun MSActionContainer(
     onPrimaryClick: () -> Unit,
     onSecondaryClick: () -> Unit,
     modifier: Modifier = Modifier,
+    primaryButtonEnabled: Boolean = textFieldState.text.isNotEmpty(),
     secondaryButtonText: String= "취소",
     primaryButtonWeight: Float = 1f,
     secondaryButtonWeight: Float = 1f,
@@ -99,7 +100,7 @@ fun MSActionContainer(
                 modifier = Modifier
                     .weight(primaryButtonWeight)
                     .height(48.dp),
-                enabled = textFieldState.text.isNotEmpty(),
+                enabled = primaryButtonEnabled,
                 onClick = onPrimaryClick,
                 colors = primaryButtonColors,
                 pressColors = primaryPressColors,

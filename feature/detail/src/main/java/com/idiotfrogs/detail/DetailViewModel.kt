@@ -69,7 +69,7 @@ class DetailViewModel @AssistedInject constructor(
     override fun onAction(action: DetailAction) {
         when (action) {
             is DetailAction.NavigateToFriend -> intent { postSideEffect(DetailSideEffect.NavigateToFriend(action.id)) }
-            is DetailAction.NavigateToManagement -> intent { postSideEffect(DetailSideEffect.NavigateToManagement(action.id)) }
+            is DetailAction.NavigateToManagement -> intent { postSideEffect(DetailSideEffect.NavigateToManagement(action.id, action.title)) }
             DetailAction.NavigateToBack -> intent { postSideEffect(DetailSideEffect.NavigateToBack) }
             is DetailAction.SealVote -> sealVote(action.agree)
         }
@@ -89,7 +89,7 @@ data class TimeCapsuleData(
 
 sealed interface DetailAction {
     data class NavigateToFriend(val id: Long) : DetailAction
-    data class NavigateToManagement(val id: Long) : DetailAction
+    data class NavigateToManagement(val id: Long, val title: String) : DetailAction
     data object NavigateToBack : DetailAction
 
     data class SealVote(val agree: Boolean) : DetailAction
@@ -97,6 +97,6 @@ sealed interface DetailAction {
 
 sealed interface DetailSideEffect {
     data class NavigateToFriend(val id: Long) : DetailSideEffect
-    data class NavigateToManagement(val id: Long) : DetailSideEffect
+    data class NavigateToManagement(val id: Long, val title: String) : DetailSideEffect
     data object NavigateToBack : DetailSideEffect
 }

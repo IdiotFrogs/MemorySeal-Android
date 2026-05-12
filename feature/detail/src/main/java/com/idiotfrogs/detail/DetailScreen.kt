@@ -74,7 +74,12 @@ fun DetailRoute(
         when (event) {
             DetailSideEffect.NavigateToBack -> navigator.popBackStack()
             is DetailSideEffect.NavigateToFriend -> navigator.navigate(Routes.Friend(event.id))
-            is DetailSideEffect.NavigateToManagement -> navigator.navigate(Routes.Management(event.id))
+            is DetailSideEffect.NavigateToManagement -> navigator.navigate(
+                Routes.Management(
+                    id = event.id,
+                    title = event.title,
+                )
+            )
         }
     }
 
@@ -158,7 +163,14 @@ fun DetailScreen(
                     .systemBarsPadding()
                     .align(Alignment.TopEnd)
                     .padding(top = 20.dp, end = 20.dp)
-                    .noRippleClickable { onAction(DetailAction.NavigateToManagement(capsuleId)) },
+                    .noRippleClickable {
+                        onAction(
+                            DetailAction.NavigateToManagement(
+                                id = capsuleId,
+                                title = data.capsule?.title.orEmpty(),
+                            )
+                        )
+                    },
                 painter = painterResource(R.drawable.img_management),
                 contentDescription = "Management"
             )
