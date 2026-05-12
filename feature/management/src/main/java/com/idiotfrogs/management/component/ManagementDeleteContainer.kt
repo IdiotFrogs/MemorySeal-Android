@@ -38,7 +38,7 @@ fun BoxScope.ManagementDeleteContainer(
 
     if (isShow) {
         MSActionContainer(
-            title = "삭제를 위해 티켓 이름\n\"$capsuleTitle\"을 입력해주세요.",
+            title = "삭제를 위해 티켓 이름\n\"$capsuleTitle\"을/를 입력해주세요.",
             hint = capsuleTitle,
             textFieldState = textFieldState,
             primaryButtonText = "삭제",
@@ -73,7 +73,7 @@ private fun ManagementDeleteContainerPreview() {
         ManagementDeleteContainer(
             isShow = true,
             textFieldState = textFieldState,
-            capsuleTitle = "나의 티켓",
+            capsuleTitle = "티켓 Title",
             onCancel = { },
             onDelete = { }
         )

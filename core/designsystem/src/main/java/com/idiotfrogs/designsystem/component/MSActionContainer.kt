@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.theme.MSTheme
@@ -66,7 +67,12 @@ fun MSActionContainer(
             .padding(horizontal = 20.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        MSText(text = title, fontSize = 16.dp)
+        MSText(
+            modifier = Modifier.fillMaxWidth(),
+            text = title,
+            fontSize = 16.dp,
+            textAlign = TextAlign.Center,
+        )
         Spacer(modifier = Modifier.height(16.dp))
         MSTextField(
             modifier = Modifier.fillMaxWidth(),
