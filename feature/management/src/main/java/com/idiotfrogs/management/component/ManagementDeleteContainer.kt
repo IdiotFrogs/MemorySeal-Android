@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.idiotfrogs.designsystem.component.MSActionContainer
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.resource.R
 
 @Composable
 fun BoxScope.ManagementDeleteContainer(
@@ -46,6 +45,7 @@ fun BoxScope.ManagementDeleteContainer(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .focusRequester(focusRequester),
+            focusedBorderColor = MSTheme.color.greyG1,
             primaryButtonColors = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFED1E1E),
                 disabledContainerColor = Color(0xFFF3BBBB),

@@ -1,6 +1,5 @@
 package com.idiotfrogs.designsystem.component
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,6 +34,8 @@ fun MSActionContainer(
     secondaryButtonText: String= "취소",
     primaryButtonWeight: Float = 1f,
     secondaryButtonWeight: Float = 1f,
+    focusedBorderColor: Color = MSTheme.color.primaryNormal,
+    unfocusedBorderColor: Color = MSTheme.color.greyG1,
     primaryButtonColors: ButtonColors = ButtonDefaults.buttonColors(
         containerColor = MSTheme.color.primaryNormal,
         disabledContainerColor = MSTheme.color.primaryLight,
@@ -70,6 +71,8 @@ fun MSActionContainer(
             modifier = Modifier.fillMaxWidth(),
             textFieldState = textFieldState,
             hint = hint,
+            focusedBorderColor = focusedBorderColor,
+            unfocusedBorderColor = unfocusedBorderColor,
         )
         Spacer(modifier = Modifier.height(24.dp))
         Row(
