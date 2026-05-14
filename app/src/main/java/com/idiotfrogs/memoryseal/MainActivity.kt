@@ -99,7 +99,10 @@ class MainActivity : ComponentActivity() {
                                     FriendRoute(it.id)
                                 }
                                 entry<Routes.Management> {
-                                    ManagementRoute(capsuleId = it.id)
+                                    ManagementRoute(
+                                        capsuleId = it.id,
+                                        capsuleTitle = it.title,
+                                    )
                                 }
                             },
                         )

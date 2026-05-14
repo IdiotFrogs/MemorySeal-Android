@@ -39,6 +39,8 @@ fun MSTextField(
     hint: String,
     enabled: Boolean = true,
     readOnly: Boolean = false,
+    focusedBorderColor: Color = MSTheme.color.primaryNormal,
+    unfocusedBorderColor: Color = MSTheme.color.greyG1,
     textFieldState: TextFieldState = rememberTextFieldState(),
     focusState: Pair<MutableInteractionSource, Boolean> = rememberFocusState(),
     inputTransformation: InputTransformation? = null,
@@ -79,7 +81,7 @@ fun MSTextField(
                     .heightIn(54.dp)  // UI : 48dp + 테두리 3+3 = 6dp => 54dp
                     .fillMaxWidth()
                     .wavyStroke(
-                        color = if (isFocused) MSTheme.color.primaryNormal else MSTheme.color.greyG1,
+                        color = if (isFocused) focusedBorderColor else unfocusedBorderColor,
                         amplitude = 1.5.dp,
                         spacing = 5.dp,
                     )

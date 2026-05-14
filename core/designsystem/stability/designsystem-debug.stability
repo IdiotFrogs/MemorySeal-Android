@@ -5,7 +5,7 @@
 //   ./gradlew :designsystem:stabilityDump
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.MSActionContainer(title: kotlin.String, hint: kotlin.String, textFieldState: androidx.compose.foundation.text.input.TextFieldState, primaryButtonText: kotlin.String, primaryWavyStrokeColor: androidx.compose.ui.graphics.Color, secondaryWavyStrokeColor: androidx.compose.ui.graphics.Color, onPrimaryClick: kotlin.Function0<kotlin.Unit>, onSecondaryClick: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, secondaryButtonText: kotlin.String, primaryButtonWeight: kotlin.Float, secondaryButtonWeight: kotlin.Float, primaryButtonColors: androidx.compose.material3.ButtonColors, primaryPressColors: androidx.compose.material3.ButtonColors, primaryTextColor: androidx.compose.ui.graphics.Color, secondaryButtonColors: androidx.compose.material3.ButtonColors, secondaryPressColors: androidx.compose.material3.ButtonColors, secondaryTextColor: androidx.compose.ui.graphics.Color): kotlin.Unit
+public fun com.idiotfrogs.designsystem.component.MSActionContainer(title: kotlin.String, hint: kotlin.String, textFieldState: androidx.compose.foundation.text.input.TextFieldState, primaryButtonText: kotlin.String, primaryWavyStrokeColor: androidx.compose.ui.graphics.Color, secondaryWavyStrokeColor: androidx.compose.ui.graphics.Color, onPrimaryClick: kotlin.Function0<kotlin.Unit>, onSecondaryClick: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, primaryButtonEnabled: kotlin.Boolean, secondaryButtonText: kotlin.String, primaryButtonWeight: kotlin.Float, secondaryButtonWeight: kotlin.Float, focusedBorderColor: androidx.compose.ui.graphics.Color, unfocusedBorderColor: androidx.compose.ui.graphics.Color, primaryButtonColors: androidx.compose.material3.ButtonColors, primaryPressColors: androidx.compose.material3.ButtonColors, primaryTextColor: androidx.compose.ui.graphics.Color, secondaryButtonColors: androidx.compose.material3.ButtonColors, secondaryPressColors: androidx.compose.material3.ButtonColors, secondaryTextColor: androidx.compose.ui.graphics.Color): kotlin.Unit
   skippable: true
   restartable: true
   params:
@@ -18,9 +18,12 @@ public fun com.idiotfrogs.designsystem.component.MSActionContainer(title: kotlin
     - onPrimaryClick: STABLE (function type)
     - onSecondaryClick: STABLE (function type)
     - modifier: STABLE (marked @Stable or @Immutable)
+    - primaryButtonEnabled: STABLE (primitive type)
     - secondaryButtonText: STABLE (String is immutable)
     - primaryButtonWeight: STABLE (primitive type)
     - secondaryButtonWeight: STABLE (primitive type)
+    - focusedBorderColor: STABLE (marked @Stable or @Immutable)
+    - unfocusedBorderColor: STABLE (marked @Stable or @Immutable)
     - primaryButtonColors: STABLE (marked @Stable or @Immutable)
     - primaryPressColors: STABLE (marked @Stable or @Immutable)
     - primaryTextColor: STABLE (marked @Stable or @Immutable)
@@ -149,7 +152,7 @@ public fun com.idiotfrogs.designsystem.component.MSText(text: kotlin.String, mod
     - style: STABLE (marked @Stable or @Immutable)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.MSTextField(modifier: androidx.compose.ui.Modifier, hint: kotlin.String, enabled: kotlin.Boolean, readOnly: kotlin.Boolean, textFieldState: androidx.compose.foundation.text.input.TextFieldState, focusState: kotlin.Pair<androidx.compose.foundation.interaction.MutableInteractionSource, kotlin.Boolean>, inputTransformation: androidx.compose.foundation.text.input.InputTransformation?, textStyle: androidx.compose.ui.text.TextStyle, keyboardOptions: androidx.compose.foundation.text.KeyboardOptions, onKeyboardAction: androidx.compose.foundation.text.input.KeyboardActionHandler?, lineLimits: androidx.compose.foundation.text.input.TextFieldLineLimits, onTextLayout: @[ExtensionFunctionType] kotlin.Function2<androidx.compose.ui.unit.Density, @[ParameterName(name = \, cursorBrush: androidx.compose.ui.graphics.Brush, outputTransformation: androidx.compose.foundation.text.input.OutputTransformation?, scrollState: androidx.compose.foundation.ScrollState): kotlin.Unit
+public fun com.idiotfrogs.designsystem.component.MSTextField(modifier: androidx.compose.ui.Modifier, hint: kotlin.String, enabled: kotlin.Boolean, readOnly: kotlin.Boolean, focusedBorderColor: androidx.compose.ui.graphics.Color, unfocusedBorderColor: androidx.compose.ui.graphics.Color, textFieldState: androidx.compose.foundation.text.input.TextFieldState, focusState: kotlin.Pair<androidx.compose.foundation.interaction.MutableInteractionSource, kotlin.Boolean>, inputTransformation: androidx.compose.foundation.text.input.InputTransformation?, textStyle: androidx.compose.ui.text.TextStyle, keyboardOptions: androidx.compose.foundation.text.KeyboardOptions, onKeyboardAction: androidx.compose.foundation.text.input.KeyboardActionHandler?, lineLimits: androidx.compose.foundation.text.input.TextFieldLineLimits, onTextLayout: @[ExtensionFunctionType] kotlin.Function2<androidx.compose.ui.unit.Density, @[ParameterName(name = \, cursorBrush: androidx.compose.ui.graphics.Brush, outputTransformation: androidx.compose.foundation.text.input.OutputTransformation?, scrollState: androidx.compose.foundation.ScrollState): kotlin.Unit
   skippable: true
   restartable: true
   params:
@@ -157,6 +160,8 @@ public fun com.idiotfrogs.designsystem.component.MSTextField(modifier: androidx.
     - hint: STABLE (String is immutable)
     - enabled: STABLE (primitive type)
     - readOnly: STABLE (primitive type)
+    - focusedBorderColor: STABLE (marked @Stable or @Immutable)
+    - unfocusedBorderColor: STABLE (marked @Stable or @Immutable)
     - textFieldState: STABLE (marked @Stable or @Immutable)
     - focusState: STABLE (known stable type)
     - inputTransformation: STABLE (marked @Stable or @Immutable)
