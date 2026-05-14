@@ -46,6 +46,8 @@ fun MSToast(
             .wavyStroke(
                 color = MSTheme.color.greyG4,
                 fillColor = Color(0x7A0B0B0B),  // 48% 투명도
+                amplitude = 1.dp,
+                spacing = 2.dp,
             )
     ) {
         Row(

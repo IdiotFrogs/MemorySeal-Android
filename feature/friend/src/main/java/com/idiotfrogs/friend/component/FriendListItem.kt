@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
@@ -36,7 +37,15 @@ fun FriendListItem(
         GlideImage(
             modifier = Modifier
                 .size(48.dp)
-                .clip(CircleShape),
+                .clip(CircleShape)
+                .wavyStroke(
+                    color = MSTheme.color.greyG5,
+                    strokeWidth = 2.dp,
+                    cornerRadius = 24.dp,
+                    amplitude = 1.dp,
+                    spacing = (1.5).dp,
+                    clipContent = true
+                ),
             imageModel = { profileImageUrl }
         )
         Spacer(Modifier.width(8.dp))
