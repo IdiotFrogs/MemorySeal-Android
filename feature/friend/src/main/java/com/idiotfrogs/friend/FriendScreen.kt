@@ -2,6 +2,7 @@ package com.idiotfrogs.friend
 
 import android.content.ClipData
 import android.content.Intent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDetailHeader
+import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSMenuFab
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.model.MSMenuFabModel
@@ -183,9 +186,11 @@ fun FriendScreen(
                     paddingValues = PaddingValues(horizontal = 0.dp, vertical = 16.dp)
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_plus),
+                        painter = painterResource(R.drawable.ic_add_friend),
                         contentDescription = "메뉴 열기",
-                        modifier = Modifier.noRippleClickable { expanded = true }
+                        modifier = Modifier
+                            .size(24.dp)
+                            .noRippleClickable { expanded = true }
                     )
                 }
             }
@@ -193,16 +198,20 @@ fun FriendScreen(
             if (pendingCollaborators.isEmpty()) {
                 item {
                     Spacer(Modifier.height(25.dp))
-                    Box(Modifier.fillMaxWidth()) {
-                        Icon(
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 75.dp)
+                    ) {
+                        Image(
                             painter = painterResource(R.drawable.img_friend_empty_plus),
                             contentDescription = "emptyIcon",
-                            tint = MSTheme.color.greyG1,
                             modifier = Modifier
+                                .size(124.dp, 262.dp)
                                 .align(Alignment.CenterEnd)
-                                .padding(end = 40.dp)
                         )
                     }
+
                     Spacer(Modifier.height(32.dp))
                     MSText(
                         modifier = Modifier.fillMaxWidth(),
@@ -228,6 +237,11 @@ fun FriendScreen(
                 }
             }
         }
+
+        MSDim(
+            visible = expanded,
+            onDismiss = { expanded = false }
+        )
     }
 }
 
