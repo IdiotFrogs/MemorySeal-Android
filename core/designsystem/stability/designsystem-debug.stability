@@ -53,11 +53,23 @@ public fun com.idiotfrogs.designsystem.component.MSAnnotatedText(text: androidx.
     - style: STABLE (marked @Stable or @Immutable)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.MSCalender(onDateSelected: kotlin.Function1<kotlinx.datetime.LocalDateTime, kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.designsystem.component.MSCalender(showSealDate: kotlin.Boolean, onDateSelected: kotlin.Function1<kotlinx.datetime.LocalDateTime, kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
   params:
+    - showSealDate: STABLE (primitive type)
     - onDateSelected: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.designsystem.component.MSDashHorizontalDivider(modifier: androidx.compose.ui.Modifier, color: androidx.compose.ui.graphics.Color, thickness: androidx.compose.ui.unit.Dp, dashWidth: androidx.compose.ui.unit.Dp, gapWidth: androidx.compose.ui.unit.Dp): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - color: STABLE (marked @Stable or @Immutable)
+    - thickness: STABLE (marked @Stable or @Immutable)
+    - dashWidth: STABLE (marked @Stable or @Immutable)
+    - gapWidth: STABLE (marked @Stable or @Immutable)
 
 @Composable
 public fun com.idiotfrogs.designsystem.component.MSDetailHeader(navigateToBack: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, title: kotlin.String, paddingValues: androidx.compose.foundation.layout.PaddingValues, trailingContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction0<kotlin.Unit>?): kotlin.Unit
@@ -173,6 +185,23 @@ public fun com.idiotfrogs.designsystem.component.MSTextField(modifier: androidx.
     - cursorBrush: STABLE (marked @Stable or @Immutable)
     - outputTransformation: STABLE (marked @Stable or @Immutable)
     - scrollState: STABLE (marked @Stable or @Immutable)
+
+@Composable
+public fun com.idiotfrogs.designsystem.component.MSTitleDialog(title: kotlin.String, onConfirm: kotlin.Function0<kotlin.Unit>, onCancel: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, confirmText: kotlin.String, cancelText: kotlin.String, confirmButtonColor: androidx.compose.ui.graphics.Color, cancelButtonColor: androidx.compose.ui.graphics.Color, confirmTextColor: androidx.compose.ui.graphics.Color, cancelTextColor: androidx.compose.ui.graphics.Color, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.ColumnScope, kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - title: STABLE (String is immutable)
+    - onConfirm: STABLE (function type)
+    - onCancel: STABLE (function type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - confirmText: STABLE (String is immutable)
+    - cancelText: STABLE (String is immutable)
+    - confirmButtonColor: STABLE (marked @Stable or @Immutable)
+    - cancelButtonColor: STABLE (marked @Stable or @Immutable)
+    - confirmTextColor: STABLE (marked @Stable or @Immutable)
+    - cancelTextColor: STABLE (marked @Stable or @Immutable)
+    - content: STABLE (composable function type)
 
 @Composable
 public fun com.idiotfrogs.designsystem.component.MSToast(hazeState: dev.chrisbanes.haze.HazeState, modifier: androidx.compose.ui.Modifier, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.RowScope, kotlin.Unit>): kotlin.Unit
