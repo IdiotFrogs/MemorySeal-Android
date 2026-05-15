@@ -35,6 +35,8 @@ import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.R
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.atTime
@@ -51,11 +53,21 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 @Composable
 fun MSCalender(
+    showSealDate: Boolean = false,
     onDateSelected: (LocalDateTime) -> Unit
 ) {
     val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-    val selectedDate = remember { mutableStateOf(today) }
-    var currentYearMonth by remember { mutableStateOf(YearMonth(today.year, today.month)) }
+    val initialSelectedDate = if (showSealDate) {
+        today.plus(1, DateTimeUnit.DAY)
+    } else {
+        today
+    }
+    val selectedDate = remember(showSealDate) {
+        mutableStateOf(initialSelectedDate)
+    }
+    var currentYearMonth by remember(showSealDate) {
+        mutableStateOf(YearMonth(initialSelectedDate.year, initialSelectedDate.month))
+    }
 
     val currentMonth = today.yearMonth
     val canGoToPrevMonth = currentYearMonth > currentMonth
@@ -164,29 +176,33 @@ fun MSCalender(
                 items(dates) { date ->
                     val isCurrentMonth = date.yearMonth == currentYearMonth
                     val isSelected = date == selectedDate.value
+                    val isSealDate = showSealDate && date == today
                     val isPast = date < today
+                    val isDisabled = !isCurrentMonth || isPast
 
                     Box(
                         modifier = Modifier
                             .aspectRatio(1f)
                             .then(
-                                if (isSelected) {
-                                    Modifier.wavyStroke(
-                                        color = MSTheme.color.primaryNormal,
-                                        fillColor = MSTheme.color.primaryNormal,
-                                        strokeWidth = 5.dp,
-                                        cornerRadius = 8.dp,
-                                        amplitude = 1.5.dp,
-                                        spacing = 4.dp,
-                                        contentPadding = 0.dp,
-                                        seed = date.day.toLong(),
-                                    )
-                                } else {
-                                    Modifier
+                                when {
+                                    isSelected -> {
+                                        Modifier.wavyStroke(
+                                            color = MSTheme.color.primaryNormal,
+                                            fillColor = MSTheme.color.primaryNormal,
+                                            strokeWidth = 5.dp,
+                                            cornerRadius = 8.dp,
+                                            amplitude = 1.dp,
+                                            spacing = 3.dp,
+                                            contentPadding = 0.dp,
+                                            seed = date.day.toLong(),
+                                        )
+                                    }
+
+                                    else -> Modifier
                                 }
                             )
                             .noRippleClickable {
-                                if (!isPast) {
+                                if (!isPast && !isSealDate) {
                                     selectedDate.value = date
 
                                     val selectedMonth = date.yearMonth
@@ -199,14 +215,32 @@ fun MSCalender(
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        MSText(
-                            text = date.day.toString(),
-                            color = when {
-                                isSelected -> MSTheme.color.white
-                                isCurrentMonth -> MSTheme.color.greyG5
-                                else -> MSTheme.color.greyG2
+                        if (isSealDate) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                            ) {
+                                MSText(
+                                    text = date.day.toString(),
+                                    color = MSTheme.color.primaryDark,
+                                )
+                                MSText(
+                                    text = "봉인일",
+                                    fontSize = 11.dp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MSTheme.color.primaryDark,
+                                )
                             }
-                        )
+                        } else {
+                            MSText(
+                                text = date.day.toString(),
+                                color = when {
+                                    isSelected -> MSTheme.color.white
+                                    isDisabled -> MSTheme.color.greyG2
+                                    else -> MSTheme.color.greyG5
+                                }
+                            )
+                        }
                     }
                 }
             }
