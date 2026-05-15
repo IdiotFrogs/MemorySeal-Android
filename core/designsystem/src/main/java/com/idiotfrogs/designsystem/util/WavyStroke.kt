@@ -501,8 +501,8 @@ private fun makeEdgeWavyBackgroundPath(
             }
 
             DrawType.BOTTOM -> {
-                lineTo(0f, 0f)
                 lineTo(width, 0f)
+                lineTo(0f, 0f)
             }
 
             DrawType.START -> {

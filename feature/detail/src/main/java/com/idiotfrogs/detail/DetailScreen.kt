@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -48,7 +49,9 @@ import com.idiotfrogs.designsystem.component.MSTitleDialog
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.DrawType
 import com.idiotfrogs.designsystem.util.noRippleClickable
+import com.idiotfrogs.designsystem.util.wavyBackground
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.extension.toDday
 import com.idiotfrogs.extension.toYearMonthDayWeek
@@ -146,6 +149,14 @@ fun DetailScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(420.dp)
+                .wavyBackground(
+                    color = Color.Black,
+                    drawType = DrawType.BOTTOM,
+                    strokeWidth = 5.dp,
+                    amplitude = 2.dp,
+                    spacing = 3.dp,
+                    clipContent = true,
+                )
         ) {
             capsule?.mainImageUrl?.let {
                 GlideImage(
@@ -230,7 +241,11 @@ fun DetailScreen(
             Spacer(Modifier.height(12.dp))
 
             MSText(
-                text = capsule?.createdAt.toYearMonthDayWeek() + " ~ " + capsule?.openedAt.toYearMonthDayWeek(),
+                text = if (status == TimeCapsuleStatus.BEFOREBURIED) {
+                    capsule?.createdAt.toYearMonthDayWeek() + " ~ 오픈일"
+                } else {
+                    capsule?.createdAt.toYearMonthDayWeek() + " ~ " + capsule?.openedAt.toYearMonthDayWeek()
+                },
                 fontSize = 14.dp,
                 fontWeight = FontWeight.Medium,
                 color = MSTheme.color.greyG3,
