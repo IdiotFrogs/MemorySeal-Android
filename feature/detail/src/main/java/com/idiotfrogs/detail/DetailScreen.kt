@@ -105,9 +105,7 @@ fun DetailScreen(
     val scrollState = rememberScrollState()
     val capsule = data.capsule
     val status = capsule?.timeCapsuleStatus ?: TimeCapsuleStatus.BEFOREBURIED
-//    val status = TimeCapsuleStatus.BURIED
     val role = capsule?.userRole ?: TimeCapsuleRole.CONTRIBUTOR
-//    val role = TimeCapsuleRole.CONTRIBUTOR
     val isHost = role == TimeCapsuleRole.HOST
     val isBuried = status == TimeCapsuleStatus.BURIED
     var showBuryDialog by remember { mutableStateOf(false) }
@@ -215,13 +213,11 @@ fun DetailScreen(
                         fontSize = 20.dp,
                         color = MSTheme.color.greyG5,
                     )
-                    if (role == TimeCapsuleRole.CONTRIBUTOR) {
-                        Image(
-                            modifier = Modifier.size(72.dp, 32.dp),
-                            painter = painterResource(R.drawable.img_detail_buried_badge),
-                            contentDescription = "묻혀있음",
-                        )
-                    }
+                    Image(
+                        modifier = Modifier.size(72.dp, 32.dp),
+                        painter = painterResource(R.drawable.img_detail_buried_badge),
+                        contentDescription = "묻혀있음",
+                    )
                 }
             } else {
                 MSText(
