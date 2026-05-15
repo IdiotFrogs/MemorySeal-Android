@@ -213,11 +213,11 @@ fun DetailScreen(
                         fontSize = 20.dp,
                         color = MSTheme.color.greyG5,
                     )
-                    Image(
-                        modifier = Modifier.size(72.dp, 32.dp),
-                        painter = painterResource(R.drawable.img_detail_buried_badge),
-                        contentDescription = "묻혀있음",
-                    )
+//                    Image(
+//                        modifier = Modifier.size(72.dp, 32.dp),
+//                        painter = painterResource(R.drawable.img_detail_buried_badge),
+//                        contentDescription = "묻혀있음",
+//                    )
                 }
             } else {
                 MSText(
@@ -382,7 +382,7 @@ fun DetailScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Column(
                     modifier = Modifier
                         .weight(1f)
