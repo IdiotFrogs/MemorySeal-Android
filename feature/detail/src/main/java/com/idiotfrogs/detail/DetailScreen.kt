@@ -375,7 +375,7 @@ fun DetailScreen(
                 )
                 Image(
                     modifier = Modifier.size(16.dp),
-                    painter = painterResource(R.drawable.ic_detail_rigt),
+                    painter = painterResource(R.drawable.ic_chevron_right),
                     contentDescription = "추억 메시지 상세 아이콘"
                 )
             }
@@ -452,7 +452,7 @@ fun DetailScreen(
                     modifier = Modifier
                         .size(16.dp)
                         .noRippleClickable { onAction(DetailAction.NavigateToFriend(capsuleId)) },
-                    painter = painterResource(R.drawable.ic_detail_rigt),
+                    painter = painterResource(R.drawable.ic_chevron_right),
                     contentDescription = "추억 메시지 상세 아이콘"
                 )
             }
