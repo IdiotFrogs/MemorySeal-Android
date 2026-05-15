@@ -5,26 +5,21 @@
 //   ./gradlew :detail:stabilityDump
 
 @Composable
-public fun com.idiotfrogs.detail.DetailRoute(capsuleId: kotlin.Long, isVoteStart: kotlin.Boolean, iSSeal: kotlin.Boolean, viewModel: com.idiotfrogs.detail.DetailViewModel): kotlin.Unit
+public fun com.idiotfrogs.detail.DetailRoute(capsuleId: kotlin.Long, viewModel: com.idiotfrogs.detail.DetailViewModel): kotlin.Unit
   skippable: false
   restartable: true
   params:
     - capsuleId: STABLE (primitive type)
-    - isVoteStart: STABLE (primitive type)
-    - iSSeal: STABLE (primitive type)
     - viewModel: UNSTABLE (has mutable properties or unstable members)
 
 @Composable
-public fun com.idiotfrogs.detail.DetailScreen(data: com.idiotfrogs.detail.TimeCapsuleData, capsuleId: kotlin.Long, isVoteStart: kotlin.Boolean, iSSeal: kotlin.Boolean, onAction: kotlin.Function1<com.idiotfrogs.detail.DetailAction, kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+public fun com.idiotfrogs.detail.DetailScreen(data: com.idiotfrogs.detail.TimeCapsuleData, capsuleId: kotlin.Long, onAction: kotlin.Function1<com.idiotfrogs.detail.DetailAction, kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
   params:
     - data: STABLE (marked @Stable or @Immutable)
     - capsuleId: STABLE (primitive type)
-    - isVoteStart: STABLE (primitive type)
-    - iSSeal: STABLE (primitive type)
     - onAction: STABLE (function type)
-    - modifier: STABLE (marked @Stable or @Immutable)
 
 @Composable
 public fun com.idiotfrogs.detail.component.MembarListItem(nickName: kotlin.String, profileImageUrl: kotlin.String, modifier: androidx.compose.ui.Modifier, isMembar: kotlin.Boolean): kotlin.Unit

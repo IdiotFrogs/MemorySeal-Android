@@ -3,6 +3,7 @@ package com.idiotfrogs.designsystem.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.wavyStroke
 
 @Composable
 fun MSDialog(
@@ -95,6 +97,78 @@ fun MSDialog(
                             color = confirmTextColor
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun MSTitleDialog(
+    title: String,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+    modifier: Modifier = Modifier,
+    confirmText: String = "확인",
+    cancelText: String = "취소",
+    confirmButtonColor: Color = MSTheme.color.primaryNormal,
+    cancelButtonColor: Color = MSTheme.color.greyG1,
+    confirmTextColor: Color = MSTheme.color.white,
+    cancelTextColor: Color = MSTheme.color.greyG4,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Dialog(onDismissRequest = onCancel) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .wavyStroke(
+                    color = MSTheme.color.white,
+                    fillColor = MSTheme.color.white,
+                    contentPadding = 20.dp,
+                )
+        ) {
+            MSText(
+                text = title,
+                fontSize = 20.dp,
+            )
+            content()
+            Row(modifier = Modifier.fillMaxWidth()) {
+                MSButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = onCancel,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = cancelButtonColor
+                    ),
+                    pressColors = ButtonDefaults.buttonColors(
+                        containerColor = cancelButtonColor
+                    ),
+                    wavyStrokeColor = cancelButtonColor,
+                    contentPadding = PaddingValues(12.dp)
+                ) {
+                    MSText(
+                        text = cancelText,
+                        fontSize = 16.dp,
+                        color = cancelTextColor
+                    )
+                }
+                Spacer(Modifier.width(8.dp))
+                MSButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = onConfirm,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = confirmButtonColor
+                    ),
+                    pressColors = ButtonDefaults.buttonColors(
+                        containerColor = confirmButtonColor
+                    ),
+                    wavyStrokeColor = confirmButtonColor,
+                    contentPadding = PaddingValues(11.dp)
+                ) {
+                    MSText(
+                        text = confirmText,
+                        fontSize = 16.dp,
+                        color = confirmTextColor
+                    )
                 }
             }
         }

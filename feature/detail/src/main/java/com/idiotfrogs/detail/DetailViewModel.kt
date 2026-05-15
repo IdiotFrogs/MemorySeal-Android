@@ -62,16 +62,11 @@ class DetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun sealVote(agree: Boolean) {
-        // TODO 투표 api 연결 필요
-    }
-
     override fun onAction(action: DetailAction) {
         when (action) {
             is DetailAction.NavigateToFriend -> intent { postSideEffect(DetailSideEffect.NavigateToFriend(action.id)) }
             is DetailAction.NavigateToManagement -> intent { postSideEffect(DetailSideEffect.NavigateToManagement(action.id, action.title)) }
             DetailAction.NavigateToBack -> intent { postSideEffect(DetailSideEffect.NavigateToBack) }
-            is DetailAction.SealVote -> sealVote(action.agree)
         }
     }
 
@@ -84,15 +79,13 @@ class DetailViewModel @AssistedInject constructor(
 @Immutable
 data class TimeCapsuleData(
     val capsule: TimeCapsuleResponse? = null,
-    val collaborators: List<TimeCapsuleCollaboratorsResponse> = emptyList()
+    val collaborators: List<TimeCapsuleCollaboratorsResponse> = emptyList(),
 )
 
 sealed interface DetailAction {
     data class NavigateToFriend(val id: Long) : DetailAction
     data class NavigateToManagement(val id: Long, val title: String) : DetailAction
     data object NavigateToBack : DetailAction
-
-    data class SealVote(val agree: Boolean) : DetailAction
 }
 
 sealed interface DetailSideEffect {

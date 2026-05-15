@@ -84,20 +84,12 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Profile> { ProfileRoute() }
                                 entry<Routes.EditProfile> { EditProfileRoute() }
                                 entry<Routes.Setting> { SettingRoute() }
-                                entry<Routes.Detail> {
-                                    DetailRoute(
-                                        isVoteStart = false,
-                                        iSSeal = false,
-                                        capsuleId = it.id,
-                                    )
-                                }
+                                entry<Routes.Detail> { DetailRoute(it.id) }
                                 entry<Routes.Message> {
                                     // TODO 메시지 화면 퍼블리싱 후 추가하기
                                     it.id
                                 }
-                                entry<Routes.Friend> {
-                                    FriendRoute(it.id)
-                                }
+                                entry<Routes.Friend> { FriendRoute(it.id) }
                                 entry<Routes.Management> {
                                     ManagementRoute(
                                         capsuleId = it.id,
