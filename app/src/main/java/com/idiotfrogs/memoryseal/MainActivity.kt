@@ -27,6 +27,7 @@ import com.idiotfrogs.detail.DetailRoute
 import com.idiotfrogs.friend.FriendRoute
 import com.idiotfrogs.home.HomeRoute
 import com.idiotfrogs.management.ManagementRoute
+import com.idiotfrogs.message.MessageRoute
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.MSNavigatorImpl
 import com.idiotfrogs.navigation.Routes
@@ -84,11 +85,8 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Profile> { ProfileRoute() }
                                 entry<Routes.EditProfile> { EditProfileRoute() }
                                 entry<Routes.Setting> { SettingRoute() }
-                                entry<Routes.Detail> { DetailRoute(it.id) }
-                                entry<Routes.Message> {
-                                    // TODO 메시지 화면 퍼블리싱 후 추가하기
-                                    it.id
-                                }
+                                entry<Routes.Detail> { DetailRoute(capsuleId = it.id) }
+                                entry<Routes.Message> { MessageRoute(capsuleId = it.id) }
                                 entry<Routes.Friend> { FriendRoute(it.id) }
                                 entry<Routes.Management> {
                                     ManagementRoute(

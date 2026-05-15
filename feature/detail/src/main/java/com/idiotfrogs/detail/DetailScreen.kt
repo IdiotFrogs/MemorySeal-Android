@@ -77,6 +77,7 @@ fun DetailRoute(
         when (event) {
             DetailSideEffect.NavigateToBack -> navigator.popBackStack()
             is DetailSideEffect.NavigateToFriend -> navigator.navigate(Routes.Friend(event.id))
+            is DetailSideEffect.NavigateToMessage -> navigator.navigate(Routes.Message(event.id))
             is DetailSideEffect.NavigateToManagement -> navigator.navigate(
                 Routes.Management(
                     id = event.id,
@@ -389,7 +390,9 @@ fun DetailScreen(
                     color = MSTheme.color.greyG4,
                 )
                 Image(
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier
+                        .size(16.dp)
+                        .noRippleClickable { onAction(DetailAction.NavigateToMessage(capsuleId)) },
                     painter = painterResource(R.drawable.ic_chevron_right),
                     contentDescription = "추억 메시지 상세 아이콘"
                 )
