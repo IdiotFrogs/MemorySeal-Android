@@ -1,10 +1,16 @@
 package com.idiotfrogs.home.component
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
@@ -14,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
@@ -29,36 +36,60 @@ enum class HomeTab(val title: String) {
 @Composable
 fun HomeTabBar(
     selectedTab: HomeTab,
-    onClick: (HomeTab) -> Unit,
+    showBorder: Boolean,
+    onClick: (HomeTab) -> Unit
 ) {
     val homeTabs = remember { HomeTab.entries }
 
-    CompositionLocalProvider(LocalRippleConfiguration provides null) {
-        TabRow(
-            selectedTabIndex = selectedTab.ordinal,
-            containerColor = MSTheme.color.white,
-            indicator = { tabPositions ->
-                Box(
-                    modifier = Modifier
-                        .tabIndicatorOffset(tabPositions[selectedTab.ordinal])
-                        .padding(horizontal = 54.dp)
-                        .wavyStroke(
-                            color = MSTheme.color.greyG5,
-                            drawType = DrawType.BOTTOM,
-                            spacing = 3.dp
+    var tabPositions by remember { mutableStateOf<List<TabPosition>?>(null) }
+
+    Column {
+        CompositionLocalProvider(LocalRippleConfiguration provides null) {
+            TabRow(
+                modifier = Modifier
+                    .then(
+                        if (showBorder) {
+                            Modifier.border(
+                                width = 2.dp,
+                                color = MSTheme.color.bgNormal
+                            )
+                        } else {
+                            Modifier
+                        }
+                    ),
+                selectedTabIndex = selectedTab.ordinal,
+                containerColor = MSTheme.color.white,
+                indicator = { tabPositions = it },
+                divider = {}
+            ) {
+                homeTabs.forEach { homeTab ->
+                    HomeTabItem(
+                        selected = homeTab == selectedTab,
+                        text = homeTab.title,
+                        onClick = { onClick.invoke(homeTab) }
                     )
-                )
-            },
-            divider = {}
-        ) {
-            homeTabs.forEach { homeTab ->
-                HomeTabItem(
-                    selected = homeTab == selectedTab,
-                    text = homeTab.title,
-                    onClick = { onClick.invoke(homeTab) }
-                )
+                }
             }
         }
+
+        Box(
+            modifier = Modifier
+                .then(
+                    if (tabPositions != null) {
+                        Modifier
+                            .tabIndicatorOffset(tabPositions!![selectedTab.ordinal])
+                    } else {
+                        Modifier
+                    }
+                )
+                .offset(y = 1.dp)
+                .padding(horizontal = 54.dp)
+                .wavyStroke(
+                    color = MSTheme.color.greyG5,
+                    drawType = DrawType.BOTTOM,
+                    spacing = 3.dp
+                )
+        )
     }
 }
 
@@ -87,8 +118,12 @@ fun HomeTabItem(
 private fun HomeTabBarPreview() {
     var currentTab by remember { mutableStateOf(HomeTab.CREATED) }
 
-    HomeTabBar(
-        selectedTab = currentTab,
-        onClick = { currentTab = it }
-    )
+    Box(modifier = Modifier.fillMaxSize().background(Color.White)) {
+        HomeTabBar(
+            selectedTab = currentTab,
+            showBorder = true,
+            onClick = { currentTab = it }
+        )
+    }
+
 }

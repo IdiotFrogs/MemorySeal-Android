@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -179,6 +180,12 @@ fun HomeScreen(
             }
         }
 
+        val lazyListState = rememberLazyListState()
+        val showBorder = remember {
+            lazyListState.firstVisibleItemScrollOffset > 0 || // 1px이라도 움직였거나
+                    lazyListState.firstVisibleItemIndex > 0   // 첫 번째 아이템을 넘어간 경우
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -191,6 +198,7 @@ fun HomeScreen(
                 navigateToProfile = { onAction(HomeAction.NavigateToProfile) }
             )
             HomeTabBar(
+                showBorder = showBorder,
                 selectedTab = currentTab,
                 onClick = { currentTab = it },
             )
@@ -232,6 +240,7 @@ fun HomeScreen(
                     val data = data.capsules[role].orEmpty()
 
                     LazyColumn(
+                        state = lazyListState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(
                             top = 24.dp,
