@@ -3,31 +3,33 @@ package com.idiotfrogs.message
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items as lazyColumnItems
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
@@ -58,12 +60,13 @@ import com.idiotfrogs.designsystem.component.MSTabBar
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.designsystem.util.rememberMultiPickerState
 import com.idiotfrogs.designsystem.util.noRippleClickable
+import com.idiotfrogs.designsystem.util.rememberMultiPickerState
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.message.component.MessageCheckBox
-import com.idiotfrogs.message.component.MessageSettingListItem
+import com.idiotfrogs.message.component.MessageDetailCard
 import com.idiotfrogs.message.component.MessagePreviewBanner
+import com.idiotfrogs.message.component.MessageSettingListItem
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.util.UiState
@@ -106,6 +109,7 @@ fun MessageScreen(
     var currentTab by remember { mutableStateOf(MessageTab.MESSAGE) }
     var isDeleteMode by rememberSaveable { mutableStateOf(false) }
     var showMessageInput by rememberSaveable { mutableStateOf(false) }
+    var activeMessageId by rememberSaveable { mutableStateOf<Long?>(null) }
     var messageItems by remember { mutableStateOf(emptyList<MessageListItemUiModel>()) }
     var selectedIds by rememberSaveable { mutableStateOf(emptySet<Long>()) }
     var photoItems by remember { mutableStateOf(emptyList<PhotoListItemUiModel>()) }
@@ -117,10 +121,44 @@ fun MessageScreen(
     val (pickedPhotoUris, launchPhotoPicker) = rememberMultiPickerState()
     val pagerState = rememberPagerState { MessageTab.entries.size }
     val canDelete = selectedIds.isNotEmpty()
+    val activeMessageItem = messageItems.firstOrNull { it.id == activeMessageId }
+
+    fun closeMessageInput() {
+        showMessageInput = false
+        activeMessageId = null
+        messageTextFieldState.clearText()
+        focusManager.clearFocus()
+        keyboardController?.hide()
+    }
+
+    fun saveMessage() {
+        val message = messageTextFieldState.text.toString()
+
+        if (message.isBlank()) return
+
+        if (activeMessageId == null) {
+            messageItems = messageItems + MessageListItemUiModel(
+                id = (messageItems.maxOfOrNull { it.id } ?: 0L) + 1L,
+                title = "메시지 ${messageItems.size + 1}",
+                description = message,
+            )
+        } else {
+            messageItems = messageItems.map { item ->
+                if (item.id == activeMessageId) {
+                    item.copy(description = message)
+                } else {
+                    item
+                }
+            }
+        }
+
+        closeMessageInput()
+    }
 
     LaunchedEffect(currentTab) {
         isDeleteMode = false
         showMessageInput = false
+        activeMessageId = null
         selectedIds = emptySet()
         pagerState.animateScrollToPage(currentTab.ordinal)
     }
@@ -174,6 +212,7 @@ fun MessageScreen(
                         .noRippleClickable {
                             isDeleteMode = true
                             selectedIds = emptySet()
+                            activeMessageId = null
                         },
                     painter = painterResource(R.drawable.ic_trashcan),
                     contentDescription = "삭제",
@@ -224,6 +263,8 @@ fun MessageScreen(
                                     onClick = {
                                         if (isDeleteMode) {
                                             selectedIds = selectedIds.toggle(item.id)
+                                        } else {
+                                            activeMessageId = item.id
                                         }
                                     },
                                 )
@@ -377,7 +418,7 @@ fun MessageScreen(
                     )
                 }
             }
-        } else if (!showMessageInput) {
+        } else if (!showMessageInput && activeMessageItem == null) {
             FloatingActionButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -402,7 +443,11 @@ fun MessageScreen(
                 ),
                 onClick = {
                     when (currentTab) {
-                        MessageTab.MESSAGE -> showMessageInput = true
+                        MessageTab.MESSAGE -> {
+                            activeMessageId = null
+                            messageTextFieldState.clearText()
+                            showMessageInput = true
+                        }
                         MessageTab.PHOTO -> launchPhotoPicker()
                     }
                 },
@@ -415,14 +460,36 @@ fun MessageScreen(
             }
         }
 
-        if (showMessageInput) {
+        if (activeMessageItem != null && !showMessageInput) {
             MSDim(
-                visible = showMessageInput,
+                visible = true,
                 onDismiss = {
-                    showMessageInput = false
-                    focusManager.clearFocus()
-                    keyboardController?.hide()
+                    activeMessageId = null
                 },
+            )
+
+            MessageDetailCard(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center)
+                    .padding(horizontal = 20.dp),
+                description = activeMessageItem.description,
+                onEditClick = {
+                    messageTextFieldState.setText(activeMessageItem.description)
+                    showMessageInput = true
+                },
+                onCloseClick = {
+                    activeMessageId = null
+                },
+            )
+        }
+
+        if (showMessageInput) {
+            val canSave = messageTextFieldState.text.isNotBlank()
+
+            MSDim(
+                visible = true,
+                onDismiss = ::closeMessageInput,
             )
 
             Column(
@@ -436,7 +503,7 @@ fun MessageScreen(
                             topEnd = 24.dp,
                         ),
                     )
-                    .height(176.dp)
+                    .heightIn(min = 176.dp, max = 320.dp)
                     .padding(horizontal = 20.dp, vertical = 16.dp),
             ) {
                 Row(
@@ -449,42 +516,37 @@ fun MessageScreen(
                     )
                     Spacer(Modifier.weight(1f))
                     MSText(
-                        modifier = Modifier.noRippleClickable {
-                            showMessageInput = false
-                            focusManager.clearFocus()
-                            keyboardController?.hide()
-                        },
+                        modifier = Modifier.noRippleClickable(onClick = ::closeMessageInput),
                         text = "취소",
                         fontSize = 12.dp,
                         color = MSTheme.color.greyG3,
                     )
                     Spacer(Modifier.width(16.dp))
-                    MSText(
-                        modifier = Modifier.noRippleClickable {
-                            val message = messageTextFieldState.text.toString()
-
-                            if (message.isNotBlank()) {
-                                messageItems = messageItems + MessageListItemUiModel(
-                                    id = (messageItems.maxOfOrNull { it.id } ?: 0L) + 1L,
-                                    title = "메시지 ${messageItems.size + 1}",
-                                    description = message,
-                                )
-                                messageTextFieldState.edit {
-                                    replace(0, length, "")
-                                }
-                                showMessageInput = false
-                                focusManager.clearFocus()
-                                keyboardController?.hide()
-                            }
-                        },
-                        text = "저장",
-                        fontSize = 12.dp,
-                        color = if (messageTextFieldState.text.isNotBlank()) {
-                            MSTheme.color.primaryNormal
-                        } else {
-                            MSTheme.color.primaryLight
-                        },
-                    )
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = MSTheme.color.primaryLight,
+                                shape = RoundedCornerShape(8.dp),
+                            )
+                            .then(
+                                if (canSave) {
+                                    Modifier.noRippleClickable { saveMessage() }
+                                } else {
+                                    Modifier
+                                },
+                            )
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                    ) {
+                        MSText(
+                            text = "저장",
+                            fontSize = 12.dp,
+                            color = if (canSave) {
+                                MSTheme.color.primaryDark
+                            } else {
+                                Color(0xFF84B591)
+                            },
+                        )
+                    }
                 }
 
                 Spacer(Modifier.height(16.dp))
@@ -492,7 +554,7 @@ fun MessageScreen(
                 MSPlainTextField(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f)
+                        .heightIn(min = 96.dp, max = 224.dp)
                         .focusRequester(focusRequester),
                     hint = "공유하고 싶은 메시지를 작성해보세요!",
                     textFieldState = messageTextFieldState,
@@ -535,6 +597,18 @@ private data class PhotoListItemUiModel(
 
 private fun Set<Long>.toggle(id: Long): Set<Long> =
     if (id in this) this - id else this + id
+
+private fun TextFieldState.clearText() {
+    edit {
+        replace(0, length, "")
+    }
+}
+
+private fun TextFieldState.setText(value: String) {
+    edit {
+        replace(0, length, value)
+    }
+}
 
 @Preview
 @Composable
