@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,13 +34,9 @@ fun MessageSettingListItem(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (isDeleteMode) {
-            RadioButton(
-                selected = isSelected,
+            MessageCheckBox(
+                isSelected = isSelected,
                 onClick = onClick,
-                colors = RadioButtonDefaults.colors(
-                    selectedColor = MSTheme.color.greyG5,
-                    unselectedColor = MSTheme.color.greyG5,
-                ),
             )
             Spacer(Modifier.width(16.dp))
         }
@@ -51,7 +45,11 @@ fun MessageSettingListItem(
             modifier = Modifier
                 .weight(1f)
                 .wavyStroke(
-                    color = MSTheme.color.bgNormal,
+                    color = if (isSelected) {
+                        MSTheme.color.primaryNormal
+                    } else {
+                        MSTheme.color.bgNormal
+                    },
                     fillColor = MSTheme.color.white,
                     strokeWidth = 2.dp,
                     cornerRadius = 12.dp,

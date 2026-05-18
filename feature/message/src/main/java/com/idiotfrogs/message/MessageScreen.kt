@@ -32,8 +32,6 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -63,6 +61,7 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.rememberMultiPickerState
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.wavyStroke
+import com.idiotfrogs.message.component.MessageCheckBox
 import com.idiotfrogs.message.component.MessageSettingListItem
 import com.idiotfrogs.message.component.MessagePreviewBanner
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
@@ -108,9 +107,8 @@ fun MessageScreen(
     var isDeleteMode by rememberSaveable { mutableStateOf(false) }
     var showMessageInput by rememberSaveable { mutableStateOf(false) }
     var messageItems by remember { mutableStateOf(emptyList<MessageListItemUiModel>()) }
-    var selectedMessageId by rememberSaveable { mutableStateOf<Long?>(null) }
-    var selectedPhotoUri by remember { mutableStateOf<Uri?>(null) }
-    var photoUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+    var selectedIds by rememberSaveable { mutableStateOf(emptySet<Long>()) }
+    var photoItems by remember { mutableStateOf(emptyList<PhotoListItemUiModel>()) }
 
     val messageTextFieldState = rememberTextFieldState()
     val focusRequester = remember { FocusRequester() }
@@ -118,16 +116,12 @@ fun MessageScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val (pickedPhotoUris, launchPhotoPicker) = rememberMultiPickerState()
     val pagerState = rememberPagerState { MessageTab.entries.size }
-    val canDelete = when (currentTab) {
-        MessageTab.MESSAGE -> selectedMessageId != null
-        MessageTab.PHOTO -> selectedPhotoUri != null
-    }
+    val canDelete = selectedIds.isNotEmpty()
 
     LaunchedEffect(currentTab) {
         isDeleteMode = false
         showMessageInput = false
-        selectedMessageId = null
-        selectedPhotoUri = null
+        selectedIds = emptySet()
         pagerState.animateScrollToPage(currentTab.ordinal)
     }
 
@@ -137,7 +131,18 @@ fun MessageScreen(
 
     LaunchedEffect(pickedPhotoUris) {
         if (pickedPhotoUris.isNotEmpty()) {
-            photoUris = (photoUris + pickedPhotoUris).distinct()
+            val existingUris = photoItems.map { it.uri }.toSet()
+            val newUris = pickedPhotoUris
+                .distinct()
+                .filterNot { it in existingUris }
+            val nextPhotoId = (photoItems.maxOfOrNull { it.id } ?: 0L) + 1L
+
+            photoItems = photoItems + newUris.mapIndexed { index, uri ->
+                PhotoListItemUiModel(
+                    id = nextPhotoId + index,
+                    uri = uri,
+                )
+            }
         }
     }
 
@@ -168,8 +173,7 @@ fun MessageScreen(
                         .size(24.dp)
                         .noRippleClickable {
                             isDeleteMode = true
-                            selectedMessageId = null
-                            selectedPhotoUri = null
+                            selectedIds = emptySet()
                         },
                     painter = painterResource(R.drawable.ic_trashcan),
                     contentDescription = "삭제",
@@ -216,10 +220,10 @@ fun MessageScreen(
                                     title = item.title,
                                     description = item.description,
                                     isDeleteMode = isDeleteMode,
-                                    isSelected = selectedMessageId == item.id,
+                                    isSelected = item.id in selectedIds,
                                     onClick = {
                                         if (isDeleteMode) {
-                                            selectedMessageId = item.id
+                                            selectedIds = selectedIds.toggle(item.id)
                                         }
                                     },
                                 )
@@ -251,33 +255,47 @@ fun MessageScreen(
                                 )
                             }
 
-                            items(photoUris, key = { it.toString() }) { uri ->
+                            items(photoItems, key = { it.id }) { item ->
+                                val isSelected = item.id in selectedIds
+
                                 Box(
                                     modifier = Modifier
                                         .aspectRatio(1f)
-                                        .clip(RoundedCornerShape(8.dp))
+                                        .then(
+                                            if (isSelected) {
+                                                Modifier.wavyStroke(
+                                                    color = MSTheme.color.primaryNormal,
+                                                    strokeWidth = 4.dp,
+                                                    cornerRadius = 12.dp,
+                                                    amplitude = 1.dp,
+                                                    spacing = 2.dp,
+                                                    clipContent = true,
+                                                )
+                                            } else {
+                                                Modifier.clip(RoundedCornerShape(8.dp))
+                                            },
+                                        )
                                         .noRippleClickable {
                                             if (isDeleteMode) {
-                                                selectedPhotoUri = uri
+                                                selectedIds = selectedIds.toggle(item.id)
                                             }
                                         },
                                 ) {
                                     GlideImage(
                                         modifier = Modifier.matchParentSize(),
-                                        imageModel = { uri },
+                                        imageModel = { item.uri },
                                     )
 
                                     if (isDeleteMode) {
-                                        RadioButton(
+                                        MessageCheckBox(
                                             modifier = Modifier
                                                 .align(Alignment.TopStart)
-                                                .padding(4.dp),
-                                            selected = selectedPhotoUri == uri,
-                                            onClick = { selectedPhotoUri = uri },
-                                            colors = RadioButtonDefaults.colors(
-                                                selectedColor = MSTheme.color.greyG5,
-                                                unselectedColor = MSTheme.color.greyG5,
-                                            ),
+                                                .padding(8.dp),
+                                            isSelected = isSelected,
+                                            unselectedBorderColor = MSTheme.color.white,
+                                            onClick = {
+                                                selectedIds = selectedIds.toggle(item.id)
+                                            },
                                         )
                                     }
                                 }
@@ -303,8 +321,7 @@ fun MessageScreen(
                         .height(48.dp),
                     onClick = {
                         isDeleteMode = false
-                        selectedMessageId = null
-                        selectedPhotoUri = null
+                        selectedIds = emptySet()
                     },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MSTheme.color.greyG1,
@@ -329,19 +346,18 @@ fun MessageScreen(
                         when (currentTab) {
                             MessageTab.MESSAGE -> {
                                 messageItems = messageItems.filterNot {
-                                    it.id == selectedMessageId
+                                    it.id in selectedIds
                                 }
-                                selectedMessageId = null
                             }
 
                             MessageTab.PHOTO -> {
-                                photoUris = photoUris.filterNot {
-                                    it == selectedPhotoUri
+                                photoItems = photoItems.filterNot {
+                                    it.id in selectedIds
                                 }
-                                selectedPhotoUri = null
                             }
                         }
 
+                        selectedIds = emptySet()
                         isDeleteMode = false
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -511,6 +527,14 @@ private data class MessageListItemUiModel(
     val title: String,
     val description: String,
 )
+
+private data class PhotoListItemUiModel(
+    val id: Long,
+    val uri: Uri,
+)
+
+private fun Set<Long>.toggle(id: Long): Set<Long> =
+    if (id in this) this - id else this + id
 
 @Preview
 @Composable
