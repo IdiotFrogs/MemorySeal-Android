@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -57,8 +56,8 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.util.UiState
-import com.idiotfrogs.extension.toDday
 import com.idiotfrogs.extension.toYearMonthDay
+import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.resource.R
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
@@ -255,7 +254,7 @@ fun HomeScreen(
                                 modifier = Modifier.noRippleClickable {
                                     onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
                                 },
-                                countdown = it.openedAt.toDday(),
+                                buried = it.timeCapsuleStatus == TimeCapsuleStatus.BURIED,
                                 targetDate = it.openedAt.toYearMonthDay(),
                                 title = it.title,
                                 imageUrl = it.mainImageUrl
