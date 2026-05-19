@@ -142,6 +142,45 @@ public fun com.idiotfrogs.designsystem.component.MSMessageItem(type: com.idiotfr
     - isSeal: STABLE (primitive type)
 
 @Composable
+public fun com.idiotfrogs.designsystem.component.MSPlainTextField(modifier: androidx.compose.ui.Modifier, hint: kotlin.String, enabled: kotlin.Boolean, readOnly: kotlin.Boolean, textFieldState: androidx.compose.foundation.text.input.TextFieldState, inputTransformation: androidx.compose.foundation.text.input.InputTransformation?, textStyle: androidx.compose.ui.text.TextStyle, keyboardOptions: androidx.compose.foundation.text.KeyboardOptions, onKeyboardAction: androidx.compose.foundation.text.input.KeyboardActionHandler?, lineLimits: androidx.compose.foundation.text.input.TextFieldLineLimits, onTextLayout: @[ExtensionFunctionType] kotlin.Function2<androidx.compose.ui.unit.Density, @[ParameterName(name = \, cursorBrush: androidx.compose.ui.graphics.Brush, outputTransformation: androidx.compose.foundation.text.input.OutputTransformation?, scrollState: androidx.compose.foundation.ScrollState): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - hint: STABLE (String is immutable)
+    - enabled: STABLE (primitive type)
+    - readOnly: STABLE (primitive type)
+    - textFieldState: STABLE (marked @Stable or @Immutable)
+    - inputTransformation: STABLE (marked @Stable or @Immutable)
+    - textStyle: STABLE (marked @Stable or @Immutable)
+    - keyboardOptions: STABLE (marked @Stable or @Immutable)
+    - onKeyboardAction: STABLE (marked @Stable or @Immutable)
+    - lineLimits: STABLE (marked @Stable or @Immutable)
+    - onTextLayout: STABLE (function type)
+    - cursorBrush: STABLE (marked @Stable or @Immutable)
+    - outputTransformation: STABLE (marked @Stable or @Immutable)
+    - scrollState: STABLE (marked @Stable or @Immutable)
+
+@Composable
+public fun com.idiotfrogs.designsystem.component.MSTabBar(tabs: kotlin.collections.List<kotlin.String>, selectedIndex: kotlin.Int, onClick: kotlin.Function1<kotlin.Int, kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+  skippable: false
+  restartable: true
+  params:
+    - tabs: RUNTIME (requires runtime check)
+    - selectedIndex: STABLE (primitive type)
+    - onClick: STABLE (function type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+
+@Composable
+private fun com.idiotfrogs.designsystem.component.MSTabItem(selected: kotlin.Boolean, text: kotlin.String, onClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - selected: STABLE (primitive type)
+    - text: STABLE (String is immutable)
+    - onClick: STABLE (function type)
+
+@Composable
 public fun com.idiotfrogs.designsystem.component.MSText(text: kotlin.String, modifier: androidx.compose.ui.Modifier, fontSize: androidx.compose.ui.unit.Dp, color: androidx.compose.ui.graphics.Color, fontFamily: androidx.compose.ui.text.font.FontFamily, fontWeight: androidx.compose.ui.text.font.FontWeight, letterSpacing: androidx.compose.ui.unit.TextUnit, textDecoration: androidx.compose.ui.text.style.TextDecoration?, textAlign: androidx.compose.ui.text.style.TextAlign?, lineHeight: androidx.compose.ui.unit.TextUnit, overflow: androidx.compose.ui.text.style.TextOverflow, softWrap: kotlin.Boolean, maxLines: kotlin.Int, minLines: kotlin.Int, onTextLayout: kotlin.Function1<androidx.compose.ui.text.TextLayoutResult, kotlin.Unit>?, style: androidx.compose.ui.text.TextStyle): kotlin.Unit
   skippable: true
   restartable: true

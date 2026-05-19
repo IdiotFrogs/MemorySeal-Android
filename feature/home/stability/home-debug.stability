@@ -39,23 +39,6 @@ public fun com.idiotfrogs.home.component.HomeJoinContainer(isShow: kotlin.Boolea
     - onJoin: STABLE (function type)
 
 @Composable
-public fun com.idiotfrogs.home.component.HomeTabBar(selectedTab: com.idiotfrogs.home.component.HomeTab, onClick: kotlin.Function1<com.idiotfrogs.home.component.HomeTab, kotlin.Unit>): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - selectedTab: STABLE (class with no mutable properties)
-    - onClick: STABLE (function type)
-
-@Composable
-public fun com.idiotfrogs.home.component.HomeTabItem(selected: kotlin.Boolean, text: kotlin.String, onClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - selected: STABLE (primitive type)
-    - text: STABLE (String is immutable)
-    - onClick: STABLE (function type)
-
-@Composable
 public fun com.idiotfrogs.home.component.HomeTicket(countdown: kotlin.String, targetDate: kotlin.String, title: kotlin.String, imageUrl: kotlin.String?, modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: true
   restartable: true
