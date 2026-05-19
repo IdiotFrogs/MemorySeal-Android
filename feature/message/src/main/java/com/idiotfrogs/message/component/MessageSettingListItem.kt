@@ -53,7 +53,6 @@ fun MessageSettingListItem(
                     },
                     fillColor = MSTheme.color.white,
                     strokeWidth = 2.dp,
-                    cornerRadius = 12.dp,
                 )
                 .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {

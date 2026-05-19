@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,13 +23,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items as lazyColumnItems
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -64,7 +65,6 @@ import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberMultiPickerState
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.message.component.MessageCheckBox
-import com.idiotfrogs.message.component.MessageDetailCard
 import com.idiotfrogs.message.component.MessagePreviewBanner
 import com.idiotfrogs.message.component.MessageSettingListItem
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
@@ -238,7 +238,7 @@ fun MessageScreen(
                             contentPadding = PaddingValues(
                                 start = 20.dp,
                                 end = 20.dp,
-                                top = 16.dp,
+                                top = 20.dp,
                                 bottom = if (isDeleteMode) 96.dp else 88.dp,
                             ),
                             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -254,7 +254,7 @@ fun MessageScreen(
                                 )
                             }
 
-                            lazyColumnItems(messageItems, key = { it.id }) { item ->
+                            items(messageItems, key = { it.id }) { item ->
                                 MessageSettingListItem(
                                     title = item.title,
                                     description = item.description,
@@ -279,7 +279,7 @@ fun MessageScreen(
                             contentPadding = PaddingValues(
                                 start = 20.dp,
                                 end = 20.dp,
-                                top = 16.dp,
+                                top = 20.dp,
                                 bottom = if (isDeleteMode) 96.dp else 88.dp,
                             ),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -307,14 +307,11 @@ fun MessageScreen(
                                                 Modifier.wavyStroke(
                                                     color = MSTheme.color.primaryNormal,
                                                     strokeWidth = 4.dp,
-                                                    cornerRadius = 12.dp,
                                                     amplitude = 1.dp,
                                                     spacing = 2.dp,
                                                     clipContent = true,
                                                 )
-                                            } else {
-                                                Modifier.clip(RoundedCornerShape(8.dp))
-                                            },
+                                            } else { Modifier.clip(RoundedCornerShape(12.dp)) },
                                         )
                                         .noRippleClickable {
                                             if (isDeleteMode) {
@@ -331,12 +328,10 @@ fun MessageScreen(
                                         MessageCheckBox(
                                             modifier = Modifier
                                                 .align(Alignment.TopStart)
-                                                .padding(8.dp),
+                                                .padding(12.dp),
                                             isSelected = isSelected,
                                             unselectedBorderColor = MSTheme.color.white,
-                                            onClick = {
-                                                selectedIds = selectedIds.toggle(item.id)
-                                            },
+                                            onClick = { selectedIds = selectedIds.toggle(item.id) },
                                         )
                                     }
                                 }
@@ -353,8 +348,8 @@ fun MessageScreen(
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
                     .navigationBarsPadding()
-                    .padding(horizontal = 20.dp, vertical = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    .padding(horizontal = 20.dp, vertical = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
             ) {
                 MSButton(
                     modifier = Modifier
@@ -374,8 +369,8 @@ fun MessageScreen(
                 ) {
                     MSText(
                         text = "취소",
-                        fontSize = 14.dp,
-                        color = MSTheme.color.greyG5,
+                        fontSize = 16.dp,
+                        color = MSTheme.color.greyG4,
                     )
                 }
                 MSButton(
@@ -402,18 +397,18 @@ fun MessageScreen(
                         isDeleteMode = false
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MSTheme.color.red,
+                        containerColor = Color(0xFFED1E2F),
                         disabledContainerColor = Color(0xFFF3BBBB),
                     ),
                     pressColors = ButtonDefaults.buttonColors(
-                        containerColor = MSTheme.color.red,
+                        containerColor = Color(0xFFED1E2F),
                         disabledContainerColor = Color(0xFFF3BBBB),
                     ),
-                    wavyStrokeColor = if (canDelete) MSTheme.color.red else Color(0xFFF3BBBB),
+                    wavyStrokeColor = if (canDelete) Color(0xFFED1E2F) else Color(0xFFF3BBBB),
                 ) {
                     MSText(
                         text = "삭제",
-                        fontSize = 14.dp,
+                        fontSize = 16.dp,
                         color = if (canDelete) MSTheme.color.white else Color(0x59DA1B1B),
                     )
                 }
@@ -463,25 +458,55 @@ fun MessageScreen(
         if (activeMessageItem != null && !showMessageInput) {
             MSDim(
                 visible = true,
-                onDismiss = {
-                    activeMessageId = null
-                },
+                onDismiss = { activeMessageId = null },
             )
 
-            MessageDetailCard(
-                modifier = Modifier
+            Column(
+                modifier = modifier
                     .fillMaxWidth()
                     .align(Alignment.Center)
-                    .padding(horizontal = 20.dp),
-                description = activeMessageItem.description,
-                onEditClick = {
-                    messageTextFieldState.setText(activeMessageItem.description)
-                    showMessageInput = true
-                },
-                onCloseClick = {
-                    activeMessageId = null
-                },
-            )
+                    .padding(horizontal = 20.dp)
+                    .wavyStroke(
+                        color = MSTheme.color.white,
+                        fillColor = MSTheme.color.white,
+                        strokeWidth = 4.dp,
+                        contentPadding = 16.dp,
+                    )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .noRippleClickable {
+                                messageTextFieldState.setTextAndPlaceCursorAtEnd(activeMessageItem.description)
+                                showMessageInput = true
+                            },
+                        painter = painterResource(R.drawable.img_message_edit),
+                        contentDescription = "메시지 수정",
+                    )
+                    Spacer(Modifier.weight(1f))
+                    Image(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .noRippleClickable {
+                                activeMessageId = null
+                            },
+                        painter = painterResource(R.drawable.img_cancel),
+                        contentDescription = "닫기",
+                    )
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                MSText(
+                    text = activeMessageItem.description,
+                    fontWeight = FontWeight.Normal,
+                    color = MSTheme.color.greyG5,
+                )
+            }
         }
 
         if (showMessageInput) {
@@ -489,7 +514,7 @@ fun MessageScreen(
 
             MSDim(
                 visible = true,
-                onDismiss = ::closeMessageInput,
+                onDismiss = { closeMessageInput() },
             )
 
             Column(
@@ -503,8 +528,8 @@ fun MessageScreen(
                             topEnd = 24.dp,
                         ),
                     )
-                    .heightIn(min = 176.dp, max = 320.dp)
-                    .padding(horizontal = 20.dp, vertical = 16.dp),
+                    .height(370.dp)
+                    .padding(horizontal = 20.dp, vertical = 24.dp),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -512,16 +537,20 @@ fun MessageScreen(
                 ) {
                     MSText(
                         text = "메시지",
-                        fontSize = 12.dp,
+                        color = MSTheme.color.greyG5,
                     )
                     Spacer(Modifier.weight(1f))
-                    MSText(
-                        modifier = Modifier.noRippleClickable(onClick = ::closeMessageInput),
-                        text = "취소",
-                        fontSize = 12.dp,
-                        color = MSTheme.color.greyG3,
-                    )
-                    Spacer(Modifier.width(16.dp))
+                    Box(
+                        modifier = Modifier
+                            .noRippleClickable { closeMessageInput() }
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                    ) {
+                        MSText(
+                            text = "취소",
+                            color = MSTheme.color.greyG3,
+                        )
+                    }
+                    Spacer(Modifier.width(4.dp))
                     Box(
                         modifier = Modifier
                             .background(
@@ -539,7 +568,6 @@ fun MessageScreen(
                     ) {
                         MSText(
                             text = "저장",
-                            fontSize = 12.dp,
                             color = if (canSave) {
                                 MSTheme.color.primaryDark
                             } else {
@@ -554,7 +582,7 @@ fun MessageScreen(
                 MSPlainTextField(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(min = 96.dp, max = 224.dp)
+                        .weight(1f)
                         .focusRequester(focusRequester),
                     hint = "공유하고 싶은 메시지를 작성해보세요!",
                     textFieldState = messageTextFieldState,
@@ -597,18 +625,6 @@ private data class PhotoListItemUiModel(
 
 private fun Set<Long>.toggle(id: Long): Set<Long> =
     if (id in this) this - id else this + id
-
-private fun TextFieldState.clearText() {
-    edit {
-        replace(0, length, "")
-    }
-}
-
-private fun TextFieldState.setText(value: String) {
-    edit {
-        replace(0, length, value)
-    }
-}
 
 @Preview
 @Composable

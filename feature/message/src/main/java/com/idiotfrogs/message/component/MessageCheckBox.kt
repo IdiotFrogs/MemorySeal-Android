@@ -31,12 +31,8 @@ fun MessageCheckBox(
                 R.drawable.img_message_checkbox_inactive
             },
         ),
-        colorFilter = if (isSelected) {
-            null
-        } else {
-            ColorFilter.tint(unselectedBorderColor)
-        },
-        contentDescription = null,
+        colorFilter = if (isSelected) null else ColorFilter.tint(unselectedBorderColor),
+        contentDescription = "checkbox",
     )
 }
 

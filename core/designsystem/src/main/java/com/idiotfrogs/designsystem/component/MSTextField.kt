@@ -151,7 +151,7 @@ fun MSPlainTextField(
                     MSText(
                         text = hint,
                         color = MSTheme.color.greyG3,
-                        fontSize = 14.dp,
+                        fontSize = 16.dp,
                         fontWeight = FontWeight.Normal,
                         lineHeight = 14.dp.toSp() * 1.6,
                     )
