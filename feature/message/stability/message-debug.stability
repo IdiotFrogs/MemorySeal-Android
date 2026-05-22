@@ -32,16 +32,6 @@ public fun com.idiotfrogs.message.component.MessageCheckBox(isSelected: kotlin.B
     - unselectedBorderColor: STABLE (marked @Stable or @Immutable)
 
 @Composable
-public fun com.idiotfrogs.message.component.MessageDetailCard(description: kotlin.String, onEditClick: kotlin.Function0<kotlin.Unit>, onCloseClick: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - description: STABLE (String is immutable)
-    - onEditClick: STABLE (function type)
-    - onCloseClick: STABLE (function type)
-    - modifier: STABLE (marked @Stable or @Immutable)
-
-@Composable
 public fun com.idiotfrogs.message.component.MessagePreviewBanner(imageRes: kotlin.Int, title: kotlin.String, description: kotlin.String, onPreviewClick: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: true
   restartable: true
