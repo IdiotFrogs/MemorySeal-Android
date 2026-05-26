@@ -109,6 +109,60 @@ fun MSTextField(
     )
 }
 
+@Composable
+fun MSPlainTextField(
+    modifier: Modifier = Modifier,
+    hint: String,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    textFieldState: TextFieldState = rememberTextFieldState(),
+    inputTransformation: InputTransformation? = null,
+    textStyle: TextStyle = TextStyle(
+        color = MSTheme.color.greyG5,
+        fontSize = 14.dp.toSp(),
+        fontWeight = FontWeight.Normal,
+        fontFamily = pretendard,
+        lineHeight = 14.dp.toSp() * 1.6,
+    ),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    onKeyboardAction: KeyboardActionHandler? = null,
+    lineLimits: TextFieldLineLimits = TextFieldLineLimits.MultiLine(),
+    onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,
+    cursorBrush: Brush = SolidColor(MSTheme.color.greyG5),
+    outputTransformation: OutputTransformation? = null,
+    scrollState: ScrollState = rememberScrollState(),
+) {
+    BasicTextField(
+        state = textFieldState,
+        modifier = modifier,
+        enabled = enabled,
+        readOnly = readOnly,
+        inputTransformation = inputTransformation,
+        textStyle = textStyle,
+        keyboardOptions = keyboardOptions,
+        onKeyboardAction = onKeyboardAction,
+        lineLimits = lineLimits,
+        onTextLayout = onTextLayout,
+        cursorBrush = cursorBrush,
+        outputTransformation = outputTransformation,
+        decorator = { innerTextField ->
+            Box {
+                if (textFieldState.text.isEmpty()) {
+                    MSText(
+                        text = hint,
+                        color = MSTheme.color.greyG3,
+                        fontSize = 16.dp,
+                        fontWeight = FontWeight.Normal,
+                        lineHeight = 14.dp.toSp() * 1.6,
+                    )
+                }
+                innerTextField()
+            }
+        },
+        scrollState = scrollState,
+    )
+}
+
 @Preview
 @Composable
 private fun MSTextFieldPreview() {
@@ -125,5 +179,14 @@ private fun MSTextFieldDisabledPreview() {
         modifier = Modifier.fillMaxWidth(),
         enabled = false,
         hint = "별명을 입력해주세요.",
+    )
+}
+
+@Preview
+@Composable
+private fun MSPlainTextFieldPreview() {
+    MSPlainTextField(
+        modifier = Modifier.fillMaxWidth(),
+        hint = "공유하고 싶은 메시지를 작성해보세요!",
     )
 }

@@ -41,6 +41,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSMenuFab
+import com.idiotfrogs.designsystem.component.MSTabBar
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSToast
 import com.idiotfrogs.designsystem.model.MSMenuFabModel
@@ -49,8 +50,6 @@ import com.idiotfrogs.designsystem.util.DevicePreview
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.home.component.HomeHeader
 import com.idiotfrogs.home.component.HomeJoinContainer
-import com.idiotfrogs.home.component.HomeTab
-import com.idiotfrogs.home.component.HomeTabBar
 import com.idiotfrogs.home.component.HomeTicket
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
@@ -190,9 +189,10 @@ fun HomeScreen(
                 profileUrl = data.user?.profileImageUrl,
                 navigateToProfile = { onAction(HomeAction.NavigateToProfile) }
             )
-            HomeTabBar(
-                selectedTab = currentTab,
-                onClick = { currentTab = it },
+            MSTabBar(
+                tabs = HomeTab.entries.map { it.title },
+                selectedIndex = currentTab.ordinal,
+                onClick = { currentTab = HomeTab.entries[it] },
             )
             if (data.capsules.isEmpty()) {
                 Column(
@@ -292,4 +292,9 @@ fun HomeScreenPreview() {
         data = HomeData(),
         onAction = {},
     )
+}
+
+private enum class HomeTab(val title: String) {
+    CREATED("생성한 티켓"),
+    JOINED("참여한 티켓"),
 }
