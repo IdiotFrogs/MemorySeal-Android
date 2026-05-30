@@ -43,7 +43,7 @@ public fun com.idiotfrogs.home.component.HomeTicket(buried: kotlin.Boolean, targ
   skippable: true
   restartable: true
   params:
-i    - buried: STABLE (primitive type)
+    - buried: STABLE (primitive type)
     - targetDate: STABLE (String is immutable)
     - title: STABLE (String is immutable)
     - imageUrl: STABLE (class with no mutable properties)
