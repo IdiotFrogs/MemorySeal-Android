@@ -15,11 +15,13 @@ dependencies {
     implementation(project(":feature:detail"))
     implementation(project(":feature:friend"))
     implementation(project(":feature:management"))
+    implementation(project(":feature:message"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))
     implementation(project(":core:util"))
     implementation(project(":core:di"))
     implementation(project(":common:resource"))
+    implementation(project(":common:notification"))
 
     implementation(libs.androidx.core.splash)
 

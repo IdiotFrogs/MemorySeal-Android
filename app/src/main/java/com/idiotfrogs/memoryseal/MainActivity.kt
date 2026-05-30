@@ -1,6 +1,7 @@
 package com.idiotfrogs.memoryseal
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -26,6 +27,7 @@ import com.idiotfrogs.detail.DetailRoute
 import com.idiotfrogs.friend.FriendRoute
 import com.idiotfrogs.home.HomeRoute
 import com.idiotfrogs.management.ManagementRoute
+import com.idiotfrogs.message.MessageRoute
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.MSNavigatorImpl
 import com.idiotfrogs.navigation.Routes
@@ -83,22 +85,14 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Profile> { ProfileRoute() }
                                 entry<Routes.EditProfile> { EditProfileRoute() }
                                 entry<Routes.Setting> { SettingRoute() }
-                                entry<Routes.Detail> {
-                                    DetailRoute(
-                                        isVoteStart = false,
-                                        iSSeal = false,
-                                        capsuleId = it.id,
-                                    )
-                                }
-                                entry<Routes.Message> {
-                                    // TODO 메시지 화면 퍼블리싱 후 추가하기
-                                    it.id
-                                }
-                                entry<Routes.Friend> {
-                                    FriendRoute(it.id)
-                                }
+                                entry<Routes.Detail> { DetailRoute(capsuleId = it.id) }
+                                entry<Routes.Message> { MessageRoute(capsuleId = it.id) }
+                                entry<Routes.Friend> { FriendRoute(it.id) }
                                 entry<Routes.Management> {
-                                    ManagementRoute(capsuleId = it.id)
+                                    ManagementRoute(
+                                        capsuleId = it.id,
+                                        capsuleTitle = it.title,
+                                    )
                                 }
                             },
                         )
@@ -106,5 +100,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        // TODO 푸시 작업 추가 필요
     }
 }

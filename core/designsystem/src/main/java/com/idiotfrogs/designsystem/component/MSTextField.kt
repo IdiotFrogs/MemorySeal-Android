@@ -1,14 +1,12 @@
 package com.idiotfrogs.designsystem.component
 
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.InputTransformation
@@ -32,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.rememberFocusState
 import com.idiotfrogs.designsystem.util.toSp
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.pretendard
 
 @Composable
@@ -40,6 +39,8 @@ fun MSTextField(
     hint: String,
     enabled: Boolean = true,
     readOnly: Boolean = false,
+    focusedBorderColor: Color = MSTheme.color.primaryNormal,
+    unfocusedBorderColor: Color = MSTheme.color.greyG1,
     textFieldState: TextFieldState = rememberTextFieldState(),
     focusState: Pair<MutableInteractionSource, Boolean> = rememberFocusState(),
     inputTransformation: InputTransformation? = null,
@@ -77,31 +78,88 @@ fun MSTextField(
         decorator = { innerTextField ->
             Box(
                 modifier = Modifier
-                    .heightIn(48.dp)
-                    .border(
-                        width = 1.dp,
-                        color = when {
-                            (enabled && !isFocused) || !enabled -> MSTheme.color.greyG2
-                            else -> MSTheme.color.greyG5
-                        },
-                        shape = RoundedCornerShape(12.dp)
+                    .heightIn(54.dp)  // UI : 48dp + 테두리 3+3 = 6dp => 54dp
+                    .fillMaxWidth()
+                    .wavyStroke(
+                        color = if (isFocused) focusedBorderColor else unfocusedBorderColor,
+                        amplitude = 1.5.dp,
+                        spacing = 5.dp,
                     )
-                    .padding(horizontal = 12.dp, vertical = 11.dp),
-                contentAlignment = Alignment.CenterStart
             ) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .padding(15.dp), // UI : 12dp + 테두리 3dp => 15dp
+                    contentAlignment = Alignment.CenterStart,
+                ) {
+                    if (textFieldState.text.isEmpty()) {
+                        MSText(
+                            text = hint,
+                            color = MSTheme.color.greyG3,
+                            fontSize = 16.dp,
+                            fontWeight = FontWeight.Normal,
+                            lineHeight = 16.dp.toSp() * 1.6,
+                        )
+                    }
+                    innerTextField()
+                }
+            }
+        },
+        scrollState = scrollState
+    )
+}
+
+@Composable
+fun MSPlainTextField(
+    modifier: Modifier = Modifier,
+    hint: String,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    textFieldState: TextFieldState = rememberTextFieldState(),
+    inputTransformation: InputTransformation? = null,
+    textStyle: TextStyle = TextStyle(
+        color = MSTheme.color.greyG5,
+        fontSize = 14.dp.toSp(),
+        fontWeight = FontWeight.Normal,
+        fontFamily = pretendard,
+        lineHeight = 14.dp.toSp() * 1.6,
+    ),
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    onKeyboardAction: KeyboardActionHandler? = null,
+    lineLimits: TextFieldLineLimits = TextFieldLineLimits.MultiLine(),
+    onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,
+    cursorBrush: Brush = SolidColor(MSTheme.color.greyG5),
+    outputTransformation: OutputTransformation? = null,
+    scrollState: ScrollState = rememberScrollState(),
+) {
+    BasicTextField(
+        state = textFieldState,
+        modifier = modifier,
+        enabled = enabled,
+        readOnly = readOnly,
+        inputTransformation = inputTransformation,
+        textStyle = textStyle,
+        keyboardOptions = keyboardOptions,
+        onKeyboardAction = onKeyboardAction,
+        lineLimits = lineLimits,
+        onTextLayout = onTextLayout,
+        cursorBrush = cursorBrush,
+        outputTransformation = outputTransformation,
+        decorator = { innerTextField ->
+            Box {
                 if (textFieldState.text.isEmpty()) {
                     MSText(
                         text = hint,
                         color = MSTheme.color.greyG3,
                         fontSize = 16.dp,
                         fontWeight = FontWeight.Normal,
-                        lineHeight = 16.dp.toSp() * 1.6,
+                        lineHeight = 14.dp.toSp() * 1.6,
                     )
                 }
                 innerTextField()
             }
         },
-        scrollState = scrollState
+        scrollState = scrollState,
     )
 }
 
@@ -121,5 +179,14 @@ private fun MSTextFieldDisabledPreview() {
         modifier = Modifier.fillMaxWidth(),
         enabled = false,
         hint = "별명을 입력해주세요.",
+    )
+}
+
+@Preview
+@Composable
+private fun MSPlainTextFieldPreview() {
+    MSPlainTextField(
+        modifier = Modifier.fillMaxWidth(),
+        hint = "공유하고 싶은 메시지를 작성해보세요!",
     )
 }

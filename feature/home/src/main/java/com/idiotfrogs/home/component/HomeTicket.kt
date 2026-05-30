@@ -1,6 +1,5 @@
 package com.idiotfrogs.home.component
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,100 +11,145 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun HomeTicket(
-    countdown: String,
+    buried: Boolean,
     targetDate: String,
     title: String,
     imageUrl: String?,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        Row(
-            modifier = Modifier
-                .shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(16.dp),
-                    ambientColor = Color(0xBFA6A6A6),
-                    spotColor = Color(0xBFA6A6A6)
-                )
-                .fillMaxWidth()
-                .background(
-                    color = MSTheme.color.white,
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            MSText(
-                text = countdown,
-                fontSize = 32.dp,
-            )
-            MSText(
-                text = targetDate,
-                fontWeight = FontWeight.Normal,
-                fontSize = 14.dp,
-                color = MSTheme.color.greyG4
-            )
-        }
-        DashedDivider(
+        Box(
             modifier = Modifier
                 .zIndex(1f)
-                .padding(horizontal = 16.dp)
-        )
-        Column(
+                .wavyStroke(
+                    color = MSTheme.color.greyG5,
+                    strokeWidth = 4.dp,
+                    fillColor = MSTheme.color.primaryNormal
+                )
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .fillMaxWidth()
+            ) {
+                if (buried) {
+                    Row(
+                        modifier = Modifier
+                            .background(
+                                color = MSTheme.color.primaryLight,
+                                shape = RoundedCornerShape(12.dp))
+                            .padding(6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            modifier = Modifier.size(16.dp),
+                            painter = painterResource(R.drawable.ic_shovels),
+                            contentDescription = "buried",
+                            colorFilter = ColorFilter.tint(MSTheme.color.greyG5)
+                        )
+                        MSText(
+                            text = "묻어짐",
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.dp,
+                            color = MSTheme.color.greyG5
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+                MSText(
+                    text = title,
+                    fontSize = 20.dp,
+                    fontWeight = FontWeight.Bold,
+                    color = MSTheme.color.greyG5
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                MSText(
+                    text = targetDate,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.dp,
+                    color = MSTheme.color.greyG4
+                )
+            }
+        }
+        val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
+        Box(
             modifier = Modifier
-                .shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(16.dp),
-                    ambientColor = Color(0xBFA6A6A6),
-                    spotColor = Color(0xBFA6A6A6)
+                .offset(y = (-10).dp)
+                .wavyStroke(
+                    color = MSTheme.color.greyG5,
+                    strokeWidth = 4.dp,
+                    fillColor = MSTheme.color.white
                 )
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .background(
-                    color = MSTheme.color.white,
-                    shape = RoundedCornerShape(16.dp)
-                )
-                .padding(16.dp),
         ) {
-            MSText(
-                text = title,
-                fontSize = 16.dp,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
             imageUrl?.let {
                 GlideImage(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                        .fillMaxSize()
+                        .padding(24.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .drawWithCache {
+                            onDrawWithContent {
+                                drawContent()
+                                drawImage(
+                                    image = mask,
+                                    dstSize = IntSize(size.width.toInt(), size.height.toInt()),
+                                    blendMode = BlendMode.DstIn
+                                )
+                            }
+                        },
                     imageModel = { imageUrl }
                 )
             } ?: run {
                 Image(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                        .fillMaxSize()
+                        .padding(24.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .drawWithCache {
+                            onDrawWithContent {
+                                drawContent()
+                                drawImage(
+                                    image = mask,
+                                    dstSize = IntSize(size.width.toInt(), size.height.toInt()),
+                                    blendMode = BlendMode.DstIn
+                                )
+                            }
+                        },
                     painter = painterResource(R.drawable.img_sample),
                     contentDescription = "thumbnail",
                     contentScale = ContentScale.Crop
@@ -115,48 +159,15 @@ fun HomeTicket(
     }
 }
 
-@Composable
-fun DashedDivider(
-    modifier: Modifier = Modifier,
-    color: Color = MSTheme.color.greyG2,
-    dashDp: Dp = 8.dp,
-    strokeDp: Dp = 2.dp,
-) {
-    val density = LocalDensity.current
-
-    Canvas(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(strokeDp)
-            .background(MSTheme.color.white)
-    ) {
-        val dashPx = with(density) { dashDp.toPx() }
-        val strokePx = with(density) { strokeDp.toPx() }
-
-        drawLine(
-            color = color,
-            start = Offset(0f, strokePx / 2),
-            end = Offset(size.width, strokePx / 2),
-            strokeWidth = strokePx,
-            cap = StrokeCap.Round,
-            pathEffect = PathEffect.dashPathEffect(
-                intervals = floatArrayOf(dashPx, dashPx),
-                phase = dashPx / 2f
-            )
-        )
-    }
-}
-
-
 @Preview(showBackground = true)
 @Composable
 private fun HomeTicketPreview() {
     Box(modifier = Modifier.padding(horizontal = 20.dp)) {
         HomeTicket(
-            countdown = "D-5",
+            buried = true,
             targetDate = "2027. 10. 24.",
             title = "제목입니다.",
-            imageUrl = ""
+            imageUrl = null
         )
     }
 }

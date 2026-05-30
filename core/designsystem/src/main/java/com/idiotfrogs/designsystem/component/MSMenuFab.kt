@@ -29,6 +29,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +39,7 @@ import com.idiotfrogs.designsystem.model.MSMenuFabModel
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.rememberPressState
 import com.idiotfrogs.designsystem.util.toSp
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.resource.pretendard
 
@@ -57,11 +59,16 @@ fun MSMenuFab(
         contentAlignment = Alignment.BottomEnd
     ) {
         DropdownMenu(
+            modifier = Modifier.wavyStroke(
+                color = MSTheme.color.white,
+                fillColor = MSTheme.color.white
+            ),
             offset = offset,
             expanded = expanded,
             onDismissRequest = onDismiss,
             shadowElevation = 0.dp,
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(12.dp),
+            containerColor = Color.Transparent
         ) {
             CompositionLocalProvider(LocalRippleConfiguration provides null) {
                 menuList.forEach {
@@ -93,9 +100,18 @@ fun MSMenuFab(
         }
         if (hasFab) {
             FloatingActionButton(
-                modifier = Modifier.size(56.dp),
+                modifier = Modifier
+                    .wavyStroke(
+                        color = Color(0xFF29A047),
+                        strokeWidth = 4.dp,
+                        cornerRadius = 28.dp,
+                        amplitude = 1.dp,
+                        spacing = 2.dp,
+                    )
+                    .size(56.dp)
+                    .padding(2.dp),
                 shape = CircleShape,
-                containerColor = if (expanded) MSTheme.color.white else MSTheme.color.primaryNormal,
+                containerColor = MSTheme.color.primaryNormal,
                 elevation = FloatingActionButtonDefaults.elevation(
                     defaultElevation = 4.dp,
                     pressedElevation = 4.dp,
@@ -104,8 +120,13 @@ fun MSMenuFab(
                 ),
                 onClick = onClick
             ) {
-                val imageRes = if (expanded) R.drawable.ic_close else R.drawable.ic_plus
+                val imageRes = R.drawable.ic_add
                 Image(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .graphicsLayer {
+                            rotationZ = if (expanded) 45f else 0f
+                        },
                     painter = painterResource(imageRes),
                     contentDescription = "fab content"
                 )

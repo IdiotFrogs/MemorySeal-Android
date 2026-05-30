@@ -23,6 +23,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.extension.toYearMonthDay
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.profile.component.ProfileCard
@@ -49,10 +50,13 @@ fun ProfileRoute(
         }
     }
 
-    when (uiState) {
+    when (val state = uiState) {
         UiState.Init -> Unit
         is UiState.Success -> {
-            ProfileScreen(onAction = viewModel::onAction)
+            ProfileScreen(
+                data = state.data,
+                onAction = viewModel::onAction
+            )
         }
         is UiState.Error -> Unit
     }
@@ -60,6 +64,7 @@ fun ProfileRoute(
 
 @Composable
 fun ProfileScreen(
+    data: ProfileData,
     onAction: (ProfileAction) -> Unit
 ) {
     Box(
@@ -84,7 +89,8 @@ fun ProfileScreen(
             maxLineItem {
                 ProfileCard(
                     modifier = Modifier.padding(top = (HeaderHeight + 24).dp),
-                    nickname = "용감한 사자처럼",
+                    nickname = data.user?.nickname ?: "",
+                    imageUrl = data.user?.profileImageUrl,
                     onEditClick = { onAction(ProfileAction.NavigateToEditProfile) }
                 )
             }
@@ -97,12 +103,11 @@ fun ProfileScreen(
                     color = MSTheme.color.greyG5
                 )
             }
-            // TODO: 실제 데이터로 변경
-            items(List(10) { "2026. 10. 24" }) {
+            items(data.capsules) {
                 ProfileTicketCard(
-                    imageUrl = "",
-                    title = "제목입니다.다ㅏㅏ",
-                    date = it,
+                    imageUrl = it.mainImageUrl,
+                    title = it.title,
+                    date = it.openedAt.toYearMonthDay(),
                     onClick = {}
                 )
             }
@@ -122,5 +127,8 @@ private fun LazyGridScope.maxLineItem(
 @Preview
 @Composable
 private fun ProfileScreenPreview() {
-    ProfileScreen(onAction = {})
+    ProfileScreen(
+        data = ProfileData(),
+        onAction = {},
+    )
 }

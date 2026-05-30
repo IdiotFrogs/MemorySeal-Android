@@ -48,6 +48,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 fun ManagementRoute(
     viewModel: ManagementViewModel = hiltViewModel(),
     capsuleId: Long,
+    capsuleTitle: String,
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
@@ -64,6 +65,7 @@ fun ManagementRoute(
         is UiState.Success -> {
             ManagementScreen(
                 capsuleId = capsuleId,
+                capsuleTitle = capsuleTitle,
                 onAction = viewModel::onAction
             )
         }
@@ -75,6 +77,7 @@ fun ManagementRoute(
 fun ManagementScreen(
     modifier: Modifier = Modifier,
     capsuleId: Long,
+    capsuleTitle: String,
     onAction: (ManagementAction) -> Unit,
 ) {
     var showDeleteContainer by remember { mutableStateOf(false) }
@@ -95,7 +98,7 @@ fun ManagementScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             MSDetailHeader(
-                title = "관리",
+                title = "티켓 관리",
                 navigateToBack = { onAction(ManagementAction.NavigateToBack) },
                 paddingValues = PaddingValues(horizontal = 0.dp, vertical = 16.dp)
             )
@@ -131,6 +134,7 @@ fun ManagementScreen(
         ManagementDeleteContainer(
             isShow = showDeleteContainer,
             textFieldState = textFieldState,
+            capsuleTitle = capsuleTitle,
             onDelete = {
                 onAction(ManagementAction.DeleteCapsule(capsuleId))
                 showDeleteContainer = false
@@ -143,5 +147,5 @@ fun ManagementScreen(
 @Preview
 @Composable
 fun ManagementScreenPreview() {
-    ManagementScreen(capsuleId = 0) {}
+    ManagementScreen(capsuleId = 0, capsuleTitle = "티켓 Title") {}
 }

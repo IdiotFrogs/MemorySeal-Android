@@ -22,10 +22,12 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 fun BoxScope.ManagementDeleteContainer(
     isShow: Boolean,
     textFieldState: TextFieldState,
+    capsuleTitle: String,
     onCancel: () -> Unit,
     onDelete: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
+    val enabled = textFieldState.text.toString() == capsuleTitle
 
     LaunchedEffect(isShow) {
         if (isShow) {
@@ -36,8 +38,8 @@ fun BoxScope.ManagementDeleteContainer(
 
     if (isShow) {
         MSActionContainer(
-            title = "삭제를 위해 티켓 이름”티켓 이름”을 입력해주세요.",
-            hint = "”티켓 이름”",
+            title = "삭제를 위해 티켓 이름\n\"$capsuleTitle\"을/를 입력해주세요.",
+            hint = capsuleTitle,
             textFieldState = textFieldState,
             primaryButtonText = "삭제",
             onSecondaryClick = onCancel,
@@ -45,15 +47,19 @@ fun BoxScope.ManagementDeleteContainer(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .focusRequester(focusRequester),
+            primaryButtonEnabled = enabled,
+            focusedBorderColor = MSTheme.color.greyG1,
             primaryButtonColors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFDA1B1B),
-                disabledContainerColor = Color(0x33DA1B1B),  // 20% 투명도
+                containerColor = Color(0xFFED1E1E),
+                disabledContainerColor = Color(0xFFF3BBBB),
             ),
             primaryPressColors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFDA1B1B),
-                disabledContainerColor = Color(0x33DA1B1B),  // 20% 투명도
+                containerColor = Color(0xFFED1E1E),
+                disabledContainerColor = Color(0xFFF3BBBB),
             ),
-            primaryTextColor = if (textFieldState.text.isNotEmpty()) MSTheme.color.white else Color(0x59DA1B1B)  // 35% 투명도
+            primaryTextColor = if (enabled) MSTheme.color.white else Color(0x59DA1B1B),  // 35% 투명도
+            secondaryWavyStrokeColor = MSTheme.color.greyG1,
+            primaryWavyStrokeColor = if (enabled) Color(0xFFED1E1E) else Color(0xFFF3BBBB),
         )
     }
 }
@@ -67,6 +73,7 @@ private fun ManagementDeleteContainerPreview() {
         ManagementDeleteContainer(
             isShow = true,
             textFieldState = textFieldState,
+            capsuleTitle = "티켓 Title",
             onCancel = { },
             onDelete = { }
         )

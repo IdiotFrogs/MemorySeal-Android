@@ -27,5 +27,5 @@ sealed interface Routes: NavKey {
     @Serializable
     data class Message(val id: Long) : Routes
     @Serializable
-    data class Management(val id: Long): Routes
+    data class Management(val id: Long, val title: String): Routes
 }

@@ -1,7 +1,7 @@
 package com.idiotfrogs.designsystem.component
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.R
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
@@ -31,7 +32,7 @@ fun MSToast(
     modifier: Modifier = Modifier,
     content: @Composable RowScope.() -> Unit,
 ) {
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
@@ -42,10 +43,20 @@ fun MSToast(
                 ambientColor = Color(0x29505050),  // 16% 투명도
                 spotColor = Color(0x29505050)  // 16% 투명도
             )
-            .background(Color(0x7A0B0B0B)) // 48% 투명도
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) { content() }
+            .wavyStroke(
+                color = MSTheme.color.greyG4,
+                fillColor = Color(0x7A0B0B0B),  // 48% 투명도
+                amplitude = 1.dp,
+                spacing = 2.dp,
+            )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) { content() }
+    }
 }
 
 @Preview(showBackground = true)

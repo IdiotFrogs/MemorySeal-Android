@@ -12,22 +12,13 @@ public fun com.idiotfrogs.home.HomeRoute(viewModel: com.idiotfrogs.home.HomeView
     - viewModel: UNSTABLE (has mutable properties or unstable members)
 
 @Composable
-public fun com.idiotfrogs.home.HomeScreen(data: com.idiotfrogs.home.HomeData, onAction: kotlin.Function1<com.idiotfrogs.home.HomeAction, kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.home.HomeScreen(showToast: kotlin.Boolean, data: com.idiotfrogs.home.HomeData, onAction: kotlin.Function1<com.idiotfrogs.home.HomeAction, kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
   params:
+    - showToast: STABLE (primitive type)
     - data: STABLE (marked @Stable or @Immutable)
     - onAction: STABLE (function type)
-
-@Composable
-public fun com.idiotfrogs.home.component.DashedDivider(modifier: androidx.compose.ui.Modifier, color: androidx.compose.ui.graphics.Color, dashDp: androidx.compose.ui.unit.Dp, strokeDp: androidx.compose.ui.unit.Dp): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - modifier: STABLE (marked @Stable or @Immutable)
-    - color: STABLE (marked @Stable or @Immutable)
-    - dashDp: STABLE (marked @Stable or @Immutable)
-    - strokeDp: STABLE (marked @Stable or @Immutable)
 
 @Composable
 public fun com.idiotfrogs.home.component.HomeHeader(profileUrl: kotlin.String?, navigateToProfile: kotlin.Function0<kotlin.Unit>): kotlin.Unit
@@ -48,28 +39,11 @@ public fun com.idiotfrogs.home.component.HomeJoinContainer(isShow: kotlin.Boolea
     - onJoin: STABLE (function type)
 
 @Composable
-public fun com.idiotfrogs.home.component.HomeTabBar(selectedTab: com.idiotfrogs.home.component.HomeTab, onClick: kotlin.Function1<com.idiotfrogs.home.component.HomeTab, kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.home.component.HomeTicket(buried: kotlin.Boolean, targetDate: kotlin.String, title: kotlin.String, imageUrl: kotlin.String?, modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: true
   restartable: true
   params:
-    - selectedTab: STABLE (class with no mutable properties)
-    - onClick: STABLE (function type)
-
-@Composable
-public fun com.idiotfrogs.home.component.HomeTabItem(selected: kotlin.Boolean, text: kotlin.String, onClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - selected: STABLE (primitive type)
-    - text: STABLE (String is immutable)
-    - onClick: STABLE (function type)
-
-@Composable
-public fun com.idiotfrogs.home.component.HomeTicket(countdown: kotlin.String, targetDate: kotlin.String, title: kotlin.String, imageUrl: kotlin.String?, modifier: androidx.compose.ui.Modifier): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - countdown: STABLE (String is immutable)
+    - buried: STABLE (primitive type)
     - targetDate: STABLE (String is immutable)
     - title: STABLE (String is immutable)
     - imageUrl: STABLE (class with no mutable properties)
