@@ -175,6 +175,54 @@ fun MSTitleDialog(
     }
 }
 
+@Composable
+fun MSTitleDialog(
+    title: String,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+    modifier: Modifier = Modifier,
+    confirmText: String = "확인",
+    confirmButtonColor: Color = MSTheme.color.primaryNormal,
+    confirmTextColor: Color = MSTheme.color.white,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    Dialog(onDismissRequest = onCancel) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .wavyStroke(
+                    color = MSTheme.color.white,
+                    fillColor = MSTheme.color.white,
+                    contentPadding = 20.dp,
+                )
+        ) {
+            MSText(
+                text = title,
+                fontSize = 20.dp,
+            )
+            content()
+            MSButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onConfirm,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = confirmButtonColor
+                ),
+                pressColors = ButtonDefaults.buttonColors(
+                    containerColor = confirmButtonColor
+                ),
+                wavyStrokeColor = confirmButtonColor,
+                contentPadding = PaddingValues(11.dp)
+            ) {
+                MSText(
+                    text = confirmText,
+                    fontSize = 16.dp,
+                    color = confirmTextColor
+                )
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 fun MSDialogPreview() {
