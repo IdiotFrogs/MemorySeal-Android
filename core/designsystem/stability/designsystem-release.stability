@@ -162,11 +162,12 @@ public fun com.idiotfrogs.designsystem.component.MSPlainTextField(modifier: andr
     - scrollState: STABLE (marked @Stable or @Immutable)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.MSTabBar(tabs: kotlin.collections.List<kotlin.String>, selectedIndex: kotlin.Int, onClick: kotlin.Function1<kotlin.Int, kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+public fun com.idiotfrogs.designsystem.component.MSTabBar(tabs: kotlin.collections.List<kotlin.String>, showBorder: kotlin.Boolean, selectedIndex: kotlin.Int, onClick: kotlin.Function1<kotlin.Int, kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: false
   restartable: true
   params:
     - tabs: RUNTIME (requires runtime check)
+    - showBorder: STABLE (primitive type)
     - selectedIndex: STABLE (primitive type)
     - onClick: STABLE (function type)
     - modifier: STABLE (marked @Stable or @Immutable)
