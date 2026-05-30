@@ -53,4 +53,9 @@ interface TimeCapsuleService {
         @Path("requestId") requestId: Long,
         @Body body: ProcessCollaboratorRequest
     )
+
+    @DELETE("time-capsules/{capsuleId}/leave")
+    suspend fun leaveTimeCapsule(
+        @Path("capsuleId") capsuleId: Long
+    )
 }

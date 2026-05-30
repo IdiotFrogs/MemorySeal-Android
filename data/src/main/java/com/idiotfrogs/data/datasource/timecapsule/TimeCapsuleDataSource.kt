@@ -32,4 +32,6 @@ interface TimeCapsuleDataSource {
     suspend fun requestCollaborator(body: PendingCollaboratorsRequest)
 
     suspend fun processRequest(requestId: Long, body: ProcessCollaboratorRequest)
+
+    suspend fun leaveTimeCapsule(capsuleId: Long)
 }

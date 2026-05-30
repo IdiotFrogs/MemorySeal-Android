@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.resource.R
@@ -23,6 +24,7 @@ fun MSDetailHeader(
     navigateToBack: () -> Unit,
     modifier: Modifier = Modifier,
     title: String = "",
+    fontSize: Dp = 14.dp,
     paddingValues: PaddingValues = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
     trailingContent: @Composable (() -> Unit)? = null,
 ) {
@@ -41,7 +43,8 @@ fun MSDetailHeader(
         )
         MSText(
             modifier = Modifier.align(Alignment.Center),
-            text = title
+            text = title,
+            fontSize = fontSize
         )
         trailingContent?.let {
             Box(Modifier.align(Alignment.CenterEnd)) { it() }

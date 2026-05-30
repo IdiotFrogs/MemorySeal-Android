@@ -1,6 +1,7 @@
 package com.idiotfrogs.management
 
 import com.idiotfrogs.domain.usecase.timecapsule.DeleteTimeCapsuleUseCase
+import com.idiotfrogs.domain.usecase.timecapsule.LeaveTimeCapsuleUseCase
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.sideEffect.RefreshEvent
@@ -13,22 +14,38 @@ import javax.inject.Inject
 @HiltViewModel
 class ManagementViewModel @Inject constructor(
     private val deleteTimeCapsuleUseCase: DeleteTimeCapsuleUseCase,
+    private val leaveTimeCapsuleUseCase: LeaveTimeCapsuleUseCase,
 ) : BaseViewModel<UiState<Unit>, ManagementSideEffect, ManagementAction>() {
 
-    override val container: Container<UiState<Unit>, ManagementSideEffect> = container(UiState.Success(Unit))
+    override val container: Container<UiState<Unit>, ManagementSideEffect> =
+        container(UiState.Success(Unit))
 
     override fun onAction(action: ManagementAction) {
         when (action) {
             ManagementAction.NavigateToBack -> intent { postSideEffect(ManagementSideEffect.NavigateToBack) }
-            is ManagementAction.DeleteCapsule -> {
-                safeLaunch {
-                    deleteTimeCapsuleUseCase(action.capsuleId).onSuccess {
-                        RefreshSideEffect.tryEmit(RefreshEvent.Home)
-                        intent { postSideEffect(ManagementSideEffect.NavigateToHome) }
-                    }.onFailure {
-                        // TODO 에러 Toast 작업?
-                    }
-                }
+            is ManagementAction.DeleteCapsule -> deleteTimeCapsule(action.capsuleId)
+            is ManagementAction.LeaveTimeCapsule -> leaveTimeCapsule(action.capsuleId)
+        }
+    }
+
+    private fun deleteTimeCapsule(capsuleId: Long) {
+        safeLaunch {
+            deleteTimeCapsuleUseCase(capsuleId).onSuccess {
+                RefreshSideEffect.tryEmit(RefreshEvent.Home)
+                intent { postSideEffect(ManagementSideEffect.NavigateToHome) }
+            }.onFailure {
+                // TODO 에러 Toast 작업?
+            }
+        }
+    }
+
+    private fun leaveTimeCapsule(capsuleId: Long) {
+        safeLaunch {
+            leaveTimeCapsuleUseCase(capsuleId).onSuccess {
+                RefreshSideEffect.tryEmit(RefreshEvent.Home)
+                intent { postSideEffect(ManagementSideEffect.NavigateToHome) }
+            }.onFailure {
+                // TODO 에러 dialog 작업
             }
         }
     }
@@ -38,6 +55,7 @@ sealed interface ManagementAction {
     data object NavigateToBack : ManagementAction
 
     data class DeleteCapsule(val capsuleId: Long) : ManagementAction
+    data class LeaveTimeCapsule(val capsuleId: Long) : ManagementAction
 }
 
 sealed interface ManagementSideEffect {

@@ -57,4 +57,8 @@ class TimeCapsuleDataSourceImpl @Inject constructor(
     override suspend fun processRequest(requestId: Long, body: ProcessCollaboratorRequest) {
         return timeCapsuleService.processRequest(requestId , body)
     }
+
+    override suspend fun leaveTimeCapsule(capsuleId: Long) {
+        return timeCapsuleService.leaveTimeCapsule(capsuleId)
+    }
 }
