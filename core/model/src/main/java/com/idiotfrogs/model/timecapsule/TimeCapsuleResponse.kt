@@ -13,4 +13,6 @@ data class TimeCapsuleResponse(
     val mainImageUrl: String,
     val timeCapsuleStatus: TimeCapsuleStatus,
     val userRole: TimeCapsuleRole,
+    val myContentCount: Int,
+    val myImageCount: Int,
 )
