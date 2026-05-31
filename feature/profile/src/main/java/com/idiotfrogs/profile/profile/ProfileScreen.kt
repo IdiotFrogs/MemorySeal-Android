@@ -107,7 +107,7 @@ fun ProfileScreen(
                 ProfileTicketCard(
                     imageUrl = it.mainImageUrl,
                     title = it.title,
-                    date = it.openedAt.toYearMonthDay(),
+                    date = it.createdAt.toYearMonthDay(),
                     onClick = {}
                 )
             }

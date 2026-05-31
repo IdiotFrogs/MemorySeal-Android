@@ -179,9 +179,11 @@ fun HomeScreen(
         }
 
         val lazyListState = rememberLazyListState()
-        val showBorder = remember {
-            lazyListState.firstVisibleItemScrollOffset > 0 || // 1px이라도 움직였거나
-                    lazyListState.firstVisibleItemIndex > 0   // 첫 번째 아이템을 넘어간 경우
+        val showBorder by remember {
+            derivedStateOf {
+                lazyListState.firstVisibleItemScrollOffset > 0 || // 1px이라도 움직였거나
+                        lazyListState.firstVisibleItemIndex > 0   // 첫 번째 아이템을 넘어간 경우
+            }
         }
 
         Column(
@@ -255,7 +257,7 @@ fun HomeScreen(
                                     onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
                                 },
                                 buried = it.timeCapsuleStatus == TimeCapsuleStatus.BURIED,
-                                targetDate = it.openedAt.toYearMonthDay(),
+                                createdAt = it.createdAt.toYearMonthDay(),
                                 title = it.title,
                                 imageUrl = it.mainImageUrl
                             )

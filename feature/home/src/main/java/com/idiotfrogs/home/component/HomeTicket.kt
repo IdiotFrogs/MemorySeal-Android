@@ -42,7 +42,7 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun HomeTicket(
     buried: Boolean,
-    targetDate: String,
+    createdAt: String,
     title: String,
     imageUrl: String?,
     modifier: Modifier = Modifier,
@@ -95,7 +95,7 @@ fun HomeTicket(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 MSText(
-                    text = targetDate,
+                    text = createdAt,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.dp,
                     color = MSTheme.color.greyG4
@@ -165,7 +165,7 @@ private fun HomeTicketPreview() {
     Box(modifier = Modifier.padding(horizontal = 20.dp)) {
         HomeTicket(
             buried = true,
-            targetDate = "2027. 10. 24.",
+            createdAt = "2027. 10. 24.",
             title = "제목입니다.",
             imageUrl = null
         )
