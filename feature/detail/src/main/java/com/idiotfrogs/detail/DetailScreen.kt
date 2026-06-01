@@ -179,7 +179,7 @@ fun DetailScreen(
                     .padding(horizontal = 20.dp)
                     .align(Alignment.BottomCenter)
                     .navigationBarsPadding()
-                    .padding(bottom = 24.dp)
+                    .padding(bottom = 16.dp)
                     .zIndex(1f),
                 hazeState = hazeState,
             ) {
