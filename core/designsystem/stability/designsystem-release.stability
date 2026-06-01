@@ -162,11 +162,12 @@ public fun com.idiotfrogs.designsystem.component.MSPlainTextField(modifier: andr
     - scrollState: STABLE (marked @Stable or @Immutable)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.MSTabBar(tabs: kotlin.collections.List<kotlin.String>, selectedIndex: kotlin.Int, onClick: kotlin.Function1<kotlin.Int, kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+public fun com.idiotfrogs.designsystem.component.MSTabBar(tabs: kotlin.collections.List<kotlin.String>, showBorder: kotlin.Boolean, selectedIndex: kotlin.Int, onClick: kotlin.Function1<kotlin.Int, kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: false
   restartable: true
   params:
     - tabs: RUNTIME (requires runtime check)
+    - showBorder: STABLE (primitive type)
     - selectedIndex: STABLE (primitive type)
     - onClick: STABLE (function type)
     - modifier: STABLE (marked @Stable or @Immutable)
@@ -240,6 +241,20 @@ public fun com.idiotfrogs.designsystem.component.MSTitleDialog(title: kotlin.Str
     - cancelButtonColor: STABLE (marked @Stable or @Immutable)
     - confirmTextColor: STABLE (marked @Stable or @Immutable)
     - cancelTextColor: STABLE (marked @Stable or @Immutable)
+    - content: STABLE (composable function type)
+
+@Composable
+public fun com.idiotfrogs.designsystem.component.MSTitleDialog(title: kotlin.String, onConfirm: kotlin.Function0<kotlin.Unit>, onCancel: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, confirmText: kotlin.String, confirmButtonColor: androidx.compose.ui.graphics.Color, confirmTextColor: androidx.compose.ui.graphics.Color, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.ColumnScope, kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - title: STABLE (String is immutable)
+    - onConfirm: STABLE (function type)
+    - onCancel: STABLE (function type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - confirmText: STABLE (String is immutable)
+    - confirmButtonColor: STABLE (marked @Stable or @Immutable)
+    - confirmTextColor: STABLE (marked @Stable or @Immutable)
     - content: STABLE (composable function type)
 
 @Composable

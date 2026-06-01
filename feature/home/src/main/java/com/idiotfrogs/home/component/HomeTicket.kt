@@ -1,15 +1,19 @@
 package com.idiotfrogs.home.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
@@ -36,7 +41,7 @@ import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun HomeTicket(
-    countdown: String,
+    buried: Boolean,
     targetDate: String,
     title: String,
     imageUrl: String?,
@@ -52,26 +57,43 @@ fun HomeTicket(
                     fillColor = MSTheme.color.primaryNormal
                 )
         ) {
-            Row(
+            Column(
                 modifier = Modifier
-                    .padding(horizontal = 24.dp, vertical = 20.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+                    .padding(20.dp)
+                    .fillMaxWidth()
             ) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f),
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    MSText(
-                        text = countdown,
-                        fontSize = 32.dp,
-                    )
-                    MSText(
-                        text = title,
-                        fontSize = 16.dp,
-                    )
+                if (buried) {
+                    Row(
+                        modifier = Modifier
+                            .background(
+                                color = MSTheme.color.primaryLight,
+                                shape = RoundedCornerShape(12.dp))
+                            .padding(6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Image(
+                            modifier = Modifier.size(16.dp),
+                            painter = painterResource(R.drawable.ic_shovels),
+                            contentDescription = "buried",
+                            colorFilter = ColorFilter.tint(MSTheme.color.greyG5)
+                        )
+                        MSText(
+                            text = "묻어짐",
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 12.dp,
+                            color = MSTheme.color.greyG5
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
                 }
+                MSText(
+                    text = title,
+                    fontSize = 20.dp,
+                    fontWeight = FontWeight.Bold,
+                    color = MSTheme.color.greyG5
+                )
+                Spacer(modifier = Modifier.height(8.dp))
                 MSText(
                     text = targetDate,
                     fontWeight = FontWeight.Normal,
@@ -142,7 +164,7 @@ fun HomeTicket(
 private fun HomeTicketPreview() {
     Box(modifier = Modifier.padding(horizontal = 20.dp)) {
         HomeTicket(
-            countdown = "D-5",
+            buried = true,
             targetDate = "2027. 10. 24.",
             title = "제목입니다.",
             imageUrl = null
