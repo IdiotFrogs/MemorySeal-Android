@@ -244,6 +244,20 @@ public fun com.idiotfrogs.designsystem.component.MSTitleDialog(title: kotlin.Str
     - content: STABLE (composable function type)
 
 @Composable
+public fun com.idiotfrogs.designsystem.component.MSTitleDialog(title: kotlin.String, onConfirm: kotlin.Function0<kotlin.Unit>, onCancel: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, confirmText: kotlin.String, confirmButtonColor: androidx.compose.ui.graphics.Color, confirmTextColor: androidx.compose.ui.graphics.Color, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.ColumnScope, kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - title: STABLE (String is immutable)
+    - onConfirm: STABLE (function type)
+    - onCancel: STABLE (function type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - confirmText: STABLE (String is immutable)
+    - confirmButtonColor: STABLE (marked @Stable or @Immutable)
+    - confirmTextColor: STABLE (marked @Stable or @Immutable)
+    - content: STABLE (composable function type)
+
+@Composable
 public fun com.idiotfrogs.designsystem.component.MSToast(hazeState: dev.chrisbanes.haze.HazeState, modifier: androidx.compose.ui.Modifier, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.RowScope, kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true

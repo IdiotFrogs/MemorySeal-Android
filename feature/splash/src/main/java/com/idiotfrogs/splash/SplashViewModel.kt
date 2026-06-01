@@ -15,16 +15,19 @@ class SplashViewModel @Inject constructor(
     private val getAccessTokenUseCase: GetAccessTokenUseCase,
     private val getMyProfileUseCase: GetMyProfileUseCase,
 ): BaseViewModel<UiState<Unit>, SplashSideEffect, SplashAction>() {
-    override fun onAction(action: SplashAction) { }
-
     override val container: Container<UiState<Unit>, SplashSideEffect> = container(
         initialState = UiState.Init,
         onCreate = {
             /** todo: 데이터 로드 등 사전 작업 */
             intent { reduce { UiState.Success(Unit) } }
-            autoLogin()
         }
     )
+
+    override fun onAction(action: SplashAction) {
+        when (action) {
+            SplashAction.AutoLogin -> autoLogin()
+        }
+    }
 
     private fun autoLogin() {
         safeLaunch {
@@ -48,7 +51,9 @@ class SplashViewModel @Inject constructor(
     }
 }
 
-sealed interface SplashAction
+sealed interface SplashAction {
+    data object AutoLogin : SplashAction
+}
 
 sealed interface SplashSideEffect {
     data object NavigateToLogin : SplashSideEffect
