@@ -23,7 +23,7 @@ class CreateViewModel @Inject constructor(
     override fun onAction(action: CreateAction) {
         when (action) {
             is CreateAction.CreateTimeCapsule -> createTimeCapsule(
-                action.title, action.description, action.openedAt, action.mainImage
+                action.title, action.description, action.mainImage
             )
             CreateAction.NavigateToBack -> intent { postSideEffect(CreateSideEffect.NavigateToBack) }
         }
@@ -32,14 +32,12 @@ class CreateViewModel @Inject constructor(
     private fun createTimeCapsule(
         title: String,
         description: String?,
-        openedAt: LocalDateTime,
         mainImage: File
     ) {
         safeLaunch {
             val request = TimeCapsuleCreateRequest(
                 title = title,
                 description = description,
-                openedAt = openedAt
             )
             val result = createTimeCapsuleUseCase(request, mainImage)
 
@@ -57,7 +55,6 @@ sealed interface CreateAction {
     data class CreateTimeCapsule(
         val title: String,
         val description: String?,
-        val openedAt: LocalDateTime,
         val mainImage: File
     ) : CreateAction
 

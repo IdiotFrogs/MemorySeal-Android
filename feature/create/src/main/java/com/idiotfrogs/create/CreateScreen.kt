@@ -20,8 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,7 +30,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.button.MSButton
-import com.idiotfrogs.designsystem.component.MSCalender
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.component.MSDetailHeader
@@ -50,12 +47,8 @@ import com.idiotfrogs.navigation.Routes.*
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
-import kotlinx.datetime.todayIn
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
-import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @Composable
@@ -99,9 +92,6 @@ private fun CreateScreen(
     val scrollState = rememberScrollState()
     val (imageUri, launchImagePicker) = rememberPickerState()
     val isShowKeyboard = rememberKeyboardVisibility()
-
-    val today = Clock.System.todayIn(TimeZone.currentSystemDefault()).atTime(0, 0, 0, 0)
-    val selectedDate = remember { mutableStateOf(today) }
 
     val enabled = titleTextFieldState.text.isNotEmpty() && imageUri != null
 
@@ -194,17 +184,7 @@ private fun CreateScreen(
                     textFieldState = contentTextFieldState,
                     hint = "설명을 입력해주세요.",
                 )
-                Spacer(Modifier.height(16.dp))
-                MSText(
-                    modifier = Modifier.padding(start = 6.dp),
-                    text = "오픈 날짜",
-                    fontSize = 12.dp,
-                    fontWeight = FontWeight.Medium,
-                    color = MSTheme.color.greyG3
-                )
-                Spacer(Modifier.height(8.dp))
-                MSCalender { selectedDate.value = it }
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(14.dp))
             }
         }
         MSButton(
@@ -231,7 +211,6 @@ private fun CreateScreen(
                         CreateAction.CreateTimeCapsule(
                             titleTextFieldState.text.toString(),
                             contentTextFieldState.text.toString().takeIf { it.isNotEmpty() },
-                            selectedDate.value,
                             file
                         )
                     )
