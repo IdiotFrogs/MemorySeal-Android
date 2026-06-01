@@ -1,9 +1,7 @@
 package com.idiotfrogs.designsystem.component
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalRippleConfiguration
@@ -18,6 +16,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DrawType
@@ -34,15 +35,22 @@ fun MSTabBar(
 ) {
     var tabPositions by remember { mutableStateOf<List<TabPosition>?>(null) }
 
-    Column {
+    Column(modifier = Modifier.zIndex(1f)) {
         CompositionLocalProvider(LocalRippleConfiguration provides null) {
             TabRow(
                 modifier = modifier.then(
                     if (showBorder) {
-                        Modifier.border(
-                            width = 2.dp,
-                            color = MSTheme.color.bgNormal
-                        )
+                        val borderColor = MSTheme.color.bgNormal
+                        Modifier.drawWithContent {
+                            val strokeWidthPx = 2.dp.toPx()
+                            drawContent()
+                            drawLine(
+                                color = borderColor,
+                                start = Offset(0f, size.height - strokeWidthPx / 2f),
+                                end = Offset(size.width, size.height - strokeWidthPx / 2f),
+                                strokeWidth = strokeWidthPx,
+                            )
+                        }
                     } else {
                         Modifier
                     }
@@ -71,7 +79,6 @@ fun MSTabBar(
                         Modifier
                     }
                 )
-                .offset(y = 1.dp)
                 .padding(horizontal = 54.dp)
                 .wavyStroke(
                     color = MSTheme.color.greyG5,

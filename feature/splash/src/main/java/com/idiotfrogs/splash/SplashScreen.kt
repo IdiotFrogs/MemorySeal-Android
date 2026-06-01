@@ -43,9 +43,9 @@ fun SplashRoute(
     // TIRAMISU 이상인 경우에는 알림 권한 필요
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         val notificationPermission = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
-        LaunchedEffect(Unit) {
+        LaunchedEffect(notificationPermission.status) {
             when {
-                notificationPermission.status.isGranted -> return@LaunchedEffect // 권한 이미 허용됨
+                notificationPermission.status.isGranted -> viewModel.onAction(SplashAction.AutoLogin)
                 notificationPermission.status.shouldShowRationale -> showPermissionDialog = true // 권한 거부
                 else -> notificationPermission.launchPermissionRequest() // 권한 요청
             }

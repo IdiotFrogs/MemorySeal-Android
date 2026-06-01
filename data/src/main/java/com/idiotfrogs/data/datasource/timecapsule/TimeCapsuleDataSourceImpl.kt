@@ -1,5 +1,6 @@
 package com.idiotfrogs.data.datasource.timecapsule
 
+import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
@@ -56,6 +57,13 @@ class TimeCapsuleDataSourceImpl @Inject constructor(
 
     override suspend fun processRequest(requestId: Long, body: ProcessCollaboratorRequest) {
         return timeCapsuleService.processRequest(requestId , body)
+    }
+
+    override suspend fun buryTimeCapsule(
+        capsuleId: Long,
+        body: BuryTimeCapsuleRequest
+    ): TimeCapsuleResponse {
+        return timeCapsuleService.buryTimeCapsule(capsuleId, body)
     }
 
     override suspend fun leaveTimeCapsule(capsuleId: Long) {
