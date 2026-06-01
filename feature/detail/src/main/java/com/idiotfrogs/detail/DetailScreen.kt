@@ -25,6 +25,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,12 +42,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSAnnotatedText
 import com.idiotfrogs.designsystem.component.MSCalender
 import com.idiotfrogs.designsystem.component.MSDashHorizontalDivider
 import com.idiotfrogs.designsystem.component.MSTitleDialog
 import com.idiotfrogs.designsystem.component.MSText
+import com.idiotfrogs.designsystem.component.MSToast
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DrawType
@@ -54,6 +57,7 @@ import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.wavyBackground
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.extension.toDday
+import com.idiotfrogs.extension.toOpenRemainingText
 import com.idiotfrogs.extension.toYearMonthDayWeek
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
@@ -62,8 +66,18 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
+import kotlinx.coroutines.delay
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atTime
+import kotlinx.datetime.plus
+import kotlinx.datetime.todayIn
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Composable
 fun DetailRoute(
@@ -72,6 +86,13 @@ fun DetailRoute(
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
+    var showToast by remember { mutableStateOf(false) }
+
+    LaunchedEffect(showToast) {
+        if (!showToast) return@LaunchedEffect
+        delay(2000L)
+        showToast = false
+    }
 
     viewModel.collectSideEffect { event ->
         when (event) {
@@ -84,6 +105,7 @@ fun DetailRoute(
                     title = event.title,
                 )
             )
+            DetailSideEffect.ShowToast -> showToast = true
         }
     }
 
@@ -93,6 +115,7 @@ fun DetailRoute(
             DetailScreen(
                 data = state.data,
                 capsuleId = capsuleId,
+                showToast = showToast,
                 onAction = viewModel::onAction,
             )
         }
@@ -100,12 +123,15 @@ fun DetailRoute(
     }
 }
 
+@OptIn(ExperimentalTime::class)
 @Composable
 fun DetailScreen(
     data: TimeCapsuleData,
     capsuleId: Long,
+    showToast: Boolean,
     onAction: (DetailAction) -> Unit,
 ) {
+    val hazeState = rememberHazeState()
     val scrollState = rememberScrollState()
     val capsule = data.capsule
     val status = capsule?.timeCapsuleStatus ?: TimeCapsuleStatus.BEFOREBURIED
@@ -114,12 +140,23 @@ fun DetailScreen(
     val isBuried = status == TimeCapsuleStatus.BURIED
     var showBuryDialog by remember { mutableStateOf(false) }
 
+    val defaultOpenAt = remember {
+        Clock.System
+            .todayIn(TimeZone.currentSystemDefault())
+            .plus(1, DateTimeUnit.DAY)
+            .atTime(0, 0, 0, 0)
+    }
+    var selectedOpenAt by remember { mutableStateOf(defaultOpenAt) }
+
     if (showBuryDialog) {
         MSTitleDialog(
             title = "티켓 오픈일 설정",
             confirmText = "묻기",
             cancelText = "취소",
-            onConfirm = { showBuryDialog = false },
+            onConfirm = {
+                onAction(DetailAction.BuryTimeCapsule(selectedOpenAt))
+                showBuryDialog = false
+            },
             onCancel = { showBuryDialog = false },
         ) {
             Spacer(Modifier.height(8.dp))
@@ -130,22 +167,43 @@ fun DetailScreen(
                 color = MSTheme.color.greyG3,
             )
             Spacer(Modifier.height(32.dp))
-            MSCalender(
-                showSealDate = true,
-            ) {
-                // API 연결 시 선택 날짜를 저장해 묻기 요청에 사용
-            }
+            MSCalender(showSealDate = true) { selectedOpenAt = it }
             Spacer(Modifier.height(32.dp))
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .navigationBarsPadding()
-            .background(MSTheme.color.bgNormal)
-            .verticalScroll(scrollState),
-    ) {
+    Box {
+        if (showToast) {
+            MSToast(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
+                    .padding(bottom = 24.dp)
+                    .zIndex(1f),
+                hazeState = hazeState,
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.img_friend_reject),
+                    contentDescription = "알림",
+                    modifier = Modifier.size(24.dp),
+                )
+                Spacer(Modifier.width(8.dp))
+                MSText(
+                    text = "티켓 묻기에 실패했어요.",
+                    color = MSTheme.color.white,
+                )
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .hazeSource(hazeState)
+                .navigationBarsPadding()
+                .background(MSTheme.color.bgNormal)
+                .verticalScroll(scrollState),
+        ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -206,38 +264,45 @@ fun DetailScreen(
                 .padding(horizontal = 20.dp, vertical = 24.dp)
         ) {
             if (isBuried) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MSTheme.color.greyG1)
+                        .padding(horizontal = 10.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Image(
+                        modifier = Modifier.size(16.dp),
+                        painter = painterResource(R.drawable.ic_shovel),
+                        contentDescription = "ic_shovel",
+                    )
+
+                    Spacer(Modifier.width(4.dp))
+
                     MSText(
-                        text = capsule?.openedAt.toDday(),
-                        fontSize = 24.dp,
-                        color = MSTheme.color.greyG5,
+                        text = capsule?.openedAt.toOpenRemainingText(),
+                        fontSize = 12.dp,
+                        color = MSTheme.color.greyG4,
                     )
-                    Spacer(Modifier.width(12.dp))
-                    VerticalDivider(
-                        modifier = Modifier.height(21.dp),
-                        thickness = 2.dp,
-                        color = MSTheme.color.greyG2,
-                    )
-                    Spacer(Modifier.width(12.dp))
-                    MSText(
-                        modifier = Modifier.weight(1f),
-                        text = capsule?.title.orEmpty(),
-                        fontSize = 20.dp,
-                        color = MSTheme.color.greyG5,
-                    )
-//                    Image(
-//                        modifier = Modifier.size(72.dp, 32.dp),
-//                        painter = painterResource(R.drawable.img_detail_buried_badge),
-//                        contentDescription = "묻혀있음",
-//                    )
                 }
-            } else {
-                MSText(
-                    text = capsule?.title.orEmpty(),
-                    fontSize = 20.dp,
-                    color = MSTheme.color.greyG5,
-                )
+
+                Spacer(Modifier.height(16.dp))
             }
+
+            MSText(
+                text = capsule?.title.orEmpty(),
+                fontSize = 20.dp,
+                color = MSTheme.color.greyG5,
+            )
+
+            Spacer(Modifier.height(12.dp))
+
+            MSText(
+                text = capsule?.description.orEmpty(),
+                fontSize = 16.dp,
+                fontWeight = FontWeight.Normal,
+                color = MSTheme.color.greyG5,
+            )
 
             Spacer(Modifier.height(12.dp))
 
@@ -250,15 +315,6 @@ fun DetailScreen(
                 fontSize = 14.dp,
                 fontWeight = FontWeight.Medium,
                 color = MSTheme.color.greyG3,
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            MSText(
-                text = capsule?.description.orEmpty(),
-                fontSize = 16.dp,
-                fontWeight = FontWeight.Normal,
-                color = MSTheme.color.greyG5,
             )
 
             when (status) {
@@ -501,6 +557,8 @@ fun DetailScreen(
         }
     }
 }
+}
+
 
 @Preview
 @Composable
@@ -508,6 +566,7 @@ fun DetailScreenPreview() {
     DetailScreen(
         data = TimeCapsuleData(null),
         capsuleId = 0L,
+        showToast = false,
         onAction = {},
     )
 }

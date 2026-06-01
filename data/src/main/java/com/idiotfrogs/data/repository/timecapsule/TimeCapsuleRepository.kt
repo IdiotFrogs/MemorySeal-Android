@@ -1,5 +1,6 @@
 package com.idiotfrogs.data.repository.timecapsule
 
+import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
@@ -32,4 +33,9 @@ interface TimeCapsuleRepository {
     suspend fun requestCollaborator(body: PendingCollaboratorsRequest)
 
     suspend fun processRequest(requestId: Long, body: ProcessCollaboratorRequest)
+
+    suspend fun buryTimeCapsule(
+        capsuleId: Long,
+        body: BuryTimeCapsuleRequest
+    ): TimeCapsuleResponse
 }
