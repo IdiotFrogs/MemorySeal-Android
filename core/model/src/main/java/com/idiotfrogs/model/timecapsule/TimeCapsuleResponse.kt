@@ -9,7 +9,7 @@ data class TimeCapsuleResponse(
     val description: String?,
     val buriedAt: LocalDateTime?,
     val createdAt: LocalDateTime,
-    val openedAt: LocalDateTime,
+    val openedAt: LocalDateTime?,
     val mainImageUrl: String,
     val timeCapsuleStatus: TimeCapsuleStatus,
     val userRole: TimeCapsuleRole,
