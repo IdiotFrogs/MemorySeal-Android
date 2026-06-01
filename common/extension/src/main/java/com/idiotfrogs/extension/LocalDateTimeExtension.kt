@@ -23,6 +23,20 @@ fun LocalDateTime?.toDday(): String {
     return "D-$diff"
 }
 
+@OptIn(ExperimentalTime::class)
+fun LocalDateTime?.toOpenRemainingText(): String {
+    if (this == null) return "묻기 전"
+
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val diff = date.toEpochDays() - today.toEpochDays()
+
+    return when {
+        diff > 0 -> "오픈까지 ${diff}일 남음"
+        diff.toInt() == 0 -> "오픈 당일"
+        else -> "오픈"
+    }
+}
+
 private fun DayOfWeek.toKoreanShort(): String = when (this) {
     DayOfWeek.MONDAY -> "(월)"
     DayOfWeek.TUESDAY -> "(화)"

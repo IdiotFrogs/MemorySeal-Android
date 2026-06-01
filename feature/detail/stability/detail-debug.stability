@@ -13,12 +13,13 @@ public fun com.idiotfrogs.detail.DetailRoute(capsuleId: kotlin.Long, viewModel: 
     - viewModel: UNSTABLE (has mutable properties or unstable members)
 
 @Composable
-public fun com.idiotfrogs.detail.DetailScreen(data: com.idiotfrogs.detail.TimeCapsuleData, capsuleId: kotlin.Long, onAction: kotlin.Function1<com.idiotfrogs.detail.DetailAction, kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.detail.DetailScreen(data: com.idiotfrogs.detail.TimeCapsuleData, capsuleId: kotlin.Long, showToast: kotlin.Boolean, onAction: kotlin.Function1<com.idiotfrogs.detail.DetailAction, kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
   params:
     - data: STABLE (marked @Stable or @Immutable)
     - capsuleId: STABLE (primitive type)
+    - showToast: STABLE (primitive type)
     - onAction: STABLE (function type)
 
 @Composable

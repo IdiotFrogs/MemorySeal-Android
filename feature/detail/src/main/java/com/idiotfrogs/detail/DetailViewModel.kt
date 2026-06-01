@@ -1,8 +1,10 @@
 package com.idiotfrogs.detail
 
 import androidx.compose.runtime.Immutable
+import com.idiotfrogs.domain.usecase.timecapsule.BuryTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleCollaboratorsUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleUseCase
+import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import com.idiotfrogs.util.UiState
@@ -14,6 +16,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.datetime.LocalDateTime
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 
@@ -22,6 +25,7 @@ class DetailViewModel @AssistedInject constructor(
     @Assisted private val capsuleId: Long,
     private val getTimeCapsuleUseCase: GetTimeCapsuleUseCase,
     private val getTimeCapsuleCollaboratorsUseCase: GetTimeCapsuleCollaboratorsUseCase,
+    private val buryTimeCapsuleUseCase: BuryTimeCapsuleUseCase,
 ) : BaseViewModel<UiState<TimeCapsuleData>, DetailSideEffect, DetailAction>() {
     override val container: Container<UiState<TimeCapsuleData>, DetailSideEffect> = container(
         initialState = UiState.Init,
@@ -62,12 +66,32 @@ class DetailViewModel @AssistedInject constructor(
         }
     }
 
+    private fun buryTimeCapsule(openedAt: LocalDateTime) {
+        safeLaunch {
+            buryTimeCapsuleUseCase(
+                capsuleId = capsuleId,
+                body = BuryTimeCapsuleRequest(openedAt),
+            ).onSuccess { response ->
+                intent {
+                    reduce {
+                        val currentData = (state as? UiState.Success)?.data ?: TimeCapsuleData()
+                        UiState.Success(currentData.copy(capsule = response))
+                    }
+                }
+            }.onFailure {
+                intent { postSideEffect(DetailSideEffect.ShowToast) }
+            }
+        }
+    }
+
+
     override fun onAction(action: DetailAction) {
         when (action) {
             is DetailAction.NavigateToFriend -> intent { postSideEffect(DetailSideEffect.NavigateToFriend(action.id)) }
             is DetailAction.NavigateToMessage -> intent { postSideEffect(DetailSideEffect.NavigateToMessage(action.id)) }
             is DetailAction.NavigateToManagement -> intent { postSideEffect(DetailSideEffect.NavigateToManagement(action.id, action.title)) }
             DetailAction.NavigateToBack -> intent { postSideEffect(DetailSideEffect.NavigateToBack) }
+            is DetailAction.BuryTimeCapsule -> buryTimeCapsule(action.openedAt)
         }
     }
 
@@ -88,6 +112,7 @@ sealed interface DetailAction {
     data class NavigateToMessage(val id: Long) : DetailAction
     data class NavigateToManagement(val id: Long, val title: String) : DetailAction
     data object NavigateToBack : DetailAction
+    data class BuryTimeCapsule(val openedAt: LocalDateTime) : DetailAction
 }
 
 sealed interface DetailSideEffect {
@@ -95,4 +120,5 @@ sealed interface DetailSideEffect {
     data class NavigateToMessage(val id: Long) : DetailSideEffect
     data class NavigateToManagement(val id: Long, val title: String) : DetailSideEffect
     data object NavigateToBack : DetailSideEffect
+    data object ShowToast : DetailSideEffect
 }
