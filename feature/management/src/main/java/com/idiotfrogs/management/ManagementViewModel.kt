@@ -25,6 +25,7 @@ class ManagementViewModel @Inject constructor(
             ManagementAction.NavigateToBack -> intent { postSideEffect(ManagementSideEffect.NavigateToBack) }
             is ManagementAction.DeleteCapsule -> deleteTimeCapsule(action.capsuleId)
             is ManagementAction.LeaveTimeCapsule -> leaveTimeCapsule(action.capsuleId)
+            ManagementAction.NavigateToFriend -> intent { postSideEffect(ManagementSideEffect.NavigateToFriend) }
         }
     }
 
@@ -53,6 +54,7 @@ class ManagementViewModel @Inject constructor(
 
 sealed interface ManagementAction {
     data object NavigateToBack : ManagementAction
+    data object NavigateToFriend : ManagementAction
 
     data class DeleteCapsule(val capsuleId: Long) : ManagementAction
     data class LeaveTimeCapsule(val capsuleId: Long) : ManagementAction
@@ -61,4 +63,5 @@ sealed interface ManagementAction {
 sealed interface ManagementSideEffect {
     data object NavigateToHome : ManagementSideEffect
     data object NavigateToBack : ManagementSideEffect
+    data object NavigateToFriend : ManagementSideEffect
 }
