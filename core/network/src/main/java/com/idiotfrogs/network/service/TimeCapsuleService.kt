@@ -1,5 +1,6 @@
 package com.idiotfrogs.network.service
 
+import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
@@ -15,6 +16,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 
@@ -53,4 +55,10 @@ interface TimeCapsuleService {
         @Path("requestId") requestId: Long,
         @Body body: ProcessCollaboratorRequest
     )
+
+    @PUT("time-capsules/{capsuleId}/bury")
+    suspend fun buryTimeCapsule(
+        @Path("capsuleId") capsuleId: Long,
+        @Body body: BuryTimeCapsuleRequest
+    ): TimeCapsuleResponse
 }
