@@ -24,6 +24,8 @@ import kotlin.math.sin
 
 enum class DrawType { TOP, BOTTOM, START, END, ALL }
 
+enum class WavyAlign { INNER, OUTER }
+
 fun Modifier.wavyStroke(
     color: Color,
     drawType: DrawType = DrawType.ALL,
@@ -127,6 +129,7 @@ fun Modifier.wavyStroke(
 fun Modifier.wavyBackground(
     color: Color,
     drawType: DrawType = DrawType.ALL,
+    wavyAlign: WavyAlign = WavyAlign.INNER,
     strokeWidth: Dp = 3.dp,
     cornerRadius: Dp = 12.dp,
     amplitude: Dp = 2.dp,
@@ -182,6 +185,7 @@ fun Modifier.wavyBackground(
                     amplitude = ampPx,
                     seed = seed,
                     strokeWidth = strokePx,
+                    align = wavyAlign
                 )
             }
 
@@ -429,8 +433,10 @@ private fun makeEdgeWavyBackgroundPath(
     amplitude: Float,
     seed: Long,
     strokeWidth: Float,
+    align: WavyAlign
 ): WavyBackgroundPath {
-    val inset = amplitude + strokeWidth / 2f
+    val alignedAmplitude = if (align == WavyAlign.INNER) amplitude else -amplitude
+    val inset = alignedAmplitude + strokeWidth / 2f
 
     val count = when (edge) {
         DrawType.TOP,
