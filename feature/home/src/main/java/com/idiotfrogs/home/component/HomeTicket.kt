@@ -42,7 +42,7 @@ import com.skydoves.landscapist.glide.GlideImage
 @Composable
 fun HomeTicket(
     buried: Boolean,
-    targetDate: String,
+    createdAt: String,
     title: String,
     imageUrl: String?,
     modifier: Modifier = Modifier,
@@ -53,7 +53,10 @@ fun HomeTicket(
                 .zIndex(1f)
                 .wavyStroke(
                     color = MSTheme.color.greyG5,
+                    cornerRadius = 16.dp,
                     strokeWidth = 4.dp,
+                    amplitude = 1.dp,
+                    spacing = 3.dp,
                     fillColor = MSTheme.color.primaryNormal
                 )
         ) {
@@ -66,7 +69,7 @@ fun HomeTicket(
                     Row(
                         modifier = Modifier
                             .background(
-                                color = MSTheme.color.primaryLight,
+                                color = MSTheme.color.primaryLight.copy(0.6f),
                                 shape = RoundedCornerShape(12.dp))
                             .padding(6.dp),
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -95,7 +98,7 @@ fun HomeTicket(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 MSText(
-                    text = targetDate,
+                    text = createdAt,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.dp,
                     color = MSTheme.color.greyG4
@@ -108,7 +111,10 @@ fun HomeTicket(
                 .offset(y = (-10).dp)
                 .wavyStroke(
                     color = MSTheme.color.greyG5,
+                    cornerRadius = 16.dp,
                     strokeWidth = 4.dp,
+                    amplitude = (1.5).dp,
+                    spacing = 4.dp,
                     fillColor = MSTheme.color.white
                 )
                 .fillMaxWidth()
@@ -165,7 +171,7 @@ private fun HomeTicketPreview() {
     Box(modifier = Modifier.padding(horizontal = 20.dp)) {
         HomeTicket(
             buried = true,
-            targetDate = "2027. 10. 24.",
+            createdAt = "2027. 10. 24.",
             title = "제목입니다.",
             imageUrl = null
         )
