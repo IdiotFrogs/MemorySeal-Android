@@ -23,6 +23,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 enum class DrawType { TOP, BOTTOM, START, END, ALL }
+enum class WavyAlign { INNER, OUTER }
 
 fun Modifier.wavyStroke(
     color: Color,
@@ -35,6 +36,7 @@ fun Modifier.wavyStroke(
     fillColor: Color? = null,
     contentPadding: Dp = 0.dp,
     clipContent: Boolean = false,
+    wavyAlign: WavyAlign = WavyAlign.INNER,
 ): Modifier = this.then(
     Modifier
         .drawWithCache {
@@ -43,17 +45,22 @@ fun Modifier.wavyStroke(
             val spacingPx = spacing.toPx().coerceAtLeast(1f)
 
             val pathInset = ampPx + strokePx / 2f
+            val signedInset = if (wavyAlign == WavyAlign.INNER) pathInset else -pathInset
 
             val rect = Rect(
-                left = pathInset,
-                top = pathInset,
-                right = size.width - pathInset,
-                bottom = size.height - pathInset,
+                left = signedInset,
+                top = signedInset,
+                right = size.width - signedInset,
+                bottom = size.height - signedInset,
             )
 
-            val radius = (cornerRadius.toPx() - pathInset)
-                .coerceAtLeast(0f)
-                .coerceAtMost(min(rect.width, rect.height) / 2f)
+            val radius = if (wavyAlign == WavyAlign.INNER) {
+                (cornerRadius.toPx() - pathInset)
+                    .coerceAtLeast(0f)
+                    .coerceAtMost(min(rect.width, rect.height) / 2f)
+            } else {
+                cornerRadius.toPx() + pathInset // 바깥 사각형이 커지므로 모서리도 키움
+            }
 
             val path = when (drawType) {
                 DrawType.TOP -> makeTopWavyPath(

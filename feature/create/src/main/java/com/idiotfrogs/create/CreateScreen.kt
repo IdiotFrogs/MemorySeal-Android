@@ -39,7 +39,6 @@ import com.idiotfrogs.designsystem.util.keyboardAutoScroll
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
 import com.idiotfrogs.designsystem.util.rememberPickerState
-import com.idiotfrogs.designsystem.util.wavyBackground
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator

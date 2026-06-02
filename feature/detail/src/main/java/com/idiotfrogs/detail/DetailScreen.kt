@@ -55,9 +55,7 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DrawType
 import com.idiotfrogs.designsystem.util.WavyAlign
 import com.idiotfrogs.designsystem.util.noRippleClickable
-import com.idiotfrogs.designsystem.util.wavyBackground
 import com.idiotfrogs.designsystem.util.wavyStroke
-import com.idiotfrogs.extension.toDday
 import com.idiotfrogs.extension.toOpenRemainingText
 import com.idiotfrogs.extension.toYearMonthDayWeek
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
@@ -216,6 +214,7 @@ fun DetailScreen(
                     amplitude = 2.dp,
                     spacing = 3.dp,
                     clipContent = true,
+                    wavyAlign = WavyAlign.OUTER
                 )
         ) {
             capsule?.mainImageUrl?.let {
