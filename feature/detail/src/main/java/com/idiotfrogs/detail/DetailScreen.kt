@@ -201,7 +201,7 @@ fun DetailScreen(
                 .fillMaxSize()
                 .hazeSource(hazeState)
                 .navigationBarsPadding()
-                .background(MSTheme.color.bgNormal)
+                .background(Color.White)
                 .verticalScroll(scrollState),
         ) {
         Box(
