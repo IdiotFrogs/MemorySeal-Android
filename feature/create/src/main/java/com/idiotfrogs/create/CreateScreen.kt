@@ -192,10 +192,9 @@ private fun CreateScreen(
                 .fillMaxWidth()
                 .height(48.dp)
                 .padding(horizontal = buttonHorizontalPadding)
-                .wavyBackground(
+                .wavyStroke(
                     color = if (enabled) MSTheme.color.primaryNormal else MSTheme.color.primaryLight,
                     drawType = if (isShowKeyboard) DrawType.TOP else DrawType.ALL,
-                    contentPadding = if (isShowKeyboard) 0.dp else 5.dp,
                     clipContent = true,
                 ),
             enabled = enabled,

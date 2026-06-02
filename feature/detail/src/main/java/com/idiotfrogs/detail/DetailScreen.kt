@@ -53,6 +53,7 @@ import com.idiotfrogs.designsystem.component.MSToast
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DrawType
+import com.idiotfrogs.designsystem.util.WavyAlign
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.wavyBackground
 import com.idiotfrogs.designsystem.util.wavyStroke
@@ -208,7 +209,7 @@ fun DetailScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(420.dp)
-                .wavyBackground(
+                .wavyStroke(
                     color = Color.Black,
                     drawType = DrawType.BOTTOM,
                     strokeWidth = 5.dp,
@@ -260,7 +261,6 @@ fun DetailScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MSTheme.color.white)
                 .padding(horizontal = 20.dp, vertical = 24.dp)
         ) {
             if (isBuried) {
