@@ -9,7 +9,11 @@ import javax.inject.Inject
 class GetTimeCapsuleCollaboratorsUseCase @Inject constructor(
     private val timeCapsuleRepository: TimeCapsuleRepository
 ) {
-    suspend operator fun invoke(capsuleId: Long): Result<List<TimeCapsuleCollaboratorsResponse>> = safeCatching {
-        timeCapsuleRepository.getTimesCapsuleCollaborators(capsuleId)
+    suspend operator fun invoke(
+        capsuleId: Long,
+        page: Int,
+        size: Int,
+    ): Result<TimeCapsuleCollaboratorsResponse> = safeCatching {
+        timeCapsuleRepository.getTimesCapsuleCollaborators(capsuleId, page, size)
     }
 }

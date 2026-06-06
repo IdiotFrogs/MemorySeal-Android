@@ -517,7 +517,7 @@ fun DetailScreen(
                         append("멤버 ")
                         withStyle(
                             SpanStyle(color = MSTheme.color.primaryNormal)
-                        ) { append(data.collaborators.size.toString()) }
+                        ) { append(data.collaborators?.content?.size.toString()) }
                     },
                     color = MSTheme.color.greyG4
                 )
@@ -536,7 +536,7 @@ fun DetailScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                data.collaborators.forEach { collaborator ->
+                data.collaborators?.content?.forEach { collaborator ->
                     GlideImage(
                         modifier = Modifier
                             .size(48.dp)
