@@ -39,7 +39,6 @@ import com.idiotfrogs.designsystem.util.keyboardAutoScroll
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
 import com.idiotfrogs.designsystem.util.rememberPickerState
-import com.idiotfrogs.designsystem.util.wavyBackground
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
@@ -192,10 +191,9 @@ private fun CreateScreen(
                 .fillMaxWidth()
                 .height(48.dp)
                 .padding(horizontal = buttonHorizontalPadding)
-                .wavyBackground(
+                .wavyStroke(
                     color = if (enabled) MSTheme.color.primaryNormal else MSTheme.color.primaryLight,
                     drawType = if (isShowKeyboard) DrawType.TOP else DrawType.ALL,
-                    contentPadding = if (isShowKeyboard) 0.dp else 5.dp,
                     clipContent = true,
                 ),
             enabled = enabled,

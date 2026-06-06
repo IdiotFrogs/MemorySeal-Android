@@ -23,6 +23,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 
 enum class DrawType { TOP, BOTTOM, START, END, ALL }
+enum class WavyAlign { INNER, OUTER }
 
 fun Modifier.wavyStroke(
     color: Color,
@@ -35,6 +36,7 @@ fun Modifier.wavyStroke(
     fillColor: Color? = null,
     contentPadding: Dp = 0.dp,
     clipContent: Boolean = false,
+    wavyAlign: WavyAlign = WavyAlign.INNER,
 ): Modifier = this.then(
     Modifier
         .drawWithCache {
@@ -43,17 +45,22 @@ fun Modifier.wavyStroke(
             val spacingPx = spacing.toPx().coerceAtLeast(1f)
 
             val pathInset = ampPx + strokePx / 2f
+            val signedInset = if (wavyAlign == WavyAlign.INNER) pathInset else -pathInset
 
             val rect = Rect(
-                left = pathInset,
-                top = pathInset,
-                right = size.width - pathInset,
-                bottom = size.height - pathInset,
+                left = signedInset,
+                top = signedInset,
+                right = size.width - signedInset,
+                bottom = size.height - signedInset,
             )
 
-            val radius = (cornerRadius.toPx() - pathInset)
-                .coerceAtLeast(0f)
-                .coerceAtMost(min(rect.width, rect.height) / 2f)
+            val radius = if (wavyAlign == WavyAlign.INNER) {
+                (cornerRadius.toPx() - pathInset)
+                    .coerceAtLeast(0f)
+                    .coerceAtMost(min(rect.width, rect.height) / 2f)
+            } else {
+                cornerRadius.toPx() + pathInset // 바깥 사각형이 커지므로 모서리도 키움
+            }
 
             val path = when (drawType) {
                 DrawType.TOP -> makeTopWavyPath(
@@ -97,13 +104,44 @@ fun Modifier.wavyStroke(
                 }
             }
 
+            val fillPath = if (drawType == DrawType.ALL) {
+                path // ALL은 이미 닫힌 Path 이다
+            } else {
+                Path().apply {
+                    addPath(path)
+                    when (drawType) {
+                        DrawType.TOP -> {
+                            lineTo(size.width, size.height)
+                            lineTo(0f, size.height)
+                            lineTo(0f, 0f)
+                        }
+                        DrawType.BOTTOM -> {
+                            lineTo(size.width, 0f)
+                            lineTo(0f, 0f)
+                            lineTo(0f, size.height)
+                        }
+                        DrawType.START -> {
+                            lineTo(size.width, size.height)
+                            lineTo(size.width, 0f)
+                            lineTo(0f, 0f)
+                        }
+                        DrawType.END -> {
+                            lineTo(0f, size.height)
+                            lineTo(0f, 0f)
+                            lineTo(size.width, 0f)
+                        }
+                    }
+                    close()
+                }
+            }
+
             onDrawWithContent {
                 fillColor?.let {
-                    drawPath(path = path, color = it)
+                    drawPath(path = fillPath, color = it)
                 }
 
                 if (clipContent) {
-                    clipPath(path) {
+                    clipPath(fillPath) {
                         this@onDrawWithContent.drawContent()
                     }
                 } else {
@@ -124,98 +162,8 @@ fun Modifier.wavyStroke(
         .padding(contentPadding)
 )
 
-fun Modifier.wavyBackground(
-    color: Color,
-    drawType: DrawType = DrawType.ALL,
-    strokeWidth: Dp = 3.dp,
-    cornerRadius: Dp = 12.dp,
-    amplitude: Dp = 2.dp,
-    spacing: Dp = 6.dp,
-    seed: Long = 0xC0FFEE_BABEL,
-    fillColor: Color = color,
-    contentPadding: Dp = 0.dp,
-    clipContent: Boolean = false,
-): Modifier = this.then(
-    Modifier
-        .drawWithCache {
-            val strokePx = strokeWidth.toPx()
-            val ampPx = amplitude.toPx()
-            val spacingPx = spacing.toPx().coerceAtLeast(1f)
-
-            val pathInset = ampPx + strokePx / 2f
-
-            val rect = Rect(
-                left = pathInset,
-                top = pathInset,
-                right = size.width - pathInset,
-                bottom = size.height - pathInset,
-            )
-
-            val radius = (cornerRadius.toPx() - pathInset)
-                .coerceAtLeast(0f)
-                .coerceAtMost(min(rect.width, rect.height) / 2f)
-
-            val paths = when (drawType) {
-                DrawType.ALL -> {
-                    val path = makeWavyPath(
-                        rect = rect,
-                        cornerRadius = radius,
-                        spacing = spacingPx,
-                        amplitude = ampPx,
-                        seed = seed,
-                    )
-
-                    WavyBackgroundPath(
-                        fillPath = path,
-                        strokePath = path,
-                    )
-                }
-
-                DrawType.TOP,
-                DrawType.BOTTOM,
-                DrawType.START,
-                DrawType.END -> makeEdgeWavyBackgroundPath(
-                    width = size.width,
-                    height = size.height,
-                    edge = drawType,
-                    spacing = spacingPx,
-                    amplitude = ampPx,
-                    seed = seed,
-                    strokeWidth = strokePx,
-                )
-            }
-
-            onDrawWithContent {
-                drawPath(
-                    path = paths.fillPath,
-                    color = fillColor,
-                )
-
-                if (clipContent) {
-                    clipPath(paths.fillPath) {
-                        this@onDrawWithContent.drawContent()
-                    }
-                } else {
-                    drawContent()
-                }
-
-                drawPath(
-                    path = paths.strokePath,
-                    color = color,
-                    style = Stroke(
-                        width = strokePx,
-                        cap = StrokeCap.Round,
-                        join = StrokeJoin.Round,
-                    ),
-                )
-            }
-        }
-        .padding(contentPadding)
-)
 
 private data class WavyData(val point: Offset, val normal: Offset)
-
-private data class WavyBackgroundPath(val fillPath: Path, val strokePath: Path)
 
 private fun makeWavyPath(
     rect: Rect,
@@ -420,126 +368,3 @@ private fun makeSingleAxisWavyPath(
 
 private fun midpoint(a: Offset, b: Offset): Offset =
     Offset((a.x + b.x) / 2f, (a.y + b.y) / 2f)
-
-private fun makeEdgeWavyBackgroundPath(
-    width: Float,
-    height: Float,
-    edge: DrawType,
-    spacing: Float,
-    amplitude: Float,
-    seed: Long,
-    strokeWidth: Float,
-): WavyBackgroundPath {
-    val inset = amplitude + strokeWidth / 2f
-
-    val count = when (edge) {
-        DrawType.TOP,
-        DrawType.BOTTOM -> max(1, (width / spacing).toInt())
-
-        DrawType.START,
-        DrawType.END -> max(1, (height / spacing).toInt())
-
-        DrawType.ALL -> 1
-    }
-
-    var nextSeed = seed
-
-    val points = buildList {
-        repeat(count + 1) { i ->
-            val t = i / count.toFloat()
-
-            nextSeed = nextSeed * 6364136223846793005L + 1442695040888963407L
-            val random = ((nextSeed ushr 1) % 2000L) / 1000f - 1f
-            val offset = random * amplitude
-
-            add(
-                when (edge) {
-                    DrawType.TOP -> Offset(
-                        x = width * t,
-                        y = inset + offset,
-                    )
-
-                    DrawType.BOTTOM -> Offset(
-                        x = width * t,
-                        y = height - inset + offset,
-                    )
-
-                    DrawType.START -> Offset(
-                        x = inset + offset,
-                        y = height * t,
-                    )
-
-                    DrawType.END -> Offset(
-                        x = width - inset + offset,
-                        y = height * t,
-                    )
-
-                    DrawType.ALL -> Offset.Zero
-                }
-            )
-        }
-    }
-
-    val strokePath = makeOpenSmoothPath(points)
-
-    val fillPath = Path().apply {
-        val first = points.first()
-        moveTo(first.x, first.y)
-
-        points.zipWithNext { current, next ->
-            val mid = midpoint(current, next)
-            quadraticTo(current.x, current.y, mid.x, mid.y)
-        }
-
-        val last = points.last()
-        lineTo(last.x, last.y)
-
-        when (edge) {
-            DrawType.TOP -> {
-                lineTo(width, height)
-                lineTo(0f, height)
-            }
-
-            DrawType.BOTTOM -> {
-                lineTo(width, 0f)
-                lineTo(0f, 0f)
-            }
-
-            DrawType.START -> {
-                lineTo(width, height)
-                lineTo(width, 0f)
-            }
-
-            DrawType.END -> {
-                lineTo(0f, height)
-                lineTo(0f, 0f)
-            }
-
-            DrawType.ALL -> Unit
-        }
-
-        close()
-    }
-
-    return WavyBackgroundPath(
-        fillPath = fillPath,
-        strokePath = strokePath,
-    )
-}
-
-private fun makeOpenSmoothPath(points: List<Offset>): Path {
-    return Path().apply {
-        if (points.isEmpty()) return@apply
-
-        val first = points.first()
-        moveTo(first.x, first.y)
-
-        points.zipWithNext { current, next ->
-            val mid = midpoint(current, next)
-            quadraticTo(current.x, current.y, mid.x, mid.y)
-        }
-
-        val last = points.last()
-        lineTo(last.x, last.y)
-    }
-}
