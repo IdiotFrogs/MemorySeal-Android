@@ -39,8 +39,12 @@ class TimeCapsuleDataSourceImpl @Inject constructor(
         return timeCapsuleService.getTimeCapsule(capsuleId)
     }
 
-    override suspend fun getTimesCapsuleCollaborators(capsuleId: Long): List<TimeCapsuleCollaboratorsResponse> {
-        return timeCapsuleService.getTimesCapsuleCollaborators(capsuleId)
+    override suspend fun getTimesCapsuleCollaborators(
+        capsuleId: Long,
+        page: Int,
+        size: Int
+    ): TimeCapsuleCollaboratorsResponse {
+        return timeCapsuleService.getTimesCapsuleCollaborators(capsuleId, page, size)
     }
 
     override suspend fun getTimeCapsuleInviteCode(capsuleId: Long): TimeCapsuleInviteCodeResponse {

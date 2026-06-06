@@ -19,6 +19,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface TimeCapsuleService {
 
@@ -39,7 +40,11 @@ interface TimeCapsuleService {
     suspend fun getTimeCapsule(@Path("capsuleId") capsuleId: Long): TimeCapsuleResponse
 
     @GET("time-capsules/{capsuleId}/collaborators")
-    suspend fun getTimesCapsuleCollaborators(@Path("capsuleId") capsuleId: Long): List<TimeCapsuleCollaboratorsResponse>
+    suspend fun getTimesCapsuleCollaborators(
+        @Path("capsuleId") capsuleId: Long,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+    ): TimeCapsuleCollaboratorsResponse
 
     @POST("time-capsules/{capsuleId}/invite")
     suspend fun getTimeCapsuleInviteCode(@Path("capsuleId") capsuleId: Long): TimeCapsuleInviteCodeResponse

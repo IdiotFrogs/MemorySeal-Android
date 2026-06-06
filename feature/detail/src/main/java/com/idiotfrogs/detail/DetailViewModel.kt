@@ -42,7 +42,7 @@ class DetailViewModel @AssistedInject constructor(
     private fun fetchDetail(capsuleId: Long) {
         safeLaunch {
             val capsuleDeferred = async { getTimeCapsuleUseCase(capsuleId) }
-            val collaboratorsDeferred = async { getTimeCapsuleCollaboratorsUseCase(capsuleId) }
+            val collaboratorsDeferred = async { getTimeCapsuleCollaboratorsUseCase(capsuleId, 0, 20) }
 
             val capsuleResult = capsuleDeferred.await()
             val collaboratorsResult = collaboratorsDeferred.await()
@@ -57,7 +57,7 @@ class DetailViewModel @AssistedInject constructor(
                         UiState.Success(
                             TimeCapsuleData(
                                 capsule = capsuleResult.getOrNull(),
-                                collaborators = collaboratorsResult.getOrNull() ?: emptyList(),
+                                collaborators = collaboratorsResult.getOrNull(),
                             )
                         )
                     }
@@ -104,7 +104,7 @@ class DetailViewModel @AssistedInject constructor(
 @Immutable
 data class TimeCapsuleData(
     val capsule: TimeCapsuleResponse? = null,
-    val collaborators: List<TimeCapsuleCollaboratorsResponse> = emptyList(),
+    val collaborators: TimeCapsuleCollaboratorsResponse? = null,
 )
 
 sealed interface DetailAction {

@@ -24,7 +24,11 @@ interface TimeCapsuleRepository {
 
     suspend fun getTimeCapsule(capsuleId: Long): TimeCapsuleResponse
 
-    suspend fun getTimesCapsuleCollaborators(capsuleId: Long): List<TimeCapsuleCollaboratorsResponse>
+    suspend fun getTimesCapsuleCollaborators(
+        capsuleId: Long,
+        page: Int,
+        size: Int,
+    ): TimeCapsuleCollaboratorsResponse
 
     suspend fun getTimeCapsuleInviteCode(capsuleId: Long): TimeCapsuleInviteCodeResponse
 
