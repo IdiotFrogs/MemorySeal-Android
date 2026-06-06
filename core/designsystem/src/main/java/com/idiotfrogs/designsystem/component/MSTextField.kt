@@ -3,6 +3,7 @@ package com.idiotfrogs.designsystem.component
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -57,7 +58,9 @@ fun MSTextField(
     onTextLayout: (Density.(getResult: () -> TextLayoutResult?) -> Unit)? = null,
     cursorBrush: Brush = SolidColor(Color.Black),
     outputTransformation: OutputTransformation? = null,
-    scrollState: ScrollState = rememberScrollState()
+    scrollState: ScrollState = rememberScrollState(),
+    fillColor: Color? = null,
+    leadingContent: (@Composable () -> Unit)? = null,
 ) {
     val (interactionSource, isFocused) = focusState
 
@@ -84,24 +87,31 @@ fun MSTextField(
                         color = if (isFocused) focusedBorderColor else unfocusedBorderColor,
                         amplitude = 1.5.dp,
                         spacing = 5.dp,
+                        fillColor = fillColor,
                     )
             ) {
-                Box(
+                Row(
                     modifier = Modifier
                         .matchParentSize()
                         .padding(15.dp), // UI : 12dp + 테두리 3dp => 15dp
-                    contentAlignment = Alignment.CenterStart,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (textFieldState.text.isEmpty()) {
-                        MSText(
-                            text = hint,
-                            color = MSTheme.color.greyG3,
-                            fontSize = 16.dp,
-                            fontWeight = FontWeight.Normal,
-                            lineHeight = 16.dp.toSp() * 1.6,
-                        )
+                    leadingContent?.invoke()
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.CenterStart,
+                    ) {
+                        if (textFieldState.text.isEmpty()) {
+                            MSText(
+                                text = hint,
+                                color = MSTheme.color.greyG3,
+                                fontSize = 16.dp,
+                                fontWeight = FontWeight.Normal,
+                                lineHeight = 16.dp.toSp() * 1.6,
+                            )
+                        }
+                        innerTextField()
                     }
-                    innerTextField()
                 }
             }
         },
