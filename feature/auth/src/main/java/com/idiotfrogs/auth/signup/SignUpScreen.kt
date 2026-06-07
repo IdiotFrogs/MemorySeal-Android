@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -37,11 +39,13 @@ import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
+import com.idiotfrogs.designsystem.util.DrawType
 import com.idiotfrogs.designsystem.util.keyboardAutoScroll
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberKeyboardVisibility
 import com.idiotfrogs.designsystem.util.rememberPickerState
 import com.idiotfrogs.designsystem.util.toSp
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
@@ -103,24 +107,22 @@ fun SignUpScreen(
                 bottom = if (isShowKeyboard) 0.dp else 32.dp
             )
     ) {
-        Column {
+        Box(modifier = Modifier.fillMaxWidth()) {
             Icon(
                 modifier = Modifier
                     .padding(start = 20.dp)
+                    .size(24.dp)
                     .noRippleClickable { onAction(SignUpAction.NavigateToBack) },
                 painter = painterResource(R.drawable.ic_chevron_left),
                 contentDescription = "Back"
             )
-            Spacer(modifier = Modifier.height(24.dp))
             MSText(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp),
+                modifier = Modifier.align(Alignment.Center),
                 text = "프로필",
                 fontSize = 24.dp
             )
         }
-        Spacer(modifier = Modifier.height(19.dp))
+        Spacer(modifier = Modifier.height(74.dp))
         Column(
             modifier = Modifier
                 .verticalScroll(
@@ -139,14 +141,46 @@ fun SignUpScreen(
                         .align(Alignment.CenterHorizontally),
 
                 )
-            } ?: Image(
-                modifier = Modifier
-                    .noRippleClickable { launchImagePicker() }
-                    .size(128.dp)
-                    .align(Alignment.CenterHorizontally),
-                painter = painterResource(R.drawable.img_empty_profile),
-                contentDescription = "Profile"
-            )
+            } ?: run {
+                Box(
+                    modifier = Modifier
+                        .size(120.dp)
+                        .background(
+                            color = MSTheme.color.greyG1,
+                            shape = CircleShape
+                        )
+                        .align(Alignment.CenterHorizontally)
+                        .noRippleClickable { launchImagePicker() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        modifier = Modifier.size(48.dp),
+                        painter = painterResource(R.drawable.ic_photo),
+                        contentDescription = "photo",
+                        colorFilter = ColorFilter.tint(MSTheme.color.greyG3)
+                    )
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .size(40.dp)
+                            .wavyStroke(
+                                color = MSTheme.color.black,
+                                cornerRadius = 20.dp,
+                                fillColor = MSTheme.color.black,
+                                amplitude = 1.dp,
+                                spacing = 1.dp
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            modifier = Modifier.size(24.dp),
+                            painter = painterResource(R.drawable.ic_edit),
+                            contentDescription = "edit",
+                            colorFilter = ColorFilter.tint(MSTheme.color.white)
+                        )
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(24.dp))
             MSText(
                 modifier = Modifier
@@ -198,13 +232,19 @@ fun SignUpScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
-                .padding(horizontal = horizontalPadding),
+                .padding(horizontal = horizontalPadding)
+                .wavyStroke(
+                    color = MSTheme.color.primaryNormal,
+                    drawType = if (isShowKeyboard) DrawType.TOP else DrawType.ALL,
+                    clipContent = true,
+                ),
             isRounded = !isShowKeyboard,
             content = {
                 MSText(
                     text = "이 프로필로 할게요!",
                     fontSize = 16.dp,
-                    lineHeight = 16.dp.toSp() * 1.6
+                    lineHeight = 16.dp.toSp() * 1.6,
+                    color = MSTheme.color.white
                 )
             },
             onClick = {
