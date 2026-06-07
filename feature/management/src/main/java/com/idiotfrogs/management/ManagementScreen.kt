@@ -7,9 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -55,7 +57,7 @@ fun ManagementRoute(
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
 
-    var showExitDialog by remember { mutableStateOf(false) }
+    var showCannotExitDialog by remember { mutableStateOf(false) }
 
     viewModel.collectSideEffect { event ->
         when (event) {
@@ -77,11 +79,11 @@ fun ManagementRoute(
         is UiState.Error -> Unit
     }
 
-    if (showExitDialog) {
+    if (showCannotExitDialog) {
         MSTitleDialog(
             title = "방장은 방장 권한을 위임 혹은 티켓에 아무도 없을때 티켓을 나가실 수 있어요.",
-            onConfirm = { showExitDialog = false },
-            onCancel = { showExitDialog = false },
+            onConfirm = { showCannotExitDialog = false },
+            onCancel = { showCannotExitDialog = false },
             content = { /** 없음 */ }
         )
     }
@@ -94,7 +96,9 @@ fun ManagementScreen(
     capsuleTitle: String,
     onAction: (ManagementAction) -> Unit,
 ) {
+    var showExitDialog by remember { mutableStateOf(false) }
     var showDeleteContainer by remember { mutableStateOf(false) }
+
     val ime = WindowInsets.ime
     val density = LocalDensity.current
     val imeHeight by remember { derivedStateOf { ime.getBottom(density) } }
@@ -154,9 +158,7 @@ fun ManagementScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
-                    .noRippleClickable {
-                        onAction(ManagementAction.LeaveTimeCapsule(capsuleId))
-                    },
+                    .noRippleClickable { showExitDialog = true },
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -233,6 +235,25 @@ fun ManagementScreen(
             },
             onCancel = { showDeleteContainer = false }
         )
+        if (showExitDialog) {
+            MSTitleDialog(
+                title = "방장은 방장 권한을 위임 혹은 티켓에 아무도 없을때 티켓을 나가실 수 있어요.",
+                onConfirm = {
+                    showExitDialog = false
+                    onAction.invoke(ManagementAction.LeaveTimeCapsule(capsuleId))
+                },
+                onCancel = { showExitDialog = false },
+                content = {
+                    Spacer( modifier = Modifier.height(8.dp))
+                    MSText(
+                        text = "나가실 경우 다시 초대를 받아야만 들어 오실 수 있습니다.",
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 16.dp,
+                        color = MSTheme.color.greyG3
+                    )
+                }
+            )
+        }
     }
 }
 
