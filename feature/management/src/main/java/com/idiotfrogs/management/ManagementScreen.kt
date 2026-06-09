@@ -237,11 +237,12 @@ fun ManagementScreen(
         )
         if (showExitDialog) {
             MSTitleDialog(
-                title = "방장은 방장 권한을 위임 혹은 티켓에 아무도 없을때 티켓을 나가실 수 있어요.",
+                title = "정말 티켓을 나가시겠습니까?",
                 onConfirm = {
                     showExitDialog = false
                     onAction.invoke(ManagementAction.LeaveTimeCapsule(capsuleId))
                 },
+                cancelText = "취소",
                 onCancel = { showExitDialog = false },
                 content = {
                     Spacer( modifier = Modifier.height(8.dp))
@@ -251,6 +252,7 @@ fun ManagementScreen(
                         fontSize = 16.dp,
                         color = MSTheme.color.greyG3
                     )
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             )
         }
