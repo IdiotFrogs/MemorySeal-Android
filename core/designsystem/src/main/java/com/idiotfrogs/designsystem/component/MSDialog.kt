@@ -115,7 +115,7 @@ fun MSTitleDialog(
     cancelButtonColor: Color = MSTheme.color.greyG1,
     confirmTextColor: Color = MSTheme.color.white,
     cancelTextColor: Color = MSTheme.color.greyG4,
-    content: @Composable ColumnScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit = { Spacer(Modifier.height(24.dp)) },
 ) {
     Dialog(onDismissRequest = onCancel) {
         Column(

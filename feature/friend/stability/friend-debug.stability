@@ -23,14 +23,35 @@ public fun com.idiotfrogs.friend.FriendScreen(capsuleId: kotlin.Long, toastState
     - onAction: STABLE (function type)
 
 @Composable
-public fun com.idiotfrogs.friend.component.FriendListItem(nickName: kotlin.String, profileImageUrl: kotlin.String, onAccept: kotlin.Function0<kotlin.Unit>, onReject: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+public fun com.idiotfrogs.friend.component.FriendBottomSheetItem(modifier: androidx.compose.ui.Modifier, text: kotlin.String, icon: kotlin.Int, onClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - text: STABLE (String is immutable)
+    - icon: STABLE (primitive type)
+    - onClick: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.friend.component.FriendInviteButton(modifier: androidx.compose.ui.Modifier, text: kotlin.String, icon: kotlin.Int, onClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - text: STABLE (String is immutable)
+    - icon: STABLE (primitive type)
+    - onClick: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.friend.component.FriendListItem(nickName: kotlin.String, profileImageUrl: kotlin.String, isMe: kotlin.Boolean, role: com.idiotfrogs.model.timecapsule.TimeCapsuleRole, onMoreClick: kotlin.Function0<kotlin.Unit>?, modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: true
   restartable: true
   params:
     - nickName: STABLE (String is immutable)
     - profileImageUrl: STABLE (String is immutable)
-    - onAccept: STABLE (function type)
-    - onReject: STABLE (function type)
+    - isMe: STABLE (primitive type)
+    - role: STABLE (class with no mutable properties)
+    - onMoreClick: STABLE (function type)
     - modifier: STABLE (marked @Stable or @Immutable)
 
 @Composable

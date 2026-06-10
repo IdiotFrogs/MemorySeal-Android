@@ -1,15 +1,14 @@
 package com.idiotfrogs.friend
 
 import androidx.compose.runtime.Immutable
-import com.idiotfrogs.domain.usecase.timecapsule.GetRequestCollaboratorsUseCase
+import com.idiotfrogs.domain.usecase.timecapsule.DelegationTimeCapsuleHostUseCase
+import com.idiotfrogs.domain.usecase.timecapsule.DeleteTimeCapsuleContributorsUseCase
+import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleCollaboratorsUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleInviteCodeUseCase
-import com.idiotfrogs.domain.usecase.timecapsule.ProcessRequestUseCase
-import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
-import com.idiotfrogs.model.timecapsule.RequestCollaboratorsResponse
+import com.idiotfrogs.domain.usecase.timecapsule.SearchTimeCapsuleCollaboratorsUseCase
+import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
-import com.idiotfrogs.util.sideEffect.RefreshEvent
-import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -21,8 +20,10 @@ import org.orbitmvi.orbit.viewmodel.container
 class FriendViewModel @AssistedInject constructor(
     @Assisted private val capsuleId: Long,
     private val getTimeCapsuleInviteCodeUseCase: GetTimeCapsuleInviteCodeUseCase,
-    private val processRequestUseCase: ProcessRequestUseCase,
-    private val getRequestCollaboratorsUseCase: GetRequestCollaboratorsUseCase,
+    private val getTimeCapsuleCollaboratorsUseCase: GetTimeCapsuleCollaboratorsUseCase,
+    private val delegationTimeCapsuleHostUseCase: DelegationTimeCapsuleHostUseCase,
+    private val deleteTimeCapsuleContributorsUseCase: DeleteTimeCapsuleContributorsUseCase,
+    private val searchTimeCapsuleCollaboratorsUseCase: SearchTimeCapsuleCollaboratorsUseCase,
 ) : BaseViewModel<UiState<CollaboratorsData>, FriendSideEffect, FriendAction>() {
 
     override val container: Container<UiState<CollaboratorsData>, FriendSideEffect> = container(
@@ -31,8 +32,12 @@ class FriendViewModel @AssistedInject constructor(
     )
 
     private fun fetchFriend() = safeLaunch {
-        getRequestCollaboratorsUseCase(capsuleId).onSuccess {
-            intent { reduce { UiState.Success(CollaboratorsData(it)) } }
+        getTimeCapsuleCollaboratorsUseCase(capsuleId, 0, 20).onSuccess {
+            intent {
+                reduce {
+                    UiState.Success(CollaboratorsData(collaborators = it))
+                }
+            }
         }.onFailure {
             intent { reduce { UiState.Error(it.message) } }
         }
@@ -49,20 +54,31 @@ class FriendViewModel @AssistedInject constructor(
         }
     }
 
-    private fun processRequest(requestId: Long, body: ProcessCollaboratorRequest) = safeLaunch {
-        processRequestUseCase(requestId, body).onSuccess {
-            intent {
-                postSideEffect(
-                    FriendSideEffect.ShowToast(
-                        if (body.isApproved) FriendScreenActionState.ACCEPT
-                        else FriendScreenActionState.REJECT
-                    )
-                )
-            }
+    private fun delegationTimeCapsuleHost(targetUserId: Long) = safeLaunch {
+        delegationTimeCapsuleHostUseCase(capsuleId, targetUserId).onSuccess {
             fetchFriend()
-            RefreshSideEffect.tryEmit(RefreshEvent.Detail(capsuleId))
         }.onFailure {
-            // TODO 에러 처리 어떻게 할지 논의 필요.
+            intent { reduce { UiState.Error(it.message) } }
+        }
+    }
+
+    private fun deleteTimeCapsuleContributor(targetUserId: Long) = safeLaunch {
+        deleteTimeCapsuleContributorsUseCase(capsuleId, targetUserId).onSuccess {
+            fetchFriend()
+        }.onFailure {
+            intent { reduce { UiState.Error(it.message) } }
+        }
+    }
+
+    private fun searchTimeCapsuleCollaborators(nickname: String) = safeLaunch {
+        searchTimeCapsuleCollaboratorsUseCase(capsuleId, nickname, 0, 20).onSuccess {
+            intent {
+                reduce {
+                    UiState.Success(CollaboratorsData(collaborators = it))
+                }
+            }
+        }.onFailure {
+            intent { reduce { UiState.Error(it.message) } }
         }
     }
 
@@ -70,7 +86,9 @@ class FriendViewModel @AssistedInject constructor(
         when (action) {
             FriendAction.NavigateToBack -> intent { postSideEffect(FriendSideEffect.NavigateToBack) }
             is FriendAction.CopyInviteCode -> getTimeCapsuleInviteCode(action.capsuleId)
-            is FriendAction.ProcessRequest -> processRequest(action.requestId, ProcessCollaboratorRequest(action.isApproved))
+            is FriendAction.DelegationHost -> delegationTimeCapsuleHost(action.targetUserId)
+            is FriendAction.DeleteContributor -> deleteTimeCapsuleContributor(action.targetUserId)
+            is FriendAction.SearchCollaborators -> searchTimeCapsuleCollaborators(action.nickname)
         }
     }
 
@@ -82,7 +100,7 @@ class FriendViewModel @AssistedInject constructor(
 
 @Immutable
 data class CollaboratorsData(
-    val collaborators: List<RequestCollaboratorsResponse> = emptyList()
+    val collaborators: TimeCapsuleCollaboratorsResponse? = null,
 )
 
 sealed interface FriendAction {
@@ -90,7 +108,11 @@ sealed interface FriendAction {
 
     data class CopyInviteCode(val capsuleId: Long) : FriendAction
 
-    data class ProcessRequest(val requestId: Long, val isApproved: Boolean) : FriendAction
+    data class DelegationHost(val targetUserId: Long) : FriendAction
+
+    data class DeleteContributor(val targetUserId: Long) : FriendAction
+
+    data class SearchCollaborators(val nickname: String) : FriendAction
 }
 
 sealed interface FriendSideEffect {

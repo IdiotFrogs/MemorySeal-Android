@@ -5,7 +5,6 @@ import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
-import com.idiotfrogs.model.timecapsule.RequestCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
@@ -56,10 +55,6 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
         return timeCapsuleDataSource.getTimeCapsuleInviteCode(capsuleId)
     }
 
-    override suspend fun getRequestCollaborators(capsuleId: Long): List<RequestCollaboratorsResponse> {
-        return timeCapsuleDataSource.getRequestCollaborators(capsuleId)
-    }
-
     override suspend fun requestCollaborator(body: PendingCollaboratorsRequest) {
         return timeCapsuleDataSource.requestCollaborator(body)
     }
@@ -73,5 +68,33 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
         body: BuryTimeCapsuleRequest
     ): TimeCapsuleResponse {
         return timeCapsuleDataSource.buryTimeCapsule(capsuleId, body)
+    }
+
+    override suspend fun delegationTimeCapsuleHost(
+        capsuleId: Long,
+        targetUserId: Long
+    ) {
+        return timeCapsuleDataSource.delegationTimeCapsuleHost(capsuleId, targetUserId)
+    }
+
+    override suspend fun deleteTimesCapsuleContributors(
+        capsuleId: Long,
+        targetUserId: Long
+    ) {
+        return timeCapsuleDataSource.deleteTimesCapsuleContributors(capsuleId, targetUserId)
+    }
+
+    override suspend fun searchTimesCapsuleCollaborators(
+        capsuleId: Long,
+        nickname: String,
+        page: Int,
+        size: Int
+    ): TimeCapsuleCollaboratorsResponse {
+        return timeCapsuleDataSource.searchTimesCapsuleCollaborators(
+            capsuleId = capsuleId,
+            nickname = nickname,
+            page = page,
+            size = size
+        )
     }
 }
