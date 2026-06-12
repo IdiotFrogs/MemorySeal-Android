@@ -76,7 +76,7 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MSTheme.color.bgSplash)
+            .background(MSTheme.color.white)
             .systemBarsPadding()
     ) {
         Column(
