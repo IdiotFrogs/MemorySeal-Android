@@ -44,6 +44,7 @@ import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.management.component.ManagementDeleteContainer
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
+import com.idiotfrogs.resource.R
 import com.idiotfrogs.util.UiState
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -142,8 +143,8 @@ fun ManagementScreen(
                 ) {
                     Image(
                         modifier = Modifier.size(24.dp),
-                        painter = painterResource(com.idiotfrogs.resource.R.drawable.ic_people),
-                        contentDescription = "삭제",
+                        painter = painterResource(R.drawable.ic_people),
+                        contentDescription = "멤버",
                         colorFilter = ColorFilter.tint(MSTheme.color.primaryDark)
                     )
                 }
@@ -175,7 +176,7 @@ fun ManagementScreen(
                 ) {
                     Image(
                         modifier = Modifier.size(24.dp),
-                        painter = painterResource(com.idiotfrogs.resource.R.drawable.ic_chevron_left),
+                        painter = painterResource(R.drawable.ic_chevron_left),
                         contentDescription = "나가기",
                         colorFilter = ColorFilter.tint(MSTheme.color.greyG3)
                     )
@@ -208,7 +209,7 @@ fun ManagementScreen(
                 ) {
                     Image(
                         modifier = Modifier.size(24.dp),
-                        painter = painterResource(com.idiotfrogs.resource.R.drawable.ic_trashcan),
+                        painter = painterResource(R.drawable.ic_trashcan),
                         contentDescription = "삭제",
                         colorFilter = ColorFilter.tint(MSTheme.color.greyG3)
                     )
