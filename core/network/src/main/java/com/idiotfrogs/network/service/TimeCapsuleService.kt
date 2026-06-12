@@ -4,7 +4,6 @@ import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
-import com.idiotfrogs.model.timecapsule.RequestCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
@@ -19,6 +18,7 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface TimeCapsuleService {
 
@@ -39,13 +39,14 @@ interface TimeCapsuleService {
     suspend fun getTimeCapsule(@Path("capsuleId") capsuleId: Long): TimeCapsuleResponse
 
     @GET("time-capsules/{capsuleId}/collaborators")
-    suspend fun getTimesCapsuleCollaborators(@Path("capsuleId") capsuleId: Long): List<TimeCapsuleCollaboratorsResponse>
+    suspend fun getTimesCapsuleCollaborators(
+        @Path("capsuleId") capsuleId: Long,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+    ): TimeCapsuleCollaboratorsResponse
 
     @POST("time-capsules/{capsuleId}/invite")
     suspend fun getTimeCapsuleInviteCode(@Path("capsuleId") capsuleId: Long): TimeCapsuleInviteCodeResponse
-
-    @GET("time-capsules/request/{capsuleId}/requests")
-    suspend fun getRequestCollaborators(@Path("capsuleId") capsuleId: Long): List<RequestCollaboratorsResponse>
 
     @POST("time-capsules/join-request")
     suspend fun requestCollaborator(@Body body: PendingCollaboratorsRequest)
@@ -61,6 +62,26 @@ interface TimeCapsuleService {
         @Path("capsuleId") capsuleId: Long,
         @Body body: BuryTimeCapsuleRequest
     ): TimeCapsuleResponse
+
+    @PUT("time-capsules/{capsuleId}/delegation/{targetUserId}")
+    suspend fun delegationTimeCapsuleHost(
+        @Path("capsuleId") capsuleId: Long,
+        @Path("targetUserId") targetUserId: Long,
+    )
+
+    @DELETE("time-capsules/{capsuleId}/contributors/{targetUserId}")
+    suspend fun deleteTimesCapsuleContributors(
+        @Path("capsuleId") capsuleId: Long,
+        @Path("targetUserId") targetUserId: Long,
+    )
+
+    @GET("time-capsules/{capsuleId}/collaborators/search")
+    suspend fun searchTimesCapsuleCollaborators(
+        @Path("capsuleId") capsuleId: Long,
+        @Query("nickname") nickname: String,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+    ): TimeCapsuleCollaboratorsResponse
 
     @DELETE("time-capsules/{capsuleId}/leave")
     suspend fun leaveTimeCapsule(

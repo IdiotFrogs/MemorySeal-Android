@@ -39,12 +39,12 @@ public fun com.idiotfrogs.home.component.HomeJoinContainer(isShow: kotlin.Boolea
     - onJoin: STABLE (function type)
 
 @Composable
-public fun com.idiotfrogs.home.component.HomeTicket(buried: kotlin.Boolean, targetDate: kotlin.String, title: kotlin.String, imageUrl: kotlin.String?, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+public fun com.idiotfrogs.home.component.HomeTicket(buried: kotlin.Boolean, createdAt: kotlin.String, title: kotlin.String, imageUrl: kotlin.String?, modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: true
   restartable: true
   params:
     - buried: STABLE (primitive type)
-    - targetDate: STABLE (String is immutable)
+    - createdAt: STABLE (String is immutable)
     - title: STABLE (String is immutable)
     - imageUrl: STABLE (class with no mutable properties)
     - modifier: STABLE (marked @Stable or @Immutable)

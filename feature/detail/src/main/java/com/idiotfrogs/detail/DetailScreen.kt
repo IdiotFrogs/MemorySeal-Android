@@ -53,10 +53,9 @@ import com.idiotfrogs.designsystem.component.MSToast
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DrawType
+import com.idiotfrogs.designsystem.util.WavyAlign
 import com.idiotfrogs.designsystem.util.noRippleClickable
-import com.idiotfrogs.designsystem.util.wavyBackground
 import com.idiotfrogs.designsystem.util.wavyStroke
-import com.idiotfrogs.extension.toDday
 import com.idiotfrogs.extension.toOpenRemainingText
 import com.idiotfrogs.extension.toYearMonthDayWeek
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
@@ -201,20 +200,21 @@ fun DetailScreen(
                 .fillMaxSize()
                 .hazeSource(hazeState)
                 .navigationBarsPadding()
-                .background(MSTheme.color.bgNormal)
+                .background(Color.White)
                 .verticalScroll(scrollState),
         ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(420.dp)
-                .wavyBackground(
+                .wavyStroke(
                     color = Color.Black,
                     drawType = DrawType.BOTTOM,
                     strokeWidth = 5.dp,
                     amplitude = 2.dp,
                     spacing = 3.dp,
                     clipContent = true,
+                    wavyAlign = WavyAlign.OUTER
                 )
         ) {
             capsule?.mainImageUrl?.let {
@@ -260,7 +260,6 @@ fun DetailScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(MSTheme.color.white)
                 .padding(horizontal = 20.dp, vertical = 24.dp)
         ) {
             if (isBuried) {
@@ -518,7 +517,7 @@ fun DetailScreen(
                         append("멤버 ")
                         withStyle(
                             SpanStyle(color = MSTheme.color.primaryNormal)
-                        ) { append(data.collaborators.size.toString()) }
+                        ) { append(data.collaborators?.content?.size.toString()) }
                     },
                     color = MSTheme.color.greyG4
                 )
@@ -537,7 +536,7 @@ fun DetailScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                data.collaborators.forEach { collaborator ->
+                data.collaborators?.content?.forEach { collaborator ->
                     GlideImage(
                         modifier = Modifier
                             .size(48.dp)

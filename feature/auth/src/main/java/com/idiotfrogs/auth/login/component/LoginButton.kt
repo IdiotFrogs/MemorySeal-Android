@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -16,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.R
 
 @Immutable
@@ -38,15 +40,15 @@ internal fun LoginButton(
     Button(
         modifier = modifier
             .fillMaxWidth()
-            .height(48.dp),
+            .height(48.dp)
+            .wavyStroke(
+                amplitude = 1.dp,
+                spacing = 3.dp,
+                color = MSTheme.color.black,
+                fillColor = uiModel.containerColor,
+            ),
+        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = uiModel.containerColor
-        ),
-        border = BorderStroke(
-            width = if (uiModel.borderColor != Color.Transparent) 1.dp else 0.dp,
-            color = uiModel.borderColor
-        )
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Image(

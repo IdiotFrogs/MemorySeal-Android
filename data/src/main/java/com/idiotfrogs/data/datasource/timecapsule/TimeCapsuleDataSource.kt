@@ -4,7 +4,6 @@ import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
-import com.idiotfrogs.model.timecapsule.RequestCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
@@ -24,11 +23,13 @@ interface TimeCapsuleDataSource {
 
     suspend fun getTimeCapsule(capsuleId: Long): TimeCapsuleResponse
 
-    suspend fun getTimesCapsuleCollaborators(capsuleId: Long): List<TimeCapsuleCollaboratorsResponse>
+    suspend fun getTimesCapsuleCollaborators(
+        capsuleId: Long,
+        page: Int,
+        size: Int,
+    ): TimeCapsuleCollaboratorsResponse
 
     suspend fun getTimeCapsuleInviteCode(capsuleId: Long): TimeCapsuleInviteCodeResponse
-
-    suspend fun getRequestCollaborators(capsuleId: Long): List<RequestCollaboratorsResponse>
 
     suspend fun requestCollaborator(body: PendingCollaboratorsRequest)
 
@@ -38,6 +39,23 @@ interface TimeCapsuleDataSource {
         capsuleId: Long,
         body: BuryTimeCapsuleRequest
     ): TimeCapsuleResponse
+
+    suspend fun delegationTimeCapsuleHost(
+        capsuleId: Long,
+        targetUserId: Long,
+    )
+
+    suspend fun deleteTimesCapsuleContributors(
+        capsuleId: Long,
+        targetUserId: Long,
+    )
+
+    suspend fun searchTimesCapsuleCollaborators(
+        capsuleId: Long,
+        nickname: String,
+        page: Int,
+        size: Int,
+    ): TimeCapsuleCollaboratorsResponse
 
     suspend fun leaveTimeCapsule(capsuleId: Long)
 }
