@@ -125,7 +125,7 @@ fun ManagementScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
-                    .noRippleClickable { /** TODO: 멤버로 이동 */ },
+                    .noRippleClickable { onAction.invoke(ManagementAction.NavigateToFriend) },
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
