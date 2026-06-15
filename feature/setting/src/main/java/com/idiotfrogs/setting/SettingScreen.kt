@@ -79,6 +79,7 @@ fun SettingScreen(
                     fontSize = 16.dp,
                     color = MSTheme.color.greyG5
                 )
+                Spacer(modifier = Modifier.height(24.dp))
             }
         )
     }
@@ -101,6 +102,7 @@ fun SettingScreen(
                     fontSize = 16.dp,
                     color = MSTheme.color.greyG5
                 )
+                Spacer(modifier = Modifier.height(24.dp))
             }
         )
     }
