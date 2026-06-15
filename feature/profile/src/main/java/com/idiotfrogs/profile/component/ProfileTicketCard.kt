@@ -59,7 +59,7 @@ fun ProfileTicketCard(
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.dp,
                 color = MSTheme.color.greyG5,
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(6.dp))
