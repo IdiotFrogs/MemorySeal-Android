@@ -93,7 +93,6 @@ fun MessageRoute(
         UiState.Init -> Unit
         is UiState.Success -> {
             MessageScreen(
-                capsuleId = capsuleId,
                 data = state.data,
                 onAction = viewModel::onAction,
             )
@@ -104,7 +103,6 @@ fun MessageRoute(
 
 @Composable
 fun MessageScreen(
-    capsuleId: Long,
     data: MessageData,
     onAction: (MessageAction) -> Unit,
     modifier: Modifier = Modifier,
@@ -660,7 +658,6 @@ private fun Set<String>.toggle(id: String): Set<String> =
 @Composable
 fun MessageScreenPreview() {
     MessageScreen(
-        capsuleId = 0L,
         data = MessageData(),
         onAction = {},
     )
