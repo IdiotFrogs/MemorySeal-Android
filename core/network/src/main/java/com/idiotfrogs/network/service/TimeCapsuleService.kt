@@ -1,15 +1,18 @@
 package com.idiotfrogs.network.service
 
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
+import com.idiotfrogs.model.timecapsule.CapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleContentResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -87,4 +90,27 @@ interface TimeCapsuleService {
     suspend fun leaveTimeCapsule(
         @Path("capsuleId") capsuleId: Long
     )
+
+    @GET("api/time-capsule-content/{timeCapsuleId}/contents")
+    suspend fun getTimeCapsuleContent(@Path("timeCapsuleId") timeCapsuleId: Long): List<TimeCapsuleContentResponse>
+
+    @GET("api/time-capsule-content/{timeCapsuleId}/my-contents")
+    suspend fun getMyTimeCapsuleContent(@Path("timeCapsuleId") timeCapsuleId: Long): List<CapsuleContentsData>
+
+    @POST("api/time-capsule-content/{timeCapsuleId}")
+    @Multipart
+    suspend fun createTimeCapsuleContent(
+        @Path("timeCapsuleId") timeCapsuleId: Long,
+        @Part("content") content: RequestBody,
+        @Part files: List<MultipartBody.Part>,
+    ): CapsuleContentsData
+
+    @PUT("api/time-capsule-content/{contentId}")
+    suspend fun modifyTimeCapsuleContent(
+        @Path("contentId") contentId: Long,
+        @Query("content") content: String,
+    ): CapsuleContentsData
+
+    @DELETE("api/time-capsule-content")
+    suspend fun deleteTimeCapsuleContent(@Query("contentIds") contentIds: List<Long>)
 }
