@@ -56,4 +56,6 @@ interface TimeCapsuleDataSource {
         page: Int,
         size: Int,
     ): TimeCapsuleCollaboratorsResponse
+
+    suspend fun leaveTimeCapsule(capsuleId: Long)
 }

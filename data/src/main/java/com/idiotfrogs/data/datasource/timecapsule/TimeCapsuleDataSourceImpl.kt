@@ -92,4 +92,8 @@ class TimeCapsuleDataSourceImpl @Inject constructor(
             size = size
         )
     }
+
+    override suspend fun leaveTimeCapsule(capsuleId: Long) {
+        return timeCapsuleService.leaveTimeCapsule(capsuleId)
+    }
 }

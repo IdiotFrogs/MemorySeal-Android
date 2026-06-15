@@ -82,4 +82,9 @@ interface TimeCapsuleService {
         @Query("page") page: Int,
         @Query("size") size: Int,
     ): TimeCapsuleCollaboratorsResponse
+
+    @DELETE("time-capsules/{capsuleId}/leave")
+    suspend fun leaveTimeCapsule(
+        @Path("capsuleId") capsuleId: Long
+    )
 }
