@@ -298,13 +298,14 @@ public fun com.idiotfrogs.designsystem.component.TwoByTwo(images: kotlin.collect
     - images: RUNTIME (requires runtime check)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.button.MSButton(modifier: androidx.compose.ui.Modifier, enabled: kotlin.Boolean, isRounded: kotlin.Boolean, colors: androidx.compose.material3.ButtonColors, pressColors: androidx.compose.material3.ButtonColors, elevation: androidx.compose.material3.ButtonElevation?, border: androidx.compose.foundation.BorderStroke?, wavyStrokeColor: androidx.compose.ui.graphics.Color?, contentPadding: androidx.compose.foundation.layout.PaddingValues, interactionSource: androidx.compose.foundation.interaction.MutableInteractionSource, onClick: kotlin.Function0<kotlin.Unit>, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.RowScope, kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.designsystem.component.button.MSButton(modifier: androidx.compose.ui.Modifier, enabled: kotlin.Boolean, isRounded: kotlin.Boolean, cornerRadius: androidx.compose.ui.unit.Dp, colors: androidx.compose.material3.ButtonColors, pressColors: androidx.compose.material3.ButtonColors, elevation: androidx.compose.material3.ButtonElevation?, border: androidx.compose.foundation.BorderStroke?, wavyStrokeColor: androidx.compose.ui.graphics.Color?, contentPadding: androidx.compose.foundation.layout.PaddingValues, interactionSource: androidx.compose.foundation.interaction.MutableInteractionSource, onClick: kotlin.Function0<kotlin.Unit>, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.RowScope, kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
   params:
     - modifier: STABLE (marked @Stable or @Immutable)
     - enabled: STABLE (primitive type)
     - isRounded: STABLE (primitive type)
+    - cornerRadius: STABLE (marked @Stable or @Immutable)
     - colors: STABLE (marked @Stable or @Immutable)
     - pressColors: STABLE (marked @Stable or @Immutable)
     - elevation: STABLE (marked @Stable or @Immutable)
