@@ -1,6 +1,8 @@
 package com.idiotfrogs.create
 
+import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -45,12 +47,12 @@ fun CreateLoadingScreen(
     modifier: Modifier = Modifier,
 ) {
     val transition = rememberInfiniteTransition()
-    val coverProgress by transition.animateFloat(
+    val maskProgress by transition.animateFloat(
         initialValue = 0f,
-        targetValue = 1f,
+        targetValue = 2f,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = 1500,
+                durationMillis = 2000,
                 easing = LinearEasing,
             ),
             repeatMode = RepeatMode.Restart,
@@ -93,32 +95,55 @@ fun CreateLoadingScreen(
                 .drawWithContent {
                     drawContent()
 
-                    val coverWidth = size.width * coverProgress
-                    val featherWidth = 24.dp.toPx()
+                    val phase = maskProgress.coerceIn(0f, 2f)
 
-                    if (coverWidth > 0f) {
-                        drawRect(
-                            color = Color.White,
-                            size = Size(
-                                width = coverWidth,
-                                height = size.height,
-                            ),
-                        )
+                    if (phase < 1f) {
+                        val fraction = FastOutLinearInEasing.transform(phase)
+                        val gradientWidth = size.width * 1.16f
+                        val gradientEndX = (size.width + gradientWidth) * fraction
+                        val gradientStartX = gradientEndX - gradientWidth
+                        val solidCoverWidth = gradientStartX.coerceIn(0f, size.width)
 
+                        if (solidCoverWidth > 0f) {
+                            drawRect(
+                                color = Color.White,
+                                size = Size(
+                                    width = solidCoverWidth,
+                                    height = size.height,
+                                ),
+                            )
+                        }
+
+                        val visibleGradientStartX = gradientStartX.coerceAtLeast(0f)
+                        val visibleGradientEndX = gradientEndX.coerceIn(0f, size.width)
+                        val visibleGradientWidth = visibleGradientEndX - visibleGradientStartX
+
+                        if (visibleGradientWidth > 0f) {
+                            drawRect(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color.White,
+                                        Color.White.copy(alpha = 0.72f),
+                                        Color.White.copy(alpha = 0f),
+                                    ),
+                                    startX = gradientStartX,
+                                    endX = gradientEndX,
+                                ),
+                                topLeft = Offset(
+                                    x = visibleGradientStartX,
+                                    y = 0f,
+                                ),
+                                size = Size(
+                                    width = visibleGradientWidth,
+                                    height = size.height,
+                                ),
+                            )
+                        }
+                    } else {
+                        val fraction = LinearOutSlowInEasing.transform(phase - 1f)
                         drawRect(
-                            brush = Brush.horizontalGradient(
-                                colors = listOf(Color.White, Color.Transparent),
-                                startX = coverWidth,
-                                endX = coverWidth + featherWidth,
-                            ),
-                            topLeft = Offset(
-                                x = coverWidth,
-                                y = 0f,
-                            ),
-                            size = Size(
-                                width = featherWidth,
-                                height = size.height,
-                            ),
+                            color = Color.White.copy(alpha = 1f - fraction),
+                            size = size,
                         )
                     }
                 },
