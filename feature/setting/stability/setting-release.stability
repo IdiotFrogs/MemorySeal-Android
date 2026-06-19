@@ -18,20 +18,3 @@ public fun com.idiotfrogs.setting.SettingScreen(onAction: kotlin.Function1<com.i
   params:
     - onAction: STABLE (function type)
 
-@Composable
-public fun com.idiotfrogs.setting.component.SettingHeader(onBack: kotlin.Function0<kotlin.Unit>): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - onBack: STABLE (function type)
-
-@Composable
-public fun com.idiotfrogs.setting.component.SettingItem(settingType: com.idiotfrogs.setting.component.SettingType, title: kotlin.String, titleColor: androidx.compose.ui.graphics.Color, onClick: kotlin.Function0<kotlin.Unit>?): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - settingType: STABLE (class with no mutable properties)
-    - title: STABLE (String is immutable)
-    - titleColor: STABLE (marked @Stable or @Immutable)
-    - onClick: STABLE (function type)
-

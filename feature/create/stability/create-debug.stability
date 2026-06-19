@@ -5,6 +5,13 @@
 //   ./gradlew :create:stabilityDump
 
 @Composable
+public fun com.idiotfrogs.create.CreateLoadingScreen(modifier: androidx.compose.ui.Modifier): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+
+@Composable
 public fun com.idiotfrogs.create.CreateRoute(viewModel: com.idiotfrogs.create.CreateViewModel): kotlin.Unit
   skippable: false
   restartable: true
