@@ -75,9 +75,7 @@ fun CreateLoadingScreen(
 
         MSText(
             text = "티켓을 만드는중이에요\n잠시만 기다려주세요",
-            fontSize = 14.dp,
-            fontWeight = FontWeight.Bold,
-            color = MSTheme.color.black,
+            fontSize = 20.dp,
             textAlign = TextAlign.Center,
         )
 
