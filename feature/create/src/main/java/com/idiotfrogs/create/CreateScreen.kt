@@ -59,8 +59,7 @@ fun CreateRoute(
     viewModel.collectSideEffect { event ->
         when (event) {
             is CreateSideEffect.NavigateToDetail -> {
-                navigator.popBackStack()
-                navigator.navigate(Detail(event.response.id))
+                navigator.replace(Detail(event.response.id))
             }
             CreateSideEffect.NavigateToBack -> navigator.popBackStack()
         }

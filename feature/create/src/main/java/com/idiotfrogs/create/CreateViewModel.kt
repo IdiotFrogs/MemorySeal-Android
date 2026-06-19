@@ -43,7 +43,6 @@ class CreateViewModel @Inject constructor(
             val result = createTimeCapsuleUseCase(request, mainImage)
 
             result.onSuccess { response ->
-                intent { reduce { state.copy(isLoading = false, errorMessage = null) } }
                 RefreshSideEffect.tryEmit(RefreshEvent.Home)
                 intent { postSideEffect(CreateSideEffect.NavigateToDetail(response)) }
             }.onFailure { e ->
