@@ -110,7 +110,7 @@ fun SignUpScreen(
                 modifier = Modifier
                     .padding(start = 20.dp)
                     .size(24.dp)
-                    .noRippleClickable { onAction(SignUpAction.NavigateToBack) },
+                    .noRippleClickable { onAction(SignUpAction.BackClicked) },
                 painter = painterResource(R.drawable.ic_chevron_left),
                 contentDescription = "Back"
             )
@@ -250,7 +250,7 @@ fun SignUpScreen(
                     isShowError = true
                 } else {
                     val imageFile = imageUri?.toFile(context, "profileImage")
-                    onAction(SignUpAction.SignUp(textFieldState.text.toString(), imageFile))
+                    onAction(SignUpAction.SignUpButtonClicked(textFieldState.text.toString(), imageFile))
                 }
             }
         )

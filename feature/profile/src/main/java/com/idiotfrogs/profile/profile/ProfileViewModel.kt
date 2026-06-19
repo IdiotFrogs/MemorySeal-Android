@@ -74,9 +74,9 @@ class ProfileViewModel @Inject constructor(
 
     override fun onAction(action: ProfileAction) {
         when (action) {
-            ProfileAction.NavigateToEditProfile -> intent { postSideEffect(ProfileSideEffect.NavigateToEditProfile) }
-            ProfileAction.NavigateToSetting -> intent { postSideEffect(ProfileSideEffect.NavigateToSetting) }
-            ProfileAction.NavigateToBack -> intent { postSideEffect(ProfileSideEffect.NavigateToBack) }
+            ProfileAction.EditProfileClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToEditProfile) }
+            ProfileAction.SettingClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToSetting) }
+            ProfileAction.BackClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToBack) }
         }
     }
 }
@@ -95,9 +95,9 @@ data class ProfileData(
 )
 
 sealed interface ProfileAction {
-    data object NavigateToSetting : ProfileAction
-    data object NavigateToEditProfile : ProfileAction
-    data object NavigateToBack : ProfileAction
+    data object SettingClicked : ProfileAction
+    data object EditProfileClicked : ProfileAction
+    data object BackClicked : ProfileAction
 }
 
 sealed interface ProfileSideEffect {

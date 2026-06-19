@@ -83,10 +83,10 @@ class HomeViewModel @Inject constructor(
     override fun onAction(action: HomeAction) {
         intent {
             when (action) {
-                HomeAction.NavigateToCreate -> postSideEffect(HomeSideEffect.NavigateToCreate)
-                HomeAction.NavigateToProfile -> postSideEffect(HomeSideEffect.NavigateToProfile)
-                is HomeAction.NavigateToDetail -> postSideEffect(HomeSideEffect.NavigateToDetail(action.id))
-                is HomeAction.RequestCollaborator -> requestCollaborator(PendingCollaboratorsRequest(action.code))
+                HomeAction.CreateClicked -> postSideEffect(HomeSideEffect.NavigateToCreate)
+                HomeAction.ProfileClicked -> postSideEffect(HomeSideEffect.NavigateToProfile)
+                is HomeAction.TimeCapsuleClicked -> postSideEffect(HomeSideEffect.NavigateToDetail(action.id))
+                is HomeAction.JoinCodeSubmitted -> requestCollaborator(PendingCollaboratorsRequest(action.code))
             }
         }
     }
@@ -106,11 +106,10 @@ data class HomeData(
 )
 
 sealed interface HomeAction {
-    data object NavigateToCreate : HomeAction
-    data object NavigateToProfile : HomeAction
-    data class NavigateToDetail(val id: Long) : HomeAction
-
-    data class RequestCollaborator(val code: String) : HomeAction
+    data object CreateClicked : HomeAction
+    data object ProfileClicked : HomeAction
+    data class TimeCapsuleClicked(val id: Long) : HomeAction
+    data class JoinCodeSubmitted(val code: String) : HomeAction
 }
 
 sealed interface HomeSideEffect {

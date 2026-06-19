@@ -74,8 +74,8 @@ fun ProfileScreen(
     ) {
         ProfileHeader(
             modifier = Modifier.zIndex(1f),
-            onBack = { onAction(ProfileAction.NavigateToBack) },
-            onSetting = { onAction(ProfileAction.NavigateToSetting) }
+            onBack = { onAction(ProfileAction.BackClicked) },
+            onSetting = { onAction(ProfileAction.SettingClicked) }
         )
         LazyVerticalGrid(
             modifier = Modifier
@@ -91,7 +91,7 @@ fun ProfileScreen(
                     modifier = Modifier.padding(top = (HeaderHeight + 24).dp),
                     nickname = data.user?.nickname ?: "",
                     imageUrl = data.user?.profileImageUrl,
-                    onEditClick = { onAction(ProfileAction.NavigateToEditProfile) }
+                    onEditClick = { onAction(ProfileAction.EditProfileClicked) }
                 )
             }
             maxLineItem {

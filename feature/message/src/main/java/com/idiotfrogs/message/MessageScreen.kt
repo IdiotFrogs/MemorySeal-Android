@@ -201,7 +201,7 @@ fun MessageScreen(
         ) {
             MSDetailHeader(
                 title = "나의 추억 메시지",
-                navigateToBack = { onAction(MessageAction.NavigateToBack) },
+                navigateToBack = { onAction(MessageAction.BackClicked) },
                 paddingValues = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
             ) {
                 Image(

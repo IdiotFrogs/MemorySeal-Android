@@ -17,9 +17,9 @@ class SettingViewModel @Inject constructor(
 
     override fun onAction(action: SettingAction) {
         when (action) {
-            SettingAction.NavigateToLogin -> intent { postSideEffect(SettingSideEffect.NavigateToLogin) }
-            SettingAction.NavigateToBack -> intent { postSideEffect(SettingSideEffect.NavigateToBack) }
-            SettingAction.Withdraw -> withdraw()
+            SettingAction.LogoutConfirmed -> intent { postSideEffect(SettingSideEffect.NavigateToLogin) }
+            SettingAction.BackClicked -> intent { postSideEffect(SettingSideEffect.NavigateToBack) }
+            SettingAction.WithdrawConfirmed -> withdraw()
         }
     }
 
@@ -46,10 +46,9 @@ data class SettingUiState(
 ) : BaseUiState
 
 sealed interface SettingAction {
-    data object NavigateToLogin : SettingAction
-    data object NavigateToBack : SettingAction
-
-    data object Withdraw : SettingAction
+    data object LogoutConfirmed : SettingAction
+    data object BackClicked : SettingAction
+    data object WithdrawConfirmed : SettingAction
 }
 
 sealed interface SettingSideEffect {

@@ -64,7 +64,7 @@ fun SettingScreen(
             onConfirm = {
                 /** TODO: 로그아웃 로직 */
                 showLogoutDialog = false
-                onAction(SettingAction.NavigateToLogin)
+                onAction(SettingAction.LogoutConfirmed)
             },
             onCancel = { showLogoutDialog = false }
         )
@@ -78,7 +78,7 @@ fun SettingScreen(
             cancelText = "취소",
             onConfirm = {
                 showWithdrawDialog = false
-                onAction(SettingAction.Withdraw)
+                onAction(SettingAction.WithdrawConfirmed)
             },
             onCancel = { showWithdrawDialog = false }
         )
@@ -90,7 +90,7 @@ fun SettingScreen(
             .background(MSTheme.color.white)
             .systemBarsPadding(),
     ) {
-        SettingHeader(onBack = { onAction(SettingAction.NavigateToBack) })
+        SettingHeader(onBack = { onAction(SettingAction.BackClicked) })
         Column(
             modifier = Modifier
                 .fillMaxSize()

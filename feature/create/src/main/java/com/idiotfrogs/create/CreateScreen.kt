@@ -105,7 +105,7 @@ private fun CreateScreen(
             MSDetailHeader(
                 title = "타임 티켓 생성",
                 paddingValues = PaddingValues(vertical = 16.dp),
-                navigateToBack = { onAction(CreateAction.NavigateToBack) }
+                navigateToBack = { onAction(CreateAction.BackClicked) }
             )
             Spacer(Modifier.height(24.dp))
             Column(
@@ -200,7 +200,7 @@ private fun CreateScreen(
                 val file = imageUri?.toFile(context, "mainImage")
                 if (file != null) {
                     onAction(
-                        CreateAction.CreateTimeCapsule(
+                        CreateAction.CreateButtonClicked(
                             titleTextFieldState.text.toString(),
                             contentTextFieldState.text.toString().takeIf { it.isNotEmpty() },
                             file

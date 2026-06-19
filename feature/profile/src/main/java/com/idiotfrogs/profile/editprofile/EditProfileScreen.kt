@@ -101,12 +101,12 @@ fun EditProfileScreen(
     ) {
         ProfileHeader(
             isChanged = isChanged,
-            onBack = { onAction(EditProfileAction.NavigateToBack) },
+            onBack = { onAction(EditProfileAction.BackClicked) },
             onSave = {
                 val file = imageUri?.toFile(context, "profileImage")
                 Log.d("test", file?.name.toString())
                 /** TODO: 저장 로직 */
-                onAction(EditProfileAction.NavigateToBack)
+                onAction(EditProfileAction.SaveClicked)
             }
         )
         Spacer(modifier = Modifier.height(16.dp))

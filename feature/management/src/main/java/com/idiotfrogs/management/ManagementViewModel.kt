@@ -22,10 +22,10 @@ class ManagementViewModel @Inject constructor(
 
     override fun onAction(action: ManagementAction) {
         when (action) {
-            ManagementAction.NavigateToBack -> intent { postSideEffect(ManagementSideEffect.NavigateToBack) }
-            is ManagementAction.DeleteCapsule -> deleteTimeCapsule(action.capsuleId)
-            is ManagementAction.LeaveTimeCapsule -> leaveTimeCapsule(action.capsuleId)
-            ManagementAction.NavigateToFriend -> intent { postSideEffect(ManagementSideEffect.NavigateToFriend) }
+            ManagementAction.BackClicked -> intent { postSideEffect(ManagementSideEffect.NavigateToBack) }
+            is ManagementAction.DeleteCapsuleConfirmed -> deleteTimeCapsule(action.capsuleId)
+            is ManagementAction.LeaveCapsuleConfirmed -> leaveTimeCapsule(action.capsuleId)
+            ManagementAction.MemberClicked -> intent { postSideEffect(ManagementSideEffect.NavigateToFriend) }
         }
     }
 
@@ -66,11 +66,10 @@ data class ManagementUiState(
 ) : BaseUiState
 
 sealed interface ManagementAction {
-    data object NavigateToBack : ManagementAction
-    data object NavigateToFriend : ManagementAction
-
-    data class DeleteCapsule(val capsuleId: Long) : ManagementAction
-    data class LeaveTimeCapsule(val capsuleId: Long) : ManagementAction
+    data object BackClicked : ManagementAction
+    data object MemberClicked : ManagementAction
+    data class DeleteCapsuleConfirmed(val capsuleId: Long) : ManagementAction
+    data class LeaveCapsuleConfirmed(val capsuleId: Long) : ManagementAction
 }
 
 sealed interface ManagementSideEffect {

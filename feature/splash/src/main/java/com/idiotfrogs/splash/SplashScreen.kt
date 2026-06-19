@@ -50,7 +50,7 @@ fun SplashRoute(
         val notificationPermission = rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
         LaunchedEffect(notificationPermission.status) {
             when {
-                notificationPermission.status.isGranted -> viewModel.onAction(SplashAction.AutoLogin)
+                notificationPermission.status.isGranted -> viewModel.onAction(SplashAction.AutoLoginRequested)
                 notificationPermission.status.shouldShowRationale -> showPermissionDialog = true // 권한 거부
                 else -> notificationPermission.launchPermissionRequest() // 권한 요청
             }

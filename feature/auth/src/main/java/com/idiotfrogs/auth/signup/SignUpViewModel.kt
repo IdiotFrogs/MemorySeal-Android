@@ -18,8 +18,8 @@ class SignUpViewModel @Inject constructor(
 
     override fun onAction(action: SignUpAction) {
         when (action) {
-            is SignUpAction.SignUp -> signUp(action.nickname, action.file)
-            SignUpAction.NavigateToBack -> intent { postSideEffect(SignUpSideEffect.NavigateToBack) }
+            is SignUpAction.SignUpButtonClicked -> signUp(action.nickname, action.file)
+            SignUpAction.BackClicked -> intent { postSideEffect(SignUpSideEffect.NavigateToBack) }
         }
     }
 
@@ -47,8 +47,8 @@ data class SignUpUiState(
 ) : BaseUiState
 
 sealed interface SignUpAction {
-    data class SignUp(val nickname: String, val file: File?): SignUpAction
-    data object NavigateToBack : SignUpAction
+    data class SignUpButtonClicked(val nickname: String, val file: File?): SignUpAction
+    data object BackClicked : SignUpAction
 }
 
 sealed interface SignUpSideEffect {

@@ -21,10 +21,10 @@ class CreateViewModel @Inject constructor(
 
     override fun onAction(action: CreateAction) {
         when (action) {
-            is CreateAction.CreateTimeCapsule -> createTimeCapsule(
+            is CreateAction.CreateButtonClicked -> createTimeCapsule(
                 action.title, action.description, action.mainImage
             )
-            CreateAction.NavigateToBack -> intent { postSideEffect(CreateSideEffect.NavigateToBack) }
+            CreateAction.BackClicked -> intent { postSideEffect(CreateSideEffect.NavigateToBack) }
         }
     }
 
@@ -60,13 +60,12 @@ data class CreateUiState(
 ) : BaseUiState
 
 sealed interface CreateAction {
-    data class CreateTimeCapsule(
+    data class CreateButtonClicked(
         val title: String,
         val description: String?,
         val mainImage: File
     ) : CreateAction
-
-    data object NavigateToBack : CreateAction
+    data object BackClicked : CreateAction
 }
 
 sealed interface CreateSideEffect {

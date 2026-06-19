@@ -88,7 +88,7 @@ fun FriendRoute(
     viewModel.collectSideEffect { event ->
         when (event) {
             FriendSideEffect.NavigateToBack -> navigator.popBackStack()
-            is FriendSideEffect.CopyInviteCode -> {
+            is FriendSideEffect.CopyInviteCodeToClipboard -> {
                 val clipData = ClipData.newPlainText("inviteCode", event.code)
                 clipboard.setClipEntry(ClipEntry(clipData))
             }
@@ -149,7 +149,7 @@ fun FriendScreen(
             item {
                 MSDetailHeader(
                     title = "멤버",
-                    navigateToBack = { onAction(FriendAction.NavigateToBack) },
+                    navigateToBack = { onAction(FriendAction.BackClicked) },
                     paddingValues = PaddingValues(horizontal = 0.dp, vertical = 16.dp),
                 )
 
@@ -177,7 +177,7 @@ fun FriendScreen(
                         modifier = Modifier.weight(1f),
                         text = "참여 코드 복사",
                         icon = R.drawable.img_copy,
-                        onClick = { onAction(FriendAction.CopyInviteCode(capsuleId)) },
+                        onClick = { onAction(FriendAction.InviteCodeCopyClicked(capsuleId)) },
                     )
                 }
 
@@ -191,7 +191,7 @@ fun FriendScreen(
                     unfocusedBorderColor = MSTheme.color.greyG1,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     onKeyboardAction = { performDefaultAction ->
-                        onAction(FriendAction.SearchCollaborators(searchTextFieldState.text.toString()))
+                        onAction(FriendAction.SearchSubmitted(searchTextFieldState.text.toString()))
                         performDefaultAction()
                         focusManager.clearFocus()
                     },
@@ -306,7 +306,7 @@ fun FriendScreen(
                 confirmText = "위임",
                 cancelText = "취소",
                 onConfirm = {
-                    onAction(FriendAction.DelegationHost(state.member.userId))
+                    onAction(FriendAction.DelegationHostConfirmed(state.member.userId))
                     dialogState = FriendDialogState.None
                 },
                 onCancel = { dialogState = FriendDialogState.None },
@@ -319,7 +319,7 @@ fun FriendScreen(
                 cancelText = "취소",
                 confirmButtonColor = Color(0xFFED1E2F),
                 onConfirm = {
-                    onAction(FriendAction.DeleteContributor(state.member.userId))
+                    onAction(FriendAction.DeleteContributorConfirmed(state.member.userId))
                     dialogState = FriendDialogState.None
                 },
                 onCancel = { dialogState = FriendDialogState.None },

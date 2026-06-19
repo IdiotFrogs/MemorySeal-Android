@@ -153,7 +153,7 @@ fun DetailScreen(
             confirmText = "묻기",
             cancelText = "취소",
             onConfirm = {
-                onAction(DetailAction.BuryTimeCapsule(selectedOpenAt))
+                onAction(DetailAction.BuryConfirmClicked(selectedOpenAt))
                 showBuryDialog = false
             },
             onCancel = { showBuryDialog = false },
@@ -234,7 +234,7 @@ fun DetailScreen(
                     .align(Alignment.TopStart)
                     .padding(top = 20.dp, start = 20.dp)
                     .size(32.dp)
-                    .noRippleClickable { onAction(DetailAction.NavigateToBack) },
+                    .noRippleClickable { onAction(DetailAction.BackClicked) },
                 painter = painterResource(R.drawable.btn_detail_back),
                 contentDescription = "Close"
             )
@@ -246,7 +246,7 @@ fun DetailScreen(
                     .size(32.dp)
                     .noRippleClickable {
                         onAction(
-                            DetailAction.NavigateToManagement(
+                            DetailAction.ManagementClicked(
                                 id = capsuleId,
                                 title = capsule?.title.orEmpty(),
                             )
@@ -447,7 +447,7 @@ fun DetailScreen(
                 Image(
                     modifier = Modifier
                         .size(16.dp)
-                        .noRippleClickable { onAction(DetailAction.NavigateToMessage(capsuleId)) },
+                        .noRippleClickable { onAction(DetailAction.MessageSectionClicked(capsuleId)) },
                     painter = painterResource(R.drawable.ic_chevron_right),
                     contentDescription = "추억 메시지 상세 아이콘"
                 )
@@ -524,7 +524,7 @@ fun DetailScreen(
                 Image(
                     modifier = Modifier
                         .size(16.dp)
-                        .noRippleClickable { onAction(DetailAction.NavigateToFriend(capsuleId)) },
+                        .noRippleClickable { onAction(DetailAction.MemberSectionClicked(capsuleId)) },
                     painter = painterResource(R.drawable.ic_chevron_right),
                     contentDescription = "추억 메시지 상세 아이콘"
                 )

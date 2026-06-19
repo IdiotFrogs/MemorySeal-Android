@@ -24,7 +24,8 @@ class EditProfileViewModel @Inject constructor(
 
     override fun onAction(action: EditProfileAction) {
         when (action) {
-            EditProfileAction.NavigateToBack -> intent { postSideEffect(EditProfileSideEffect.NavigateToBack) }
+            EditProfileAction.BackClicked -> intent { postSideEffect(EditProfileSideEffect.NavigateToBack) }
+            EditProfileAction.SaveClicked -> intent { postSideEffect(EditProfileSideEffect.NavigateToBack) }
         }
     }
 }
@@ -35,7 +36,8 @@ data class EditProfileUiState(
 ) : BaseUiState
 
 sealed interface EditProfileAction {
-    data object NavigateToBack : EditProfileAction
+    data object BackClicked : EditProfileAction
+    data object SaveClicked : EditProfileAction
 }
 
 sealed interface EditProfileSideEffect {

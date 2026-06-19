@@ -55,7 +55,7 @@ class FriendViewModel @AssistedInject constructor(
         getTimeCapsuleInviteCodeUseCase(capsuleId).onSuccess {
             intent {
                 reduce { state.copy(isLoading = false, errorMessage = null) }
-                postSideEffect(FriendSideEffect.CopyInviteCode(it.code))
+                postSideEffect(FriendSideEffect.CopyInviteCodeToClipboard(it.code))
                 postSideEffect(FriendSideEffect.ShowToast(FriendScreenActionState.COPY))
             }
         }.onFailure {
@@ -138,11 +138,11 @@ class FriendViewModel @AssistedInject constructor(
 
     override fun onAction(action: FriendAction) {
         when (action) {
-            FriendAction.NavigateToBack -> intent { postSideEffect(FriendSideEffect.NavigateToBack) }
-            is FriendAction.CopyInviteCode -> getTimeCapsuleInviteCode(action.capsuleId)
-            is FriendAction.DelegationHost -> delegationTimeCapsuleHost(action.targetUserId)
-            is FriendAction.DeleteContributor -> deleteTimeCapsuleContributor(action.targetUserId)
-            is FriendAction.SearchCollaborators -> searchTimeCapsuleCollaborators(action.nickname)
+            FriendAction.BackClicked -> intent { postSideEffect(FriendSideEffect.NavigateToBack) }
+            is FriendAction.InviteCodeCopyClicked -> getTimeCapsuleInviteCode(action.capsuleId)
+            is FriendAction.DelegationHostConfirmed -> delegationTimeCapsuleHost(action.targetUserId)
+            is FriendAction.DeleteContributorConfirmed -> deleteTimeCapsuleContributor(action.targetUserId)
+            is FriendAction.SearchSubmitted -> searchTimeCapsuleCollaborators(action.nickname)
         }
     }
 
@@ -165,21 +165,15 @@ data class CollaboratorsData(
 )
 
 sealed interface FriendAction {
-    data object NavigateToBack : FriendAction
-
-    data class CopyInviteCode(val capsuleId: Long) : FriendAction
-
-    data class DelegationHost(val targetUserId: Long) : FriendAction
-
-    data class DeleteContributor(val targetUserId: Long) : FriendAction
-
-    data class SearchCollaborators(val nickname: String) : FriendAction
+    data object BackClicked : FriendAction
+    data class InviteCodeCopyClicked(val capsuleId: Long) : FriendAction
+    data class DelegationHostConfirmed(val targetUserId: Long) : FriendAction
+    data class DeleteContributorConfirmed(val targetUserId: Long) : FriendAction
+    data class SearchSubmitted(val nickname: String) : FriendAction
 }
 
 sealed interface FriendSideEffect {
     data object NavigateToBack : FriendSideEffect
-
-    data class CopyInviteCode(val code: String) : FriendSideEffect
-
+    data class CopyInviteCodeToClipboard(val code: String) : FriendSideEffect
     data class ShowToast(val state: FriendScreenActionState) : FriendSideEffect
 }

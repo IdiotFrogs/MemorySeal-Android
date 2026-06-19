@@ -102,11 +102,11 @@ class DetailViewModel @AssistedInject constructor(
 
     override fun onAction(action: DetailAction) {
         when (action) {
-            is DetailAction.NavigateToFriend -> intent { postSideEffect(DetailSideEffect.NavigateToFriend(action.id)) }
-            is DetailAction.NavigateToMessage -> intent { postSideEffect(DetailSideEffect.NavigateToMessage(action.id)) }
-            is DetailAction.NavigateToManagement -> intent { postSideEffect(DetailSideEffect.NavigateToManagement(action.id, action.title)) }
-            DetailAction.NavigateToBack -> intent { postSideEffect(DetailSideEffect.NavigateToBack) }
-            is DetailAction.BuryTimeCapsule -> buryTimeCapsule(action.openedAt)
+            is DetailAction.MemberSectionClicked -> intent { postSideEffect(DetailSideEffect.NavigateToFriend(action.id)) }
+            is DetailAction.MessageSectionClicked -> intent { postSideEffect(DetailSideEffect.NavigateToMessage(action.id)) }
+            is DetailAction.ManagementClicked -> intent { postSideEffect(DetailSideEffect.NavigateToManagement(action.id, action.title)) }
+            DetailAction.BackClicked -> intent { postSideEffect(DetailSideEffect.NavigateToBack) }
+            is DetailAction.BuryConfirmClicked -> buryTimeCapsule(action.openedAt)
         }
     }
 
@@ -130,11 +130,11 @@ data class TimeCapsuleData(
 )
 
 sealed interface DetailAction {
-    data class NavigateToFriend(val id: Long) : DetailAction
-    data class NavigateToMessage(val id: Long) : DetailAction
-    data class NavigateToManagement(val id: Long, val title: String) : DetailAction
-    data object NavigateToBack : DetailAction
-    data class BuryTimeCapsule(val openedAt: LocalDateTime) : DetailAction
+    data class MemberSectionClicked(val id: Long) : DetailAction
+    data class MessageSectionClicked(val id: Long) : DetailAction
+    data class ManagementClicked(val id: Long, val title: String) : DetailAction
+    data object BackClicked : DetailAction
+    data class BuryConfirmClicked(val openedAt: LocalDateTime) : DetailAction
 }
 
 sealed interface DetailSideEffect {

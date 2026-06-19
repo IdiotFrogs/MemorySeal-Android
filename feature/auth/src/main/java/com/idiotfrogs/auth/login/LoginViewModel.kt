@@ -25,7 +25,7 @@ class LoginViewModel @Inject constructor(
 
     override fun onAction(action: LoginAction) {
         when (action) {
-            is LoginAction.SocialLogin -> socialLogin(action.loginCallback)
+            is LoginAction.SocialLoginClicked -> socialLogin(action.loginCallback)
         }
     }
 
@@ -60,7 +60,7 @@ data class LoginUiState(
 ) : BaseUiState
 
 sealed interface LoginAction {
-    data class SocialLogin(val loginCallback: suspend () -> Unit) : LoginAction
+    data class SocialLoginClicked(val loginCallback: suspend () -> Unit) : LoginAction
 }
 
 sealed interface LoginSideEffect {

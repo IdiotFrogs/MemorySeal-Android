@@ -123,7 +123,7 @@ fun HomeScreen(
             listOf(
                 MSMenuFabModel("새 티켓 생성하기") {
                     expanded = false
-                    onAction(HomeAction.NavigateToCreate)
+                    onAction(HomeAction.CreateClicked)
                 },
                 MSMenuFabModel("참여코드로 합류하기") {
                     expanded = false
@@ -195,7 +195,7 @@ fun HomeScreen(
         ) {
             HomeHeader(
                 profileUrl = data.user?.profileImageUrl,
-                navigateToProfile = { onAction(HomeAction.NavigateToProfile) }
+                navigateToProfile = { onAction(HomeAction.ProfileClicked) }
             )
             MSTabBar(
                 showBorder = showBorder,
@@ -254,7 +254,7 @@ fun HomeScreen(
                         items(data) {
                             HomeTicket(
                                 modifier = Modifier.noRippleClickable {
-                                    onAction(HomeAction.NavigateToDetail(it.timeCapsuleId))
+                                    onAction(HomeAction.TimeCapsuleClicked(it.timeCapsuleId))
                                 },
                                 buried = it.timeCapsuleStatus == TimeCapsuleStatus.BURIED,
                                 createdAt = it.createdAt.toYearMonthDay(),
@@ -288,7 +288,7 @@ fun HomeScreen(
         HomeJoinContainer(
             isShow = showJoinContainer,
             textFieldState = textFieldState,
-            onJoin = { onAction(HomeAction.RequestCollaborator(textFieldState.text.toString())) },
+            onJoin = { onAction(HomeAction.JoinCodeSubmitted(textFieldState.text.toString())) },
             onCancel = { showJoinContainer = false }
         )
     }

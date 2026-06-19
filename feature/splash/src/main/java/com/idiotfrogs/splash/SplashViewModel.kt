@@ -25,7 +25,7 @@ class SplashViewModel @Inject constructor(
 
     override fun onAction(action: SplashAction) {
         when (action) {
-            SplashAction.AutoLogin -> autoLogin()
+            SplashAction.AutoLoginRequested -> autoLogin()
         }
     }
 
@@ -63,7 +63,7 @@ data class SplashUiState(
 ) : BaseUiState
 
 sealed interface SplashAction {
-    data object AutoLogin : SplashAction
+    data object AutoLoginRequested : SplashAction
 }
 
 sealed interface SplashSideEffect {

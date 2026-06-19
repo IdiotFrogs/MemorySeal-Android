@@ -16,7 +16,7 @@ class MessageViewModel @Inject constructor() :
 
     override fun onAction(action: MessageAction) {
         when (action) {
-            MessageAction.NavigateToBack -> intent {
+            MessageAction.BackClicked -> intent {
                 postSideEffect(MessageSideEffect.NavigateToBack)
             }
         }
@@ -29,7 +29,7 @@ data class MessageUiState(
 ) : BaseUiState
 
 sealed interface MessageAction {
-    data object NavigateToBack : MessageAction
+    data object BackClicked : MessageAction
 }
 
 sealed interface MessageSideEffect {
