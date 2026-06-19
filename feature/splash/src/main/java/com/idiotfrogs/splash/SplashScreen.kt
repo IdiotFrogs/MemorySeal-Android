@@ -6,7 +6,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,11 +25,13 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTitleDialog
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
+import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -37,6 +41,7 @@ fun SplashRoute(
 ) {
     val navigator = LocalComposeMSNavigator.current
     val context = LocalContext.current
+    val uiState by viewModel.collectAsState()
 
     var showPermissionDialog by remember { mutableStateOf(false) }
 
@@ -69,7 +74,10 @@ fun SplashRoute(
         }
     }
 
-    SplashScreen()
+    Box(modifier = Modifier.fillMaxSize()) {
+        SplashScreen()
+        MSLoadingOverlay(visible = uiState.isLoading)
+    }
 
     if (showPermissionDialog) {
         MSTitleDialog(

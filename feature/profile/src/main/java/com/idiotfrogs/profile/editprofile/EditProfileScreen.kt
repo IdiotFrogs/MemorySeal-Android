@@ -3,6 +3,7 @@ package com.idiotfrogs.profile.editprofile
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
@@ -38,7 +40,6 @@ import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.profile.component.EditProfileBottomSheet
 import com.idiotfrogs.profile.component.ProfileHeader
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -56,12 +57,10 @@ fun EditProfileRoute(
         }
     }
 
-    when (uiState) {
-        UiState.Init -> Unit
-        is UiState.Success -> {
-            EditProfileScreen(onAction = viewModel::onAction)
-        }
-        is UiState.Error -> Unit
+    Box(modifier = Modifier.fillMaxSize()) {
+        EditProfileScreen(onAction = viewModel::onAction)
+
+        MSLoadingOverlay(visible = uiState.isLoading)
     }
 }
 

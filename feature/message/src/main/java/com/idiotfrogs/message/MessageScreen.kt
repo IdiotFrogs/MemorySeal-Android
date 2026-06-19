@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDetailHeader
 import com.idiotfrogs.designsystem.component.MSDim
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSPlainTextField
 import com.idiotfrogs.designsystem.component.MSTabBar
 import com.idiotfrogs.designsystem.component.MSText
@@ -69,7 +70,6 @@ import com.idiotfrogs.message.component.MessagePreviewBanner
 import com.idiotfrogs.message.component.MessageSettingListItem
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -88,15 +88,13 @@ fun MessageRoute(
         }
     }
 
-    when (uiState) {
-        UiState.Init -> Unit
-        is UiState.Success -> {
-            MessageScreen(
-                capsuleId = capsuleId,
-                onAction = viewModel::onAction,
-            )
-        }
-        is UiState.Error -> Unit
+    Box(modifier = Modifier.fillMaxSize()) {
+        MessageScreen(
+            capsuleId = capsuleId,
+            onAction = viewModel::onAction,
+        )
+
+        MSLoadingOverlay(visible = uiState.isLoading)
     }
 }
 

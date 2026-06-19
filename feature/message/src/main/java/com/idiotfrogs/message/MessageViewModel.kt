@@ -1,6 +1,6 @@
 package com.idiotfrogs.message
 
-import com.idiotfrogs.util.UiState
+import com.idiotfrogs.util.base.BaseUiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.Container
@@ -9,10 +9,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MessageViewModel @Inject constructor() :
-    BaseViewModel<UiState<Unit>, MessageSideEffect, MessageAction>() {
+    BaseViewModel<MessageUiState, MessageSideEffect, MessageAction>() {
 
-    override val container: Container<UiState<Unit>, MessageSideEffect> =
-        container(UiState.Success(Unit))
+    override val container: Container<MessageUiState, MessageSideEffect> =
+        container(MessageUiState())
 
     override fun onAction(action: MessageAction) {
         when (action) {
@@ -22,6 +22,11 @@ class MessageViewModel @Inject constructor() :
         }
     }
 }
+
+data class MessageUiState(
+    override val isLoading: Boolean = false,
+    override val errorMessage: String? = null,
+) : BaseUiState
 
 sealed interface MessageAction {
     data object NavigateToBack : MessageAction

@@ -1,7 +1,7 @@
 package com.idiotfrogs.setting
 
 import com.idiotfrogs.domain.usecase.user.WithdrawUseCase
-import com.idiotfrogs.util.UiState
+import com.idiotfrogs.util.base.BaseUiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.Container
@@ -11,9 +11,9 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     private val withdrawUseCase: WithdrawUseCase
-) : BaseViewModel<UiState<Unit>, SettingSideEffect, SettingAction>() {
+) : BaseViewModel<SettingUiState, SettingSideEffect, SettingAction>() {
 
-    override val container: Container<UiState<Unit>, SettingSideEffect> = container(UiState.Success(Unit))
+    override val container: Container<SettingUiState, SettingSideEffect> = container(SettingUiState())
 
     override fun onAction(action: SettingAction) {
         when (action) {
@@ -25,13 +25,25 @@ class SettingViewModel @Inject constructor(
 
     private fun withdraw() {
         safeLaunch {
+            intent { reduce { state.copy(isLoading = true) } }
+
             withdrawUseCase()
                 .onSuccess {
-                    intent { postSideEffect(SettingSideEffect.NavigateToLogin) }
+                    intent {
+                        reduce { state.copy(isLoading = false, errorMessage = null) }
+                        postSideEffect(SettingSideEffect.NavigateToLogin)
+                    }
+                 }.onFailure {
+                    intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
                  }
         }
     }
 }
+
+data class SettingUiState(
+    override val isLoading: Boolean = false,
+    override val errorMessage: String? = null,
+) : BaseUiState
 
 sealed interface SettingAction {
     data object NavigateToLogin : SettingAction

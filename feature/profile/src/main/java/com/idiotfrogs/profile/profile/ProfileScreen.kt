@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.extension.toYearMonthDay
@@ -29,7 +30,6 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.profile.component.ProfileCard
 import com.idiotfrogs.profile.component.ProfileHeader
 import com.idiotfrogs.profile.component.ProfileTicketCard
-import com.idiotfrogs.util.UiState
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -50,15 +50,15 @@ fun ProfileRoute(
         }
     }
 
-    when (val state = uiState) {
-        UiState.Init -> Unit
-        is UiState.Success -> {
+    Box(modifier = Modifier.fillMaxSize()) {
+        uiState.data?.let { data ->
             ProfileScreen(
-                data = state.data,
+                data = data,
                 onAction = viewModel::onAction
             )
         }
-        is UiState.Error -> Unit
+
+        MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
     }
 }
 

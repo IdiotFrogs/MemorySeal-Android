@@ -3,12 +3,11 @@ package com.idiotfrogs.create
 import com.idiotfrogs.domain.usecase.timecapsule.CreateTimeCapsuleUseCase
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
-import com.idiotfrogs.util.UiState
+import com.idiotfrogs.util.base.BaseUiState
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.sideEffect.RefreshEvent
 import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.datetime.LocalDateTime
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import java.io.File
@@ -17,8 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateViewModel @Inject constructor(
     private val createTimeCapsuleUseCase: CreateTimeCapsuleUseCase
-) : BaseViewModel<UiState<Unit>, CreateSideEffect, CreateAction>() {
-    override val container: Container<UiState<Unit>, CreateSideEffect> = container(UiState.Success(Unit))
+) : BaseViewModel<CreateUiState, CreateSideEffect, CreateAction>() {
+    override val container: Container<CreateUiState, CreateSideEffect> = container(CreateUiState())
 
     override fun onAction(action: CreateAction) {
         when (action) {
@@ -35,6 +34,8 @@ class CreateViewModel @Inject constructor(
         mainImage: File
     ) {
         safeLaunch {
+            intent { reduce { state.copy(isLoading = true) } }
+
             val request = TimeCapsuleCreateRequest(
                 title = title,
                 description = description,
@@ -42,14 +43,21 @@ class CreateViewModel @Inject constructor(
             val result = createTimeCapsuleUseCase(request, mainImage)
 
             result.onSuccess { response ->
+                intent { reduce { state.copy(isLoading = false, errorMessage = null) } }
                 RefreshSideEffect.tryEmit(RefreshEvent.Home)
                 intent { postSideEffect(CreateSideEffect.NavigateToDetail(response)) }
             }.onFailure { e ->
+                intent { reduce { state.copy(isLoading = false, errorMessage = e.message) } }
                 // TODO: 에러 처리 (토스트 등)
             }
         }
     }
 }
+
+data class CreateUiState(
+    override val isLoading: Boolean = false,
+    override val errorMessage: String? = null,
+) : BaseUiState
 
 sealed interface CreateAction {
     data class CreateTimeCapsule(

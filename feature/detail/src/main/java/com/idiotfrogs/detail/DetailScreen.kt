@@ -47,6 +47,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSAnnotatedText
 import com.idiotfrogs.designsystem.component.MSCalender
 import com.idiotfrogs.designsystem.component.MSDashHorizontalDivider
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSTitleDialog
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSToast
@@ -63,7 +64,6 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
@@ -108,17 +108,17 @@ fun DetailRoute(
         }
     }
 
-    when (val state = uiState) {
-        UiState.Init -> Unit
-        is UiState.Success -> {
+    Box(modifier = Modifier.fillMaxSize()) {
+        uiState.data?.let { data ->
             DetailScreen(
-                data = state.data,
+                data = data,
                 capsuleId = capsuleId,
                 showToast = showToast,
                 onAction = viewModel::onAction,
             )
         }
-        is UiState.Error -> Unit
+
+        MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
     }
 }
 

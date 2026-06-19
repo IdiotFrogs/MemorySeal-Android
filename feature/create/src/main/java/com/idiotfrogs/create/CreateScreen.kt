@@ -44,7 +44,6 @@ import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes.*
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -67,14 +66,9 @@ fun CreateRoute(
         }
     }
 
-    when (uiState) {
-        UiState.Init -> Unit // 화면 로딩 로직
-        is UiState.Success -> {
-            CreateScreen(
-                onAction = viewModel::onAction
-            )
-        }
-        is UiState.Error -> Unit
+    Box(modifier = Modifier.fillMaxSize()) {
+        CreateScreen(onAction = viewModel::onAction)
+        if (uiState.isLoading) CreateLoadingScreen()
     }
 }
 

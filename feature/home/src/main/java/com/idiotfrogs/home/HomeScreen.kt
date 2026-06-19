@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDim
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSMenuFab
 import com.idiotfrogs.designsystem.component.MSTabBar
 import com.idiotfrogs.designsystem.component.MSText
@@ -54,7 +55,6 @@ import com.idiotfrogs.home.component.HomeTicket
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
-import com.idiotfrogs.util.UiState
 import com.idiotfrogs.extension.toYearMonthDay
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.resource.R
@@ -87,16 +87,16 @@ fun HomeRoute(
         }
     }
 
-    when (val state = uiState) {
-        UiState.Init -> {}
-        is UiState.Success -> {
+    Box(modifier = Modifier.fillMaxSize()) {
+        uiState.data?.let { data ->
             HomeScreen(
                 showToast = showToast,
-                data = state.data,
+                data = data,
                 onAction = viewModel::onAction
             )
         }
-        is UiState.Error -> {}
+
+        MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
     }
 }
 

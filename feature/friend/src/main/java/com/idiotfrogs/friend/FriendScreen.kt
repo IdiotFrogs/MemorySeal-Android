@@ -48,6 +48,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDashHorizontalDivider
 import com.idiotfrogs.designsystem.component.MSDetailHeader
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.component.MSTitleDialog
@@ -62,7 +63,6 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponseData
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.util.UiState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
@@ -96,17 +96,17 @@ fun FriendRoute(
         }
     }
 
-    when (val state = uiState) {
-        UiState.Init -> Unit
-        is UiState.Success -> {
+    Box(modifier = Modifier.fillMaxSize()) {
+        uiState.data?.let { data ->
             FriendScreen(
                 capsuleId = capsuleId,
                 toastState = toastState,
-                data = state.data,
+                data = data,
                 onAction = viewModel::onAction,
             )
         }
-        is UiState.Error -> Unit
+
+        MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
     }
 }
 
