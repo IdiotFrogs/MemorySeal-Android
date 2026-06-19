@@ -23,3 +23,14 @@ public fun com.idiotfrogs.management.ManagementScreen(modifier: androidx.compose
     - capsuleTitle: STABLE (String is immutable)
     - onAction: STABLE (function type)
 
+@Composable
+public fun com.idiotfrogs.management.component.ManagementDeleteContainer(isShow: kotlin.Boolean, textFieldState: androidx.compose.foundation.text.input.TextFieldState, capsuleTitle: kotlin.String, onCancel: kotlin.Function0<kotlin.Unit>, onDelete: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - isShow: STABLE (primitive type)
+    - textFieldState: STABLE (marked @Stable or @Immutable)
+    - capsuleTitle: STABLE (String is immutable)
+    - onCancel: STABLE (function type)
+    - onDelete: STABLE (function type)
+

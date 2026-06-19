@@ -22,3 +22,44 @@ public fun com.idiotfrogs.friend.FriendScreen(capsuleId: kotlin.Long, toastState
     - data: STABLE (marked @Stable or @Immutable)
     - onAction: STABLE (function type)
 
+@Composable
+public fun com.idiotfrogs.friend.component.FriendBottomSheetItem(modifier: androidx.compose.ui.Modifier, text: kotlin.String, icon: kotlin.Int, onClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - text: STABLE (String is immutable)
+    - icon: STABLE (primitive type)
+    - onClick: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.friend.component.FriendInviteButton(modifier: androidx.compose.ui.Modifier, text: kotlin.String, icon: kotlin.Int, onClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - text: STABLE (String is immutable)
+    - icon: STABLE (primitive type)
+    - onClick: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.friend.component.FriendListItem(nickName: kotlin.String, profileImageUrl: kotlin.String, isMe: kotlin.Boolean, role: com.idiotfrogs.model.timecapsule.TimeCapsuleRole, onMoreClick: kotlin.Function0<kotlin.Unit>?, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - nickName: STABLE (String is immutable)
+    - profileImageUrl: STABLE (String is immutable)
+    - isMe: STABLE (primitive type)
+    - role: STABLE (class with no mutable properties)
+    - onMoreClick: STABLE (function type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+
+@Composable
+public fun com.idiotfrogs.friend.component.FriendTopNotification(hazeState: dev.chrisbanes.haze.HazeState, action: com.idiotfrogs.friend.FriendScreenActionState, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - hazeState: STABLE (marked @Stable or @Immutable)
+    - action: STABLE (class with no mutable properties)
+    - modifier: STABLE (marked @Stable or @Immutable)
+

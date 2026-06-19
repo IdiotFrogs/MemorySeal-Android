@@ -5,6 +5,54 @@
 //   ./gradlew :profile:stabilityDump
 
 @Composable
+public fun com.idiotfrogs.profile.component.EditProfileBottomSheet(onSelectImage: kotlin.Function0<kotlin.Unit>, onDefaultImage: kotlin.Function0<kotlin.Unit>, onDismiss: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - onSelectImage: STABLE (function type)
+    - onDefaultImage: STABLE (function type)
+    - onDismiss: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.profile.component.ProfileCard(modifier: androidx.compose.ui.Modifier, imageUrl: kotlin.String?, nickname: kotlin.String, onEditClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - imageUrl: STABLE (class with no mutable properties)
+    - nickname: STABLE (String is immutable)
+    - onEditClick: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.profile.component.ProfileHeader(isChanged: kotlin.Boolean, modifier: androidx.compose.ui.Modifier, onBack: kotlin.Function0<kotlin.Unit>, onSave: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - isChanged: STABLE (primitive type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - onBack: STABLE (function type)
+    - onSave: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.profile.component.ProfileHeader(modifier: androidx.compose.ui.Modifier, onBack: kotlin.Function0<kotlin.Unit>, onSetting: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - onBack: STABLE (function type)
+    - onSetting: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.profile.component.ProfileTicketCard(imageUrl: kotlin.String, title: kotlin.String, date: kotlin.String, onClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - imageUrl: STABLE (String is immutable)
+    - title: STABLE (String is immutable)
+    - date: STABLE (String is immutable)
+    - onClick: STABLE (function type)
+
+@Composable
 public fun com.idiotfrogs.profile.editprofile.EditProfileRoute(viewModel: com.idiotfrogs.profile.editprofile.EditProfileViewModel): kotlin.Unit
   skippable: false
   restartable: true

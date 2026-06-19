@@ -20,6 +20,21 @@ public fun com.idiotfrogs.auth.login.LoginScreen(loginManager: com.idiotfrogs.so
     - onAction: STABLE (function type)
 
 @Composable
+internal fun com.idiotfrogs.auth.login.component.LoginButton(modifier: androidx.compose.ui.Modifier, loginType: com.idiotfrogs.auth.login.component.LoginType, onClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - loginType: STABLE (class with no mutable properties)
+    - onClick: STABLE (function type)
+
+@Composable
+internal fun com.idiotfrogs.auth.login.component.LoginType.toUiModel(): com.idiotfrogs.auth.login.component.LoginUiModel
+  skippable: true
+  restartable: true
+  params:
+
+@Composable
 public fun com.idiotfrogs.auth.signup.SignUpRoute(viewModel: com.idiotfrogs.auth.signup.SignUpViewModel): kotlin.Unit
   skippable: false
   restartable: true
@@ -32,4 +47,10 @@ public fun com.idiotfrogs.auth.signup.SignUpScreen(onAction: kotlin.Function1<co
   restartable: true
   params:
     - onAction: STABLE (function type)
+
+@Composable
+internal fun com.idiotfrogs.auth.util.rememberLoginManager(): com.idiotfrogs.social_login.LoginManager?
+  skippable: true
+  restartable: true
+  params:
 
