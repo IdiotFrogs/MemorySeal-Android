@@ -14,9 +14,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,8 +35,6 @@ import com.idiotfrogs.profile.component.ProfileCard
 import com.idiotfrogs.profile.component.ProfileHeader
 import com.idiotfrogs.profile.component.ProfileTicketCard
 import com.idiotfrogs.util.UiState
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.todayIn
@@ -60,6 +56,7 @@ fun ProfileRoute(
             ProfileSideEffect.NavigateToBack -> navigator.popBackStack()
             ProfileSideEffect.NavigateToEditProfile -> navigator.navigate(Routes.EditProfile)
             ProfileSideEffect.NavigateToSetting -> navigator.navigate(Routes.Setting)
+            is ProfileSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(event.id))
         }
     }
 
@@ -71,7 +68,6 @@ fun ProfileRoute(
                 onAction = viewModel::onAction
             )
         }
-
         is UiState.Error -> Unit
     }
 }
@@ -130,7 +126,7 @@ fun ProfileScreen(
                     imageUrl = it.mainImageUrl,
                     title = it.title,
                     date = it.createdAt.toYearMonthDay(),
-                    onClick = {}
+                    onClick = { onAction.invoke(ProfileAction.NavigateToDetail(it.timeCapsuleId))}
                 )
             }
         }

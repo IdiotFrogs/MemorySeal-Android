@@ -71,6 +71,7 @@ class ProfileViewModel @Inject constructor(
             ProfileAction.NavigateToEditProfile -> intent { postSideEffect(ProfileSideEffect.NavigateToEditProfile) }
             ProfileAction.NavigateToSetting -> intent { postSideEffect(ProfileSideEffect.NavigateToSetting) }
             ProfileAction.NavigateToBack -> intent { postSideEffect(ProfileSideEffect.NavigateToBack) }
+            is ProfileAction.NavigateToDetail -> intent { postSideEffect(ProfileSideEffect.NavigateToDetail(action.id))}
         }
     }
 }
@@ -85,10 +86,12 @@ sealed interface ProfileAction {
     data object NavigateToSetting : ProfileAction
     data object NavigateToEditProfile : ProfileAction
     data object NavigateToBack : ProfileAction
+    data class NavigateToDetail(val id: Long) : ProfileAction
 }
 
 sealed interface ProfileSideEffect {
     data object NavigateToSetting : ProfileSideEffect
     data object NavigateToEditProfile : ProfileSideEffect
     data object NavigateToBack : ProfileSideEffect
+    data class NavigateToDetail(val id: Long) : ProfileSideEffect
 }
