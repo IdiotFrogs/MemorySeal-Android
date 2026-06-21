@@ -3,7 +3,9 @@ package com.idiotfrogs.setting
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
@@ -12,10 +14,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.idiotfrogs.designsystem.component.MSDialog
+import com.idiotfrogs.designsystem.component.MSText
+import com.idiotfrogs.designsystem.component.MSTitleDialog
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
@@ -57,9 +61,8 @@ fun SettingScreen(
     var showWithdrawDialog by remember { mutableStateOf(false) }
 
     if (showLogoutDialog) {
-        MSDialog(
+        MSTitleDialog(
             title = "로그아웃",
-            content = "메실에서 로그아웃 하시겠습니까?",
             confirmText = "로그아웃",
             cancelText = "유지",
             onConfirm = {
@@ -67,21 +70,40 @@ fun SettingScreen(
                 showLogoutDialog = false
                 onAction(SettingAction.NavigateToLogin)
             },
-            onCancel = { showLogoutDialog = false }
+            onCancel = { showLogoutDialog = false },
+            content = {
+                Spacer(modifier = Modifier.height(8.dp))
+                MSText(
+                    text = "메실에서 로그아웃 하시겠습니까?",
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.dp,
+                    color = MSTheme.color.greyG5
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
         )
     }
 
     if (showWithdrawDialog) {
-        MSDialog(
+        MSTitleDialog(
             title = "회원탈퇴",
-            content = "메실 회원을 탈퇴하시겠습니까?\n티켓에 저장된 내용은 삭제되지 않습니다.",
             confirmText = "탈퇴",
             cancelText = "취소",
             onConfirm = {
                 showWithdrawDialog = false
                 onAction(SettingAction.Withdraw)
             },
-            onCancel = { showWithdrawDialog = false }
+            onCancel = { showWithdrawDialog = false },
+            content = {
+                Spacer(modifier = Modifier.height(8.dp))
+                MSText(
+                    text = "메실 회원을 탈퇴하시겠습니까?\n티켓에 저장된 내용은 삭제되지 않습니다.",
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.dp,
+                    color = MSTheme.color.greyG5
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
         )
     }
 
