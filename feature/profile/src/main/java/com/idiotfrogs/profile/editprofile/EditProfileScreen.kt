@@ -45,6 +45,7 @@ import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import java.io.File
 
 @Composable
 fun EditProfileRoute(
@@ -59,10 +60,13 @@ fun EditProfileRoute(
         }
     }
 
-    when (uiState) {
+    when (val state = uiState) {
         UiState.Init -> Unit
         is UiState.Success -> {
-            EditProfileScreen(onAction = viewModel::onAction)
+            EditProfileScreen(
+                data = state.data,
+                onAction = viewModel::onAction
+            )
         }
         is UiState.Error -> Unit
     }
@@ -70,29 +74,36 @@ fun EditProfileRoute(
 
 @Composable
 fun EditProfileScreen(
+    data: EditProfileData,
     onAction: (EditProfileAction) -> Unit
 ) {
     val context = LocalContext.current
 
     var isChanged by remember { mutableStateOf(false) }
     var showBottomSheet by remember { mutableStateOf(false) }
+    // 기본 이미지 사용 플래그 (이미지 없는 경우와 구분 용도)
+    var useDefaultImage by remember { mutableStateOf(false) }
 
     val pickerState = rememberPickerState()
     var imageUri by remember(pickerState.first) { mutableStateOf(pickerState.first) }
     val launchImagePicker = pickerState.second
 
-    val textFieldState = rememberTextFieldState()
+    val textFieldState = rememberTextFieldState(initialText = data.user?.nickname ?: "")
 
-    LaunchedEffect(textFieldState.text) {
-        // TODO: 추후 기존 프로필과 비교 로직 작성
-        isChanged = textFieldState.text.isNotEmpty()
+    LaunchedEffect(textFieldState.text, imageUri) {
+        isChanged = data.user?.nickname != textFieldState.text || // 닉네임이 변경 되었거나
+                imageUri != null // 이미지가 로드되어 Uri가 채워진 경우
     }
 
     if (showBottomSheet) {
         EditProfileBottomSheet(
             onDismiss = { showBottomSheet = false },
             onSelectImage = { launchImagePicker() },
-            onDefaultImage = { imageUri = null }
+            onDefaultImage = {
+                useDefaultImage = true // 기본 이미지
+                imageUri = null
+                isChanged = true
+            }
         )
     }
 
@@ -108,16 +119,23 @@ fun EditProfileScreen(
             onBack = { onAction(EditProfileAction.NavigateToBack) },
             onSave = {
                 val file = imageUri?.toFile(context, "profileImage")
-                Log.d("test", file?.name.toString())
-                /** TODO: 저장 로직 */
-                onAction(EditProfileAction.NavigateToBack)
+
+                data.user?.let {
+                    onAction.invoke(
+                        EditProfileAction.UpdateMyProfile(
+                            userId = it.id,
+                            profileImage = file,
+                            nickname = textFieldState.text.toString(),
+                        )
+                    )
+                }
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
-        imageUri?.let {
-            Box {
+        if ((imageUri != null || data.user?.profileImageUrl != null) && !useDefaultImage) {
+            Box(modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 GlideImage(
-                    imageModel = { imageUri },
+                    imageModel = { imageUri ?: data.user?.profileImageUrl }, // 둘 중 하나는 not-null
                     modifier = Modifier
                         .noRippleClickable { showBottomSheet = true }
                         .size(120.dp)
@@ -144,8 +162,7 @@ fun EditProfileScreen(
                     )
                 }
             }
-
-        } ?: run {
+        } else {
             Box(
                 modifier = Modifier
                     .size(120.dp)
@@ -204,5 +221,8 @@ fun EditProfileScreen(
 @Preview
 @Composable
 fun EditProfileScreenPreview() {
-    EditProfileScreen(onAction = {})
+    EditProfileScreen(
+        data = EditProfileData(),
+        onAction = {}
+    )
 }
