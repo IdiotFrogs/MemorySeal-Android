@@ -24,10 +24,10 @@ import com.idiotfrogs.resource.pretendard
 fun MSText(
     text: String,
     modifier: Modifier = Modifier,
-    fontSize: Dp = 14.dp, // @Preview를 위한 디폴트 값 (사용할 때는 똑같이 14.dp 여도 해당 속성은 무조건 입력하기)
+    fontSize: Dp = 14.dp, // @Preview를 위한 디폴트 값, 해당 값이 그대로 사용 될 경우 기본 값으로도 사용 가능 (코드 스타일 개념)
     color: Color = MSTheme.color.black,
     fontFamily: FontFamily = pretendard,
-    fontWeight: FontWeight = FontWeight.Bold,
+    fontWeight: FontWeight = FontWeight.Bold, // @Preview를 위한 디폴트 값, 해당 값이 그대로 사용 될 경우 기본 값으로도 사용 가능 (코드 스타일 개념)
     letterSpacing: TextUnit = TextUnit.Unspecified,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
@@ -63,10 +63,10 @@ fun MSText(
 fun MSAnnotatedText(
     text: AnnotatedString,
     modifier: Modifier = Modifier,
-    fontSize: Dp = 14.dp, // @Preview를 위한 디폴트 값 (사용할 때는 똑같이 14.dp 여도 해당 속성은 무조건 입력하기)
+    fontSize: Dp = 14.dp, // @Preview를 위한 디폴트 값, 해당 값이 그대로 사용 될 경우 기본 값으로도 사용 가능 (코드 스타일 개념)
     color: Color = MSTheme.color.black,
     fontFamily: FontFamily = pretendard,
-    fontWeight: FontWeight = FontWeight.Bold,
+    fontWeight: FontWeight = FontWeight.Bold, // @Preview를 위한 디폴트 값, 해당 값이 그대로 사용 될 경우 기본 값으로도 사용 가능 (코드 스타일 개념)
     letterSpacing: TextUnit = TextUnit.Unspecified,
     textDecoration: TextDecoration? = null,
     textAlign: TextAlign? = null,
