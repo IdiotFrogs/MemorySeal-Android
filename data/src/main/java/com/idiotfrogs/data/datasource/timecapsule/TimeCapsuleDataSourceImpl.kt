@@ -1,16 +1,19 @@
 package com.idiotfrogs.data.datasource.timecapsule
 
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
+import com.idiotfrogs.model.timecapsule.CapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleContentResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import com.idiotfrogs.network.service.TimeCapsuleService
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import javax.inject.Inject
 
 class TimeCapsuleDataSourceImpl @Inject constructor(
@@ -95,5 +98,39 @@ class TimeCapsuleDataSourceImpl @Inject constructor(
 
     override suspend fun leaveTimeCapsule(capsuleId: Long) {
         return timeCapsuleService.leaveTimeCapsule(capsuleId)
+    }
+
+    override suspend fun getTimeCapsuleContent(timeCapsuleId: Long): List<TimeCapsuleContentResponse> {
+        return timeCapsuleService.getTimeCapsuleContent(timeCapsuleId)
+    }
+
+    override suspend fun getMyTimeCapsuleContent(timeCapsuleId: Long): List<CapsuleContentsData> {
+        return timeCapsuleService.getMyTimeCapsuleContent(timeCapsuleId)
+    }
+
+    override suspend fun createTimeCapsuleContent(
+        timeCapsuleId: Long,
+        content: RequestBody,
+        files: List<MultipartBody.Part>
+    ): CapsuleContentsData {
+        return timeCapsuleService.createTimeCapsuleContent(
+            timeCapsuleId = timeCapsuleId,
+            content = content,
+            files = files
+        )
+    }
+
+    override suspend fun modifyTimeCapsuleContent(
+        contentId: Long,
+        content: String
+    ): CapsuleContentsData {
+        return timeCapsuleService.modifyTimeCapsuleContent(
+            contentId = contentId,
+            content = content
+        )
+    }
+
+    override suspend fun deleteTimeCapsuleContent(contentIds: List<Long>) {
+        return timeCapsuleService.deleteTimeCapsuleContent(contentIds)
     }
 }
