@@ -91,11 +91,12 @@ fun MessageRoute(
 
     Box(modifier = Modifier.fillMaxSize()) {
         MessageScreen(
-            capsuleId = capsuleId,
+            data = uiState.data ?: MessageData(),
             onAction = viewModel::onAction,
         )
 
-        MSLoadingOverlay(visible = uiState.isLoading)
+        MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
+    }
 }
 
 @Composable
@@ -166,13 +167,13 @@ fun MessageScreen(
 
         activeMessageId?.let { contentId ->
             onAction(
-                MessageAction.ModifyContent(
+                MessageAction.ContentModifySubmitted(
                     contentId = contentId,
                     content = message,
                 )
             )
         } ?: onAction(
-            MessageAction.CreateContent(
+            MessageAction.ContentCreateSubmitted(
                 content = message,
                 files = emptyList(),
             )
@@ -201,7 +202,7 @@ fun MessageScreen(
 
             if (files.isNotEmpty()) {
                 onAction(
-                    MessageAction.CreateContent(
+                    MessageAction.ContentCreateSubmitted(
                         content = "",
                         files = files,
                     )
@@ -415,7 +416,7 @@ fun MessageScreen(
                                 .distinct()
                         }
 
-                        onAction(MessageAction.DeleteContent(contentIds))
+                        onAction(MessageAction.ContentDeleteConfirmed(contentIds))
                         selectedIds = emptySet()
                         isDeleteMode = false
                     },
