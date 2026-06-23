@@ -10,14 +10,14 @@ public fun com.idiotfrogs.message.MessageRoute(capsuleId: kotlin.Long, viewModel
   restartable: true
   params:
     - capsuleId: STABLE (primitive type)
-    - viewModel: RUNTIME (requires runtime check)
+    - viewModel: UNSTABLE (has mutable properties or unstable members)
 
 @Composable
-public fun com.idiotfrogs.message.MessageScreen(capsuleId: kotlin.Long, onAction: kotlin.Function1<com.idiotfrogs.message.MessageAction, kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+public fun com.idiotfrogs.message.MessageScreen(data: com.idiotfrogs.message.MessageData, onAction: kotlin.Function1<com.idiotfrogs.message.MessageAction, kotlin.Unit>, modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: true
   restartable: true
   params:
-    - capsuleId: STABLE (primitive type)
+    - data: STABLE (marked @Stable or @Immutable)
     - onAction: STABLE (function type)
     - modifier: STABLE (marked @Stable or @Immutable)
 

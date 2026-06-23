@@ -473,7 +473,7 @@ fun DetailScreen(
                     )
                     Spacer(Modifier.height(4.dp))
                     MSText(
-                        text = "2개 등록",
+                        text = "${capsule?.myContentCount}개 등록",
                         fontSize = 12.dp,
                         fontWeight = FontWeight.Medium,
                         color = MSTheme.color.primaryDark,
@@ -497,7 +497,7 @@ fun DetailScreen(
                     )
                     Spacer(Modifier.height(4.dp))
                     MSText(
-                        text = "12개 등록",
+                        text = "${capsule?.myImageCount}개 등록",
                         fontSize = 12.dp,
                         fontWeight = FontWeight.Medium,
                         color = MSTheme.color.primaryDark,

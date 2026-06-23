@@ -1,6 +1,5 @@
 package com.idiotfrogs.message
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -65,6 +65,7 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberMultiPickerState
 import com.idiotfrogs.designsystem.util.wavyStroke
+import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.message.component.MessageCheckBox
 import com.idiotfrogs.message.component.MessagePreviewBanner
 import com.idiotfrogs.message.component.MessageSettingListItem
@@ -77,7 +78,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 @Composable
 fun MessageRoute(
     capsuleId: Long,
-    viewModel: MessageViewModel = hiltViewModel(),
+    viewModel: MessageViewModel = hiltViewModel<MessageViewModel, MessageViewModel.Factory>(key = capsuleId.toString()) { it.create(capsuleId) },
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
@@ -95,21 +96,21 @@ fun MessageRoute(
         )
 
         MSLoadingOverlay(visible = uiState.isLoading)
-    }
 }
 
 @Composable
 fun MessageScreen(
-    capsuleId: Long,
+    data: MessageData,
     onAction: (MessageAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
     var currentTab by remember { mutableStateOf(MessageTab.MESSAGE) }
     var isDeleteMode by rememberSaveable { mutableStateOf(false) }
     var showMessageInput by rememberSaveable { mutableStateOf(false) }
     var activeMessageId by rememberSaveable { mutableStateOf<Long?>(null) }
     var messageItems by remember { mutableStateOf(emptyList<MessageListItemUiModel>()) }
-    var selectedIds by rememberSaveable { mutableStateOf(emptySet<Long>()) }
+    var selectedIds by rememberSaveable { mutableStateOf(emptySet<String>()) }
     var photoItems by remember { mutableStateOf(emptyList<PhotoListItemUiModel>()) }
 
     val messageTextFieldState = rememberTextFieldState()
@@ -119,7 +120,36 @@ fun MessageScreen(
     val (pickedPhotoUris, launchPhotoPicker) = rememberMultiPickerState()
     val pagerState = rememberPagerState { MessageTab.entries.size }
     val canDelete = selectedIds.isNotEmpty()
-    val activeMessageItem = messageItems.firstOrNull { it.id == activeMessageId }
+    val activeMessageItem = messageItems.firstOrNull { it.contentId == activeMessageId }
+
+    LaunchedEffect(data.contents) {
+        messageItems = data.contents
+            .filter { !it.content.isNullOrBlank() }
+            .mapIndexed { index, item ->
+                MessageListItemUiModel(
+                    id = "message-${item.contentId}",
+                    contentId = item.contentId,
+                    title = "${MessageTab.MESSAGE.title} ${index + 1}",
+                    description = item.content.orEmpty(),
+                )
+            }
+
+        photoItems = data.contents
+            .flatMap { content ->
+                content.attachedFileUrls.orEmpty().mapIndexed { index, imageUrl ->
+                    PhotoListItemUiModel(
+                        id = "photo-${content.contentId}-$index",
+                        contentId = content.contentId,
+                        imageModel = imageUrl,
+                    )
+                }
+            }
+
+        isDeleteMode = false
+        showMessageInput = false
+        activeMessageId = null
+        selectedIds = emptySet()
+    }
 
     fun closeMessageInput() {
         showMessageInput = false
@@ -134,21 +164,19 @@ fun MessageScreen(
 
         if (message.isBlank()) return
 
-        if (activeMessageId == null) {
-            messageItems = messageItems + MessageListItemUiModel(
-                id = (messageItems.maxOfOrNull { it.id } ?: 0L) + 1L,
-                title = "메시지 ${messageItems.size + 1}",
-                description = message,
+        activeMessageId?.let { contentId ->
+            onAction(
+                MessageAction.ModifyContent(
+                    contentId = contentId,
+                    content = message,
+                )
             )
-        } else {
-            messageItems = messageItems.map { item ->
-                if (item.id == activeMessageId) {
-                    item.copy(description = message)
-                } else {
-                    item
-                }
-            }
-        }
+        } ?: onAction(
+            MessageAction.CreateContent(
+                content = message,
+                files = emptyList(),
+            )
+        )
 
         closeMessageInput()
     }
@@ -167,16 +195,16 @@ fun MessageScreen(
 
     LaunchedEffect(pickedPhotoUris) {
         if (pickedPhotoUris.isNotEmpty()) {
-            val existingUris = photoItems.map { it.uri }.toSet()
-            val newUris = pickedPhotoUris
-                .distinct()
-                .filterNot { it in existingUris }
-            val nextPhotoId = (photoItems.maxOfOrNull { it.id } ?: 0L) + 1L
+            val files = pickedPhotoUris.mapIndexedNotNull { index, uri ->
+                uri.toFile(context, "photo-$index")
+            }
 
-            photoItems = photoItems + newUris.mapIndexed { index, uri ->
-                PhotoListItemUiModel(
-                    id = nextPhotoId + index,
-                    uri = uri,
+            if (files.isNotEmpty()) {
+                onAction(
+                    MessageAction.CreateContent(
+                        content = "",
+                        files = files,
+                    )
                 )
             }
         }
@@ -262,7 +290,7 @@ fun MessageScreen(
                                         if (isDeleteMode) {
                                             selectedIds = selectedIds.toggle(item.id)
                                         } else {
-                                            activeMessageId = item.id
+                                            activeMessageId = item.contentId
                                         }
                                     },
                                 )
@@ -319,7 +347,7 @@ fun MessageScreen(
                                 ) {
                                     GlideImage(
                                         modifier = Modifier.matchParentSize(),
-                                        imageModel = { item.uri },
+                                        imageModel = { item.imageModel },
                                     )
 
                                     if (isDeleteMode) {
@@ -377,20 +405,17 @@ fun MessageScreen(
                         .height(48.dp),
                     enabled = canDelete,
                     onClick = {
-                        when (currentTab) {
-                            MessageTab.MESSAGE -> {
-                                messageItems = messageItems.filterNot {
-                                    it.id in selectedIds
-                                }
-                            }
-
-                            MessageTab.PHOTO -> {
-                                photoItems = photoItems.filterNot {
-                                    it.id in selectedIds
-                                }
-                            }
+                        val contentIds = when (currentTab) {
+                            MessageTab.MESSAGE -> messageItems
+                                .filter { it.id in selectedIds }
+                                .map { it.contentId }
+                            MessageTab.PHOTO -> photoItems
+                                .filter { it.id in selectedIds }
+                                .map { it.contentId }
+                                .distinct()
                         }
 
+                        onAction(MessageAction.DeleteContent(contentIds))
                         selectedIds = emptySet()
                         isDeleteMode = false
                     },
@@ -611,24 +636,26 @@ private enum class MessageTab(
 }
 
 private data class MessageListItemUiModel(
-    val id: Long,
+    val id: String,
+    val contentId: Long,
     val title: String,
     val description: String,
 )
 
 private data class PhotoListItemUiModel(
-    val id: Long,
-    val uri: Uri,
+    val id: String,
+    val contentId: Long,
+    val imageModel: String,
 )
 
-private fun Set<Long>.toggle(id: Long): Set<Long> =
+private fun Set<String>.toggle(id: String): Set<String> =
     if (id in this) this - id else this + id
 
 @Preview
 @Composable
 fun MessageScreenPreview() {
     MessageScreen(
-        capsuleId = 0L,
+        data = MessageData(),
         onAction = {},
     )
 }
