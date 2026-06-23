@@ -8,6 +8,8 @@ import com.idiotfrogs.domain.usecase.timecapsule.ModifyTimeCapsuleContentUseCase
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.base.DataUiState
+import com.idiotfrogs.util.sideEffect.RefreshEvent
+import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -71,6 +73,7 @@ class MessageViewModel @AssistedInject constructor(
                         )
                     }
                 }
+                RefreshSideEffect.tryEmit(RefreshEvent.Detail(capsuleId))
             }.onFailure {
                 intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
             }
@@ -127,6 +130,7 @@ class MessageViewModel @AssistedInject constructor(
                         )
                     }
                 }
+                RefreshSideEffect.tryEmit(RefreshEvent.Detail(capsuleId))
             }.onFailure {
                 intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
             }

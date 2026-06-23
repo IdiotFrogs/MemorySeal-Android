@@ -33,7 +33,9 @@ class DetailViewModel @AssistedInject constructor(
             safeLaunch {
                 fetchDetail(capsuleId)
                 RefreshSideEffect.events.collect {
-                    if (it is RefreshEvent.Detail) fetchDetail(it.id)
+                    if (it is RefreshEvent.Detail && it.id == capsuleId) {
+                        fetchDetail(capsuleId)
+                    }
                 }
             }
         }
