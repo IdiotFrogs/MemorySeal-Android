@@ -6,8 +6,10 @@ import com.idiotfrogs.domain.usecase.timecapsule.DeleteTimeCapsuleContentUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleContentUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.ModifyTimeCapsuleContentUseCase
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
-import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.base.DataUiState
+import com.idiotfrogs.util.sideEffect.RefreshEvent
+import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -23,18 +25,28 @@ class MessageViewModel @AssistedInject constructor(
     private val createTimeCapsuleContentUseCase: CreateTimeCapsuleContentUseCase,
     private val modifyTimeCapsuleContentUseCase: ModifyTimeCapsuleContentUseCase,
     private val deleteTimeCapsuleContentUseCase: DeleteTimeCapsuleContentUseCase,
-) : BaseViewModel<UiState<MessageData>, MessageSideEffect, MessageAction>() {
+) : BaseViewModel<MessageUiState, MessageSideEffect, MessageAction>() {
 
-    override val container: Container<UiState<MessageData>, MessageSideEffect> = container(
-        initialState = UiState.Init,
+    override val container: Container<MessageUiState, MessageSideEffect> = container(
+        initialState = MessageUiState(),
         onCreate = { fetchTimeCapsuleContent() }
     )
 
     private fun fetchTimeCapsuleContent() = safeLaunch {
+        intent { reduce { state.copy(isLoading = true) } }
+
         getMyTimeCapsuleContentUseCase(capsuleId).onSuccess {
-            intent { reduce { UiState.Success(MessageData(contents = it)) } }
+            intent {
+                reduce {
+                    state.copy(
+                        data = MessageData(contents = it),
+                        isLoading = false,
+                        errorMessage = null,
+                    )
+                }
+            }
         }.onFailure {
-            intent { reduce { UiState.Error(it.message) } }
+            intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
         }
     }
 
@@ -43,6 +55,8 @@ class MessageViewModel @AssistedInject constructor(
         files: List<File>
     ) {
         safeLaunch {
+            intent { reduce { state.copy(isLoading = true) } }
+
             createTimeCapsuleContentUseCase(
                 timeCapsuleId = capsuleId,
                 content = content,
@@ -50,12 +64,18 @@ class MessageViewModel @AssistedInject constructor(
             ).onSuccess { response ->
                 intent {
                     reduce {
-                        val currentData = (state as? UiState.Success)?.data ?: MessageData()
-                        UiState.Success(currentData.copy(contents = currentData.contents + response))
+                        val currentData = state.data ?: MessageData()
+
+                        state.copy(
+                            data = currentData.copy(contents = currentData.contents + response),
+                            isLoading = false,
+                            errorMessage = null,
+                        )
                     }
                 }
+                RefreshSideEffect.tryEmit(RefreshEvent.Detail(capsuleId))
             }.onFailure {
-                intent { reduce { UiState.Error(it.message) } }
+                intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
             }
         }
     }
@@ -65,66 +85,75 @@ class MessageViewModel @AssistedInject constructor(
         content: String
     ) {
         safeLaunch {
+            intent { reduce { state.copy(isLoading = true) } }
+
             modifyTimeCapsuleContentUseCase(
                 contentId = contentId,
                 content = content
             ).onSuccess { response ->
                 intent {
                     reduce {
-                        val currentData = (state as? UiState.Success)?.data ?: MessageData()
+                        val currentData = state.data ?: MessageData()
 
-                        UiState.Success(
-                            currentData.copy(
+                        state.copy(
+                            data = currentData.copy(
                                 contents = currentData.contents.map { content ->
                                     if (content.contentId == response.contentId) response else content
                                 }
-                            )
+                            ),
+                            isLoading = false,
+                            errorMessage = null,
                         )
                     }
                 }
             }.onFailure {
-                intent { reduce { UiState.Error(it.message) } }
+                intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
             }
         }
     }
 
     private fun deleteTimeCapsuleContent(contentIds: List<Long>) {
         safeLaunch {
+            intent { reduce { state.copy(isLoading = true) } }
+
             deleteTimeCapsuleContentUseCase(contentIds).onSuccess {
                 intent {
                     reduce {
-                        val currentData = (state as? UiState.Success)?.data ?: MessageData()
+                        val currentData = state.data ?: MessageData()
 
-                        UiState.Success(
-                            currentData.copy(
+                        state.copy(
+                            data = currentData.copy(
                                 contents = currentData.contents.filterNot { it.contentId in contentIds }
-                            )
+                            ),
+                            isLoading = false,
+                            errorMessage = null,
                         )
                     }
                 }
+                RefreshSideEffect.tryEmit(RefreshEvent.Detail(capsuleId))
             }.onFailure {
-                intent { reduce { UiState.Error(it.message) } }
+                intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
             }
         }
     }
 
     override fun onAction(action: MessageAction) {
         when (action) {
-            MessageAction.NavigateToBack -> intent {
+            MessageAction.BackClicked -> intent {
                 postSideEffect(MessageSideEffect.NavigateToBack)
             }
 
-            is MessageAction.CreateContent -> createTimeCapsuleContent(
+            is MessageAction.ContentCreateSubmitted -> createTimeCapsuleContent(
                 content = action.content,
                 files = action.files
             )
 
-            is MessageAction.ModifyContent -> modifyTimeCapsuleContent(
+            is MessageAction.ContentModifySubmitted -> modifyTimeCapsuleContent(
                 contentId = action.contentId,
                 content = action.content
             )
 
-            is MessageAction.DeleteContent -> deleteTimeCapsuleContent(action.contentIds)
+            is MessageAction.ContentDeleteConfirmed -> deleteTimeCapsuleContent(action.contentIds)
         }
     }
 
@@ -139,20 +168,27 @@ data class MessageData(
     val contents: List<CapsuleContentsData> = emptyList(),
 )
 
-sealed interface MessageAction {
-    data object NavigateToBack : MessageAction
+@Immutable
+data class MessageUiState(
+    override val data: MessageData? = null,
+    override val isLoading: Boolean = false,
+    override val errorMessage: String? = null,
+) : DataUiState<MessageData>
 
-    data class CreateContent(
+sealed interface MessageAction {
+    data object BackClicked : MessageAction
+
+    data class ContentCreateSubmitted(
         val content: String,
         val files: List<File>,
     ) : MessageAction
 
-    data class ModifyContent(
+    data class ContentModifySubmitted(
         val contentId: Long,
         val content: String,
     ) : MessageAction
 
-    data class DeleteContent(
+    data class ContentDeleteConfirmed(
         val contentIds: List<Long>,
     ) : MessageAction
 }

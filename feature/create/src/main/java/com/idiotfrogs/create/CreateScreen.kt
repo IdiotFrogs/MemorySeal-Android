@@ -44,7 +44,6 @@ import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes.*
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -60,21 +59,15 @@ fun CreateRoute(
     viewModel.collectSideEffect { event ->
         when (event) {
             is CreateSideEffect.NavigateToDetail -> {
-                navigator.popBackStack()
-                navigator.navigate(Detail(event.response.id))
+                navigator.replace(Detail(event.response.id))
             }
             CreateSideEffect.NavigateToBack -> navigator.popBackStack()
         }
     }
 
-    when (uiState) {
-        UiState.Init -> Unit // 화면 로딩 로직
-        is UiState.Success -> {
-            CreateScreen(
-                onAction = viewModel::onAction
-            )
-        }
-        is UiState.Error -> Unit
+    Box(modifier = Modifier.fillMaxSize()) {
+        CreateScreen(onAction = viewModel::onAction)
+        if (uiState.isLoading) CreateLoadingScreen()
     }
 }
 
@@ -111,7 +104,7 @@ private fun CreateScreen(
             MSDetailHeader(
                 title = "타임 티켓 생성",
                 paddingValues = PaddingValues(vertical = 16.dp),
-                navigateToBack = { onAction(CreateAction.NavigateToBack) }
+                navigateToBack = { onAction(CreateAction.BackClicked) }
             )
             Spacer(Modifier.height(24.dp))
             Column(
@@ -206,7 +199,7 @@ private fun CreateScreen(
                 val file = imageUri?.toFile(context, "mainImage")
                 if (file != null) {
                     onAction(
-                        CreateAction.CreateTimeCapsule(
+                        CreateAction.CreateButtonClicked(
                             titleTextFieldState.text.toString(),
                             contentTextFieldState.text.toString().takeIf { it.isNotEmpty() },
                             file

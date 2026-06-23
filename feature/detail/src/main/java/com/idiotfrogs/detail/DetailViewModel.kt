@@ -7,7 +7,7 @@ import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleUseCase
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
-import com.idiotfrogs.util.UiState
+import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.sideEffect.RefreshEvent
 import com.idiotfrogs.util.sideEffect.RefreshSideEffect
@@ -26,14 +26,16 @@ class DetailViewModel @AssistedInject constructor(
     private val getTimeCapsuleUseCase: GetTimeCapsuleUseCase,
     private val getTimeCapsuleCollaboratorsUseCase: GetTimeCapsuleCollaboratorsUseCase,
     private val buryTimeCapsuleUseCase: BuryTimeCapsuleUseCase,
-) : BaseViewModel<UiState<TimeCapsuleData>, DetailSideEffect, DetailAction>() {
-    override val container: Container<UiState<TimeCapsuleData>, DetailSideEffect> = container(
-        initialState = UiState.Init,
+) : BaseViewModel<DetailUiState, DetailSideEffect, DetailAction>() {
+    override val container: Container<DetailUiState, DetailSideEffect> = container(
+        initialState = DetailUiState(),
         onCreate = {
             safeLaunch {
                 fetchDetail(capsuleId)
                 RefreshSideEffect.events.collect {
-                    if (it is RefreshEvent.Detail) fetchDetail(it.id)
+                    if (it is RefreshEvent.Detail && it.id == capsuleId) {
+                        fetchDetail(capsuleId)
+                    }
                 }
             }
         }
@@ -41,6 +43,8 @@ class DetailViewModel @AssistedInject constructor(
 
     private fun fetchDetail(capsuleId: Long) {
         safeLaunch {
+            intent { reduce { state.copy(isLoading = true) } }
+
             val capsuleDeferred = async { getTimeCapsuleUseCase(capsuleId) }
             val collaboratorsDeferred = async { getTimeCapsuleCollaboratorsUseCase(capsuleId, 0, 20) }
 
@@ -51,14 +55,18 @@ class DetailViewModel @AssistedInject constructor(
 
             intent {
                 if (results.any { it.isFailure }) {
-                    reduce { UiState.Error(results.first { it.isFailure }.exceptionOrNull()?.message) }
+                    val errorMessage = results.first { it.isFailure }.exceptionOrNull()?.message
+
+                    reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
                 } else {
                     reduce {
-                        UiState.Success(
-                            TimeCapsuleData(
+                        state.copy(
+                            data = TimeCapsuleData(
                                 capsule = capsuleResult.getOrNull(),
                                 collaborators = collaboratorsResult.getOrNull(),
-                            )
+                            ),
+                            isLoading = false,
+                            errorMessage = null,
                         )
                     }
                 }
@@ -68,18 +76,27 @@ class DetailViewModel @AssistedInject constructor(
 
     private fun buryTimeCapsule(openedAt: LocalDateTime) {
         safeLaunch {
+            intent { reduce { state.copy(isLoading = true) } }
+
             buryTimeCapsuleUseCase(
                 capsuleId = capsuleId,
                 body = BuryTimeCapsuleRequest(openedAt),
             ).onSuccess { response ->
                 intent {
                     reduce {
-                        val currentData = (state as? UiState.Success)?.data ?: TimeCapsuleData()
-                        UiState.Success(currentData.copy(capsule = response))
+                        val currentData = state.data ?: TimeCapsuleData()
+                        state.copy(
+                            data = currentData.copy(capsule = response),
+                            isLoading = false,
+                            errorMessage = null,
+                        )
                     }
                 }
             }.onFailure {
-                intent { postSideEffect(DetailSideEffect.ShowToast) }
+                intent {
+                    reduce { state.copy(isLoading = false, errorMessage = it.message) }
+                    postSideEffect(DetailSideEffect.ShowToast)
+                }
             }
         }
     }
@@ -87,11 +104,11 @@ class DetailViewModel @AssistedInject constructor(
 
     override fun onAction(action: DetailAction) {
         when (action) {
-            is DetailAction.NavigateToFriend -> intent { postSideEffect(DetailSideEffect.NavigateToFriend(action.id)) }
-            is DetailAction.NavigateToMessage -> intent { postSideEffect(DetailSideEffect.NavigateToMessage(action.id)) }
-            is DetailAction.NavigateToManagement -> intent { postSideEffect(DetailSideEffect.NavigateToManagement(action.id, action.title)) }
-            DetailAction.NavigateToBack -> intent { postSideEffect(DetailSideEffect.NavigateToBack) }
-            is DetailAction.BuryTimeCapsule -> buryTimeCapsule(action.openedAt)
+            is DetailAction.MemberSectionClicked -> intent { postSideEffect(DetailSideEffect.NavigateToFriend(action.id)) }
+            is DetailAction.MessageSectionClicked -> intent { postSideEffect(DetailSideEffect.NavigateToMessage(action.id)) }
+            is DetailAction.ManagementClicked -> intent { postSideEffect(DetailSideEffect.NavigateToManagement(action.id, action.title)) }
+            DetailAction.BackClicked -> intent { postSideEffect(DetailSideEffect.NavigateToBack) }
+            is DetailAction.BuryConfirmClicked -> buryTimeCapsule(action.openedAt)
         }
     }
 
@@ -102,17 +119,24 @@ class DetailViewModel @AssistedInject constructor(
 }
 
 @Immutable
+data class DetailUiState(
+    override val data: TimeCapsuleData? = null,
+    override val isLoading: Boolean = false,
+    override val errorMessage: String? = null,
+) : DataUiState<TimeCapsuleData>
+
+@Immutable
 data class TimeCapsuleData(
     val capsule: TimeCapsuleResponse? = null,
     val collaborators: TimeCapsuleCollaboratorsResponse? = null,
 )
 
 sealed interface DetailAction {
-    data class NavigateToFriend(val id: Long) : DetailAction
-    data class NavigateToMessage(val id: Long) : DetailAction
-    data class NavigateToManagement(val id: Long, val title: String) : DetailAction
-    data object NavigateToBack : DetailAction
-    data class BuryTimeCapsule(val openedAt: LocalDateTime) : DetailAction
+    data class MemberSectionClicked(val id: Long) : DetailAction
+    data class MessageSectionClicked(val id: Long) : DetailAction
+    data class ManagementClicked(val id: Long, val title: String) : DetailAction
+    data object BackClicked : DetailAction
+    data class BuryConfirmClicked(val openedAt: LocalDateTime) : DetailAction
 }
 
 sealed interface DetailSideEffect {

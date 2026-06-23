@@ -2,6 +2,7 @@ package com.idiotfrogs.setting
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.idiotfrogs.designsystem.component.MSDialog
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTitleDialog
 import com.idiotfrogs.designsystem.theme.MSTheme
@@ -26,7 +29,6 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.setting.component.SettingHeader
 import com.idiotfrogs.setting.component.SettingItem
 import com.idiotfrogs.setting.component.SettingType
-import com.idiotfrogs.util.UiState
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -44,12 +46,10 @@ fun SettingRoute(
         }
     }
 
-    when (uiState) {
-        UiState.Init -> Unit
-        is UiState.Success -> {
-            SettingScreen(onAction = viewModel::onAction)
-        }
-        is UiState.Error -> Unit
+    Box(modifier = Modifier.fillMaxSize()) {
+        SettingScreen(onAction = viewModel::onAction)
+
+        MSLoadingOverlay(visible = uiState.isLoading)
     }
 }
 
@@ -68,7 +68,7 @@ fun SettingScreen(
             onConfirm = {
                 /** TODO: 로그아웃 로직 */
                 showLogoutDialog = false
-                onAction(SettingAction.NavigateToLogin)
+                onAction(SettingAction.LogoutConfirmed)
             },
             onCancel = { showLogoutDialog = false },
             content = {
@@ -91,7 +91,7 @@ fun SettingScreen(
             cancelText = "취소",
             onConfirm = {
                 showWithdrawDialog = false
-                onAction(SettingAction.Withdraw)
+                onAction(SettingAction.WithdrawConfirmed)
             },
             onCancel = { showWithdrawDialog = false },
             content = {
@@ -113,7 +113,7 @@ fun SettingScreen(
             .background(MSTheme.color.white)
             .systemBarsPadding(),
     ) {
-        SettingHeader(onBack = { onAction(SettingAction.NavigateToBack) })
+        SettingHeader(onBack = { onAction(SettingAction.BackClicked) })
         Column(
             modifier = Modifier
                 .fillMaxSize()

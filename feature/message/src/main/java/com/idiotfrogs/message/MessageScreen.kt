@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDetailHeader
 import com.idiotfrogs.designsystem.component.MSDim
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSPlainTextField
 import com.idiotfrogs.designsystem.component.MSTabBar
 import com.idiotfrogs.designsystem.component.MSText
@@ -70,7 +71,6 @@ import com.idiotfrogs.message.component.MessagePreviewBanner
 import com.idiotfrogs.message.component.MessageSettingListItem
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -89,15 +89,13 @@ fun MessageRoute(
         }
     }
 
-    when (val state = uiState) {
-        UiState.Init -> Unit
-        is UiState.Success -> {
-            MessageScreen(
-                data = state.data,
-                onAction = viewModel::onAction,
-            )
-        }
-        is UiState.Error -> Unit
+    Box(modifier = Modifier.fillMaxSize()) {
+        MessageScreen(
+            data = uiState.data ?: MessageData(),
+            onAction = viewModel::onAction,
+        )
+
+        MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
     }
 }
 
@@ -169,13 +167,13 @@ fun MessageScreen(
 
         activeMessageId?.let { contentId ->
             onAction(
-                MessageAction.ModifyContent(
+                MessageAction.ContentModifySubmitted(
                     contentId = contentId,
                     content = message,
                 )
             )
         } ?: onAction(
-            MessageAction.CreateContent(
+            MessageAction.ContentCreateSubmitted(
                 content = message,
                 files = emptyList(),
             )
@@ -204,7 +202,7 @@ fun MessageScreen(
 
             if (files.isNotEmpty()) {
                 onAction(
-                    MessageAction.CreateContent(
+                    MessageAction.ContentCreateSubmitted(
                         content = "",
                         files = files,
                     )
@@ -232,7 +230,7 @@ fun MessageScreen(
         ) {
             MSDetailHeader(
                 title = "나의 추억 메시지",
-                navigateToBack = { onAction(MessageAction.NavigateToBack) },
+                navigateToBack = { onAction(MessageAction.BackClicked) },
                 paddingValues = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
             ) {
                 Image(
@@ -418,7 +416,7 @@ fun MessageScreen(
                                 .distinct()
                         }
 
-                        onAction(MessageAction.DeleteContent(contentIds))
+                        onAction(MessageAction.ContentDeleteConfirmed(contentIds))
                         selectedIds = emptySet()
                         isDeleteMode = false
                     },

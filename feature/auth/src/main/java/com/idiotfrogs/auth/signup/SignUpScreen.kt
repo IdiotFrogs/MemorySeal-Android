@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
@@ -50,7 +51,6 @@ import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -72,12 +72,10 @@ fun SignUpRoute(
         }
     }
 
-    when (uiState) {
-        UiState.Init -> Unit // 화면 로딩 로직
-        is UiState.Success -> {
-            SignUpScreen(onAction = viewModel::onAction,)
-        }
-        is UiState.Error -> Unit
+    Box(modifier = Modifier.fillMaxSize()) {
+        SignUpScreen(onAction = viewModel::onAction)
+
+        MSLoadingOverlay(visible = uiState.isLoading)
     }
 }
 
@@ -112,7 +110,7 @@ fun SignUpScreen(
                 modifier = Modifier
                     .padding(start = 20.dp)
                     .size(24.dp)
-                    .noRippleClickable { onAction(SignUpAction.NavigateToBack) },
+                    .noRippleClickable { onAction(SignUpAction.BackClicked) },
                 painter = painterResource(R.drawable.ic_chevron_left),
                 contentDescription = "Back"
             )
@@ -252,7 +250,7 @@ fun SignUpScreen(
                     isShowError = true
                 } else {
                     val imageFile = imageUri?.toFile(context, "profileImage")
-                    onAction(SignUpAction.SignUp(textFieldState.text.toString(), imageFile))
+                    onAction(SignUpAction.SignUpButtonClicked(textFieldState.text.toString(), imageFile))
                 }
             }
         )
