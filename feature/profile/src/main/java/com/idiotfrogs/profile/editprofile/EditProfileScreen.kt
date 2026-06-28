@@ -62,7 +62,7 @@ fun EditProfileRoute(
     Box(modifier = Modifier.fillMaxSize()) {
         uiState.data?.let { data ->
             EditProfileScreen(
-                data = data.user ?: return,
+                data = data,
                 onAction = viewModel::onAction
             )
         }
@@ -72,7 +72,7 @@ fun EditProfileRoute(
 
 @Composable
 fun EditProfileScreen(
-    data: ProfileResponse,
+    data: EditProfileData,
     onAction: (EditProfileAction) -> Unit
 ) {
     val context = LocalContext.current
@@ -86,10 +86,13 @@ fun EditProfileScreen(
     var imageUri by remember(pickerState.first) { mutableStateOf(pickerState.first) }
     val launchImagePicker = pickerState.second
 
-    val textFieldState = rememberTextFieldState(initialText = data.nickname)
+    val user = data.user ?: return // 유저 정보 없을 시 early-return
+
+    val textFieldState = rememberTextFieldState(initialText = user.nickname)
+
 
     LaunchedEffect(textFieldState.text, imageUri) {
-        isChanged = data.nickname != textFieldState.text || // 닉네임이 변경 되었거나
+        isChanged = user.nickname != textFieldState.text || // 닉네임이 변경 되었거나
                 imageUri != null // 이미지가 로드되어 Uri가 채워진 경우
     }
 
@@ -120,7 +123,7 @@ fun EditProfileScreen(
 
                 onAction.invoke(
                     EditProfileAction.UpdateProfile(
-                        userId = data.id,
+                        userId = user.id,
                         profileImage = file,
                         nickname = textFieldState.text.toString()
                     )
@@ -131,7 +134,7 @@ fun EditProfileScreen(
         if (imageUri != null && !useDefaultImage) {
             Box(modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 GlideImage(
-                    imageModel = { imageUri ?: data.profileImageUrl }, // 둘 중 하나는 not-null
+                    imageModel = { imageUri ?: user.profileImageUrl }, // 둘 중 하나는 not-null
                     modifier = Modifier
                         .noRippleClickable { showBottomSheet = true }
                         .size(120.dp)
@@ -218,12 +221,14 @@ fun EditProfileScreen(
 @Composable
 fun EditProfileScreenPreview() {
     EditProfileScreen(
-        data = ProfileResponse(
-            id = 0L,
-            nickname = "",
-            profileImageUrl = "",
-            email = "",
-            isOnboarding = true,
+        data = EditProfileData(
+            user = ProfileResponse(
+                id = 0L,
+                nickname = "",
+                profileImageUrl = "",
+                email = "",
+                isOnboarding = true,
+            )
         ),
         onAction = {}
     )
