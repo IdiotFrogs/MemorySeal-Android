@@ -1,6 +1,5 @@
 package com.idiotfrogs.profile.editprofile
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -38,15 +37,14 @@ import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberPickerState
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.extension.toFile
+import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.profile.component.EditProfileBottomSheet
 import com.idiotfrogs.profile.component.ProfileHeader
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
-import java.io.File
 
 @Composable
 fun EditProfileRoute(
@@ -62,18 +60,19 @@ fun EditProfileRoute(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        EditProfileScreen(
-            data = state.data,
-            onAction = viewModel::onAction
-        )
-
+        uiState.data?.let { data ->
+            EditProfileScreen(
+                data = data,
+                onAction = viewModel::onAction
+            )
+        }
         MSLoadingOverlay(visible = uiState.isLoading)
     }
 }
 
 @Composable
 fun EditProfileScreen(
-    data: EditProfileData,
+    data: ProfileResponse,
     onAction: (EditProfileAction) -> Unit
 ) {
     val context = LocalContext.current
@@ -87,10 +86,10 @@ fun EditProfileScreen(
     var imageUri by remember(pickerState.first) { mutableStateOf(pickerState.first) }
     val launchImagePicker = pickerState.second
 
-    val textFieldState = rememberTextFieldState(initialText = data.user?.nickname ?: "")
+    val textFieldState = rememberTextFieldState(initialText = data.nickname)
 
     LaunchedEffect(textFieldState.text, imageUri) {
-        isChanged = data.user?.nickname != textFieldState.text || // 닉네임이 변경 되었거나
+        isChanged = data.nickname != textFieldState.text || // 닉네임이 변경 되었거나
                 imageUri != null // 이미지가 로드되어 Uri가 채워진 경우
     }
 
@@ -119,22 +118,20 @@ fun EditProfileScreen(
             onSave = {
                 val file = imageUri?.toFile(context, "profileImage")
 
-                data.user?.let {
-                    onAction.invoke(
-                        EditProfileAction.UpdateProfile(
-                            userId = it.id,
-                            profileImage = file,
-                            nickname = textFieldState.text.toString(),
-                        )
+                onAction.invoke(
+                    EditProfileAction.UpdateProfile(
+                        userId = data.id,
+                        profileImage = file,
+                        nickname = textFieldState.text.toString()
                     )
-                }
+                )
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
-        if ((imageUri != null || data.user?.profileImageUrl != null) && !useDefaultImage) {
+        if (imageUri != null && !useDefaultImage) {
             Box(modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 GlideImage(
-                    imageModel = { imageUri ?: data.user?.profileImageUrl }, // 둘 중 하나는 not-null
+                    imageModel = { imageUri ?: data.profileImageUrl }, // 둘 중 하나는 not-null
                     modifier = Modifier
                         .noRippleClickable { showBottomSheet = true }
                         .size(120.dp)
@@ -221,7 +218,13 @@ fun EditProfileScreen(
 @Composable
 fun EditProfileScreenPreview() {
     EditProfileScreen(
-        data = EditProfileData(),
+        data = ProfileResponse(
+            id = 0L,
+            nickname = "",
+            profileImageUrl = "",
+            email = "",
+            isOnboarding = true,
+        ),
         onAction = {}
     )
 }

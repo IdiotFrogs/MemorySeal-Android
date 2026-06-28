@@ -6,8 +6,8 @@ import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.model.user.ProfileResponse
-import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.sideEffect.RefreshEvent
 import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -99,7 +99,7 @@ sealed interface ProfileAction {
     data object SettingClicked : ProfileAction
     data object EditProfileClicked : ProfileAction
     data object BackClicked : ProfileAction
-    data class TicketClicked(val id: long) : ProfileAction
+    data class TicketClicked(val id: Long) : ProfileAction
 }
 
 sealed interface ProfileSideEffect {

@@ -35,7 +35,6 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.profile.component.ProfileCard
 import com.idiotfrogs.profile.component.ProfileHeader
 import com.idiotfrogs.profile.component.ProfileTicketCard
-import com.idiotfrogs.util.UiState
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atTime
 import kotlinx.datetime.todayIn

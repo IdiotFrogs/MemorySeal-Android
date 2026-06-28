@@ -1,21 +1,14 @@
 package com.idiotfrogs.profile.editprofile
 
 import com.idiotfrogs.util.base.BaseUiState
-import android.util.Log
-import androidx.compose.runtime.Immutable
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.domain.usecase.user.UpdateMyProfileUseCase
-import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
-import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.model.user.ProfileResponse
-import com.idiotfrogs.model.user.UserUpdateRequest
-import com.idiotfrogs.profile.profile.ProfileData
-import com.idiotfrogs.util.UiState
 import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.sideEffect.RefreshEvent
 import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import java.io.File
@@ -27,8 +20,8 @@ class EditProfileViewModel @Inject constructor(
     private val updateMyProfileUseCase: UpdateMyProfileUseCase,
 ) : BaseViewModel<EditProfileUiState, EditProfileSideEffect, EditProfileAction>() {
 
-    override val container: Container<EditProfileData, EditProfileSideEffect> = container(
-        initialState = UiState.Init,
+    override val container: Container<EditProfileUiState, EditProfileSideEffect> = container(
+        initialState = EditProfileUiState(),
         onCreate = {
             safeLaunch {
                 fetchProfile()
@@ -38,7 +31,7 @@ class EditProfileViewModel @Inject constructor(
 
     override fun onAction(action: EditProfileAction) {
         when (action) {
-            EditProfileAction.NavigateToBack -> intent { postSideEffect(EditProfileSideEffect.NavigateToBack) }
+            EditProfileAction.BackClicked -> intent { postSideEffect(EditProfileSideEffect.NavigateToBack) }
             is EditProfileAction.UpdateProfile -> {
                 updateProfile(action.userId, action.profileImage, action.nickname)
             }
@@ -47,50 +40,55 @@ class EditProfileViewModel @Inject constructor(
 
     private fun fetchProfile() {
         safeLaunch {
-            intent { reduce { UiState.} }
+            intent { reduce { state.copy(isLoading = true) } }
             val result = getMyProfileUseCase()
 
             intent {
                 if (result.isFailure) {
-                    reduce { UiState.Error(result.exceptionOrNull()?.message) }
+                    reduce {
+                        state.copy(
+                            isLoading = false,
+                            errorMessage = (result.exceptionOrNull()?.message)
+                        )
+                    }
                 } else {
                     reduce {
-                        UiState.Success(
-                            EditProfileData(user = result.getOrNull())
+                        state.copy(
+                            isLoading = false,
+                            data = result.getOrNull()
                         )
                     }
                 }
             }
         }
-
-        private fun updateMyProfile(userId: Long, profileImage: File?, nickname: String) {
-            safeLaunch {
-                updateMyProfileUseCase(
-                    userId = userId,
-                    profileImage = profileImage,
-                    nickname = nickname
-                )
-                    .onSuccess {
-                        RefreshSideEffect.tryEmit(RefreshEvent.Profile)
-                        intent { postSideEffect(com.idiotfrogs.profile.editprofile.EditProfileSideEffect.NavigateToBack) }
-                    }
-                    .onFailure {
-                        Log.d("TAG", "updateMyProfile: ${it.message}")
-                    }
-            }
-        }
     }
 
+    private fun updateProfile(userId: Long, profileImage: File?, nickname: String) {
+        safeLaunch {
+            updateMyProfileUseCase(
+                userId = userId,
+                profileImage = profileImage,
+                nickname = nickname
+            )
+                .onSuccess {
+                    RefreshSideEffect.tryEmit(RefreshEvent.Profile)
+                    intent { postSideEffect(EditProfileSideEffect.NavigateToBack) }
+                }
+        }
+    }
+}
+
 data class EditProfileUiState(
+    override val data: ProfileResponse? = null,
     override val isLoading: Boolean = false,
     override val errorMessage: String? = null,
-) : BaseUiState
+) : DataUiState<ProfileResponse>
 
 sealed interface EditProfileAction {
     data object BackClicked : EditProfileAction
     data class UpdateProfile(
         val userId: Long, val profileImage: File?, val nickname: String
-    ): EditProfileAction
+    ) : EditProfileAction
 }
 
 sealed interface EditProfileSideEffect {
