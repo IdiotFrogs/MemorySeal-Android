@@ -1,6 +1,6 @@
 package com.idiotfrogs.profile.editprofile
 
-import com.idiotfrogs.util.base.BaseUiState
+import androidx.compose.runtime.Immutable
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.domain.usecase.user.UpdateMyProfileUseCase
 import com.idiotfrogs.model.user.ProfileResponse
@@ -55,7 +55,9 @@ class EditProfileViewModel @Inject constructor(
                     reduce {
                         state.copy(
                             isLoading = false,
-                            data = result.getOrNull()
+                            data = EditProfileData(
+                                result.getOrNull()
+                            )
                         )
                     }
                 }
@@ -78,11 +80,17 @@ class EditProfileViewModel @Inject constructor(
     }
 }
 
+@Immutable
 data class EditProfileUiState(
-    override val data: ProfileResponse? = null,
+    override val data: EditProfileData? = null,
     override val isLoading: Boolean = false,
     override val errorMessage: String? = null,
-) : DataUiState<ProfileResponse>
+) : DataUiState<EditProfileData>
+
+@Immutable
+data class EditProfileData(
+    val user: ProfileResponse? = null
+)
 
 sealed interface EditProfileAction {
     data object BackClicked : EditProfileAction

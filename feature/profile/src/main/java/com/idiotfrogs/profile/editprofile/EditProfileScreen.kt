@@ -62,7 +62,7 @@ fun EditProfileRoute(
     Box(modifier = Modifier.fillMaxSize()) {
         uiState.data?.let { data ->
             EditProfileScreen(
-                data = data,
+                data = data.user ?: return,
                 onAction = viewModel::onAction
             )
         }
