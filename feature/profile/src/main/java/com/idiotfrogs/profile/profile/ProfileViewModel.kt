@@ -20,10 +20,10 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val getMyTimeCapsuleUseCase: GetMyTimeCapsuleUseCase,
     private val getMyProfileUseCase: GetMyProfileUseCase
-) : BaseViewModel<UiState<ProfileData>, ProfileSideEffect, ProfileAction>() {
+) : BaseViewModel<ProfileUiState, ProfileSideEffect, ProfileAction>() {
 
-    override val container: Container<UiState<ProfileData>, ProfileSideEffect> = container(
-        initialState = UiState.Init,
+    override val container: Container<ProfileUiState, ProfileSideEffect> = container(
+        initialState = ProfileUiState(),
         onCreate = {
             safeLaunch {
                 fetchProfile()
@@ -38,6 +38,8 @@ class ProfileViewModel @Inject constructor(
 
     private fun fetchProfile() {
         safeLaunch {
+            intent { reduce { state.copy(isLoading = true) } }
+
             val userDeferred = async { getMyProfileUseCase() }
             val capsulesDeferred = async { getMyTimeCapsuleUseCase() }
 
@@ -48,17 +50,21 @@ class ProfileViewModel @Inject constructor(
 
             intent {
                 if (results.any { it.isFailure }) {
-                    reduce { UiState.Error(results.first { it.isFailure }.exceptionOrNull()?.message) }
+                    val errorMessage = results.first { it.isFailure }.exceptionOrNull()?.message
+
+                    reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
                 } else {
                     reduce {
-                        UiState.Success(
-                            ProfileData(
+                        state.copy(
+                            data = ProfileData(
                                 user = userResult.getOrNull(),
                                 capsules = capsulesResult.getOrNull()
                                     ?.flatMap { it.value }
                                     ?.filter { it.timeCapsuleStatus == TimeCapsuleStatus.OPENED }
                                     ?: emptyList(),
-                            )
+                            ),
+                            isLoading = false,
+                            errorMessage = null,
                         )
                     }
                 }
@@ -68,13 +74,20 @@ class ProfileViewModel @Inject constructor(
 
     override fun onAction(action: ProfileAction) {
         when (action) {
-            ProfileAction.NavigateToEditProfile -> intent { postSideEffect(ProfileSideEffect.NavigateToEditProfile) }
-            ProfileAction.NavigateToSetting -> intent { postSideEffect(ProfileSideEffect.NavigateToSetting) }
-            ProfileAction.NavigateToBack -> intent { postSideEffect(ProfileSideEffect.NavigateToBack) }
-            is ProfileAction.NavigateToDetail -> intent { postSideEffect(ProfileSideEffect.NavigateToDetail(action.id))}
+            ProfileAction.EditProfileClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToEditProfile) }
+            ProfileAction.SettingClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToSetting) }
+            ProfileAction.BackClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToBack) }
+            is ProfileAction.TicketClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToDetail(action.id))}
         }
     }
 }
+
+@Immutable
+data class ProfileUiState(
+    override val data: ProfileData? = null,
+    override val isLoading: Boolean = false,
+    override val errorMessage: String? = null,
+) : DataUiState<ProfileData>
 
 @Immutable
 data class ProfileData(
@@ -83,10 +96,10 @@ data class ProfileData(
 )
 
 sealed interface ProfileAction {
-    data object NavigateToSetting : ProfileAction
-    data object NavigateToEditProfile : ProfileAction
-    data object NavigateToBack : ProfileAction
-    data class NavigateToDetail(val id: Long) : ProfileAction
+    data object SettingClicked : ProfileAction
+    data object EditProfileClicked : ProfileAction
+    data object BackClicked : ProfileAction
+    data class TicketClicked(val id: long) : ProfileAction
 }
 
 sealed interface ProfileSideEffect {

@@ -2,10 +2,12 @@ package com.idiotfrogs.data.repository.timecapsule
 
 import com.idiotfrogs.data.datasource.timecapsule.TimeCapsuleDataSource
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
+import com.idiotfrogs.model.timecapsule.CapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleContentResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
@@ -13,6 +15,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import javax.inject.Inject
 
@@ -100,5 +103,45 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
 
     override suspend fun leaveTimeCapsule(capsuleId: Long) {
         return timeCapsuleDataSource.leaveTimeCapsule(capsuleId)
+    }
+
+    override suspend fun getTimeCapsuleContent(timeCapsuleId: Long): List<TimeCapsuleContentResponse> {
+        return timeCapsuleDataSource.getTimeCapsuleContent(timeCapsuleId)
+    }
+
+    override suspend fun getMyTimeCapsuleContent(timeCapsuleId: Long): List<CapsuleContentsData> {
+        return timeCapsuleDataSource.getMyTimeCapsuleContent(timeCapsuleId)
+    }
+
+    override suspend fun createTimeCapsuleContent(
+        timeCapsuleId: Long,
+        content: String,
+        files: List<File>
+    ): CapsuleContentsData {
+        val contentBody = content.toRequestBody("text/plain".toMediaType())
+        val fileParts = files.map {
+            val requestBody = it.asRequestBody("image/jpeg".toMediaType())
+            MultipartBody.Part.createFormData("files", it.name, requestBody)
+        }
+
+        return timeCapsuleDataSource.createTimeCapsuleContent(
+            timeCapsuleId = timeCapsuleId,
+            content = contentBody,
+            files = fileParts
+        )
+    }
+
+    override suspend fun modifyTimeCapsuleContent(
+        contentId: Long,
+        content: String
+    ): CapsuleContentsData {
+        return timeCapsuleDataSource.modifyTimeCapsuleContent(
+            contentId = contentId,
+            content = content
+        )
+    }
+
+    override suspend fun deleteTimeCapsuleContent(contentIds: List<Long>) {
+        return timeCapsuleDataSource.deleteTimeCapsuleContent(contentIds)
     }
 }

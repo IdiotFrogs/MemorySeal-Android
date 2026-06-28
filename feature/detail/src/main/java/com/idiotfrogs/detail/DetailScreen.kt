@@ -47,6 +47,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSAnnotatedText
 import com.idiotfrogs.designsystem.component.MSCalender
 import com.idiotfrogs.designsystem.component.MSDashHorizontalDivider
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSTitleDialog
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSToast
@@ -63,7 +64,6 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.util.UiState
 import com.skydoves.landscapist.glide.GlideImage
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
@@ -108,17 +108,17 @@ fun DetailRoute(
         }
     }
 
-    when (val state = uiState) {
-        UiState.Init -> Unit
-        is UiState.Success -> {
+    Box(modifier = Modifier.fillMaxSize()) {
+        uiState.data?.let { data ->
             DetailScreen(
-                data = state.data,
+                data = data,
                 capsuleId = capsuleId,
                 showToast = showToast,
                 onAction = viewModel::onAction,
             )
         }
-        is UiState.Error -> Unit
+
+        MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
     }
 }
 
@@ -153,7 +153,7 @@ fun DetailScreen(
             confirmText = "묻기",
             cancelText = "취소",
             onConfirm = {
-                onAction(DetailAction.BuryTimeCapsule(selectedOpenAt))
+                onAction(DetailAction.BuryConfirmClicked(selectedOpenAt))
                 showBuryDialog = false
             },
             onCancel = { showBuryDialog = false },
@@ -234,7 +234,7 @@ fun DetailScreen(
                     .align(Alignment.TopStart)
                     .padding(top = 20.dp, start = 20.dp)
                     .size(32.dp)
-                    .noRippleClickable { onAction(DetailAction.NavigateToBack) },
+                    .noRippleClickable { onAction(DetailAction.BackClicked) },
                 painter = painterResource(R.drawable.btn_detail_back),
                 contentDescription = "Close"
             )
@@ -246,7 +246,7 @@ fun DetailScreen(
                     .size(32.dp)
                     .noRippleClickable {
                         onAction(
-                            DetailAction.NavigateToManagement(
+                            DetailAction.ManagementClicked(
                                 id = capsuleId,
                                 title = capsule?.title.orEmpty(),
                             )
@@ -447,7 +447,7 @@ fun DetailScreen(
                 Image(
                     modifier = Modifier
                         .size(16.dp)
-                        .noRippleClickable { onAction(DetailAction.NavigateToMessage(capsuleId)) },
+                        .noRippleClickable { onAction(DetailAction.MessageSectionClicked(capsuleId)) },
                     painter = painterResource(R.drawable.ic_chevron_right),
                     contentDescription = "추억 메시지 상세 아이콘"
                 )
@@ -473,7 +473,7 @@ fun DetailScreen(
                     )
                     Spacer(Modifier.height(4.dp))
                     MSText(
-                        text = "2개 등록",
+                        text = "${capsule?.myContentCount}개 등록",
                         fontSize = 12.dp,
                         fontWeight = FontWeight.Medium,
                         color = MSTheme.color.primaryDark,
@@ -497,7 +497,7 @@ fun DetailScreen(
                     )
                     Spacer(Modifier.height(4.dp))
                     MSText(
-                        text = "12개 등록",
+                        text = "${capsule?.myImageCount}개 등록",
                         fontSize = 12.dp,
                         fontWeight = FontWeight.Medium,
                         color = MSTheme.color.primaryDark,
@@ -524,7 +524,7 @@ fun DetailScreen(
                 Image(
                     modifier = Modifier
                         .size(16.dp)
-                        .noRippleClickable { onAction(DetailAction.NavigateToFriend(capsuleId)) },
+                        .noRippleClickable { onAction(DetailAction.MemberSectionClicked(capsuleId)) },
                     painter = painterResource(R.drawable.ic_chevron_right),
                     contentDescription = "추억 메시지 상세 아이콘"
                 )

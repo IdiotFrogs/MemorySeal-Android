@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
@@ -60,15 +61,13 @@ fun EditProfileRoute(
         }
     }
 
-    when (val state = uiState) {
-        UiState.Init -> Unit
-        is UiState.Success -> {
-            EditProfileScreen(
-                data = state.data,
-                onAction = viewModel::onAction
-            )
-        }
-        is UiState.Error -> Unit
+    Box(modifier = Modifier.fillMaxSize()) {
+        EditProfileScreen(
+            data = state.data,
+            onAction = viewModel::onAction
+        )
+
+        MSLoadingOverlay(visible = uiState.isLoading)
     }
 }
 
@@ -116,13 +115,13 @@ fun EditProfileScreen(
     ) {
         ProfileHeader(
             isChanged = isChanged,
-            onBack = { onAction(EditProfileAction.NavigateToBack) },
+            onBack = { onAction(EditProfileAction.BackClicked) },
             onSave = {
                 val file = imageUri?.toFile(context, "profileImage")
 
                 data.user?.let {
                     onAction.invoke(
-                        EditProfileAction.UpdateMyProfile(
+                        EditProfileAction.UpdateProfile(
                             userId = it.id,
                             profileImage = file,
                             nickname = textFieldState.text.toString(),

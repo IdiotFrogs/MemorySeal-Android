@@ -8,7 +8,7 @@ import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.model.user.ProfileResponse
-import com.idiotfrogs.util.UiState
+import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.sideEffect.RefreshEvent
 import com.idiotfrogs.util.sideEffect.RefreshSideEffect
@@ -23,10 +23,10 @@ class HomeViewModel @Inject constructor(
     private val getMyTimeCapsuleUseCase: GetMyTimeCapsuleUseCase,
     private val getMyProfileUseCase: GetMyProfileUseCase,
     private val requestCollaboratorUseCase: RequestCollaboratorUseCase,
-): BaseViewModel<UiState<HomeData>, HomeSideEffect, HomeAction>() {
+): BaseViewModel<HomeUiState, HomeSideEffect, HomeAction>() {
 
-    override val container: Container<UiState<HomeData>, HomeSideEffect> = container(
-        initialState = UiState.Init,
+    override val container: Container<HomeUiState, HomeSideEffect> = container(
+        initialState = HomeUiState(),
         onCreate = {
             fetchHome()
             RefreshSideEffect.events.collect { if (it is RefreshEvent.Home) fetchHome() }
@@ -35,6 +35,8 @@ class HomeViewModel @Inject constructor(
 
     private fun fetchHome() {
         safeLaunch {
+            intent { reduce { state.copy(isLoading = true) } }
+
             val userDeferred = async { getMyProfileUseCase() }
             val capsulesDeferred = async { getMyTimeCapsuleUseCase() }
 
@@ -45,14 +47,18 @@ class HomeViewModel @Inject constructor(
 
             intent {
                 if (results.any { it.isFailure }) {
-                    reduce { UiState.Error(results.first { it.isFailure }.exceptionOrNull()?.message) }
+                    val errorMessage = results.first { it.isFailure }.exceptionOrNull()?.message
+
+                    reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
                 } else {
                     reduce {
-                        UiState.Success(
-                            HomeData(
+                        state.copy(
+                            data = HomeData(
                                 user = userResult.getOrNull(),
                                 capsules = capsulesResult.getOrNull() ?: emptyMap(),
-                            )
+                            ),
+                            isLoading = false,
+                            errorMessage = null,
                         )
                     }
                 }
@@ -61,9 +67,15 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun requestCollaborator(body: PendingCollaboratorsRequest) = safeLaunch {
+        intent { reduce { state.copy(isLoading = true) } }
+
         requestCollaboratorUseCase(body).onSuccess {
-            intent { postSideEffect(HomeSideEffect.ShowToast) }
+            intent {
+                reduce { state.copy(isLoading = false, errorMessage = null) }
+                postSideEffect(HomeSideEffect.ShowToast)
+            }
         }.onFailure {
+            intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
             // TODO 추 후 에러 핸들링 맞추기 (공동 작업자 이미 신청한 사용자라면 409)
         }
     }
@@ -71,14 +83,21 @@ class HomeViewModel @Inject constructor(
     override fun onAction(action: HomeAction) {
         intent {
             when (action) {
-                HomeAction.NavigateToCreate -> postSideEffect(HomeSideEffect.NavigateToCreate)
-                HomeAction.NavigateToProfile -> postSideEffect(HomeSideEffect.NavigateToProfile)
-                is HomeAction.NavigateToDetail -> postSideEffect(HomeSideEffect.NavigateToDetail(action.id))
-                is HomeAction.RequestCollaborator -> requestCollaborator(PendingCollaboratorsRequest(action.code))
+                HomeAction.CreateClicked -> postSideEffect(HomeSideEffect.NavigateToCreate)
+                HomeAction.ProfileClicked -> postSideEffect(HomeSideEffect.NavigateToProfile)
+                is HomeAction.TimeCapsuleClicked -> postSideEffect(HomeSideEffect.NavigateToDetail(action.id))
+                is HomeAction.JoinCodeSubmitted -> requestCollaborator(PendingCollaboratorsRequest(action.code))
             }
         }
     }
 }
+
+@Immutable
+data class HomeUiState(
+    override val data: HomeData? = null,
+    override val isLoading: Boolean = false,
+    override val errorMessage: String? = null,
+) : DataUiState<HomeData>
 
 @Immutable
 data class HomeData(
@@ -87,11 +106,10 @@ data class HomeData(
 )
 
 sealed interface HomeAction {
-    data object NavigateToCreate : HomeAction
-    data object NavigateToProfile : HomeAction
-    data class NavigateToDetail(val id: Long) : HomeAction
-
-    data class RequestCollaborator(val code: String) : HomeAction
+    data object CreateClicked : HomeAction
+    data object ProfileClicked : HomeAction
+    data class TimeCapsuleClicked(val id: Long) : HomeAction
+    data class JoinCodeSubmitted(val code: String) : HomeAction
 }
 
 sealed interface HomeSideEffect {

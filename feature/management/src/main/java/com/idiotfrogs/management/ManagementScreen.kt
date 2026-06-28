@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDetailHeader
 import com.idiotfrogs.designsystem.component.MSDim
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTitleDialog
 import com.idiotfrogs.designsystem.theme.MSTheme
@@ -45,7 +46,6 @@ import com.idiotfrogs.management.component.ManagementDeleteContainer
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
-import com.idiotfrogs.util.UiState
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -68,16 +68,14 @@ fun ManagementRoute(
         }
     }
 
-    when (uiState) {
-        UiState.Init -> Unit
-        is UiState.Success -> {
-            ManagementScreen(
-                capsuleId = capsuleId,
-                capsuleTitle = capsuleTitle,
-                onAction = viewModel::onAction
-            )
-        }
-        is UiState.Error -> Unit
+    Box(modifier = Modifier.fillMaxSize()) {
+        ManagementScreen(
+            capsuleId = capsuleId,
+            capsuleTitle = capsuleTitle,
+            onAction = viewModel::onAction
+        )
+
+        MSLoadingOverlay(visible = uiState.isLoading)
     }
 
     if (showCannotExitDialog) {
@@ -119,14 +117,14 @@ fun ManagementScreen(
             MSDetailHeader(
                 title = "티켓 관리",
                 fontSize = 20.dp,
-                navigateToBack = { onAction(ManagementAction.NavigateToBack) },
+                navigateToBack = { onAction(ManagementAction.BackClicked) },
                 paddingValues = PaddingValues(horizontal = 0.dp, vertical = 16.dp)
             )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp)
-                    .noRippleClickable { onAction.invoke(ManagementAction.NavigateToFriend) },
+                    .noRippleClickable { onAction.invoke(ManagementAction.MemberClicked) },
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -231,7 +229,7 @@ fun ManagementScreen(
             textFieldState = textFieldState,
             capsuleTitle = capsuleTitle,
             onDelete = {
-                onAction(ManagementAction.DeleteCapsule(capsuleId))
+                onAction(ManagementAction.DeleteCapsuleConfirmed(capsuleId))
                 showDeleteContainer = false
             },
             onCancel = { showDeleteContainer = false }
@@ -241,7 +239,7 @@ fun ManagementScreen(
                 title = "정말 티켓을 나가시겠습니까?",
                 onConfirm = {
                     showExitDialog = false
-                    onAction.invoke(ManagementAction.LeaveTimeCapsule(capsuleId))
+                    onAction.invoke(ManagementAction.LeaveCapsuleConfirmed(capsuleId))
                 },
                 cancelText = "취소",
                 onCancel = { showExitDialog = false },

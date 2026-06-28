@@ -1,5 +1,6 @@
 package com.idiotfrogs.profile.editprofile
 
+import com.idiotfrogs.util.base.BaseUiState
 import android.util.Log
 import androidx.compose.runtime.Immutable
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
@@ -24,9 +25,9 @@ import javax.inject.Inject
 class EditProfileViewModel @Inject constructor(
     private val getMyProfileUseCase: GetMyProfileUseCase,
     private val updateMyProfileUseCase: UpdateMyProfileUseCase,
-) : BaseViewModel<UiState<EditProfileData>, EditProfileSideEffect, EditProfileAction>() {
+) : BaseViewModel<EditProfileUiState, EditProfileSideEffect, EditProfileAction>() {
 
-    override val container: Container<UiState<EditProfileData>, EditProfileSideEffect> = container(
+    override val container: Container<EditProfileData, EditProfileSideEffect> = container(
         initialState = UiState.Init,
         onCreate = {
             safeLaunch {
@@ -37,18 +38,16 @@ class EditProfileViewModel @Inject constructor(
 
     override fun onAction(action: EditProfileAction) {
         when (action) {
-            is EditProfileAction.UpdateMyProfile -> {
-                updateMyProfile(action.userId, action.profileImage, action.nickname)
-            }
-            EditProfileAction.NavigateToBack -> {
-                intent { postSideEffect(EditProfileSideEffect.NavigateToBack) }
+            EditProfileAction.NavigateToBack -> intent { postSideEffect(EditProfileSideEffect.NavigateToBack) }
+            is EditProfileAction.UpdateProfile -> {
+                updateProfile(action.userId, action.profileImage, action.nickname)
             }
         }
     }
 
-
     private fun fetchProfile() {
         safeLaunch {
+            intent { reduce { UiState.} }
             val result = getMyProfileUseCase()
 
             intent {
@@ -63,36 +62,35 @@ class EditProfileViewModel @Inject constructor(
                 }
             }
         }
-    }
 
-    private fun updateMyProfile(userId: Long, profileImage: File?, nickname: String) {
-        safeLaunch {
-            updateMyProfileUseCase(
-                userId = userId,
-                profileImage = profileImage,
-                nickname = nickname
-            )
-                .onSuccess {
-                    RefreshSideEffect.tryEmit(RefreshEvent.Profile)
-                    intent { postSideEffect(EditProfileSideEffect.NavigateToBack) }
-                }
-                .onFailure {
-                    Log.d("TAG", "updateMyProfile: ${it.message}")
-                }
+        private fun updateMyProfile(userId: Long, profileImage: File?, nickname: String) {
+            safeLaunch {
+                updateMyProfileUseCase(
+                    userId = userId,
+                    profileImage = profileImage,
+                    nickname = nickname
+                )
+                    .onSuccess {
+                        RefreshSideEffect.tryEmit(RefreshEvent.Profile)
+                        intent { postSideEffect(com.idiotfrogs.profile.editprofile.EditProfileSideEffect.NavigateToBack) }
+                    }
+                    .onFailure {
+                        Log.d("TAG", "updateMyProfile: ${it.message}")
+                    }
+            }
         }
     }
-}
 
-@Immutable
-data class EditProfileData(
-    val user: ProfileResponse? = null,
-)
+data class EditProfileUiState(
+    override val isLoading: Boolean = false,
+    override val errorMessage: String? = null,
+) : BaseUiState
 
 sealed interface EditProfileAction {
-    data class UpdateMyProfile(
+    data object BackClicked : EditProfileAction
+    data class UpdateProfile(
         val userId: Long, val profileImage: File?, val nickname: String
-    ) : EditProfileAction
-    data object NavigateToBack : EditProfileAction
+    ): EditProfileAction
 }
 
 sealed interface EditProfileSideEffect {

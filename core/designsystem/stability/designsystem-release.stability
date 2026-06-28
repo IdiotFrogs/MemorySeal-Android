@@ -120,6 +120,22 @@ public fun com.idiotfrogs.designsystem.component.MSGalleryLayout(images: kotlin.
     - isSeal: STABLE (primitive type)
 
 @Composable
+public fun com.idiotfrogs.designsystem.component.MSLoadingIndicator(modifier: androidx.compose.ui.Modifier): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+
+@Composable
+public fun com.idiotfrogs.designsystem.component.MSLoadingOverlay(visible: kotlin.Boolean, modifier: androidx.compose.ui.Modifier, dimColor: androidx.compose.ui.graphics.Color): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - visible: STABLE (primitive type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - dimColor: STABLE (marked @Stable or @Immutable)
+
+@Composable
 public fun com.idiotfrogs.designsystem.component.MSMenuFab(modifier: androidx.compose.ui.Modifier, expanded: kotlin.Boolean, hasFab: kotlin.Boolean, offset: androidx.compose.ui.unit.DpOffset, menuList: kotlin.collections.List<com.idiotfrogs.designsystem.model.MSMenuFabModel>, onClick: kotlin.Function0<kotlin.Unit>, onDismiss: kotlin.Function0<kotlin.Unit>): kotlin.Unit
   skippable: false
   restartable: true

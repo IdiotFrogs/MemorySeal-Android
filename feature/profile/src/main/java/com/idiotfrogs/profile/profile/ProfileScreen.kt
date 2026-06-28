@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSDashHorizontalDivider
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
@@ -60,15 +61,15 @@ fun ProfileRoute(
         }
     }
 
-    when (val state = uiState) {
-        UiState.Init -> Unit
-        is UiState.Success -> {
+    Box(modifier = Modifier.fillMaxSize()) {
+        uiState.data?.let { data ->
             ProfileScreen(
-                data = state.data,
+                data = data,
                 onAction = viewModel::onAction
             )
         }
-        is UiState.Error -> Unit
+
+        MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
     }
 }
 
@@ -84,8 +85,8 @@ fun ProfileScreen(
     ) {
         ProfileHeader(
             modifier = Modifier.zIndex(1f),
-            onBack = { onAction(ProfileAction.NavigateToBack) },
-            onSetting = { onAction(ProfileAction.NavigateToSetting) }
+            onBack = { onAction(ProfileAction.BackClicked) },
+            onSetting = { onAction(ProfileAction.SettingClicked) }
         )
         LazyVerticalGrid(
             modifier = Modifier
@@ -101,7 +102,7 @@ fun ProfileScreen(
                     modifier = Modifier.padding(top = (HeaderHeight + 24).dp),
                     nickname = data.user?.nickname ?: "",
                     imageUrl = data.user?.profileImageUrl?.ifEmpty { null },
-                    onEditClick = { onAction(ProfileAction.NavigateToEditProfile) }
+                    onEditClick = { onAction(ProfileAction.EditProfileClicked) }
                 )
             }
             maxLineItem {
@@ -126,7 +127,7 @@ fun ProfileScreen(
                     imageUrl = it.mainImageUrl,
                     title = it.title,
                     date = it.createdAt.toYearMonthDay(),
-                    onClick = { onAction.invoke(ProfileAction.NavigateToDetail(it.timeCapsuleId))}
+                    onClick = { onAction.invoke(ProfileAction.TicketClicked(it.timeCapsuleId))}
                 )
             }
         }
