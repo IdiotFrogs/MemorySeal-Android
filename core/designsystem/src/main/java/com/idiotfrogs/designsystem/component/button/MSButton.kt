@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
@@ -33,6 +34,7 @@ fun MSButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isRounded: Boolean = true,
+    cornerRadius: Dp = 12.dp,
     colors: ButtonColors = ButtonDefaults.buttonColors(
         containerColor = MSTheme.color.primaryNormal,
         disabledContainerColor = MSTheme.color.primaryLight
@@ -51,7 +53,7 @@ fun MSButton(
 ) {
     val isPressed by interactionSource.collectIsPressedAsState()
     val cornerRadius by animateDpAsState(
-        targetValue = if (isRounded) 12.dp else 0.dp,
+        targetValue = if (isRounded) cornerRadius else 0.dp,
         animationSpec = tween(durationMillis = 300),
         label = "cornerRadiusAnimation",
     )

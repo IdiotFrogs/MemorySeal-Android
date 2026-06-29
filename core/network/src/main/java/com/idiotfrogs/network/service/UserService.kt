@@ -24,8 +24,8 @@ interface UserService {
     @Multipart
     suspend fun updateMyProfile(
         @Path("userId") userId: Long,
-        @Part("profileImage") profileImage: MultipartBody.Part,
-        @Part("userUpdateDto") userUpdateRequest: UserUpdateRequest
+        @Part profileImage: MultipartBody.Part,
+        @Query("nickname") nickname: String
     ): UserResponse
 
     @PATCH("users/sign-up")

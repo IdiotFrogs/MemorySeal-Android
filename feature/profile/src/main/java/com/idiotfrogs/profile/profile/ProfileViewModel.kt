@@ -6,8 +6,8 @@ import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.model.user.ProfileResponse
-import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.sideEffect.RefreshEvent
 import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -77,6 +77,7 @@ class ProfileViewModel @Inject constructor(
             ProfileAction.EditProfileClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToEditProfile) }
             ProfileAction.SettingClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToSetting) }
             ProfileAction.BackClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToBack) }
+            is ProfileAction.TicketClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToDetail(action.id))}
         }
     }
 }
@@ -98,10 +99,12 @@ sealed interface ProfileAction {
     data object SettingClicked : ProfileAction
     data object EditProfileClicked : ProfileAction
     data object BackClicked : ProfileAction
+    data class TicketClicked(val id: Long) : ProfileAction
 }
 
 sealed interface ProfileSideEffect {
     data object NavigateToSetting : ProfileSideEffect
     data object NavigateToEditProfile : ProfileSideEffect
     data object NavigateToBack : ProfileSideEffect
+    data class NavigateToDetail(val id: Long) : ProfileSideEffect
 }

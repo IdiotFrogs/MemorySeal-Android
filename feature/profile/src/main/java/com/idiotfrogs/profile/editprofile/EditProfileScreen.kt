@@ -1,6 +1,5 @@
 package com.idiotfrogs.profile.editprofile
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -23,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,7 +35,9 @@ import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberPickerState
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.extension.toFile
+import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.profile.component.EditProfileBottomSheet
 import com.idiotfrogs.profile.component.ProfileHeader
@@ -58,37 +60,51 @@ fun EditProfileRoute(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        EditProfileScreen(onAction = viewModel::onAction)
-
+        uiState.data?.let { data ->
+            EditProfileScreen(
+                data = data,
+                onAction = viewModel::onAction
+            )
+        }
         MSLoadingOverlay(visible = uiState.isLoading)
     }
 }
 
 @Composable
 fun EditProfileScreen(
+    data: EditProfileData,
     onAction: (EditProfileAction) -> Unit
 ) {
     val context = LocalContext.current
 
     var isChanged by remember { mutableStateOf(false) }
     var showBottomSheet by remember { mutableStateOf(false) }
+    // 기본 이미지 사용 플래그 (이미지 없는 경우와 구분 용도)
+    var useDefaultImage by remember { mutableStateOf(false) }
 
     val pickerState = rememberPickerState()
     var imageUri by remember(pickerState.first) { mutableStateOf(pickerState.first) }
     val launchImagePicker = pickerState.second
 
-    val textFieldState = rememberTextFieldState()
+    val user = data.user ?: return // 유저 정보 없을 시 early-return
 
-    LaunchedEffect(textFieldState.text) {
-        // TODO: 추후 기존 프로필과 비교 로직 작성
-        isChanged = textFieldState.text.isNotEmpty()
+    val textFieldState = rememberTextFieldState(initialText = user.nickname)
+
+
+    LaunchedEffect(textFieldState.text, imageUri) {
+        isChanged = user.nickname != textFieldState.text || // 닉네임이 변경 되었거나
+                imageUri != null // 이미지가 로드되어 Uri가 채워진 경우
     }
 
     if (showBottomSheet) {
         EditProfileBottomSheet(
             onDismiss = { showBottomSheet = false },
             onSelectImage = { launchImagePicker() },
-            onDefaultImage = { imageUri = null }
+            onDefaultImage = {
+                useDefaultImage = true // 기본 이미지
+                imageUri = null
+                isChanged = true
+            }
         )
     }
 
@@ -104,29 +120,87 @@ fun EditProfileScreen(
             onBack = { onAction(EditProfileAction.BackClicked) },
             onSave = {
                 val file = imageUri?.toFile(context, "profileImage")
-                Log.d("test", file?.name.toString())
-                /** TODO: 저장 로직 */
-                onAction(EditProfileAction.SaveClicked)
+
+                onAction.invoke(
+                    EditProfileAction.UpdateProfile(
+                        userId = user.id,
+                        profileImage = file,
+                        nickname = textFieldState.text.toString()
+                    )
+                )
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
-        imageUri?.let {
-            GlideImage(
-                imageModel = { imageUri },
+        if (imageUri != null && !useDefaultImage) {
+            Box(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                GlideImage(
+                    imageModel = { imageUri ?: user.profileImageUrl }, // 둘 중 하나는 not-null
+                    modifier = Modifier
+                        .noRippleClickable { showBottomSheet = true }
+                        .size(120.dp)
+                        .clip(CircleShape)
+                )
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .size(40.dp)
+                        .wavyStroke(
+                            color = MSTheme.color.black,
+                            cornerRadius = 20.dp,
+                            fillColor = MSTheme.color.black,
+                            amplitude = 1.dp,
+                            spacing = 1.dp
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(R.drawable.ic_edit),
+                        contentDescription = "edit",
+                        colorFilter = ColorFilter.tint(MSTheme.color.white)
+                    )
+                }
+            }
+        } else {
+            Box(
                 modifier = Modifier
-                    .noRippleClickable { showBottomSheet = true }
-                    .size(128.dp)
-                    .clip(CircleShape)
-                    .align(Alignment.CenterHorizontally),
-            )
-        } ?: Image(
-            modifier = Modifier
-                .noRippleClickable { showBottomSheet = true }
-                .size(128.dp)
-                .align(Alignment.CenterHorizontally),
-            painter = painterResource(R.drawable.img_empty_profile),
-            contentDescription = "Profile"
-        )
+                    .size(120.dp)
+                    .background(
+                        color = MSTheme.color.greyG1,
+                        shape = CircleShape
+                    )
+                    .align(Alignment.CenterHorizontally)
+                    .noRippleClickable { showBottomSheet = true },
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    modifier = Modifier.size(48.dp),
+                    painter = painterResource(R.drawable.ic_photo),
+                    contentDescription = "photo",
+                    colorFilter = ColorFilter.tint(MSTheme.color.greyG3)
+                )
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .size(40.dp)
+                        .wavyStroke(
+                            color = MSTheme.color.black,
+                            cornerRadius = 20.dp,
+                            fillColor = MSTheme.color.black,
+                            amplitude = 1.dp,
+                            spacing = 1.dp
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(R.drawable.ic_edit),
+                        contentDescription = "edit",
+                        colorFilter = ColorFilter.tint(MSTheme.color.white)
+                    )
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(16.dp))
         MSText(
             text = "닉네임",
@@ -146,5 +220,16 @@ fun EditProfileScreen(
 @Preview
 @Composable
 fun EditProfileScreenPreview() {
-    EditProfileScreen(onAction = {})
+    EditProfileScreen(
+        data = EditProfileData(
+            user = ProfileResponse(
+                id = 0L,
+                nickname = "",
+                profileImageUrl = "",
+                email = "",
+                isOnboarding = true,
+            )
+        ),
+        onAction = {}
+    )
 }
