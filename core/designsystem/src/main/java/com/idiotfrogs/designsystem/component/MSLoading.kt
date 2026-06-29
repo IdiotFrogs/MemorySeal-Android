@@ -43,7 +43,7 @@ import com.idiotfrogs.resource.R
 fun MSLoadingOverlay(
     visible: Boolean,
     modifier: Modifier = Modifier,
-    dimColor: Color = Color(0x3D444444),
+    dimColor: Color = Color(0x80000000),
 ) {
     AnimatedVisibility(
         visible = visible,

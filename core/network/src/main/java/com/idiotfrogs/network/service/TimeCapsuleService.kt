@@ -2,6 +2,7 @@ package com.idiotfrogs.network.service
 
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
+import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
@@ -92,10 +93,14 @@ interface TimeCapsuleService {
     )
 
     @GET("api/time-capsule-content/{timeCapsuleId}/contents")
-    suspend fun getTimeCapsuleContent(@Path("timeCapsuleId") timeCapsuleId: Long): List<TimeCapsuleContentResponse>
+    suspend fun getTimeCapsuleContent(
+        @Path("timeCapsuleId") timeCapsuleId: Long,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+    ): TimeCapsuleContentResponse
 
     @GET("api/time-capsule-content/{timeCapsuleId}/my-contents")
-    suspend fun getMyTimeCapsuleContent(@Path("timeCapsuleId") timeCapsuleId: Long): List<CapsuleContentsData>
+    suspend fun getMyTimeCapsuleContent(@Path("timeCapsuleId") timeCapsuleId: Long): List<MyCapsuleContentsData>
 
     @POST("api/time-capsule-content/{timeCapsuleId}")
     @Multipart
@@ -112,5 +117,8 @@ interface TimeCapsuleService {
     ): CapsuleContentsData
 
     @DELETE("api/time-capsule-content")
-    suspend fun deleteTimeCapsuleContent(@Query("contentIds") contentIds: List<Long>)
+    suspend fun deleteTimeCapsuleContent(
+        @Query("contentIds") contentIds: List<Long>,
+        @Query("fileIds") fileIds: List<Long>,
+    )
 }

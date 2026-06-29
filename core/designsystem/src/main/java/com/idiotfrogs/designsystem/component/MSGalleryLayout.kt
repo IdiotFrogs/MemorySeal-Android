@@ -15,6 +15,8 @@ import com.idiotfrogs.resource.R
 
 @Composable
 fun MSGalleryLayout(images: List<String>, isSeal: Boolean) {
+    if (images.isEmpty()) return
+
     Box(
         modifier = Modifier
             .width(if (images.size != 1) 284.dp else 142.dp)
@@ -26,18 +28,51 @@ fun MSGalleryLayout(images: List<String>, isSeal: Boolean) {
             2 -> RowImages(images, isFirstRow = true)
             3 -> RowImages(images, isFirstRow = false)
             4 -> TwoByTwo(images)
-            else -> PatternRowsBigFirst(images)
+            else -> PatternRows(images)
         }
     }
 }
 
 @Composable
-fun SingleImage(image: String) {
-    GlideImage(
-        imageModel = { image },
+private fun SingleImage(image: String) {
+    GalleryImage(
+        image = image,
         modifier = Modifier
             .fillMaxWidth()
             .height(160.dp),
+    )
+}
+
+@Composable
+private fun RowImages(images: List<String>, isFirstRow: Boolean) {
+    val width = when (images.size) {
+        1 -> 284.dp
+        2 -> 142.dp
+        3 -> (284f / 3f).dp
+        else -> 0.dp
+    }
+    val height = if (isFirstRow) 160.dp else 107.dp
+
+    Row(modifier = Modifier.fillMaxWidth()) {
+        images.forEach { image ->
+            GalleryImage(
+                image = image,
+                modifier = Modifier
+                    .width(width)
+                    .height(height),
+            )
+        }
+    }
+}
+
+@Composable
+private fun GalleryImage(
+    image: String,
+    modifier: Modifier = Modifier,
+) {
+    GlideImage(
+        imageModel = { image },
+        modifier = modifier,
         loading = {
             Image(
                 painter = painterResource(R.drawable.img_sample),
@@ -56,43 +91,7 @@ fun SingleImage(image: String) {
 }
 
 @Composable
-fun RowImages(images: List<String>, isFirstRow: Boolean) {
-    val width = when (images.size) {
-        1 -> 284.dp
-        2 -> 142.dp
-        3 -> (284f / 3f).dp
-        else -> 0.dp
-    }
-    val height = if (isFirstRow) 160.dp else 107.dp
-
-    Row(modifier = Modifier.fillMaxWidth()) {
-        images.forEach { image ->
-            GlideImage(
-                imageModel = { image },
-                modifier = Modifier
-                    .width(width)
-                    .height(height),
-                loading = {
-                    Image(
-                        painter = painterResource(R.drawable.img_sample),
-                        contentDescription = "Loading",
-                        contentScale = ContentScale.Crop,
-                    )
-                },
-                failure = {
-                    Image(
-                        painter = painterResource(R.drawable.img_sample),
-                        contentDescription = "Failure",
-                        contentScale = ContentScale.Crop,
-                    )
-                }
-            )
-        }
-    }
-}
-
-@Composable
-fun TwoByTwo(images: List<String>) {
+private fun TwoByTwo(images: List<String>) {
     Column(modifier = Modifier.fillMaxWidth()) {
         for (row in 0 until 2) {
             RowImages(images.subList(row * 2, row * 2 + 2), isFirstRow = false)
@@ -101,12 +100,11 @@ fun TwoByTwo(images: List<String>) {
 }
 
 @Composable
-fun PatternRowsBigFirst(images: List<String>) {
+private fun PatternRows(images: List<String>) {
     Column(
         modifier = Modifier.fillMaxWidth()) {
         var index = 0
         val total = images.size
-        var rowIndex = 0
 
         while (index < total) {
             val remaining = total - index
@@ -120,7 +118,6 @@ fun PatternRowsBigFirst(images: List<String>) {
             RowImages(subList, isFirstRow = false)
 
             index += rowSize
-            rowIndex++
         }
     }
 }

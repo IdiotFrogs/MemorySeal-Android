@@ -4,6 +4,7 @@ import com.idiotfrogs.data.datasource.timecapsule.TimeCapsuleDataSource
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
@@ -105,11 +106,19 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
         return timeCapsuleDataSource.leaveTimeCapsule(capsuleId)
     }
 
-    override suspend fun getTimeCapsuleContent(timeCapsuleId: Long): List<TimeCapsuleContentResponse> {
-        return timeCapsuleDataSource.getTimeCapsuleContent(timeCapsuleId)
+    override suspend fun getTimeCapsuleContent(
+        timeCapsuleId: Long,
+        page: Int,
+        size: Int,
+    ): TimeCapsuleContentResponse {
+        return timeCapsuleDataSource.getTimeCapsuleContent(
+            timeCapsuleId = timeCapsuleId,
+            page = page,
+            size = size
+        )
     }
 
-    override suspend fun getMyTimeCapsuleContent(timeCapsuleId: Long): List<CapsuleContentsData> {
+    override suspend fun getMyTimeCapsuleContent(timeCapsuleId: Long): List<MyCapsuleContentsData> {
         return timeCapsuleDataSource.getMyTimeCapsuleContent(timeCapsuleId)
     }
 
@@ -141,7 +150,13 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun deleteTimeCapsuleContent(contentIds: List<Long>) {
-        return timeCapsuleDataSource.deleteTimeCapsuleContent(contentIds)
+    override suspend fun deleteTimeCapsuleContent(
+        contentIds: List<Long>,
+        fileIds: List<Long>,
+    ) {
+        return timeCapsuleDataSource.deleteTimeCapsuleContent(
+            contentIds = contentIds,
+            fileIds = fileIds
+        )
     }
 }
