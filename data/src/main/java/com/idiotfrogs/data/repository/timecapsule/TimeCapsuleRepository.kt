@@ -3,6 +3,7 @@ package com.idiotfrogs.data.repository.timecapsule
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
@@ -62,9 +63,13 @@ interface TimeCapsuleRepository {
 
     suspend fun leaveTimeCapsule(capsuleId: Long)
 
-    suspend fun getTimeCapsuleContent(timeCapsuleId: Long): List<TimeCapsuleContentResponse>
+    suspend fun getTimeCapsuleContent(
+        timeCapsuleId: Long,
+        page: Int,
+        size: Int,
+    ): TimeCapsuleContentResponse
 
-    suspend fun getMyTimeCapsuleContent(timeCapsuleId: Long): List<CapsuleContentsData>
+    suspend fun getMyTimeCapsuleContent(timeCapsuleId: Long): List<MyCapsuleContentsData>
 
     suspend fun createTimeCapsuleContent(
         timeCapsuleId: Long,
@@ -77,5 +82,8 @@ interface TimeCapsuleRepository {
         content: String,
     ): CapsuleContentsData
 
-    suspend fun deleteTimeCapsuleContent(contentIds: List<Long>)
+    suspend fun deleteTimeCapsuleContent(
+        contentIds: List<Long>,
+        fileIds: List<Long>,
+    )
 }

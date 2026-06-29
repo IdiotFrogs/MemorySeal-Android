@@ -5,7 +5,7 @@ import com.idiotfrogs.domain.usecase.timecapsule.CreateTimeCapsuleContentUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.DeleteTimeCapsuleContentUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleContentUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.ModifyTimeCapsuleContentUseCase
-import com.idiotfrogs.model.timecapsule.CapsuleContentsData
+import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.sideEffect.RefreshEvent
@@ -61,17 +61,19 @@ class MessageViewModel @AssistedInject constructor(
                 timeCapsuleId = capsuleId,
                 content = content,
                 files = files
-            ).onSuccess { response ->
-                intent {
-                    reduce {
-                        val currentData = state.data ?: MessageData()
-
-                        state.copy(
-                            data = currentData.copy(contents = currentData.contents + response),
-                            isLoading = false,
-                            errorMessage = null,
-                        )
+            ).onSuccess {
+                getMyTimeCapsuleContentUseCase(capsuleId).onSuccess { contents ->
+                    intent {
+                        reduce {
+                            state.copy(
+                                data = MessageData(contents = contents),
+                                isLoading = false,
+                                errorMessage = null,
+                            )
+                        }
                     }
+                }.onFailure {
+                    intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
                 }
                 RefreshSideEffect.tryEmit(RefreshEvent.Detail(capsuleId))
             }.onFailure {
@@ -98,7 +100,11 @@ class MessageViewModel @AssistedInject constructor(
                         state.copy(
                             data = currentData.copy(
                                 contents = currentData.contents.map { content ->
-                                    if (content.contentId == response.contentId) response else content
+                                    if (content.contentId == response.contentId) {
+                                        content.copy(content = response.content)
+                                    } else {
+                                        content
+                                    }
                                 }
                             ),
                             isLoading = false,
@@ -112,18 +118,34 @@ class MessageViewModel @AssistedInject constructor(
         }
     }
 
-    private fun deleteTimeCapsuleContent(contentIds: List<Long>) {
+    private fun deleteTimeCapsuleContent(
+        contentIds: List<Long>,
+        fileIds: List<Long>,
+    ) {
         safeLaunch {
             intent { reduce { state.copy(isLoading = true) } }
 
-            deleteTimeCapsuleContentUseCase(contentIds).onSuccess {
+            deleteTimeCapsuleContentUseCase(contentIds, fileIds).onSuccess {
                 intent {
                     reduce {
                         val currentData = state.data ?: MessageData()
 
                         state.copy(
                             data = currentData.copy(
-                                contents = currentData.contents.filterNot { it.contentId in contentIds }
+                                contents = currentData.contents.mapNotNull { content ->
+                                    if (fileIds.isEmpty() && content.contentId in contentIds) {
+                                        return@mapNotNull null
+                                    }
+
+                                    val remainingFiles = content.attachedFiles
+                                        ?.filterNot { it.id in fileIds }
+
+                                    if (content.content.isNullOrBlank() && remainingFiles.isNullOrEmpty()) {
+                                        null
+                                    } else {
+                                        content.copy(attachedFiles = remainingFiles)
+                                    }
+                                }
                             ),
                             isLoading = false,
                             errorMessage = null,
@@ -143,6 +165,10 @@ class MessageViewModel @AssistedInject constructor(
                 postSideEffect(MessageSideEffect.NavigateToBack)
             }
 
+            MessageAction.PreviewClicked -> intent {
+                postSideEffect(MessageSideEffect.NavigateToPreview(capsuleId))
+            }
+
             is MessageAction.ContentCreateSubmitted -> createTimeCapsuleContent(
                 content = action.content,
                 files = action.files
@@ -153,7 +179,10 @@ class MessageViewModel @AssistedInject constructor(
                 content = action.content
             )
 
-            is MessageAction.ContentDeleteConfirmed -> deleteTimeCapsuleContent(action.contentIds)
+            is MessageAction.ContentDeleteConfirmed -> deleteTimeCapsuleContent(
+                contentIds = action.contentIds,
+                fileIds = action.fileIds
+            )
         }
     }
 
@@ -165,7 +194,7 @@ class MessageViewModel @AssistedInject constructor(
 
 @Immutable
 data class MessageData(
-    val contents: List<CapsuleContentsData> = emptyList(),
+    val contents: List<MyCapsuleContentsData> = emptyList(),
 )
 
 @Immutable
@@ -177,6 +206,7 @@ data class MessageUiState(
 
 sealed interface MessageAction {
     data object BackClicked : MessageAction
+    data object PreviewClicked : MessageAction
 
     data class ContentCreateSubmitted(
         val content: String,
@@ -190,9 +220,11 @@ sealed interface MessageAction {
 
     data class ContentDeleteConfirmed(
         val contentIds: List<Long>,
+        val fileIds: List<Long>,
     ) : MessageAction
 }
 
 sealed interface MessageSideEffect {
     data object NavigateToBack : MessageSideEffect
+    data class NavigateToPreview(val id: Long) : MessageSideEffect
 }
