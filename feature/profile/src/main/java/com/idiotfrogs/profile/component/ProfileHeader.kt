@@ -43,15 +43,15 @@ fun ProfileHeader(
         MSText(
             text = "프로필",
             fontWeight = FontWeight.Bold,
-            fontSize = 14.dp,
+            fontSize = 20.dp,
             color = MSTheme.color.greyG5
         )
-        MSText(
-            modifier = Modifier.noRippleClickable(onClick = onSetting),
-            text = "설정",
-            fontWeight = FontWeight.Medium,
-            fontSize = 14.dp,
-            color = MSTheme.color.greyG3
+        Image(
+            modifier = Modifier
+                .size(24.dp)
+                .noRippleClickable(onClick = onSetting),
+            painter = painterResource(R.drawable.ic_setting),
+            contentDescription = "설정"
         )
     }
 }

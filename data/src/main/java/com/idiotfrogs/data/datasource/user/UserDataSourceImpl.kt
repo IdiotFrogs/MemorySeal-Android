@@ -21,12 +21,12 @@ class UserDataSourceImpl @Inject constructor(
     override suspend fun updateMyProfile(
         userId: Long,
         profileImage: MultipartBody.Part,
-        userUpdateRequest: UserUpdateRequest
+        nickname: String,
     ): UserResponse {
         return userService.updateMyProfile(
             userId = userId,
             profileImage = profileImage,
-            userUpdateRequest = userUpdateRequest
+            nickname = nickname
         )
     }
 

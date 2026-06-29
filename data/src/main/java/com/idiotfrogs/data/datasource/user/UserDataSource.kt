@@ -13,7 +13,7 @@ interface UserDataSource {
     suspend fun updateMyProfile(
         userId: Long,
         profileImage: MultipartBody.Part,
-        userUpdateRequest: UserUpdateRequest
+        nickname: String,
     ): UserResponse
 
     suspend fun signUp(

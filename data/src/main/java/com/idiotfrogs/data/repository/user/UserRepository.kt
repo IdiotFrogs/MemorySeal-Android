@@ -12,8 +12,8 @@ interface UserRepository {
 
     suspend fun updateMyProfile(
         userId: Long,
-        profileImage: File,
-        userUpdateRequest: UserUpdateRequest
+        profileImage: File?,
+        nickname: String
     ): UserResponse
 
     suspend fun signUp(
