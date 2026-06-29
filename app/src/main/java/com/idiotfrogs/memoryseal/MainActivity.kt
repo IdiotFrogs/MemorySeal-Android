@@ -31,6 +31,7 @@ import com.idiotfrogs.message.MessageRoute
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.MSNavigatorImpl
 import com.idiotfrogs.navigation.Routes
+import com.idiotfrogs.preview.PreviewRoute
 import com.idiotfrogs.profile.editprofile.EditProfileRoute
 import com.idiotfrogs.profile.profile.ProfileRoute
 import com.idiotfrogs.setting.SettingRoute
@@ -87,6 +88,7 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Setting> { SettingRoute() }
                                 entry<Routes.Detail> { DetailRoute(capsuleId = it.id) }
                                 entry<Routes.Message> { MessageRoute(capsuleId = it.id) }
+                                entry<Routes.Preview> { PreviewRoute(capsuleId = it.id) }
                                 entry<Routes.Friend> { FriendRoute(it.id) }
                                 entry<Routes.Management> {
                                     ManagementRoute(
