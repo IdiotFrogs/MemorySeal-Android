@@ -25,13 +25,13 @@ import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.wavyStroke
-import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponseData
+import com.idiotfrogs.preview.PreviewCollaboratorUiModel
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun PreviewCollaboratorListItem(
-    collaborator: TimeCapsuleCollaboratorsResponseData,
+    collaborator: PreviewCollaboratorUiModel,
     isSelected: Boolean,
     modifier: Modifier = Modifier,
 ) {

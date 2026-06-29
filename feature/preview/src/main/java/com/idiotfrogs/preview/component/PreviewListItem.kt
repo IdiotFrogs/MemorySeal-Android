@@ -25,21 +25,20 @@ import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSGalleryLayout
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.model.timecapsule.CapsuleContentsData
-import com.idiotfrogs.model.timecapsule.TimeCapsuleContentResponseData
+import com.idiotfrogs.preview.PreviewContentGroupUiModel
+import com.idiotfrogs.preview.PreviewContentUiModel
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun PreviewListItem(
-    contentGroup: TimeCapsuleContentResponseData,
-    content: CapsuleContentsData,
+    contentGroup: PreviewContentGroupUiModel,
+    content: PreviewContentUiModel,
     isMine: Boolean,
     showAuthor: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val message = content.content?.takeIf { it.isNotBlank() }
-    val images = content.attachedFileUrls.orEmpty().takeIf { it.isNotEmpty() }
+    val message = content.message
 
     if (isMine) {
         Column(
@@ -62,13 +61,13 @@ fun PreviewListItem(
                 )
             }
 
-            images?.let { imageUrls ->
+            if (content.imageUrls.isNotEmpty()) {
                 if (message != null) {
                     Spacer(Modifier.height(8.dp))
                 }
 
                 MSGalleryLayout(
-                    images = imageUrls,
+                    images = content.imageUrls,
                     isSeal = false,
                 )
             }
@@ -143,13 +142,13 @@ fun PreviewListItem(
                     )
                 }
 
-                images?.let { imageUrls ->
+                if (content.imageUrls.isNotEmpty()) {
                     if (message != null) {
                         Spacer(Modifier.height(8.dp))
                     }
 
                     MSGalleryLayout(
-                        images = imageUrls,
+                        images = content.imageUrls,
                         isSeal = false,
                     )
                 }

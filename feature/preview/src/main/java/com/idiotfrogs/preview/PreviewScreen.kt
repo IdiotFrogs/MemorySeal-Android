@@ -71,7 +71,8 @@ fun PreviewScreen(
     onAction: (PreviewAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val collaborators = data.collaborators?.content.orEmpty()
+    val collaborators = data.collaborators
+    val contentGroups = data.contentGroups
     val myUserId = collaborators.firstOrNull { it.isMe }?.userId
     val collaboratorListState = rememberLazyListState()
     val contentListState = rememberLazyListState()
@@ -82,32 +83,22 @@ fun PreviewScreen(
                 contentListState.firstVisibleItemIndex > 0
         }
     }
-    val visibleContentGroups = remember(data.contents) {
-        data.contents.mapNotNull { contentGroup ->
-            val visibleContents = contentGroup.capsuleContents.filter { content ->
-                !content.content.isNullOrBlank() || !content.attachedFileUrls.isNullOrEmpty()
-            }
-
-            if (visibleContents.isEmpty()) null else contentGroup to visibleContents
-        }
-    }
     val currentSelectedUserId = selectedUserId
-        ?: visibleContentGroups.firstOrNull()?.first?.userId
+        ?: contentGroups.firstOrNull()?.userId
         ?: myUserId
 
-    LaunchedEffect(visibleContentGroups.isNotEmpty(), collaborators) {
+    LaunchedEffect(contentGroups.isNotEmpty(), collaborators) {
         if (selectedUserId == null) {
-            selectedUserId = visibleContentGroups.firstOrNull()?.first?.userId ?: myUserId
+            selectedUserId = contentGroups.firstOrNull()?.userId ?: myUserId
         }
     }
 
-    LaunchedEffect(contentListState, visibleContentGroups) {
+    LaunchedEffect(contentListState, contentGroups) {
         snapshotFlow { contentListState.firstVisibleItemIndex }
             .distinctUntilChanged()
             .collect { index ->
-                visibleContentGroups
+                contentGroups
                     .getOrNull(index)
-                    ?.first
                     ?.userId
                     ?.let { selectedUserId = it }
             }
@@ -115,7 +106,7 @@ fun PreviewScreen(
 
     LaunchedEffect(
         contentListState,
-        visibleContentGroups.size,
+        contentGroups.size,
         hasScrolledContent,
         data.isContentLast,
         data.isContentLoadingMore,
@@ -125,8 +116,8 @@ fun PreviewScreen(
             .collect { lastVisibleIndex ->
                 val shouldLoadNextPage = hasScrolledContent &&
                     lastVisibleIndex != null &&
-                    visibleContentGroups.isNotEmpty() &&
-                    lastVisibleIndex >= visibleContentGroups.lastIndex &&
+                    contentGroups.isNotEmpty() &&
+                    lastVisibleIndex >= contentGroups.lastIndex &&
                     !data.isContentLast &&
                     !data.isContentLoadingMore
 
@@ -188,7 +179,7 @@ fun PreviewScreen(
             ),
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            if (visibleContentGroups.isEmpty()) {
+            if (contentGroups.isEmpty()) {
                 item {
                     Box(
                         modifier = Modifier
@@ -205,12 +196,12 @@ fun PreviewScreen(
                     }
                 }
             } else {
-                visibleContentGroups.forEach { (contentGroup, visibleContents) ->
+                contentGroups.forEach { contentGroup ->
                     item(key = "user-${contentGroup.userId}") {
                         Column(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
-                            visibleContents.forEachIndexed { index, content ->
+                            contentGroup.contents.forEachIndexed { index, content ->
                                 val isMine = contentGroup.userId == myUserId
 
                                 PreviewListItem(
