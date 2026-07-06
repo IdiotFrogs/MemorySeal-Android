@@ -70,6 +70,7 @@ import com.idiotfrogs.message.component.MessageCheckBox
 import com.idiotfrogs.message.component.MessagePreviewBanner
 import com.idiotfrogs.message.component.MessageSettingListItem
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
+import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 import org.orbitmvi.orbit.compose.collectAsState
@@ -86,6 +87,7 @@ fun MessageRoute(
     viewModel.collectSideEffect { event ->
         when (event) {
             MessageSideEffect.NavigateToBack -> navigator.popBackStack()
+            is MessageSideEffect.NavigateToPreview -> navigator.navigate(Routes.Preview(event.id))
         }
     }
 
@@ -137,11 +139,12 @@ fun MessageScreen(
 
         photoItems = data.contents
             .flatMap { content ->
-                content.attachedFileUrls.orEmpty().mapIndexed { index, imageUrl ->
+                content.attachedFiles.orEmpty().map { file ->
                     PhotoListItemUiModel(
-                        id = "photo-${content.contentId}-$index",
+                        id = "photo-${file.id}",
                         contentId = content.contentId,
-                        imageModel = imageUrl,
+                        fileId = file.id,
+                        imageModel = file.fileUrl,
                     )
                 }
             }
@@ -275,9 +278,7 @@ fun MessageScreen(
                                     imageRes = tab.bannerImageRes,
                                     title = tab.bannerTitle,
                                     description = tab.bannerDescription,
-                                    onPreviewClick = {
-                                        // TODO 미리보기 화면이 추가되면 연결
-                                    },
+                                    onPreviewClick = { onAction(MessageAction.PreviewClicked) },
                                 )
                             }
 
@@ -317,9 +318,7 @@ fun MessageScreen(
                                     imageRes = tab.bannerImageRes,
                                     title = tab.bannerTitle,
                                     description = tab.bannerDescription,
-                                    onPreviewClick = {
-                                        // TODO 미리보기 화면이 추가되면 연결
-                                    },
+                                    onPreviewClick = { onAction(MessageAction.PreviewClicked) },
                                 )
                             }
 
@@ -415,8 +414,19 @@ fun MessageScreen(
                                 .map { it.contentId }
                                 .distinct()
                         }
+                        val fileIds = when (currentTab) {
+                            MessageTab.MESSAGE -> emptyList()
+                            MessageTab.PHOTO -> photoItems
+                                .filter { it.id in selectedIds }
+                                .map { it.fileId }
+                        }
 
-                        onAction(MessageAction.ContentDeleteConfirmed(contentIds))
+                        onAction(
+                            MessageAction.ContentDeleteConfirmed(
+                                contentIds = contentIds,
+                                fileIds = fileIds,
+                            )
+                        )
                         selectedIds = emptySet()
                         isDeleteMode = false
                     },
@@ -646,6 +656,7 @@ private data class MessageListItemUiModel(
 private data class PhotoListItemUiModel(
     val id: String,
     val contentId: Long,
+    val fileId: Long,
     val imageModel: String,
 )
 

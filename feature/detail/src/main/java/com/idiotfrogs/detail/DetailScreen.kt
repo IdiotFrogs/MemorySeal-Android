@@ -98,6 +98,7 @@ fun DetailRoute(
             DetailSideEffect.NavigateToBack -> navigator.popBackStack()
             is DetailSideEffect.NavigateToFriend -> navigator.navigate(Routes.Friend(event.id))
             is DetailSideEffect.NavigateToMessage -> navigator.navigate(Routes.Message(event.id))
+            is DetailSideEffect.NavigateToPreview -> navigator.navigate(Routes.Preview(event.id))
             is DetailSideEffect.NavigateToManagement -> navigator.navigate(
                 Routes.Management(
                     id = event.id,
@@ -283,6 +284,45 @@ fun DetailScreen(
                         fontSize = 12.dp,
                         color = MSTheme.color.greyG4,
                     )
+                }
+
+                Spacer(Modifier.height(16.dp))
+            }
+
+            if (status == TimeCapsuleStatus.OPENED) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wavyStroke(
+                            color = MSTheme.color.primaryLight,
+                            fillColor = MSTheme.color.primaryLight,
+                            contentPadding = 16.dp,
+                        ),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    MSText(
+                        modifier = Modifier.weight(1f),
+                        text = "타임캡슐이 열렸어요!\n함께 쌓인 추억을 보러가요.",
+                        fontSize = 14.dp,
+                        color = MSTheme.color.primaryDark,
+                    )
+
+                    Spacer(Modifier.width(12.dp))
+
+                    MSButton(
+                        onClick = { onAction(DetailAction.PreviewClicked(capsuleId)) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MSTheme.color.greyG5,
+                        ),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 9.dp),
+                    ) {
+                        MSText(
+                            text = "보러가기",
+                            fontSize = 12.dp,
+                            color = MSTheme.color.white,
+                        )
+                    }
                 }
 
                 Spacer(Modifier.height(16.dp))

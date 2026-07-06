@@ -7,7 +7,13 @@ import javax.inject.Inject
 class DeleteTimeCapsuleContentUseCase @Inject constructor(
     private val timeCapsuleRepository: TimeCapsuleRepository
 ) {
-    suspend operator fun invoke(contentIds: List<Long>): Result<Unit> = safeCatching {
-        timeCapsuleRepository.deleteTimeCapsuleContent(contentIds)
+    suspend operator fun invoke(
+        contentIds: List<Long>,
+        fileIds: List<Long>,
+    ): Result<Unit> = safeCatching {
+        timeCapsuleRepository.deleteTimeCapsuleContent(
+            contentIds = contentIds,
+            fileIds = fileIds
+        )
     }
 }

@@ -7,6 +7,7 @@ import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleUseCase
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.sideEffect.RefreshEvent
@@ -105,8 +106,18 @@ class DetailViewModel @AssistedInject constructor(
     override fun onAction(action: DetailAction) {
         when (action) {
             is DetailAction.MemberSectionClicked -> intent { postSideEffect(DetailSideEffect.NavigateToFriend(action.id)) }
-            is DetailAction.MessageSectionClicked -> intent { postSideEffect(DetailSideEffect.NavigateToMessage(action.id)) }
+            is DetailAction.MessageSectionClicked -> intent {
+                val status = state.data?.capsule?.timeCapsuleStatus
+                val sideEffect = if (status == TimeCapsuleStatus.BEFOREBURIED) {
+                    DetailSideEffect.NavigateToMessage(action.id)
+                } else {
+                    DetailSideEffect.NavigateToPreview(action.id)
+                }
+
+                postSideEffect(sideEffect)
+            }
             is DetailAction.ManagementClicked -> intent { postSideEffect(DetailSideEffect.NavigateToManagement(action.id, action.title)) }
+            is DetailAction.PreviewClicked -> intent { postSideEffect(DetailSideEffect.NavigateToPreview(action.id)) }
             DetailAction.BackClicked -> intent { postSideEffect(DetailSideEffect.NavigateToBack) }
             is DetailAction.BuryConfirmClicked -> buryTimeCapsule(action.openedAt)
         }
@@ -135,6 +146,7 @@ sealed interface DetailAction {
     data class MemberSectionClicked(val id: Long) : DetailAction
     data class MessageSectionClicked(val id: Long) : DetailAction
     data class ManagementClicked(val id: Long, val title: String) : DetailAction
+    data class PreviewClicked(val id: Long) : DetailAction
     data object BackClicked : DetailAction
     data class BuryConfirmClicked(val openedAt: LocalDateTime) : DetailAction
 }
@@ -142,6 +154,7 @@ sealed interface DetailAction {
 sealed interface DetailSideEffect {
     data class NavigateToFriend(val id: Long) : DetailSideEffect
     data class NavigateToMessage(val id: Long) : DetailSideEffect
+    data class NavigateToPreview(val id: Long) : DetailSideEffect
     data class NavigateToManagement(val id: Long, val title: String) : DetailSideEffect
     data object NavigateToBack : DetailSideEffect
     data object ShowToast : DetailSideEffect

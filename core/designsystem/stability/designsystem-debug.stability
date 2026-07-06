@@ -5,6 +5,14 @@
 //   ./gradlew :designsystem:stabilityDump
 
 @Composable
+private fun com.idiotfrogs.designsystem.component.GalleryImage(image: kotlin.String, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - image: STABLE (String is immutable)
+    - modifier: STABLE (marked @Stable or @Immutable)
+
+@Composable
 public fun com.idiotfrogs.designsystem.component.MSActionContainer(title: kotlin.String, hint: kotlin.String, textFieldState: androidx.compose.foundation.text.input.TextFieldState, primaryButtonText: kotlin.String, primaryWavyStrokeColor: androidx.compose.ui.graphics.Color, secondaryWavyStrokeColor: androidx.compose.ui.graphics.Color, onPrimaryClick: kotlin.Function0<kotlin.Unit>, onSecondaryClick: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, primaryButtonEnabled: kotlin.Boolean, secondaryButtonText: kotlin.String, primaryButtonWeight: kotlin.Float, secondaryButtonWeight: kotlin.Float, focusedBorderColor: androidx.compose.ui.graphics.Color, unfocusedBorderColor: androidx.compose.ui.graphics.Color, primaryButtonColors: androidx.compose.material3.ButtonColors, primaryPressColors: androidx.compose.material3.ButtonColors, primaryTextColor: androidx.compose.ui.graphics.Color, secondaryButtonColors: androidx.compose.material3.ButtonColors, secondaryPressColors: androidx.compose.material3.ButtonColors, secondaryTextColor: androidx.compose.ui.graphics.Color): kotlin.Unit
   skippable: true
   restartable: true
@@ -286,14 +294,14 @@ public fun com.idiotfrogs.designsystem.component.MSToast(hazeState: dev.chrisban
     - content: STABLE (composable function type)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.PatternRowsBigFirst(images: kotlin.collections.List<kotlin.String>): kotlin.Unit
+private fun com.idiotfrogs.designsystem.component.PatternRows(images: kotlin.collections.List<kotlin.String>): kotlin.Unit
   skippable: false
   restartable: true
   params:
     - images: RUNTIME (requires runtime check)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.RowImages(images: kotlin.collections.List<kotlin.String>, isFirstRow: kotlin.Boolean): kotlin.Unit
+private fun com.idiotfrogs.designsystem.component.RowImages(images: kotlin.collections.List<kotlin.String>, isFirstRow: kotlin.Boolean): kotlin.Unit
   skippable: false
   restartable: true
   params:
@@ -301,14 +309,14 @@ public fun com.idiotfrogs.designsystem.component.RowImages(images: kotlin.collec
     - isFirstRow: STABLE (primitive type)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.SingleImage(image: kotlin.String): kotlin.Unit
+private fun com.idiotfrogs.designsystem.component.SingleImage(image: kotlin.String): kotlin.Unit
   skippable: true
   restartable: true
   params:
     - image: STABLE (String is immutable)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.TwoByTwo(images: kotlin.collections.List<kotlin.String>): kotlin.Unit
+private fun com.idiotfrogs.designsystem.component.TwoByTwo(images: kotlin.collections.List<kotlin.String>): kotlin.Unit
   skippable: false
   restartable: true
   params:

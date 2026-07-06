@@ -8,7 +8,15 @@ import javax.inject.Inject
 class GetTimeCapsuleContentUseCase @Inject constructor(
     private val timeCapsuleRepository: TimeCapsuleRepository
 ) {
-    suspend operator fun invoke(timeCapsuleId: Long): Result<List<TimeCapsuleContentResponse>> = safeCatching {
-        timeCapsuleRepository.getTimeCapsuleContent(timeCapsuleId)
+    suspend operator fun invoke(
+        timeCapsuleId: Long,
+        page: Int,
+        size: Int,
+    ): Result<TimeCapsuleContentResponse> = safeCatching {
+        timeCapsuleRepository.getTimeCapsuleContent(
+            timeCapsuleId = timeCapsuleId,
+            page = page,
+            size = size
+        )
     }
 }

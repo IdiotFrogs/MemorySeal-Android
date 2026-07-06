@@ -16,6 +16,7 @@ dependencies {
     implementation(project(":feature:friend"))
     implementation(project(":feature:management"))
     implementation(project(":feature:message"))
+    implementation(project(":feature:preview"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))
     implementation(project(":core:util"))
