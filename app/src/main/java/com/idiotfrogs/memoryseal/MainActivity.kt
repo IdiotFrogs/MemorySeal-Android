@@ -19,6 +19,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.appsflyer.AppsFlyerLib
 import com.idiotfrogs.auth.login.LoginRoute
 import com.idiotfrogs.auth.signup.SignUpRoute
 import com.idiotfrogs.create.CreateRoute
@@ -45,6 +46,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppsFlyerLib.getInstance().collectDataFromLauncherActivity(this)
         enableEdgeToEdge()
         mainViewModel.collectAppSideEffect()
         setContent {
@@ -58,6 +60,11 @@ class MainActivity : ComponentActivity() {
                             MainEvent.NavigateToLogin -> {
                                 backStack.clear()
                                 navigator.navigate(Routes.Login)
+                            }
+                            is MainEvent.NavigateToDetail -> {
+                                backStack.clear()
+                                navigator.navigate(Routes.Home)
+                                navigator.navigate(Routes.Detail(sideEffect.capsuleId))
                             }
                         }
                     }
@@ -107,6 +114,7 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        AppsFlyerLib.getInstance().collectDataFromLauncherActivity(this)
         // TODO 푸시 작업 추가 필요
     }
 }
