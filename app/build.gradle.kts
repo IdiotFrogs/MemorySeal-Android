@@ -1,8 +1,21 @@
+import java.util.Properties
+
 plugins {
     id("convention.android.application")
     id("convention.android.hilt")
     alias(libs.plugins.baselineprofile)
     alias(libs.plugins.google.services)
+}
+
+android {
+    buildFeatures {
+        buildConfig = true
+    }
+
+    defaultConfig {
+        buildConfigField("String", "APPSFLYER_DEV_KEY", getLocalProperty("APPSFLYER_DEV_KEY"))
+        buildConfigField("String", "APPSFLYER_ONELINK_TEMPLATE_ID", getLocalProperty("APPSFLYER_ONELINK_TEMPLATE_ID"))
+    }
 }
 
 dependencies {
@@ -25,6 +38,7 @@ dependencies {
     implementation(project(":common:notification"))
 
     implementation(libs.androidx.core.splash)
+    implementation(libs.appsflyer)
 
     implementation(platform(libs.firebase.bom))
 
@@ -34,4 +48,11 @@ dependencies {
     androidTestImplementation(libs.androidx.test.espresso)
     baselineProfile(project(":baselineprofile"))
     implementation(libs.androidx.profileinstaller)
+}
+
+fun getLocalProperty(name: String): String {
+    val propertiesFile = rootProject.file("local.properties")
+    val properties = Properties()
+    properties.load(propertiesFile.inputStream())
+    return properties.getProperty(name)
 }
