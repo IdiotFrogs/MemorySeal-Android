@@ -1,6 +1,9 @@
 package com.idiotfrogs.friend
 
+import android.content.Context
 import androidx.compose.runtime.Immutable
+import com.appsflyer.share.LinkGenerator
+import com.appsflyer.share.ShareInviteHelper
 import com.idiotfrogs.domain.usecase.timecapsule.DelegationTimeCapsuleHostUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.DeleteTimeCapsuleContributorsUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleCollaboratorsUseCase
@@ -12,6 +15,7 @@ import com.idiotfrogs.util.base.BaseViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
@@ -19,6 +23,7 @@ import org.orbitmvi.orbit.viewmodel.container
 @HiltViewModel(assistedFactory = FriendViewModel.Factory::class)
 class FriendViewModel @AssistedInject constructor(
     @Assisted private val capsuleId: Long,
+    @param:ApplicationContext private val applicationContext: Context,
     private val getTimeCapsuleInviteCodeUseCase: GetTimeCapsuleInviteCodeUseCase,
     private val getTimeCapsuleCollaboratorsUseCase: GetTimeCapsuleCollaboratorsUseCase,
     private val delegationTimeCapsuleHostUseCase: DelegationTimeCapsuleHostUseCase,
@@ -62,6 +67,28 @@ class FriendViewModel @AssistedInject constructor(
             intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
             // TODO 에러 처리 어떻게 할지 논의 필요.
         }
+    }
+
+    private fun shareInviteLink(capsuleId: Long) = safeLaunch {
+        intent { reduce { state.copy(isLoading = true) } }
+
+        ShareInviteHelper.generateInviteUrl(applicationContext)
+            .addParameter("deep_link_value", capsuleId.toString())
+            .generateLink(applicationContext, object : LinkGenerator.ResponseListener {
+                override fun onResponse(shortLink: String) {
+                    intent {
+                        reduce { state.copy(isLoading = false, errorMessage = null) }
+                        postSideEffect(FriendSideEffect.ShareInviteLink(shortLink))
+                    }
+                }
+
+                override fun onResponseError(error: String) {
+                    intent {
+                        reduce { state.copy(isLoading = false, errorMessage = error) }
+                    }
+                }
+            }
+        )
     }
 
     private fun delegationTimeCapsuleHost(targetUserId: Long) = safeLaunch {
@@ -140,6 +167,7 @@ class FriendViewModel @AssistedInject constructor(
         when (action) {
             FriendAction.BackClicked -> intent { postSideEffect(FriendSideEffect.NavigateToBack) }
             is FriendAction.InviteCodeCopyClicked -> getTimeCapsuleInviteCode(action.capsuleId)
+            is FriendAction.InviteLinkShareClicked -> shareInviteLink(action.capsuleId)
             is FriendAction.DelegationHostConfirmed -> delegationTimeCapsuleHost(action.targetUserId)
             is FriendAction.DeleteContributorConfirmed -> deleteTimeCapsuleContributor(action.targetUserId)
             is FriendAction.SearchSubmitted -> searchTimeCapsuleCollaborators(action.nickname)
@@ -167,6 +195,7 @@ data class CollaboratorsData(
 sealed interface FriendAction {
     data object BackClicked : FriendAction
     data class InviteCodeCopyClicked(val capsuleId: Long) : FriendAction
+    data class InviteLinkShareClicked(val capsuleId: Long) : FriendAction
     data class DelegationHostConfirmed(val targetUserId: Long) : FriendAction
     data class DeleteContributorConfirmed(val targetUserId: Long) : FriendAction
     data class SearchSubmitted(val nickname: String) : FriendAction
@@ -175,5 +204,6 @@ sealed interface FriendAction {
 sealed interface FriendSideEffect {
     data object NavigateToBack : FriendSideEffect
     data class CopyInviteCodeToClipboard(val code: String) : FriendSideEffect
+    data class ShareInviteLink(val link: String) : FriendSideEffect
     data class ShowToast(val state: FriendScreenActionState) : FriendSideEffect
 }

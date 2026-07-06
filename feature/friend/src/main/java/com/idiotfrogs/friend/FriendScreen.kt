@@ -76,6 +76,7 @@ fun FriendRoute(
 ) {
     val navigator = LocalComposeMSNavigator.current
     val clipboard = LocalClipboard.current
+    val context = LocalContext.current
     val uiState by viewModel.collectAsState()
     var toastState by remember { mutableStateOf(FriendScreenActionState.IDLE) }
 
@@ -91,6 +92,16 @@ fun FriendRoute(
             is FriendSideEffect.CopyInviteCodeToClipboard -> {
                 val clipData = ClipData.newPlainText("inviteCode", event.code)
                 clipboard.setClipEntry(ClipEntry(clipData))
+            }
+            is FriendSideEffect.ShareInviteLink -> {
+                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                    type = "text/plain"
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        "내가 만든 타임 티켓에 함께해줘! 아래 링크로 참여 요청을 보내면 타임 캡슐에 합류할 수 있어요. ${event.link}"
+                    )
+                }
+                context.startActivity(Intent.createChooser(shareIntent, "공유하기"))
             }
             is FriendSideEffect.ShowToast -> toastState = event.state
         }
@@ -118,7 +129,6 @@ fun FriendScreen(
     data: CollaboratorsData,
     onAction: (FriendAction) -> Unit,
 ) {
-    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
     val hazeState = rememberHazeState()
     val searchTextFieldState = rememberTextFieldState()
@@ -162,16 +172,7 @@ fun FriendScreen(
                         modifier = Modifier.weight(1f),
                         text = "참여 링크 공유",
                         icon = R.drawable.img_share,
-                        onClick = {
-                            val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                                type = "text/plain"
-                                putExtra(
-                                    Intent.EXTRA_TEXT,
-                                    "내가 만든 타임 티켓에 함께해줘! 아래 링크로 참여 요청을 보내면 타임 캡슐에 합류할 수 있어요. [초대 링크]"
-                                )
-                            }
-                            context.startActivity(Intent.createChooser(shareIntent, "공유하기"))
-                        },
+                        onClick = { onAction(FriendAction.InviteLinkShareClicked(capsuleId)) },
                     )
                     FriendInviteButton(
                         modifier = Modifier.weight(1f),
