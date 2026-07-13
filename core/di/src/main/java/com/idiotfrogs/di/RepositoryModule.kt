@@ -1,5 +1,7 @@
 package com.idiotfrogs.di
 
+import com.idiotfrogs.data.repository.auth.AuthRepository
+import com.idiotfrogs.data.repository.auth.AuthRepositoryImpl
 import com.idiotfrogs.data.repository.local.LocalRepository
 import com.idiotfrogs.data.repository.local.LocalRepositoryImpl
 import com.idiotfrogs.data.repository.timecapsule.TimeCapsuleRepository
@@ -14,6 +16,11 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 interface RepositoryModule {
+    @Binds
+    fun bindsAuthRepository(
+        authRepositoryImpl: AuthRepositoryImpl
+    ): AuthRepository
+
     @Binds
     fun bindsUserRepository(
         userRepositoryImpl: UserRepositoryImpl
