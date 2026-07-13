@@ -1,6 +1,7 @@
 package com.idiotfrogs.home
 
 import androidx.compose.runtime.Immutable
+import com.idiotfrogs.domain.usecase.auth.PutFcmTokenUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.RequestCollaboratorUseCase
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
@@ -8,6 +9,7 @@ import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.model.user.ProfileResponse
+import com.idiotfrogs.notification.FcmTokenProvider
 import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.sideEffect.RefreshEvent
@@ -23,15 +25,27 @@ class HomeViewModel @Inject constructor(
     private val getMyTimeCapsuleUseCase: GetMyTimeCapsuleUseCase,
     private val getMyProfileUseCase: GetMyProfileUseCase,
     private val requestCollaboratorUseCase: RequestCollaboratorUseCase,
+    private val fcmTokenProvider: FcmTokenProvider,
+    private val putFcmTokenUseCase: PutFcmTokenUseCase,
 ): BaseViewModel<HomeUiState, HomeSideEffect, HomeAction>() {
 
     override val container: Container<HomeUiState, HomeSideEffect> = container(
         initialState = HomeUiState(),
         onCreate = {
             fetchHome()
+            syncFcmToken()
             RefreshSideEffect.events.collect { if (it is RefreshEvent.Home) fetchHome() }
         }
     )
+
+    private fun syncFcmToken() {
+        safeLaunch {
+            val fcmToken = fcmTokenProvider.getToken()
+            putFcmTokenUseCase(fcmToken).onFailure {
+                // TODO 로그 남기기 (Firebase)
+            }
+        }
+    }
 
     private fun fetchHome() {
         safeLaunch {
