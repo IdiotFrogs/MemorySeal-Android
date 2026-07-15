@@ -46,11 +46,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        handlePush(intent)
         mainViewModel.collectAppSideEffect()
         setContent {
             MSTheme {
                 val backStack = rememberNavBackStack(Routes.Splash)
                 val navigator = remember(backStack) { MSNavigatorImpl(backStack) }
+                val currentRoute = backStack.lastOrNull() as? Routes
 
                 LaunchedEffect(Unit) {
                     mainViewModel.event.collect { sideEffect ->
@@ -58,6 +60,23 @@ class MainActivity : ComponentActivity() {
                             MainEvent.NavigateToLogin -> {
                                 backStack.clear()
                                 navigator.navigate(Routes.Login)
+                            }
+                        }
+                    }
+                }
+
+                if (
+                    currentRoute != null &&
+                    currentRoute !is Routes.Splash &&
+                    currentRoute !is Routes.Login &&
+                    currentRoute !is Routes.SignUp
+                ) {
+                    LaunchedEffect(Unit) {
+                        mainViewModel.pushEvent.collect { event ->
+                            when (event) {
+                                is PushEvent.NavigateToFriend -> navigator.navigate(Routes.Friend(event.capsuleId))
+                                is PushEvent.NavigateToDetail -> navigator.navigate(Routes.Detail(event.capsuleId))
+                                is PushEvent.NavigateToPreview -> navigator.navigate(Routes.Preview(event.capsuleId))
                             }
                         }
                     }
@@ -107,6 +126,16 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        // TODO 푸시 작업 추가 필요
+        handlePush(intent)
+    }
+
+    private fun handlePush(intent: Intent?) {
+        mainViewModel.onPushReceived(
+            type = intent?.getStringExtra("type"),
+            capsuleId = intent?.getStringExtra("capsuleId"),
+        )
+
+        intent?.removeExtra("type")
+        intent?.removeExtra("capsuleId")
     }
 }

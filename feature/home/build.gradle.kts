@@ -8,6 +8,7 @@ android {
 
 dependencies {
     implementation(project(":common:extension"))
+    implementation(project(":common:notification"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
