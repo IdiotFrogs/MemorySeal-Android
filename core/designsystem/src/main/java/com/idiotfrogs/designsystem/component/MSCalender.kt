@@ -56,7 +56,7 @@ fun MSCalender(
     showSealDate: Boolean = false,
     onDateSelected: (LocalDateTime) -> Unit
 ) {
-    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val today = Clock.System.todayIn(TimeZone.of("Asia/Seoul"))
     val initialSelectedDate = if (showSealDate) {
         today.plus(1, DateTimeUnit.DAY)
     } else {

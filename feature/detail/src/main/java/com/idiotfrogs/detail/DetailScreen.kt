@@ -142,7 +142,7 @@ fun DetailScreen(
 
     val defaultOpenAt = remember {
         Clock.System
-            .todayIn(TimeZone.currentSystemDefault())
+            .todayIn(TimeZone.of("Asia/Seoul"))
             .plus(1, DateTimeUnit.DAY)
             .atTime(0, 0, 0, 0)
     }
