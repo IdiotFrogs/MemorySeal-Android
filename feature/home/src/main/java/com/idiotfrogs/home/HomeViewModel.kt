@@ -101,6 +101,7 @@ class HomeViewModel @Inject constructor(
                 HomeAction.ProfileClicked -> postSideEffect(HomeSideEffect.NavigateToProfile)
                 is HomeAction.TimeCapsuleClicked -> postSideEffect(HomeSideEffect.NavigateToDetail(action.id))
                 is HomeAction.JoinCodeSubmitted -> requestCollaborator(PendingCollaboratorsRequest(action.code))
+                HomeAction.Refresh -> fetchHome()
             }
         }
     }
@@ -124,6 +125,7 @@ sealed interface HomeAction {
     data object ProfileClicked : HomeAction
     data class TimeCapsuleClicked(val id: Long) : HomeAction
     data class JoinCodeSubmitted(val code: String) : HomeAction
+    data object Refresh : HomeAction
 }
 
 sealed interface HomeSideEffect {
