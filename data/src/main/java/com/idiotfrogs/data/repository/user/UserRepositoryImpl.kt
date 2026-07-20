@@ -22,9 +22,9 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateMyProfile(
-        userId: Long,
         profileImage: File?,
         nickname: String,
+        useDefaultImage: Boolean,
     ): UserResponse {
         val imageRequestBody = profileImage?.asRequestBody("image/jpeg".toMediaType())
             ?: "".toRequestBody("image/*".toMediaType())
@@ -35,9 +35,9 @@ class UserRepositoryImpl @Inject constructor(
         )
 
         return userDataSource.updateMyProfile(
-            userId = userId,
             profileImage = imagePart,
-            nickname = nickname
+            nickname = nickname,
+            useDefaultImage = useDefaultImage
         )
     }
 

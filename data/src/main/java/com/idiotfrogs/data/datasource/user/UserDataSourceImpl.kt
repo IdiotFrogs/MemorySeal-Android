@@ -2,7 +2,6 @@ package com.idiotfrogs.data.datasource.user
 
 import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.model.user.UserResponse
-import com.idiotfrogs.model.user.UserUpdateRequest
 import com.idiotfrogs.network.service.UserService
 import okhttp3.MultipartBody
 import javax.inject.Inject
@@ -19,14 +18,14 @@ class UserDataSourceImpl @Inject constructor(
     }
 
     override suspend fun updateMyProfile(
-        userId: Long,
         profileImage: MultipartBody.Part,
         nickname: String,
+        useDefaultImage: Boolean,
     ): UserResponse {
         return userService.updateMyProfile(
-            userId = userId,
             profileImage = profileImage,
-            nickname = nickname
+            nickname = nickname,
+            useDefaultImage = useDefaultImage
         )
     }
 

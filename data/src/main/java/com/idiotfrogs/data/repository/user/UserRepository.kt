@@ -11,9 +11,9 @@ interface UserRepository {
     suspend fun withdraw()
 
     suspend fun updateMyProfile(
-        userId: Long,
         profileImage: File?,
-        nickname: String
+        nickname: String,
+        useDefaultImage: Boolean
     ): UserResponse
 
     suspend fun signUp(

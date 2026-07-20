@@ -2,7 +2,6 @@ package com.idiotfrogs.data.datasource.user
 
 import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.model.user.UserResponse
-import com.idiotfrogs.model.user.UserUpdateRequest
 import okhttp3.MultipartBody
 
 interface UserDataSource {
@@ -11,9 +10,9 @@ interface UserDataSource {
     suspend fun withdraw()
 
     suspend fun updateMyProfile(
-        userId: Long,
         profileImage: MultipartBody.Part,
         nickname: String,
+        useDefaultImage: Boolean
     ): UserResponse
 
     suspend fun signUp(

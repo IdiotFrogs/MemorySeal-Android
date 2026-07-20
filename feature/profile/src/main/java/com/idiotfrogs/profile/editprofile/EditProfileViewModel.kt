@@ -33,7 +33,7 @@ class EditProfileViewModel @Inject constructor(
         when (action) {
             EditProfileAction.BackClicked -> intent { postSideEffect(EditProfileSideEffect.NavigateToBack) }
             is EditProfileAction.UpdateProfile -> {
-                updateProfile(action.userId, action.profileImage, action.nickname)
+                updateProfile(action.profileImage, action.nickname, action.useDefaultImage)
             }
         }
     }
@@ -65,15 +65,16 @@ class EditProfileViewModel @Inject constructor(
         }
     }
 
-    private fun updateProfile(userId: Long, profileImage: File?, nickname: String) {
+    private fun updateProfile(profileImage: File?, nickname: String, useDefaultImage: Boolean) {
         safeLaunch {
             updateMyProfileUseCase(
-                userId = userId,
                 profileImage = profileImage,
-                nickname = nickname
+                nickname = nickname,
+                useDefaultImage = useDefaultImage
             )
                 .onSuccess {
                     RefreshSideEffect.tryEmit(RefreshEvent.Profile)
+                    RefreshSideEffect.tryEmit(RefreshEvent.Home)
                     intent { postSideEffect(EditProfileSideEffect.NavigateToBack) }
                 }
         }
@@ -95,7 +96,7 @@ data class EditProfileData(
 sealed interface EditProfileAction {
     data object BackClicked : EditProfileAction
     data class UpdateProfile(
-        val userId: Long, val profileImage: File?, val nickname: String
+        val profileImage: File?, val nickname: String, val useDefaultImage: Boolean
     ) : EditProfileAction
 }
 
