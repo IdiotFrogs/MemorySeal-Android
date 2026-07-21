@@ -128,6 +128,23 @@ public fun com.idiotfrogs.designsystem.component.MSGalleryLayout(images: kotlin.
     - isSeal: STABLE (primitive type)
 
 @Composable
+public fun com.idiotfrogs.designsystem.component.MSHeaderDialog(header: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.ColumnScope, kotlin.Unit>, onConfirm: kotlin.Function0<kotlin.Unit>, onCancel: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, confirmText: kotlin.String, cancelText: kotlin.String, confirmButtonColor: androidx.compose.ui.graphics.Color, cancelButtonColor: androidx.compose.ui.graphics.Color, confirmTextColor: androidx.compose.ui.graphics.Color, cancelTextColor: androidx.compose.ui.graphics.Color, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.ColumnScope, kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - header: STABLE (composable function type)
+    - onConfirm: STABLE (function type)
+    - onCancel: STABLE (function type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - confirmText: STABLE (String is immutable)
+    - cancelText: STABLE (String is immutable)
+    - confirmButtonColor: STABLE (marked @Stable or @Immutable)
+    - cancelButtonColor: STABLE (marked @Stable or @Immutable)
+    - confirmTextColor: STABLE (marked @Stable or @Immutable)
+    - cancelTextColor: STABLE (marked @Stable or @Immutable)
+    - content: STABLE (composable function type)
+
+@Composable
 public fun com.idiotfrogs.designsystem.component.MSLoadingIndicator(modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: true
   restartable: true
