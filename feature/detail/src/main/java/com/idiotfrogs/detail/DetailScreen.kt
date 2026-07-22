@@ -47,8 +47,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSAnnotatedText
 import com.idiotfrogs.designsystem.component.MSCalender
 import com.idiotfrogs.designsystem.component.MSDashHorizontalDivider
+import com.idiotfrogs.designsystem.component.MSHeaderDialog
 import com.idiotfrogs.designsystem.component.MSLoadingOverlay
-import com.idiotfrogs.designsystem.component.MSTitleDialog
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSToast
 import com.idiotfrogs.designsystem.component.button.MSButton
@@ -142,15 +142,28 @@ fun DetailScreen(
 
     val defaultOpenAt = remember {
         Clock.System
-            .todayIn(TimeZone.currentSystemDefault())
+            .todayIn(TimeZone.of("Asia/Seoul"))
             .plus(1, DateTimeUnit.DAY)
             .atTime(0, 0, 0, 0)
     }
     var selectedOpenAt by remember { mutableStateOf(defaultOpenAt) }
 
     if (showBuryDialog) {
-        MSTitleDialog(
-            title = "티켓 오픈일 설정",
+        MSHeaderDialog(
+            header = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    MSText(
+                        text = "티켓 오픈일 설정  ·  ",
+                        fontSize = 20.dp,
+                    )
+                    MSText(
+                        text = "00시 오픈",
+                        fontSize = 16.dp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MSTheme.color.primaryDark,
+                    )
+                }
+            },
             confirmText = "묻기",
             cancelText = "취소",
             onConfirm = {

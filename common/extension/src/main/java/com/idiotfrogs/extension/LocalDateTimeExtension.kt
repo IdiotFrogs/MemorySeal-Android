@@ -16,7 +16,7 @@ fun LocalDateTime?.toYearMonthDayWeek(): String =
 
 @OptIn(ExperimentalTime::class)
 fun LocalDateTime?.toDday(): String {
-    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val today = Clock.System.todayIn(TimeZone.of("Asia/Seoul"))
     val targetDate = this?.date
     val diff = targetDate?.toEpochDays()?.minus(today.toEpochDays())
 
@@ -27,7 +27,7 @@ fun LocalDateTime?.toDday(): String {
 fun LocalDateTime?.toOpenRemainingText(): String {
     if (this == null) return "묻기 전"
 
-    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val today = Clock.System.todayIn(TimeZone.of("Asia/Seoul"))
     val diff = date.toEpochDays() - today.toEpochDays()
 
     return when {
