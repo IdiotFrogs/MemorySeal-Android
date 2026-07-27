@@ -10,14 +10,14 @@ class UpdateMyProfileUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
     suspend operator fun invoke(
-        userId: Long,
         profileImage: File?,
         nickname: String,
+        useDefaultImage: Boolean
     ): Result<UserResponse> = safeCatching {
             userRepository.updateMyProfile(
-                userId,
                 profileImage,
-                nickname
+                nickname,
+                useDefaultImage
             )
         }
 }
