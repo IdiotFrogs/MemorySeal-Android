@@ -87,6 +87,7 @@ class HomeViewModel @Inject constructor(
             intent {
                 reduce { state.copy(isLoading = false, errorMessage = null) }
                 postSideEffect(HomeSideEffect.ShowToast)
+                fetchHome()
             }
         }.onFailure {
             intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
