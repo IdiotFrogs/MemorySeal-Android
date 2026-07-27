@@ -19,4 +19,8 @@ class AuthDataSourceImpl @Inject constructor(
     override suspend fun putFcmToken(fcmToken: String) {
         authService.putFcmToken(fcmToken)
     }
+
+    override suspend fun logout() {
+        authService.logout()
+    }
 }

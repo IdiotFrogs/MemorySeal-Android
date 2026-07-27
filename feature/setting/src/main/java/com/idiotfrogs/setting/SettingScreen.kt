@@ -66,7 +66,6 @@ fun SettingScreen(
             confirmText = "로그아웃",
             cancelText = "유지",
             onConfirm = {
-                /** TODO: 로그아웃 로직 */
                 showLogoutDialog = false
                 onAction(SettingAction.LogoutConfirmed)
             },
