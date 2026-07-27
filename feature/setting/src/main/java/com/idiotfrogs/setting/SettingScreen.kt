@@ -41,7 +41,10 @@ fun SettingRoute(
 
     viewModel.collectSideEffect { event ->
         when (event) {
-            SettingSideEffect.NavigateToLogin -> navigator.navigate(Routes.Login)
+            SettingSideEffect.NavigateToLogin -> {
+                navigator.clear()
+                navigator.navigate(Routes.Login)
+            }
             SettingSideEffect.NavigateToBack -> navigator.popBackStack()
         }
     }
