@@ -3,6 +3,7 @@ package com.idiotfrogs.data.repository.user
 import com.idiotfrogs.data.datasource.user.UserDataSource
 import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.model.user.UserResponse
+import com.idiotfrogs.network.util.mapToDomainError
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -14,11 +15,11 @@ class UserRepositoryImpl @Inject constructor(
     private val userDataSource: UserDataSource
 ) : UserRepository {
     override suspend fun getMyProfile(): ProfileResponse {
-        return userDataSource.getMyProfile()
+        return mapToDomainError { userDataSource.getMyProfile() }
     }
 
     override suspend fun withdraw() {
-        userDataSource.withdraw()
+        mapToDomainError { userDataSource.withdraw() }
     }
 
     override suspend fun updateMyProfile(
@@ -34,11 +35,13 @@ class UserRepositoryImpl @Inject constructor(
             imageRequestBody
         )
 
-        return userDataSource.updateMyProfile(
-            userId = userId,
-            profileImage = imagePart,
-            nickname = nickname
-        )
+        return mapToDomainError {
+            userDataSource.updateMyProfile(
+                userId = userId,
+                profileImage = imagePart,
+                nickname = nickname
+            )
+        }
     }
 
     override suspend fun signUp(
@@ -47,9 +50,11 @@ class UserRepositoryImpl @Inject constructor(
     ): UserResponse {
         val imageRequestBody = profileImage.asRequestBody("image/jpeg".toMediaType())
         val imagePart = MultipartBody.Part.createFormData("profileImage", profileImage.name, imageRequestBody)
-        return userDataSource.signUp(
-            nickname = nickname,
-            profileImage = imagePart
-        )
+        return mapToDomainError {
+            userDataSource.signUp(
+                nickname = nickname,
+                profileImage = imagePart
+            )
+        }
     }
 }

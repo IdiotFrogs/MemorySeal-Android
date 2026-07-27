@@ -13,6 +13,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.network.util.mapToDomainError
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -29,22 +30,24 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
     ): TimeCapsuleCreateResponse {
         val imageRequestBody = mainImage.asRequestBody("image/jpeg".toMediaType())
         val imagePart = MultipartBody.Part.createFormData("mainImage", mainImage.name, imageRequestBody)
-        return timeCapsuleDataSource.createTimeCapsule(
-            timeCapsuleCreateDto,
-            imagePart
-        )
+        return mapToDomainError {
+            timeCapsuleDataSource.createTimeCapsule(
+                timeCapsuleCreateDto,
+                imagePart
+            )
+        }
     }
 
     override suspend fun getMyTimeCapsule(): List<MyTimeCapsuleResponse> {
-        return timeCapsuleDataSource.getMyTimeCapsule()
+        return mapToDomainError { timeCapsuleDataSource.getMyTimeCapsule() }
     }
 
     override suspend fun deleteTimeCapsule(capsuleId: Long) {
-        return timeCapsuleDataSource.deleteTimeCapsule(capsuleId)
+        return mapToDomainError { timeCapsuleDataSource.deleteTimeCapsule(capsuleId) }
     }
 
     override suspend fun getTimeCapsule(capsuleId: Long): TimeCapsuleResponse {
-        return timeCapsuleDataSource.getTimeCapsule(capsuleId)
+        return mapToDomainError { timeCapsuleDataSource.getTimeCapsule(capsuleId) }
     }
 
     override suspend fun getTimesCapsuleCollaborators(
@@ -52,40 +55,40 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
         page: Int,
         size: Int,
     ): TimeCapsuleCollaboratorsResponse {
-        return timeCapsuleDataSource.getTimesCapsuleCollaborators(capsuleId, page, size)
+        return mapToDomainError { timeCapsuleDataSource.getTimesCapsuleCollaborators(capsuleId, page, size) }
     }
 
     override suspend fun getTimeCapsuleInviteCode(capsuleId: Long): TimeCapsuleInviteCodeResponse {
-        return timeCapsuleDataSource.getTimeCapsuleInviteCode(capsuleId)
+        return mapToDomainError { timeCapsuleDataSource.getTimeCapsuleInviteCode(capsuleId) }
     }
 
     override suspend fun requestCollaborator(body: PendingCollaboratorsRequest) {
-        return timeCapsuleDataSource.requestCollaborator(body)
+        return mapToDomainError { timeCapsuleDataSource.requestCollaborator(body) }
     }
 
     override suspend fun processRequest(requestId: Long, body: ProcessCollaboratorRequest) {
-        return timeCapsuleDataSource.processRequest(requestId, body)
+        return mapToDomainError { timeCapsuleDataSource.processRequest(requestId, body) }
     }
 
     override suspend fun buryTimeCapsule(
         capsuleId: Long,
         body: BuryTimeCapsuleRequest
     ): TimeCapsuleResponse {
-        return timeCapsuleDataSource.buryTimeCapsule(capsuleId, body)
+        return mapToDomainError { timeCapsuleDataSource.buryTimeCapsule(capsuleId, body) }
     }
 
     override suspend fun delegationTimeCapsuleHost(
         capsuleId: Long,
         targetUserId: Long
     ) {
-        return timeCapsuleDataSource.delegationTimeCapsuleHost(capsuleId, targetUserId)
+        return mapToDomainError { timeCapsuleDataSource.delegationTimeCapsuleHost(capsuleId, targetUserId) }
     }
 
     override suspend fun deleteTimesCapsuleContributors(
         capsuleId: Long,
         targetUserId: Long
     ) {
-        return timeCapsuleDataSource.deleteTimesCapsuleContributors(capsuleId, targetUserId)
+        return mapToDomainError { timeCapsuleDataSource.deleteTimesCapsuleContributors(capsuleId, targetUserId) }
     }
 
     override suspend fun searchTimesCapsuleCollaborators(
@@ -94,16 +97,18 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
         page: Int,
         size: Int
     ): TimeCapsuleCollaboratorsResponse {
-        return timeCapsuleDataSource.searchTimesCapsuleCollaborators(
-            capsuleId = capsuleId,
-            nickname = nickname,
-            page = page,
-            size = size
-        )
+        return mapToDomainError {
+            timeCapsuleDataSource.searchTimesCapsuleCollaborators(
+                capsuleId = capsuleId,
+                nickname = nickname,
+                page = page,
+                size = size
+            )
+        }
     }
 
     override suspend fun leaveTimeCapsule(capsuleId: Long) {
-        return timeCapsuleDataSource.leaveTimeCapsule(capsuleId)
+        return mapToDomainError { timeCapsuleDataSource.leaveTimeCapsule(capsuleId) }
     }
 
     override suspend fun getTimeCapsuleContent(
@@ -111,11 +116,13 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
         page: Int,
         size: Int,
     ): TimeCapsuleContentResponse {
-        return timeCapsuleDataSource.getTimeCapsuleContent(
-            timeCapsuleId = timeCapsuleId,
-            page = page,
-            size = size
-        )
+        return mapToDomainError {
+            timeCapsuleDataSource.getTimeCapsuleContent(
+                timeCapsuleId = timeCapsuleId,
+                page = page,
+                size = size
+            )
+        }
     }
 
     override suspend fun getMyTimeCapsuleContent(timeCapsuleId: Long): List<MyCapsuleContentsData> {
@@ -133,30 +140,36 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
             MultipartBody.Part.createFormData("files", it.name, requestBody)
         }
 
-        return timeCapsuleDataSource.createTimeCapsuleContent(
-            timeCapsuleId = timeCapsuleId,
-            content = contentBody,
-            files = fileParts
-        )
+        return mapToDomainError {
+            timeCapsuleDataSource.createTimeCapsuleContent(
+                timeCapsuleId = timeCapsuleId,
+                content = contentBody,
+                files = fileParts
+            )
+        }
     }
 
     override suspend fun modifyTimeCapsuleContent(
         contentId: Long,
         content: String
     ): CapsuleContentsData {
-        return timeCapsuleDataSource.modifyTimeCapsuleContent(
-            contentId = contentId,
-            content = content
-        )
+        return mapToDomainError {
+            timeCapsuleDataSource.modifyTimeCapsuleContent(
+                contentId = contentId,
+                content = content
+            )
+        }
     }
 
     override suspend fun deleteTimeCapsuleContent(
         contentIds: List<Long>,
         fileIds: List<Long>,
     ) {
-        return timeCapsuleDataSource.deleteTimeCapsuleContent(
-            contentIds = contentIds,
-            fileIds = fileIds
-        )
+        return mapToDomainError {
+            timeCapsuleDataSource.deleteTimeCapsuleContent(
+                contentIds = contentIds,
+                fileIds = fileIds
+            )
+        }
     }
 }
