@@ -18,6 +18,6 @@ interface UserRepository {
 
     suspend fun signUp(
         nickname: String,
-        profileImage: File,
+        profileImage: File?,
     ): UserResponse
 }
