@@ -7,4 +7,8 @@ class LocalRepositoryImpl @Inject constructor(
     private val localDataSource: LocalDataSource
 ): LocalRepository {
     override val accessToken = localDataSource.accessToken
+
+    override suspend fun clearTokens() {
+        localDataSource.clearTokens()
+    }
 }

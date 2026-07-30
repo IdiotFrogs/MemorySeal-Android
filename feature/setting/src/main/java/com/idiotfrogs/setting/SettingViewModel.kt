@@ -1,5 +1,6 @@
 package com.idiotfrogs.setting
 
+import com.idiotfrogs.domain.usecase.auth.LogoutUseCase
 import com.idiotfrogs.domain.usecase.user.WithdrawUseCase
 import com.idiotfrogs.util.base.BaseUiState
 import com.idiotfrogs.util.base.BaseViewModel
@@ -10,6 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
+    private val logoutUseCase: LogoutUseCase,
     private val withdrawUseCase: WithdrawUseCase
 ) : BaseViewModel<SettingUiState, SettingSideEffect, SettingAction>() {
 
@@ -17,9 +19,21 @@ class SettingViewModel @Inject constructor(
 
     override fun onAction(action: SettingAction) {
         when (action) {
-            SettingAction.LogoutConfirmed -> intent { postSideEffect(SettingSideEffect.NavigateToLogin) }
+            SettingAction.LogoutConfirmed -> logout()
             SettingAction.BackClicked -> intent { postSideEffect(SettingSideEffect.NavigateToBack) }
             SettingAction.WithdrawConfirmed -> withdraw()
+        }
+    }
+
+    private fun logout() {
+        safeLaunch {
+            logoutUseCase.invoke()
+                .onSuccess {
+                    intent {
+                        postSideEffect(SettingSideEffect.NavigateToLogin)
+                    }
+                }
+                .onFailure { /** no-op */ }
         }
     }
 
