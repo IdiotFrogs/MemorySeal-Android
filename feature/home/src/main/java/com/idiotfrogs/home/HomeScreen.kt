@@ -59,6 +59,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.extension.toYearMonthDay
+import com.idiotfrogs.home.component.FullSizeOpenAnimation
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.resource.R
 import dev.chrisbanes.haze.hazeSource
@@ -74,6 +75,7 @@ fun HomeRoute(
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
     var showToast by remember { mutableStateOf(false) }
+    var showOpenAnimation by remember { mutableStateOf(false) }
 
     LaunchedEffect(showToast) {
         if (!showToast) return@LaunchedEffect
@@ -87,6 +89,7 @@ fun HomeRoute(
             HomeSideEffect.NavigateToProfile -> navigator.navigate(Routes.Profile)
             is HomeSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(it.id))
             HomeSideEffect.ShowToast -> showToast = true
+            HomeSideEffect.ShowOpenAnimation ->
         }
     }
 
@@ -101,6 +104,8 @@ fun HomeRoute(
         }
 
         MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
+
+        if (showOpenAnimation) FullSizeOpenAnimation()
     }
 }
 
@@ -265,7 +270,12 @@ fun HomeScreen(
                             items(data) {
                                 HomeTicket(
                                     modifier = Modifier.noRippleClickable {
-                                        onAction(HomeAction.TimeCapsuleClicked(it.timeCapsuleId))
+                                        onAction(
+                                            HomeAction.TimeCapsuleClicked(
+                                                it.timeCapsuleId,
+                                                it.timeCapsuleStatus
+                                            )
+                                        )
                                     },
                                     buried = it.timeCapsuleStatus == TimeCapsuleStatus.BURIED,
                                     createdAt = it.createdAt.toYearMonthDay(),

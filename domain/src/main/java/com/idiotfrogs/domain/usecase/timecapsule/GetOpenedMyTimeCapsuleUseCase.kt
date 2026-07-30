@@ -7,11 +7,13 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.util.safeCatching
 import javax.inject.Inject
 
-class GetMyTimeCapsuleUseCase @Inject constructor(
+class GetOpenedMyTimeCapsuleUseCase @Inject constructor(
     private val timeCapsuleRepository: TimeCapsuleRepository
 ) {
     suspend operator fun invoke(): Result<Map<TimeCapsuleRole, List<MyTimeCapsuleResponse>>> =
         safeCatching {
-            timeCapsuleRepository.getMyTimeCapsule().groupBy { it.role }
+            timeCapsuleRepository.getMyTimeCapsule()
+                .filter { it.timeCapsuleStatus == TimeCapsuleStatus.OPENED }
+                .groupBy { it.role }
         }
 }

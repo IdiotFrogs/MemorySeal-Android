@@ -3,11 +3,13 @@ package com.idiotfrogs.home
 import androidx.compose.runtime.Immutable
 import com.idiotfrogs.domain.usecase.auth.PutFcmTokenUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
+import com.idiotfrogs.domain.usecase.timecapsule.GetViewedTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.RequestCollaboratorUseCase
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
+import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.notification.FcmTokenProvider
 import com.idiotfrogs.util.base.DataUiState
@@ -16,6 +18,7 @@ import com.idiotfrogs.util.sideEffect.RefreshEvent
 import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.first
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
@@ -27,7 +30,8 @@ class HomeViewModel @Inject constructor(
     private val requestCollaboratorUseCase: RequestCollaboratorUseCase,
     private val fcmTokenProvider: FcmTokenProvider,
     private val putFcmTokenUseCase: PutFcmTokenUseCase,
-): BaseViewModel<HomeUiState, HomeSideEffect, HomeAction>() {
+    private val getViewedTimeCapsuleUseCase: GetViewedTimeCapsuleUseCase,
+) : BaseViewModel<HomeUiState, HomeSideEffect, HomeAction>() {
 
     override val container: Container<HomeUiState, HomeSideEffect> = container(
         initialState = HomeUiState(),
@@ -95,12 +99,23 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun checkTimeCapsule(capsuleId: Long, timeCapsuleStatus: TimeCapsuleStatus) = safeLaunch {
+        val capsuleIds = getViewedTimeCapsuleUseCase.capsuleIds.first()
+
+        // 만약 티켓이 오픈된 이후 처음 확인하는 거라면
+        if (capsuleId !in capsuleIds && timeCapsuleStatus == TimeCapsuleStatus.OPENED) {
+            intent { postSideEffect(HomeSideEffect.ShowOpenAnimation) }
+        } else {
+            intent { postSideEffect(HomeSideEffect.NavigateToDetail(capsuleId)) }
+        }
+    }
+
     override fun onAction(action: HomeAction) {
         intent {
             when (action) {
                 HomeAction.CreateClicked -> postSideEffect(HomeSideEffect.NavigateToCreate)
                 HomeAction.ProfileClicked -> postSideEffect(HomeSideEffect.NavigateToProfile)
-                is HomeAction.TimeCapsuleClicked -> postSideEffect(HomeSideEffect.NavigateToDetail(action.id))
+                is HomeAction.TimeCapsuleClicked -> checkTimeCapsule(action.id, action.timeCapsuleStatus)
                 is HomeAction.JoinCodeSubmitted -> requestCollaborator(PendingCollaboratorsRequest(action.code))
                 HomeAction.Refresh -> fetchHome()
             }
@@ -124,7 +139,7 @@ data class HomeData(
 sealed interface HomeAction {
     data object CreateClicked : HomeAction
     data object ProfileClicked : HomeAction
-    data class TimeCapsuleClicked(val id: Long) : HomeAction
+    data class TimeCapsuleClicked(val id: Long, val timeCapsuleStatus: TimeCapsuleStatus) : HomeAction
     data class JoinCodeSubmitted(val code: String) : HomeAction
     data object Refresh : HomeAction
 }
@@ -135,4 +150,5 @@ sealed interface HomeSideEffect {
     data class NavigateToDetail(val id: Long) : HomeSideEffect
 
     data object ShowToast : HomeSideEffect
+    data object ShowOpenAnimation : HomeSideEffect
 }
