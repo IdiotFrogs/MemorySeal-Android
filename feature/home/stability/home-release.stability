@@ -50,3 +50,18 @@ public fun com.idiotfrogs.home.component.HomeTicket(buried: kotlin.Boolean, crea
     - imageUrl: STABLE (class with no mutable properties)
     - modifier: STABLE (marked @Stable or @Immutable)
 
+@Composable
+public fun com.idiotfrogs.home.component.OpenAnimation(composition: kotlin.Function0<com.airbnb.lottie.LottieComposition>, confirmClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - composition: STABLE (function type)
+    - confirmClick: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.home.component.OpenInteraction(onFinish: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - onFinish: STABLE (function type)
+
