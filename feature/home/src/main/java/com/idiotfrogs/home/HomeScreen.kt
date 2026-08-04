@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,6 +43,8 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSMenuFab
@@ -59,7 +62,8 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.extension.toYearMonthDay
-import com.idiotfrogs.home.component.FullSizeOpenAnimation
+import com.idiotfrogs.home.component.OpenAnimation
+import com.idiotfrogs.home.component.OpenInteraction
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.resource.R
 import dev.chrisbanes.haze.hazeSource
@@ -68,6 +72,8 @@ import kotlinx.coroutines.delay
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
+enum class OpenStep { INTERACTION, ANIMATION, NONE }
+
 @Composable
 fun HomeRoute(
     viewModel: HomeViewModel = hiltViewModel()
@@ -75,7 +81,8 @@ fun HomeRoute(
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
     var showToast by remember { mutableStateOf(false) }
-    var showOpenAnimation by remember { mutableStateOf(false) }
+    var currentOpenStep by remember { mutableStateOf(OpenStep.NONE) }
+    var clickedCapsuleId by remember { mutableLongStateOf(-1L) }
 
     LaunchedEffect(showToast) {
         if (!showToast) return@LaunchedEffect
@@ -89,7 +96,10 @@ fun HomeRoute(
             HomeSideEffect.NavigateToProfile -> navigator.navigate(Routes.Profile)
             is HomeSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(it.id))
             HomeSideEffect.ShowToast -> showToast = true
-            HomeSideEffect.ShowOpenAnimation ->
+            is HomeSideEffect.ShowOpenAnimation -> {
+                clickedCapsuleId = it.id
+                currentOpenStep = OpenStep.INTERACTION
+            }
         }
     }
 
@@ -105,7 +115,28 @@ fun HomeRoute(
 
         MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
 
-        if (showOpenAnimation) FullSizeOpenAnimation()
+        // 로티를 미리 로드해둬야 함
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.ticket_open))
+        val ready = composition != null
+
+        when (currentOpenStep) {
+            OpenStep.INTERACTION -> {
+                OpenInteraction(
+                    onFinish = { currentOpenStep = OpenStep.ANIMATION}
+                )
+            }
+            // 가드 조건(if) - 매칭된 조건에 대한 추가 검사 제공
+            OpenStep.ANIMATION if ready -> {
+                OpenAnimation(
+                    composition = composition!!, // 위에서 체크해서 non-null
+                    confirmClick = {
+                        // id가 유효하지 않은 경우 해당 페이지 예외 발생 -> 뒤로 이동
+                        navigator.navigate(Routes.Detail(clickedCapsuleId))
+                    }
+                )
+            }
+            else -> Unit
+        }
     }
 }
 

@@ -150,5 +150,5 @@ sealed interface HomeSideEffect {
     data class NavigateToDetail(val id: Long) : HomeSideEffect
 
     data object ShowToast : HomeSideEffect
-    data object ShowOpenAnimation : HomeSideEffect
+    data class ShowOpenAnimation(val id: Long) : HomeSideEffect
 }
