@@ -128,7 +128,7 @@ fun HomeRoute(
             // 가드 조건(if) - 매칭된 조건에 대한 추가 검사 제공
             OpenStep.ANIMATION if ready -> {
                 OpenAnimation(
-                    composition = composition!!, // 위에서 체크해서 non-null
+                    composition = { composition!! }, // 위에서 체크해서 non-null, 람다를 통한 지연 읽기
                     confirmClick = {
                         // id가 유효하지 않은 경우 해당 페이지 예외 발생 -> 뒤로 이동
                         navigator.navigate(Routes.Detail(clickedCapsuleId))

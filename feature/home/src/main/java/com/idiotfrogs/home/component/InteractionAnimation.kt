@@ -24,7 +24,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.airbnb.lottie.LottieComposition
@@ -136,11 +135,11 @@ fun OpenInteraction(onFinish: () -> Unit) {
 
 @Composable
 fun OpenAnimation(
-    composition: LottieComposition,
+    composition: () -> LottieComposition,
     confirmClick: () -> Unit
 ) {
     val progress by animateLottieCompositionAsState(
-        composition = composition,
+        composition = composition(),
         iterations = 1,
     )
 
@@ -165,7 +164,7 @@ fun OpenAnimation(
                 modifier = Modifier
                     .zIndex(1f)
                     .size(width = LottieWidth, height = LottieHeight),
-                composition = composition,
+                composition = composition(),
                 progress = { progress }
             )
             Box(

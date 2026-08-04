@@ -104,7 +104,7 @@ class HomeViewModel @Inject constructor(
 
         // 만약 티켓이 오픈된 이후 처음 확인하는 거라면
         if (capsuleId !in capsuleIds && timeCapsuleStatus == TimeCapsuleStatus.OPENED) {
-            intent { postSideEffect(HomeSideEffect.ShowOpenAnimation) }
+            intent { postSideEffect(HomeSideEffect.ShowOpenAnimation(capsuleId)) }
         } else {
             intent { postSideEffect(HomeSideEffect.NavigateToDetail(capsuleId)) }
         }
