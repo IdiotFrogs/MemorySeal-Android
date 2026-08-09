@@ -1,5 +1,9 @@
 package com.idiotfrogs.data.repository.timecapsule
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import com.idiotfrogs.data.datasource.paging.WateringPagingSource
 import com.idiotfrogs.data.datasource.timecapsule.TimeCapsuleDataSource
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
@@ -13,6 +17,10 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.WateringContentResponse
+import com.idiotfrogs.model.timecapsule.WateringResponse
+import com.idiotfrogs.network.service.TimeCapsuleService
+import kotlinx.coroutines.flow.Flow
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -21,6 +29,7 @@ import java.io.File
 import javax.inject.Inject
 
 class TimeCapsuleRepositoryImpl @Inject constructor(
+    private val timeCapsuleService: TimeCapsuleService,
     private val timeCapsuleDataSource: TimeCapsuleDataSource
 ) : TimeCapsuleRepository {
     override suspend fun createTimeCapsule(
@@ -158,5 +167,24 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
             contentIds = contentIds,
             fileIds = fileIds
         )
+    }
+
+    override fun getWatering(capsuleId: Long): Flow<PagingData<WateringContentResponse>> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false // 전체 개수를 모르는 경우
+            ),
+            pagingSourceFactory = {
+                WateringPagingSource(
+                    timeCapsuleService = timeCapsuleService,
+                    capsuleId = capsuleId
+                )
+            }
+        ).flow
+    }
+
+    override suspend fun watering(capsuleId: Long) {
+        return timeCapsuleDataSource.watering(capsuleId)
     }
 }

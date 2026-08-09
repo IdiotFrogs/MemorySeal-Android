@@ -148,4 +148,8 @@ class TimeCapsuleDataSourceImpl @Inject constructor(
             fileIds = fileIds
         )
     }
+
+    override suspend fun watering(capsuleId: Long) {
+        return timeCapsuleService.watering(capsuleId)
+    }
 }

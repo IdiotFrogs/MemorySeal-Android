@@ -1,5 +1,6 @@
 package com.idiotfrogs.data.repository.timecapsule
 
+import androidx.paging.PagingData
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
@@ -12,6 +13,8 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.WateringContentResponse
+import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 import java.io.File
 
@@ -86,4 +89,8 @@ interface TimeCapsuleRepository {
         contentIds: List<Long>,
         fileIds: List<Long>,
     )
+
+    fun getWatering(capsuleId: Long): Flow<PagingData<WateringContentResponse>>
+
+    suspend fun watering(capsuleId: Long)
 }
