@@ -36,6 +36,7 @@ import com.idiotfrogs.profile.editprofile.EditProfileRoute
 import com.idiotfrogs.profile.profile.ProfileRoute
 import com.idiotfrogs.setting.SettingRoute
 import com.idiotfrogs.splash.SplashRoute
+import com.idiotfrogs.watering.WateringRoute
 import dagger.hilt.android.AndroidEntryPoint
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -96,6 +97,7 @@ class MainActivity : ComponentActivity() {
                                         capsuleTitle = it.title,
                                     )
                                 }
+                                entry<Routes.Watering> { WateringRoute(capsuleId = it.id) }
                             },
                         )
                     }
