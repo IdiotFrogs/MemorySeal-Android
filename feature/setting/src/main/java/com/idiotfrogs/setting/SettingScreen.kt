@@ -41,7 +41,10 @@ fun SettingRoute(
 
     viewModel.collectSideEffect { event ->
         when (event) {
-            SettingSideEffect.NavigateToLogin -> navigator.navigate(Routes.Login)
+            SettingSideEffect.NavigateToLogin -> {
+                navigator.clear()
+                navigator.navigate(Routes.Login)
+            }
             SettingSideEffect.NavigateToBack -> navigator.popBackStack()
         }
     }
@@ -66,7 +69,6 @@ fun SettingScreen(
             confirmText = "로그아웃",
             cancelText = "유지",
             onConfirm = {
-                /** TODO: 로그아웃 로직 */
                 showLogoutDialog = false
                 onAction(SettingAction.LogoutConfirmed)
             },

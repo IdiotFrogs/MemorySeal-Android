@@ -55,6 +55,10 @@ fun SplashRoute(
                 else -> notificationPermission.launchPermissionRequest() // 권한 요청
             }
         }
+    } else {
+        LaunchedEffect(Unit) {
+            viewModel.onAction(SplashAction.AutoLoginRequested)
+        }
     }
 
     viewModel.collectSideEffect { event ->

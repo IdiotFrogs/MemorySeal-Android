@@ -3,6 +3,7 @@ package com.idiotfrogs.network.service
 import com.idiotfrogs.model.auth.AuthTokenRequest
 import com.idiotfrogs.model.auth.AuthTokenResponse
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Query
@@ -16,4 +17,7 @@ interface AuthService {
 
     @PUT("auth/fcm-token")
     suspend fun putFcmToken(@Query("fcmToken") fcmToken: String)
+
+    @DELETE("auth/logout")
+    suspend fun logout()
 }
