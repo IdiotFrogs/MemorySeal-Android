@@ -13,10 +13,12 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.util.exception.AlreadyContributorException
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.HttpException
 import java.io.File
 import javax.inject.Inject
 
@@ -57,6 +59,17 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
 
     override suspend fun getTimeCapsuleInviteCode(capsuleId: Long): TimeCapsuleInviteCodeResponse {
         return timeCapsuleDataSource.getTimeCapsuleInviteCode(capsuleId)
+    }
+
+    override suspend fun joinTimeCapsule(capsuleId: Long): TimeCapsuleResponse {
+        return try {
+            timeCapsuleDataSource.joinTimeCapsule(capsuleId)
+        } catch (exception: HttpException) {
+            if (exception.code() == ALREADY_CONTRIBUTOR_STATUS_CODE) {
+                throw AlreadyContributorException()
+            }
+            throw exception
+        }
     }
 
     override suspend fun requestCollaborator(body: PendingCollaboratorsRequest) {
@@ -158,5 +171,9 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
             contentIds = contentIds,
             fileIds = fileIds
         )
+    }
+
+    companion object {
+        private const val ALREADY_CONTRIBUTOR_STATUS_CODE = 409
     }
 }

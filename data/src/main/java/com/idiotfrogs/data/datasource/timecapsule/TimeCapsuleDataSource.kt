@@ -35,6 +35,8 @@ interface TimeCapsuleDataSource {
 
     suspend fun getTimeCapsuleInviteCode(capsuleId: Long): TimeCapsuleInviteCodeResponse
 
+    suspend fun joinTimeCapsule(capsuleId: Long): TimeCapsuleResponse
+
     suspend fun requestCollaborator(body: PendingCollaboratorsRequest)
 
     suspend fun processRequest(requestId: Long, body: ProcessCollaboratorRequest)
