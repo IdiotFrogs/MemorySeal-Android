@@ -21,6 +21,7 @@ dependencies {
     implementation(project(":core:navigation"))
     implementation(project(":core:util"))
     implementation(project(":core:di"))
+    implementation(project(":core:app-link"))
     implementation(project(":common:resource"))
     implementation(project(":common:notification"))
 
