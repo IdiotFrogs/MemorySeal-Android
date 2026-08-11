@@ -18,6 +18,5 @@ dependencies {
     "implementation"(project(":core:designsystem"))
     "implementation"(project(":core:util"))
     "implementation"(project(":core:model"))
-    "implementation"(project(":core:model"))
     "implementation"(project(":core:navigation"))
 }
