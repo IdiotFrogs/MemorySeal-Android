@@ -127,7 +127,8 @@ interface TimeCapsuleService {
     suspend fun getWatering(
         @Path("capsuleId") capsuleId: Long,
         @Query("page") page: Int,
-        @Query("size") size: Int
+        @Query("size") size: Int,
+        @Query("sort") sort: String
     ): WateringResponse
 
     @POST("time-capsules/{capsuleId}/water")

@@ -5,7 +5,6 @@ import androidx.paging.cachedIn
 import com.idiotfrogs.domain.usecase.timecapsule.GetWateringUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.WateringUseCase
 import com.idiotfrogs.model.timecapsule.WateringMeta
-import com.idiotfrogs.util.base.BaseUiState
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.base.DataUiState
 import dagger.assisted.Assisted
@@ -18,13 +17,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onStart
 import org.orbitmvi.orbit.viewmodel.container
 
-@HiltViewModel(assistedFactory = WateringViewModel.Factory::class)
-class WateringViewModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = WateringDetailViewModel.Factory::class)
+class WateringDetailViewModel @AssistedInject constructor(
     @Assisted private val capsuleId: Long,
     private val getWateringUseCase: GetWateringUseCase,
     private val wateringUseCase: WateringUseCase
-): BaseViewModel<WateringState, WateringSideEffect, WateringAction>() {
-    override val container = container<WateringState, WateringSideEffect>(WateringState())
+): BaseViewModel<WateringDetailState, WateringDetailSideEffect, WateringDetailAction>() {
+    override val container = container<WateringDetailState, WateringDetailSideEffect>(WateringDetailState())
 
     // 유저 물 주기 등 강제 리프레시가 필요한 경우 트리거로 사용
     private val refreshEvent = MutableSharedFlow<Unit>()
@@ -34,7 +33,7 @@ class WateringViewModel @AssistedInject constructor(
     val watering = refreshEvent
         .onStart { emit(Unit) } // 최초 1회 조회 트리거
         .flatMapLatest {
-            getWateringUseCase.invoke(capsuleId, "desc") {
+            getWateringUseCase.invoke(capsuleId, "asc") {
                 intent {
                     reduce { state.copy(data = it) }
                 }
@@ -42,11 +41,10 @@ class WateringViewModel @AssistedInject constructor(
         }
         .cachedIn(viewModelScope) // pagingData 캐싱
 
-    override fun onAction(action: WateringAction) {
+    override fun onAction(action: WateringDetailAction) {
         when (action) {
-            WateringAction.WateringClicked -> watering()
-            WateringAction.BackClicked -> navigateToBack()
-            is WateringAction.ShowAllClicked -> navigateToWateringDetail()
+            WateringDetailAction.WateringClicked -> watering()
+            WateringDetailAction.BackClicked -> navigateToBack()
         }
     }
 
@@ -58,34 +56,28 @@ class WateringViewModel @AssistedInject constructor(
         }
     }
 
-    private fun navigateToWateringDetail() {
-        intent { postSideEffect(WateringSideEffect.NavigateToWateringDetail(capsuleId)) }
-    }
-
     private fun navigateToBack() {
-        intent { postSideEffect(WateringSideEffect.NavigateToBack) }
+        intent { postSideEffect(WateringDetailSideEffect.NavigateToBack) }
     }
 
     @AssistedFactory
     interface Factory {
-        fun create(capsuleId: Long): WateringViewModel
+        fun create(capsuleId: Long): WateringDetailViewModel
     }
 }
 
-data class WateringState(
+data class WateringDetailState(
     override val isLoading: Boolean = false,
     override val data: WateringMeta? = null,
     override val errorMessage: String? = null,
 ): DataUiState<WateringMeta>
 
-sealed interface WateringAction {
-    data object WateringClicked : WateringAction
-    data object BackClicked : WateringAction
-    data object ShowAllClicked : WateringAction
+sealed interface WateringDetailAction {
+    data object WateringClicked : WateringDetailAction
+    data object BackClicked : WateringDetailAction
 }
 
-sealed interface WateringSideEffect {
-    data object NavigateToBack : WateringSideEffect
-    data class NavigateToWateringDetail(val id: Long) : WateringSideEffect
+sealed interface WateringDetailSideEffect {
+    data object NavigateToBack : WateringDetailSideEffect
 }
 

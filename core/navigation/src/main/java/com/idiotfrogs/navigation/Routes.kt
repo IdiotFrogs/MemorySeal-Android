@@ -2,7 +2,6 @@ package com.idiotfrogs.navigation
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
-import java.io.Serial
 
 sealed interface Routes: NavKey {
     @Serializable
@@ -31,6 +30,8 @@ sealed interface Routes: NavKey {
     data class Management(val id: Long, val title: String): Routes
     @Serializable
     data class Preview(val id: Long) : Routes
-    @Serial
+    @Serializable
     data class Watering(val id: Long) : Routes
+    @Serializable
+    data class WateringDetail(val id: Long) : Routes
 }

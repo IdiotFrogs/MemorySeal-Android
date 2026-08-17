@@ -14,6 +14,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.WateringContentResponse
+import com.idiotfrogs.model.timecapsule.WateringMeta
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 import java.io.File
@@ -90,7 +91,11 @@ interface TimeCapsuleRepository {
         fileIds: List<Long>,
     )
 
-    fun getWatering(capsuleId: Long): Flow<PagingData<WateringContentResponse>>
+    fun getWatering(
+        capsuleId: Long,
+        sort: String,
+        onMetaLoaded: (WateringMeta) -> Unit
+    ): Flow<PagingData<WateringContentResponse>>
 
     suspend fun watering(capsuleId: Long)
 }

@@ -36,6 +36,7 @@ import com.idiotfrogs.profile.editprofile.EditProfileRoute
 import com.idiotfrogs.profile.profile.ProfileRoute
 import com.idiotfrogs.setting.SettingRoute
 import com.idiotfrogs.splash.SplashRoute
+import com.idiotfrogs.watering.WateringDetailRoute
 import com.idiotfrogs.watering.WateringRoute
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -98,6 +99,7 @@ class MainActivity : ComponentActivity() {
                                     )
                                 }
                                 entry<Routes.Watering> { WateringRoute(capsuleId = it.id) }
+                                entry<Routes.WateringDetail> { WateringDetailRoute(capsuleId = it.id) }
                             },
                         )
                     }

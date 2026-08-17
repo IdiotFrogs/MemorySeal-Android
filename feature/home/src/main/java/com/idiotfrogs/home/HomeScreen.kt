@@ -259,7 +259,8 @@ fun HomeScreen(
                                 buried = it.timeCapsuleStatus == TimeCapsuleStatus.BURIED,
                                 createdAt = it.createdAt.toYearMonthDay(),
                                 title = it.title,
-                                imageUrl = it.mainImageUrl
+                                imageUrl = it.mainImageUrl,
+                                step = it.stage
                             )
                         }
                     }

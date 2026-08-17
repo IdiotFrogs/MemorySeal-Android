@@ -18,7 +18,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.WateringContentResponse
-import com.idiotfrogs.model.timecapsule.WateringResponse
+import com.idiotfrogs.model.timecapsule.WateringMeta
 import com.idiotfrogs.network.service.TimeCapsuleService
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MediaType.Companion.toMediaType
@@ -169,16 +169,22 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun getWatering(capsuleId: Long): Flow<PagingData<WateringContentResponse>> {
+    override fun getWatering(
+        capsuleId: Long,
+        sort: String,
+        onMetaLoaded: (WateringMeta) -> Unit
+    ): Flow<PagingData<WateringContentResponse>> {
         return Pager(
             config = PagingConfig(
-                pageSize = 20,
+                pageSize = 50,
                 enablePlaceholders = false // 전체 개수를 모르는 경우
             ),
             pagingSourceFactory = {
                 WateringPagingSource(
                     timeCapsuleService = timeCapsuleService,
-                    capsuleId = capsuleId
+                    capsuleId = capsuleId,
+                    sort = sort,
+                    onMetaLoaded = onMetaLoaded
                 )
             }
         ).flow
