@@ -159,12 +159,11 @@ private fun ProfileScreenPreview() {
                     timeCapsuleId = 0L,
                     title = "제목입니다. 제목입니다.",
                     createdAt = Clock.System
-                        .todayIn(TimeZone.currentSystemDefault())
-                        .atTime(0, 0, 0, 0),
+                        .todayIn(TimeZone.currentSystemDefault()),
                     mainImageUrl = "",
                     role = TimeCapsuleRole.CONTRIBUTOR,
-                    timeCapsuleStatus = TimeCapsuleStatus.BURIED
-
+                    timeCapsuleStatus = TimeCapsuleStatus.BURIED,
+                    stage = 1
                 )
             )
         ),

@@ -254,11 +254,7 @@ fun HomeScreen(
                         LazyColumn(
                             state = lazyListState,
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(
-                                top = 24.dp,
-                                start = 20.dp,
-                                end = 20.dp
-                            ),
+                            contentPadding = PaddingValues(top = 24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                         ) {

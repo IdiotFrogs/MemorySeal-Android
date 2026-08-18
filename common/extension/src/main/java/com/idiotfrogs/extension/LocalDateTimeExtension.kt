@@ -9,7 +9,7 @@ import kotlinx.datetime.todayIn
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
-fun LocalDateTime?.toYearMonthDay(): String =
+fun LocalDate?.toYearMonthDay(): String =
     "${this?.year}. ${this?.month?.number.toString().padStart(2, '0')}. ${this?.day.toString().padStart(2, '0')}"
 
 fun LocalDateTime?.toYearMonthDayWeek(): String =
