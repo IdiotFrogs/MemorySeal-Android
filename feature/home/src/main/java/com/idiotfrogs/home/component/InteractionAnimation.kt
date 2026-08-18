@@ -80,7 +80,7 @@ fun OpenInteraction(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 6.dp),
+                .padding(bottom = 79.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -120,26 +120,33 @@ fun OpenInteraction(
                         fillColor = MSTheme.color.white
                     )
             ) {
+                val isValidImage = image?.takeIf { it.isNotEmpty() } != null
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(24.dp)
-                        .wavyStroke(
-                            color = MSTheme.color.greyG1,
-                            cornerRadius = 16.dp,
-                            strokeWidth = 4.dp,
-                            amplitude = (1.5).dp,
-                            spacing = 4.dp,
-                            fillColor = MSTheme.color.greyG1
+                        .then(
+                            if (isValidImage) {
+                                Modifier
+                            } else {
+                                Modifier.wavyStroke(
+                                    color = MSTheme.color.greyG1,
+                                    cornerRadius = 16.dp,
+                                    strokeWidth = 4.dp,
+                                    amplitude = (1.5).dp,
+                                    spacing = 4.dp,
+                                    fillColor = MSTheme.color.greyG1
+                                )
+                            }
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (image?.takeIf { it.isNotEmpty() } != null) {
+                    if (isValidImage) {
                         val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
                         GlideImage(
                             modifier = Modifier
                                 .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-                                .size(width = 80.dp, height = 102.dp)
+                                .fillMaxSize()
                                 .drawWithCache {
                                     onDrawWithContent {
                                         drawContent()
@@ -188,7 +195,7 @@ fun OpenAnimation(
                     painter = painterResource(R.drawable.img_ticket_open_background),
                     contentScale = ContentScale.Crop
                 )
-                .padding(top = 104.dp), // 피그마 기준 + 티켓 아래 부분이 28dp 더 위로 올라간거 보정
+                .padding(bottom = 11.dp), // 피그마 기준 + 티켓 아래 부분이 28dp 더 위로 올라간거 보정
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -213,27 +220,33 @@ fun OpenAnimation(
                         fillColor = MSTheme.color.white
                     )
             ) {
-                val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
+                val isValidImage = image?.takeIf { it.isNotEmpty() } != null
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(24.dp)
-                        .wavyStroke(
-                            color = MSTheme.color.greyG1,
-                            cornerRadius = 16.dp,
-                            strokeWidth = 4.dp,
-                            amplitude = (1.5).dp,
-                            spacing = 4.dp,
-                            fillColor = MSTheme.color.greyG1
+                        .then(
+                            if (isValidImage) {
+                                Modifier
+                            } else {
+                                Modifier.wavyStroke(
+                                    color = MSTheme.color.greyG1,
+                                    cornerRadius = 16.dp,
+                                    strokeWidth = 4.dp,
+                                    amplitude = (1.5).dp,
+                                    spacing = 4.dp,
+                                    fillColor = MSTheme.color.greyG1
+                                )
+                            }
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (image?.takeIf { it.isNotEmpty() } != null) {
+                    if (isValidImage) {
                         val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
                         GlideImage(
                             modifier = Modifier
                                 .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-                                .size(width = 80.dp, height = 102.dp)
+                                .fillMaxSize()
                                 .drawWithCache {
                                     onDrawWithContent {
                                         drawContent()

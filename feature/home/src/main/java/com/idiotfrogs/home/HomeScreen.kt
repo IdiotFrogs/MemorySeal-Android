@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -150,19 +151,25 @@ fun HomeRoute(
             }
             // 가드 조건(if) - 매칭된 조건에 대한 추가 검사 제공
             OpenStep.ANIMATION if ready -> {
-                AnimatedVisibility(
-                    // 첫 컴포지션에 false -> true 로 전환해야 진입 시에도 enter 애니메이션이 동작한다
-                    visibleState = visibleState,
-                    enter = fadeIn(tween(500))
+                // 배경 지정 안하면 홈 화면이 비쳐보임
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White)
                 ) {
-                    OpenAnimation(
-                        image = clickedCapsule?.mainImageUrl,
-                        composition = { composition!! }, // 위에서 체크해서 non-null, 람다를 통한 지연 읽기
-                        confirmClick = {
-                            // id가 유효하지 않은 경우 해당 페이지 예외 발생 -> 뒤로 이동
-                            navigator.navigate(Routes.Detail(clickedCapsuleId))
-                        }
-                    )
+                    AnimatedVisibility(
+                        visibleState = visibleState,
+                        enter = fadeIn(tween(500))
+                    ) {
+                        OpenAnimation(
+                            image = clickedCapsule?.mainImageUrl,
+                            composition = { composition!! }, // 위에서 체크해서 non-null, 람다를 통한 지연 읽기
+                            confirmClick = {
+                                // id가 유효하지 않은 경우 해당 페이지 예외 발생 -> 뒤로 이동
+                                navigator.navigate(Routes.Detail(clickedCapsuleId))
+                            }
+                        )
+                    }
                 }
             }
             else -> Unit
