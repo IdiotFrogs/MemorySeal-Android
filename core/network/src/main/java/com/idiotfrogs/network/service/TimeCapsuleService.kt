@@ -52,6 +52,9 @@ interface TimeCapsuleService {
     @POST("time-capsules/{capsuleId}/invite")
     suspend fun getTimeCapsuleInviteCode(@Path("capsuleId") capsuleId: Long): TimeCapsuleInviteCodeResponse
 
+    @POST("time-capsules/{capsuleId}/join")
+    suspend fun joinTimeCapsule(@Path("capsuleId") capsuleId: Long): TimeCapsuleResponse
+
     @POST("time-capsules/join-request")
     suspend fun requestCollaborator(@Body body: PendingCollaboratorsRequest)
 

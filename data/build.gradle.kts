@@ -11,9 +11,11 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:network"))
     implementation(project(":core:local"))
+    implementation(project(":core:util"))
     implementation(project(":common:extension"))
 
     implementation(libs.okhttp)
+    implementation(libs.retrofit)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

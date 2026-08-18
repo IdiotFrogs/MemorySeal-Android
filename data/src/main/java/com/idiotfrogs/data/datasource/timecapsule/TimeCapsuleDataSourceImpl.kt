@@ -54,6 +54,10 @@ class TimeCapsuleDataSourceImpl @Inject constructor(
         return timeCapsuleService.getTimeCapsuleInviteCode(capsuleId)
     }
 
+    override suspend fun joinTimeCapsule(capsuleId: Long): TimeCapsuleResponse {
+        return timeCapsuleService.joinTimeCapsule(capsuleId)
+    }
+
     override suspend fun requestCollaborator(body: PendingCollaboratorsRequest) {
         return timeCapsuleService.requestCollaborator(body)
     }

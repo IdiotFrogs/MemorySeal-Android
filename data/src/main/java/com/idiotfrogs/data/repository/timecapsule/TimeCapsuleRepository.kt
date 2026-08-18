@@ -12,7 +12,6 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
-import okhttp3.MultipartBody
 import java.io.File
 
 interface TimeCapsuleRepository {
@@ -34,6 +33,8 @@ interface TimeCapsuleRepository {
     ): TimeCapsuleCollaboratorsResponse
 
     suspend fun getTimeCapsuleInviteCode(capsuleId: Long): TimeCapsuleInviteCodeResponse
+
+    suspend fun joinTimeCapsule(capsuleId: Long): TimeCapsuleResponse
 
     suspend fun requestCollaborator(body: PendingCollaboratorsRequest)
 
