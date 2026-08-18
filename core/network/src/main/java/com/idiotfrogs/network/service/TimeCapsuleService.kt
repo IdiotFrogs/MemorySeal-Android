@@ -4,7 +4,6 @@ import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
-import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleContentResponse
@@ -52,14 +51,11 @@ interface TimeCapsuleService {
     @POST("time-capsules/{capsuleId}/invite")
     suspend fun getTimeCapsuleInviteCode(@Path("capsuleId") capsuleId: Long): TimeCapsuleInviteCodeResponse
 
+    @POST("time-capsules/{capsuleId}/join")
+    suspend fun joinTimeCapsule(@Path("capsuleId") capsuleId: Long): TimeCapsuleResponse
+
     @POST("time-capsules/join-request")
     suspend fun requestCollaborator(@Body body: PendingCollaboratorsRequest)
-
-    @POST("time-capsules/request/{requestId}/process")
-    suspend fun processRequest(
-        @Path("requestId") requestId: Long,
-        @Body body: ProcessCollaboratorRequest
-    )
 
     @PUT("time-capsules/{capsuleId}/bury")
     suspend fun buryTimeCapsule(

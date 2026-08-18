@@ -2,7 +2,6 @@ package com.idiotfrogs.domain.usecase.timecapsule
 
 import com.idiotfrogs.data.repository.timecapsule.TimeCapsuleRepository
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
-import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import com.idiotfrogs.util.safeCatching
 import javax.inject.Inject
 

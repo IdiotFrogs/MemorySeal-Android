@@ -5,7 +5,6 @@ import com.idiotfrogs.model.timecapsule.CapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
-import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleContentResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
@@ -54,12 +53,12 @@ class TimeCapsuleDataSourceImpl @Inject constructor(
         return timeCapsuleService.getTimeCapsuleInviteCode(capsuleId)
     }
 
-    override suspend fun requestCollaborator(body: PendingCollaboratorsRequest) {
-        return timeCapsuleService.requestCollaborator(body)
+    override suspend fun joinTimeCapsule(capsuleId: Long): TimeCapsuleResponse {
+        return timeCapsuleService.joinTimeCapsule(capsuleId)
     }
 
-    override suspend fun processRequest(requestId: Long, body: ProcessCollaboratorRequest) {
-        return timeCapsuleService.processRequest(requestId , body)
+    override suspend fun requestCollaborator(body: PendingCollaboratorsRequest) {
+        return timeCapsuleService.requestCollaborator(body)
     }
 
     override suspend fun buryTimeCapsule(

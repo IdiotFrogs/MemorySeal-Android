@@ -3,6 +3,7 @@ package com.idiotfrogs.memoryseal
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -47,12 +50,19 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         handlePush(intent)
+        handleAppLink(intent)
         mainViewModel.collectAppSideEffect()
         setContent {
             MSTheme {
                 val backStack = rememberNavBackStack(Routes.Splash)
                 val navigator = remember(backStack) { MSNavigatorImpl(backStack) }
                 val currentRoute = backStack.lastOrNull() as? Routes
+                val pendingInviteCapsuleId by mainViewModel.pendingInviteCapsuleId.collectAsState()
+                val isAuthenticatedRoute =
+                    currentRoute != null &&
+                        currentRoute !is Routes.Splash &&
+                        currentRoute !is Routes.Login &&
+                        currentRoute !is Routes.SignUp
 
                 LaunchedEffect(Unit) {
                     mainViewModel.event.collect { sideEffect ->
@@ -61,22 +71,43 @@ class MainActivity : ComponentActivity() {
                                 backStack.clear()
                                 navigator.navigate(Routes.Login)
                             }
+                            is MainEvent.ShowToast -> {
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    sideEffect.message,
+                                    Toast.LENGTH_SHORT,
+                                ).show()
+                            }
                         }
                     }
                 }
 
-                if (
-                    currentRoute != null &&
-                    currentRoute !is Routes.Splash &&
-                    currentRoute !is Routes.Login &&
-                    currentRoute !is Routes.SignUp
-                ) {
+                LaunchedEffect(isAuthenticatedRoute, pendingInviteCapsuleId) {
+                    if (isAuthenticatedRoute && pendingInviteCapsuleId != null) {
+                        mainViewModel.joinPendingInvite()
+                    }
+                }
+
+                if (isAuthenticatedRoute) {
                     LaunchedEffect(Unit) {
-                        mainViewModel.pushEvent.collect { event ->
+                        mainViewModel.navigationEvent.collect { event ->
                             when (event) {
-                                is PushEvent.NavigateToFriend -> navigator.navigate(Routes.Friend(event.capsuleId))
-                                is PushEvent.NavigateToDetail -> navigator.navigate(Routes.Detail(event.capsuleId))
-                                is PushEvent.NavigateToPreview -> navigator.navigate(Routes.Preview(event.capsuleId))
+                                is MainNavigationEvent.NavigateToFriend -> {
+                                    navigator.navigate(Routes.Friend(event.capsuleId))
+                                }
+                                is MainNavigationEvent.NavigateToDetail -> {
+                                    navigator.navigate(Routes.Detail(event.capsuleId))
+                                    event.toastMessage?.let { message ->
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            message,
+                                            Toast.LENGTH_SHORT,
+                                        ).show()
+                                    }
+                                }
+                                is MainNavigationEvent.NavigateToPreview -> {
+                                    navigator.navigate(Routes.Preview(event.capsuleId))
+                                }
                             }
                         }
                     }
@@ -127,6 +158,7 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         handlePush(intent)
+        handleAppLink(intent)
     }
 
     private fun handlePush(intent: Intent?) {
@@ -137,5 +169,13 @@ class MainActivity : ComponentActivity() {
 
         intent?.removeExtra("type")
         intent?.removeExtra("capsuleId")
+    }
+
+    private fun handleAppLink(intent: Intent?) {
+        if (intent?.action != Intent.ACTION_VIEW) return
+
+        val uri = intent.data ?: return
+        mainViewModel.onAppLinkReceived(uri)
+        intent.data = null
     }
 }

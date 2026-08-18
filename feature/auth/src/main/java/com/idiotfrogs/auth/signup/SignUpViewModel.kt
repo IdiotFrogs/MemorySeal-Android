@@ -24,8 +24,6 @@ class SignUpViewModel @Inject constructor(
     }
 
     private fun signUp(nickname: String, file: File?) {
-        if (file == null) return
-
         safeLaunch {
             intent { reduce { state.copy(isLoading = true) } }
 
