@@ -17,13 +17,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.airbnb.lottie.LottieComposition
@@ -35,6 +43,7 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.R
+import com.skydoves.landscapist.glide.GlideImage
 
 private val TicketWidth = 269.dp
 private val HandleSize = 50.dp
@@ -43,7 +52,10 @@ private val LottieWidth = 308.dp
 private val LottieHeight = 165.dp
 
 @Composable
-fun OpenInteraction(onFinish: () -> Unit) {
+fun OpenInteraction(
+    image: String?,
+    onFinish: () -> Unit
+) {
     Column(
         modifier = Modifier
             .systemBarsPadding()
@@ -122,11 +134,31 @@ fun OpenInteraction(onFinish: () -> Unit) {
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        modifier = Modifier.size(width = 80.dp, height = 102.dp),
-                        painter = painterResource(R.drawable.img_empty_placeholder),
-                        contentDescription = "empty_placeholder"
-                    )
+                    if (image?.takeIf { it.isNotEmpty() } != null) {
+                        val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
+                        GlideImage(
+                            modifier = Modifier
+                                .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                                .size(width = 80.dp, height = 102.dp)
+                                .drawWithCache {
+                                    onDrawWithContent {
+                                        drawContent()
+                                        drawImage(
+                                            image = mask,
+                                            dstSize = IntSize(size.width.toInt(), size.height.toInt()),
+                                            blendMode = BlendMode.DstIn
+                                        )
+                                    }
+                                },
+                            imageModel = { image },
+                        )
+                    } else {
+                        Image(
+                            modifier = Modifier.size(width = 80.dp, height = 102.dp),
+                            painter = painterResource(R.drawable.img_empty_placeholder),
+                            contentDescription = "empty_placeholder"
+                        )
+                    }
                 }
             }
         }
@@ -135,6 +167,7 @@ fun OpenInteraction(onFinish: () -> Unit) {
 
 @Composable
 fun OpenAnimation(
+    image: String?,
     composition: () -> LottieComposition,
     confirmClick: () -> Unit
 ) {
@@ -180,6 +213,7 @@ fun OpenAnimation(
                         fillColor = MSTheme.color.white
                     )
             ) {
+                val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -194,11 +228,31 @@ fun OpenAnimation(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        modifier = Modifier.size(width = 80.dp, height = 102.dp),
-                        painter = painterResource(R.drawable.img_empty_placeholder),
-                        contentDescription = "empty_placeholder"
-                    )
+                    if (image?.takeIf { it.isNotEmpty() } != null) {
+                        val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
+                        GlideImage(
+                            modifier = Modifier
+                                .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                                .size(width = 80.dp, height = 102.dp)
+                                .drawWithCache {
+                                    onDrawWithContent {
+                                        drawContent()
+                                        drawImage(
+                                            image = mask,
+                                            dstSize = IntSize(size.width.toInt(), size.height.toInt()),
+                                            blendMode = BlendMode.DstIn
+                                        )
+                                    }
+                                },
+                            imageModel = { image },
+                        )
+                    } else {
+                        Image(
+                            modifier = Modifier.size(width = 80.dp, height = 102.dp),
+                            painter = painterResource(R.drawable.img_empty_placeholder),
+                            contentDescription = "empty_placeholder"
+                        )
+                    }
                 }
             }
         }

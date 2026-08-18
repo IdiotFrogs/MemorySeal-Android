@@ -1,6 +1,9 @@
 package com.idiotfrogs.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -84,6 +87,8 @@ fun HomeRoute(
     var currentOpenStep by remember { mutableStateOf(OpenStep.NONE) }
     var clickedCapsuleId by remember { mutableLongStateOf(-1L) }
 
+    val visibleState = remember { MutableTransitionState(false) }
+
     LaunchedEffect(showToast) {
         if (!showToast) return@LaunchedEffect
         delay(2000L)
@@ -119,21 +124,46 @@ fun HomeRoute(
         val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.ticket_open))
         val ready = composition != null
 
+        // 만약 클릭한 캡슐이 있다면 파생해서 해당 캡슐 데이터를 얻음
+        val clickedCapsule by remember {
+            derivedStateOf {
+                if (clickedCapsuleId == -1L) {
+                    null
+                } else {
+                    uiState.data?.capsules?.flatMap { it.value }?.find { it.timeCapsuleId == clickedCapsuleId }
+                }
+            }
+        }
+
+        LaunchedEffect(currentOpenStep, ready) {
+            if (currentOpenStep == OpenStep.ANIMATION && ready) {
+                visibleState.targetState = true
+            }
+        }
+
         when (currentOpenStep) {
             OpenStep.INTERACTION -> {
                 OpenInteraction(
+                    image = clickedCapsule?.mainImageUrl,
                     onFinish = { currentOpenStep = OpenStep.ANIMATION}
                 )
             }
             // 가드 조건(if) - 매칭된 조건에 대한 추가 검사 제공
             OpenStep.ANIMATION if ready -> {
-                OpenAnimation(
-                    composition = { composition!! }, // 위에서 체크해서 non-null, 람다를 통한 지연 읽기
-                    confirmClick = {
-                        // id가 유효하지 않은 경우 해당 페이지 예외 발생 -> 뒤로 이동
-                        navigator.navigate(Routes.Detail(clickedCapsuleId))
-                    }
-                )
+                AnimatedVisibility(
+                    // 첫 컴포지션에 false -> true 로 전환해야 진입 시에도 enter 애니메이션이 동작한다
+                    visibleState = visibleState,
+                    enter = fadeIn(tween(500))
+                ) {
+                    OpenAnimation(
+                        image = clickedCapsule?.mainImageUrl,
+                        composition = { composition!! }, // 위에서 체크해서 non-null, 람다를 통한 지연 읽기
+                        confirmClick = {
+                            // id가 유효하지 않은 경우 해당 페이지 예외 발생 -> 뒤로 이동
+                            navigator.navigate(Routes.Detail(clickedCapsuleId))
+                        }
+                    )
+                }
             }
             else -> Unit
         }
