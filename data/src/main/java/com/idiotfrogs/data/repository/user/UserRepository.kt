@@ -2,7 +2,6 @@ package com.idiotfrogs.data.repository.user
 
 import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.model.user.UserResponse
-import com.idiotfrogs.model.user.UserUpdateRequest
 import java.io.File
 
 interface UserRepository {

@@ -17,7 +17,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalDate
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 
@@ -75,7 +75,7 @@ class DetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun buryTimeCapsule(openedAt: LocalDateTime) {
+    private fun buryTimeCapsule(openedAt: LocalDate) {
         safeLaunch {
             intent { reduce { state.copy(isLoading = true) } }
 
@@ -148,7 +148,7 @@ sealed interface DetailAction {
     data class ManagementClicked(val id: Long, val title: String) : DetailAction
     data class PreviewClicked(val id: Long) : DetailAction
     data object BackClicked : DetailAction
-    data class BuryConfirmClicked(val openedAt: LocalDateTime) : DetailAction
+    data class BuryConfirmClicked(val openedAt: LocalDate) : DetailAction
 }
 
 sealed interface DetailSideEffect {
