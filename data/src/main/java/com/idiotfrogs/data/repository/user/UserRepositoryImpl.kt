@@ -22,9 +22,9 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateMyProfile(
-        userId: Long,
         profileImage: File?,
         nickname: String,
+        useDefaultImage: Boolean,
     ): UserResponse {
         val imageRequestBody = profileImage?.asRequestBody("image/jpeg".toMediaType())
             ?: "".toRequestBody("image/*".toMediaType())
@@ -35,18 +35,23 @@ class UserRepositoryImpl @Inject constructor(
         )
 
         return userDataSource.updateMyProfile(
-            userId = userId,
             profileImage = imagePart,
-            nickname = nickname
+            nickname = nickname,
+            useDefaultImage = useDefaultImage
         )
     }
 
     override suspend fun signUp(
         nickname: String,
-        profileImage: File
+        profileImage: File?
     ): UserResponse {
-        val imageRequestBody = profileImage.asRequestBody("image/jpeg".toMediaType())
-        val imagePart = MultipartBody.Part.createFormData("profileImage", profileImage.name, imageRequestBody)
+        val imageRequestBody = profileImage?.asRequestBody("image/jpeg".toMediaType())
+            ?: "".toRequestBody("image/*".toMediaType())
+        val imagePart = MultipartBody.Part.createFormData(
+            "profileImage",
+            profileImage?.name ?: "profileImage", // 기본 이미지 대응
+            imageRequestBody
+        )
         return userDataSource.signUp(
             nickname = nickname,
             profileImage = imagePart

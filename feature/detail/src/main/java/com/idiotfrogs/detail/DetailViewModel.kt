@@ -1,7 +1,6 @@
 package com.idiotfrogs.detail
 
 import androidx.compose.runtime.Immutable
-import com.idiotfrogs.detail.DetailSideEffect.*
 import com.idiotfrogs.domain.usecase.timecapsule.BuryTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleCollaboratorsUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleUseCase
@@ -18,7 +17,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalDate
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 
@@ -76,7 +75,7 @@ class DetailViewModel @AssistedInject constructor(
         }
     }
 
-    private fun buryTimeCapsule(openedAt: LocalDateTime) {
+    private fun buryTimeCapsule(openedAt: LocalDate) {
         safeLaunch {
             intent { reduce { state.copy(isLoading = true) } }
 
@@ -106,19 +105,19 @@ class DetailViewModel @AssistedInject constructor(
 
     override fun onAction(action: DetailAction) {
         when (action) {
-            is DetailAction.MemberSectionClicked -> intent { postSideEffect(NavigateToFriend(action.id)) }
+            is DetailAction.MemberSectionClicked -> intent { postSideEffect(DetailSideEffect.NavigateToFriend(action.id)) }
             is DetailAction.MessageSectionClicked -> intent {
                 val status = state.data?.capsule?.timeCapsuleStatus
                 val sideEffect = if (status == TimeCapsuleStatus.BEFOREBURIED) {
-                    NavigateToMessage(action.id)
+                    DetailSideEffect.NavigateToMessage(action.id)
                 } else {
-                    NavigateToPreview(action.id)
+                    DetailSideEffect.NavigateToPreview(action.id)
                 }
 
                 postSideEffect(sideEffect)
             }
-            is DetailAction.ManagementClicked -> intent { postSideEffect(NavigateToManagement(action.id, action.title)) }
-            is DetailAction.PreviewClicked -> intent { postSideEffect(NavigateToPreview(action.id)) }
+            is DetailAction.ManagementClicked -> intent { postSideEffect(DetailSideEffect.NavigateToManagement(action.id, action.title)) }
+            is DetailAction.PreviewClicked -> intent { postSideEffect(DetailSideEffect.NavigateToPreview(action.id)) }
             DetailAction.BackClicked -> intent { postSideEffect(DetailSideEffect.NavigateToBack) }
             is DetailAction.BuryConfirmClicked -> buryTimeCapsule(action.openedAt)
             is DetailAction.WateringClicked -> intent { postSideEffect(DetailSideEffect.NavigateToWatering(action.id))}
@@ -150,7 +149,7 @@ sealed interface DetailAction {
     data class ManagementClicked(val id: Long, val title: String) : DetailAction
     data class PreviewClicked(val id: Long) : DetailAction
     data object BackClicked : DetailAction
-    data class BuryConfirmClicked(val openedAt: LocalDateTime) : DetailAction
+    data class BuryConfirmClicked(val openedAt: LocalDate) : DetailAction
     data class WateringClicked(val id: Long) : DetailAction
 }
 

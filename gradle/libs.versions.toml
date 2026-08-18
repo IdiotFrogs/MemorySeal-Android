@@ -11,6 +11,7 @@ androidxNavigation3 = "1.0.0"
 androidxLifecycle = "2.10.0"
 androidxDatastore = "1.2.0"
 firebaseBom = "33.8.0"
+kotlinxCoroutines = "1.10.2"
 kotlinxSerializationJson = "1.7.3"
 kotlin = "2.3.20"
 kotlinDatetime = "0.7.1"
@@ -71,6 +72,7 @@ androidx-navigation3-lifecycle = { group = "androidx.lifecycle", name = "lifecyc
 androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDatastore" }
 
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinDatetime" }
+kotlinx-coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "kotlinxCoroutines" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigation" }

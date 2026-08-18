@@ -223,6 +223,75 @@ fun MSTitleDialog(
     }
 }
 
+@Composable
+fun MSHeaderDialog(
+    header: @Composable ColumnScope.() -> Unit,
+    onConfirm: () -> Unit,
+    onCancel: () -> Unit,
+    modifier: Modifier = Modifier,
+    confirmText: String = "확인",
+    cancelText: String = "취소",
+    confirmButtonColor: Color = MSTheme.color.primaryNormal,
+    cancelButtonColor: Color = MSTheme.color.greyG1,
+    confirmTextColor: Color = MSTheme.color.white,
+    cancelTextColor: Color = MSTheme.color.greyG4,
+    content: @Composable ColumnScope.() -> Unit = { Spacer(Modifier.height(24.dp)) },
+) {
+    Dialog(onDismissRequest = onCancel) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .wavyStroke(
+                    color = MSTheme.color.white,
+                    fillColor = MSTheme.color.white,
+                    contentPadding = 20.dp,
+                )
+        ) {
+            header()
+            content()
+            Row(modifier = Modifier.fillMaxWidth()) {
+                MSButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = onCancel,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = cancelButtonColor
+                    ),
+                    pressColors = ButtonDefaults.buttonColors(
+                        containerColor = cancelButtonColor
+                    ),
+                    wavyStrokeColor = cancelButtonColor,
+                    contentPadding = PaddingValues(12.dp)
+                ) {
+                    MSText(
+                        text = cancelText,
+                        fontSize = 16.dp,
+                        color = cancelTextColor
+                    )
+                }
+                Spacer(Modifier.width(8.dp))
+                MSButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = onConfirm,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = confirmButtonColor
+                    ),
+                    pressColors = ButtonDefaults.buttonColors(
+                        containerColor = confirmButtonColor
+                    ),
+                    wavyStrokeColor = confirmButtonColor,
+                    contentPadding = PaddingValues(11.dp)
+                ) {
+                    MSText(
+                        text = confirmText,
+                        fontSize = 16.dp,
+                        color = confirmTextColor
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 fun MSDialogPreview() {

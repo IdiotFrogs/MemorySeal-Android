@@ -6,7 +6,6 @@ import com.idiotfrogs.model.timecapsule.CapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
-import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleContentResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
@@ -16,7 +15,6 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.WateringContentResponse
 import com.idiotfrogs.model.timecapsule.WateringMeta
 import kotlinx.coroutines.flow.Flow
-import okhttp3.MultipartBody
 import java.io.File
 
 interface TimeCapsuleRepository {
@@ -39,9 +37,9 @@ interface TimeCapsuleRepository {
 
     suspend fun getTimeCapsuleInviteCode(capsuleId: Long): TimeCapsuleInviteCodeResponse
 
-    suspend fun requestCollaborator(body: PendingCollaboratorsRequest)
+    suspend fun joinTimeCapsule(capsuleId: Long): TimeCapsuleResponse
 
-    suspend fun processRequest(requestId: Long, body: ProcessCollaboratorRequest)
+    suspend fun requestCollaborator(body: PendingCollaboratorsRequest)
 
     suspend fun buryTimeCapsule(
         capsuleId: Long,

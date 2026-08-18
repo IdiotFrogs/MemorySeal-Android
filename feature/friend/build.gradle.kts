@@ -7,6 +7,8 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:app-link"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     testImplementation(libs.junit)

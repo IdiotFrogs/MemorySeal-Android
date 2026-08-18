@@ -6,4 +6,6 @@ import com.idiotfrogs.model.auth.AuthTokenResponse
 interface AuthDataSource {
     suspend fun socialGoogleLogin(authTokenRequest: AuthTokenRequest): AuthTokenResponse
     suspend fun socialAppleLogin(authTokenRequest: AuthTokenRequest): AuthTokenResponse
+    suspend fun putFcmToken(fcmToken: String)
+    suspend fun logout()
 }

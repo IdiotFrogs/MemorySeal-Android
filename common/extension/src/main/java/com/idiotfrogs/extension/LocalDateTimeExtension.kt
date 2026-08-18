@@ -1,6 +1,7 @@
 package com.idiotfrogs.extension
 
 import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.number
@@ -14,9 +15,12 @@ fun LocalDateTime?.toYearMonthDay(): String =
 fun LocalDateTime?.toYearMonthDayWeek(): String =
     "${this?.year}. ${this?.month?.number.toString().padStart(2, '0')}. ${this?.day.toString().padStart(2, '0')}. ${this?.dayOfWeek?.toKoreanShort()}"
 
+fun LocalDate?.toYearMonthDayWeek(): String =
+    "${this?.year}. ${this?.month?.number.toString().padStart(2, '0')}. ${this?.day.toString().padStart(2, '0')}. ${this?.dayOfWeek?.toKoreanShort()}"
+
 @OptIn(ExperimentalTime::class)
 fun LocalDateTime?.toDday(): String {
-    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val today = Clock.System.todayIn(TimeZone.of("Asia/Seoul"))
     val targetDate = this?.date
     val diff = targetDate?.toEpochDays()?.minus(today.toEpochDays())
 
@@ -27,7 +31,7 @@ fun LocalDateTime?.toDday(): String {
 fun LocalDateTime?.toOpenRemainingText(): String {
     if (this == null) return "묻기 전"
 
-    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+    val today = Clock.System.todayIn(TimeZone.of("Asia/Seoul"))
     val diff = date.toEpochDays() - today.toEpochDays()
 
     return when {
@@ -45,4 +49,18 @@ private fun DayOfWeek.toKoreanShort(): String = when (this) {
     DayOfWeek.FRIDAY -> "(금)"
     DayOfWeek.SATURDAY -> "(토)"
     DayOfWeek.SUNDAY -> "(일)"
+}
+
+@OptIn(ExperimentalTime::class)
+fun LocalDate?.toOpenRemainingText(): String {
+    if (this == null) return "묻기 전"
+
+    val today = Clock.System.todayIn(TimeZone.of("Asia/Seoul"))
+    val diff = toEpochDays() - today.toEpochDays()
+
+    return when {
+        diff > 0L -> "오픈까지 ${diff}일 남음"
+        diff == 0L -> "오픈 당일"
+        else -> "오픈"
+    }
 }

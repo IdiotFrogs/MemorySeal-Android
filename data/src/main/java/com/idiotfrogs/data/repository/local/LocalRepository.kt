@@ -4,4 +4,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface LocalRepository {
     val accessToken: Flow<String>
+
+    suspend fun clearTokens()
 }

@@ -22,6 +22,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -92,6 +95,7 @@ fun HomeRoute(
             HomeScreen(
                 showToast = showToast,
                 data = data,
+                isRefreshing = uiState.isLoading,
                 onAction = viewModel::onAction
             )
         }
@@ -100,10 +104,12 @@ fun HomeRoute(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     showToast: Boolean,
     data: HomeData,
+    isRefreshing: Boolean,
     onAction: (HomeAction) -> Unit,
 ) {
     val hazeState = rememberHazeState()
@@ -239,29 +245,35 @@ fun HomeScreen(
                         HomeTab.JOINED -> TimeCapsuleRole.CONTRIBUTOR
                     }
                     val data = data.capsules[role].orEmpty()
-
-                    LazyColumn(
-                        state = lazyListState,
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(
-                            top = 24.dp,
-                            start = 20.dp,
-                            end = 20.dp
-                        ),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    val refreshState = rememberPullToRefreshState()
+                    PullToRefreshBox(
+                        isRefreshing = isRefreshing,
+                        state = refreshState,
+                        onRefresh = { onAction.invoke(HomeAction.Refresh) }
                     ) {
-                        items(data) {
-                            HomeTicket(
-                                modifier = Modifier.noRippleClickable {
-                                    onAction(HomeAction.TimeCapsuleClicked(it.timeCapsuleId))
-                                },
-                                buried = it.timeCapsuleStatus == TimeCapsuleStatus.BURIED,
-                                createdAt = it.createdAt.toYearMonthDay(),
-                                title = it.title,
-                                imageUrl = it.mainImageUrl,
-                                step = it.stage
-                            )
+                        LazyColumn(
+                            state = lazyListState,
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(
+                                top = 24.dp,
+                                start = 20.dp,
+                                end = 20.dp
+                            ),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                        ) {
+                            items(data) {
+                                HomeTicket(
+                                    modifier = Modifier.noRippleClickable {
+                                        onAction(HomeAction.TimeCapsuleClicked(it.timeCapsuleId))
+                                    },
+                                    buried = it.timeCapsuleStatus == TimeCapsuleStatus.BURIED,
+                                    createdAt = it.createdAt.toYearMonthDay(),
+                                    title = it.title,
+                                    imageUrl = it.mainImageUrl,
+                                    step = it.stage
+                                )
+                            }
                         }
                     }
                 }
@@ -301,6 +313,7 @@ fun HomeScreenPreview() {
     HomeScreen(
         showToast = false,
         data = HomeData(),
+        isRefreshing = false,
         onAction = {},
     )
 }

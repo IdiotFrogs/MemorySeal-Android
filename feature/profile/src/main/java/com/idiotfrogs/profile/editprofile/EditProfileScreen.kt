@@ -123,15 +123,15 @@ fun EditProfileScreen(
 
                 onAction.invoke(
                     EditProfileAction.UpdateProfile(
-                        userId = user.id,
                         profileImage = file,
-                        nickname = textFieldState.text.toString()
+                        nickname = textFieldState.text.toString(),
+                        useDefaultImage = useDefaultImage
                     )
                 )
             }
         )
         Spacer(modifier = Modifier.height(16.dp))
-        if (imageUri != null && !useDefaultImage) {
+        if ((imageUri != null || user.profileImageUrl.isNotEmpty()) && !useDefaultImage) {
             Box(modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 GlideImage(
                     imageModel = { imageUri ?: user.profileImageUrl }, // 둘 중 하나는 not-null

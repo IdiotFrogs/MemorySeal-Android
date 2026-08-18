@@ -15,4 +15,12 @@ class AuthDataSourceImpl @Inject constructor(
     override suspend fun socialAppleLogin(authTokenRequest: AuthTokenRequest): AuthTokenResponse {
         return authService.socialAppleLogin(authTokenRequest)
     }
+
+    override suspend fun putFcmToken(fcmToken: String) {
+        authService.putFcmToken(fcmToken)
+    }
+
+    override suspend fun logout() {
+        authService.logout()
+    }
 }

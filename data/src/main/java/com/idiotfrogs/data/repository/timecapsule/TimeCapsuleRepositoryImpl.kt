@@ -10,13 +10,13 @@ import com.idiotfrogs.model.timecapsule.CapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
-import com.idiotfrogs.model.timecapsule.ProcessCollaboratorRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleContentResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.util.exception.AlreadyContributorException
 import com.idiotfrogs.model.timecapsule.WateringContentResponse
 import com.idiotfrogs.model.timecapsule.WateringMeta
 import com.idiotfrogs.network.service.TimeCapsuleService
@@ -25,6 +25,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.HttpException
 import java.io.File
 import javax.inject.Inject
 
@@ -68,12 +69,19 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
         return timeCapsuleDataSource.getTimeCapsuleInviteCode(capsuleId)
     }
 
-    override suspend fun requestCollaborator(body: PendingCollaboratorsRequest) {
-        return timeCapsuleDataSource.requestCollaborator(body)
+    override suspend fun joinTimeCapsule(capsuleId: Long): TimeCapsuleResponse {
+        return try {
+            timeCapsuleDataSource.joinTimeCapsule(capsuleId)
+        } catch (exception: HttpException) {
+            if (exception.code() == ALREADY_CONTRIBUTOR_STATUS_CODE) {
+                throw AlreadyContributorException()
+            }
+            throw exception
+        }
     }
 
-    override suspend fun processRequest(requestId: Long, body: ProcessCollaboratorRequest) {
-        return timeCapsuleDataSource.processRequest(requestId, body)
+    override suspend fun requestCollaborator(body: PendingCollaboratorsRequest) {
+        return timeCapsuleDataSource.requestCollaborator(body)
     }
 
     override suspend fun buryTimeCapsule(
@@ -192,5 +200,10 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
 
     override suspend fun watering(capsuleId: Long) {
         return timeCapsuleDataSource.watering(capsuleId)
+    }
+
+
+    companion object {
+        private const val ALREADY_CONTRIBUTOR_STATUS_CODE = 409
     }
 }

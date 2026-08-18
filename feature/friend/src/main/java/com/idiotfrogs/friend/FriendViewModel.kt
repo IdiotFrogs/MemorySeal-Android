@@ -1,6 +1,7 @@
 package com.idiotfrogs.friend
 
 import androidx.compose.runtime.Immutable
+import com.idiotfrogs.app_link.AppLinkManager
 import com.idiotfrogs.domain.usecase.timecapsule.DelegationTimeCapsuleHostUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.DeleteTimeCapsuleContributorsUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleCollaboratorsUseCase
@@ -19,6 +20,7 @@ import org.orbitmvi.orbit.viewmodel.container
 @HiltViewModel(assistedFactory = FriendViewModel.Factory::class)
 class FriendViewModel @AssistedInject constructor(
     @Assisted private val capsuleId: Long,
+    private val appLinkManager: AppLinkManager,
     private val getTimeCapsuleInviteCodeUseCase: GetTimeCapsuleInviteCodeUseCase,
     private val getTimeCapsuleCollaboratorsUseCase: GetTimeCapsuleCollaboratorsUseCase,
     private val delegationTimeCapsuleHostUseCase: DelegationTimeCapsuleHostUseCase,
@@ -61,6 +63,19 @@ class FriendViewModel @AssistedInject constructor(
         }.onFailure {
             intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
             // TODO 에러 처리 어떻게 할지 논의 필요.
+        }
+    }
+
+    private fun shareInviteLink(capsuleId: Long) = safeLaunch {
+        intent { reduce { state.copy(isLoading = true) } }
+
+        appLinkManager.createInviteLink(capsuleId).onSuccess { inviteLink ->
+            intent {
+                reduce { state.copy(isLoading = false, errorMessage = null) }
+                postSideEffect(FriendSideEffect.ShareInviteLink(inviteLink))
+            }
+        }.onFailure {
+            intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
         }
     }
 
@@ -139,6 +154,7 @@ class FriendViewModel @AssistedInject constructor(
     override fun onAction(action: FriendAction) {
         when (action) {
             FriendAction.BackClicked -> intent { postSideEffect(FriendSideEffect.NavigateToBack) }
+            is FriendAction.InviteLinkShareClicked -> shareInviteLink(action.capsuleId)
             is FriendAction.InviteCodeCopyClicked -> getTimeCapsuleInviteCode(action.capsuleId)
             is FriendAction.DelegationHostConfirmed -> delegationTimeCapsuleHost(action.targetUserId)
             is FriendAction.DeleteContributorConfirmed -> deleteTimeCapsuleContributor(action.targetUserId)
@@ -166,6 +182,7 @@ data class CollaboratorsData(
 
 sealed interface FriendAction {
     data object BackClicked : FriendAction
+    data class InviteLinkShareClicked(val capsuleId: Long) : FriendAction
     data class InviteCodeCopyClicked(val capsuleId: Long) : FriendAction
     data class DelegationHostConfirmed(val targetUserId: Long) : FriendAction
     data class DeleteContributorConfirmed(val targetUserId: Long) : FriendAction
@@ -175,5 +192,6 @@ sealed interface FriendAction {
 sealed interface FriendSideEffect {
     data object NavigateToBack : FriendSideEffect
     data class CopyInviteCodeToClipboard(val code: String) : FriendSideEffect
+    data class ShareInviteLink(val inviteLink: String) : FriendSideEffect
     data class ShowToast(val state: FriendScreenActionState) : FriendSideEffect
 }

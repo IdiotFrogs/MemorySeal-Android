@@ -3,9 +3,11 @@ package com.idiotfrogs.create
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -85,7 +87,9 @@ private fun CreateScreen(
     val (imageUri, launchImagePicker) = rememberPickerState()
     val isShowKeyboard = rememberKeyboardVisibility()
 
-    val enabled = titleTextFieldState.text.isNotEmpty() && imageUri != null
+    val titleText = titleTextFieldState.text.toString()
+    val isTitleTooLong = titleText.length > 20
+    val enabled = titleText.isNotEmpty() && !isTitleTooLong && imageUri != null
 
     val buttonHorizontalPadding by animateDpAsState(if (isShowKeyboard) 0.dp else 20.dp)
 
@@ -162,6 +166,25 @@ private fun CreateScreen(
                     textFieldState = titleTextFieldState,
                     hint = "제목을 입력해주세요.",
                 )
+                if (isTitleTooLong) {
+                    Spacer(Modifier.height(9.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_warning),
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                        )
+                        MSText(
+                            text = "최소 1글자에서 20글자까지 입력할 수 있습니다.",
+                            fontSize = 12.dp,
+                            fontWeight = FontWeight.Normal,
+                            color = MSTheme.color.red,
+                        )
+                    }
+                }
                 Spacer(Modifier.height(16.dp))
                 MSText(
                     modifier = Modifier.padding(start = 6.dp),
