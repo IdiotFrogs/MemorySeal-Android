@@ -167,7 +167,7 @@ fun DetailScreen(
             confirmText = "묻기",
             cancelText = "취소",
             onConfirm = {
-                onAction(DetailAction.BuryConfirmClicked(selectedOpenAt))
+                onAction(DetailAction.BuryConfirmClicked(selectedOpenAt.date))
                 showBuryDialog = false
             },
             onCancel = { showBuryDialog = false },
