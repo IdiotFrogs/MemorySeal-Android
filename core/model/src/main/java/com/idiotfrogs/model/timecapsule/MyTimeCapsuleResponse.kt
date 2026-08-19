@@ -1,7 +1,6 @@
 package com.idiotfrogs.model.timecapsule
 
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -9,7 +8,7 @@ data class MyTimeCapsuleResponse(
     val timeCapsuleId: Long,
     val title: String,
     val openedAt: LocalDate? = null,
-    val createdAt: LocalDateTime,
+    val createdAt: LocalDate,
     val mainImageUrl: String,
     val timeCapsuleStatus: TimeCapsuleStatus,
     val role: TimeCapsuleRole

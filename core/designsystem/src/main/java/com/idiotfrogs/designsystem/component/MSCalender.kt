@@ -33,13 +33,12 @@ import com.idiotfrogs.designsystem.util.DevicePreview
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.R
-import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import kotlinx.datetime.YearMonth
-import kotlinx.datetime.atTime
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minusMonth
 import kotlinx.datetime.number
@@ -54,7 +53,7 @@ import kotlin.time.ExperimentalTime
 @Composable
 fun MSCalender(
     showSealDate: Boolean = false,
-    onDateSelected: (LocalDateTime) -> Unit
+    onDateSelected: (LocalDate) -> Unit
 ) {
     val today = Clock.System.todayIn(TimeZone.of("Asia/Seoul"))
     val initialSelectedDate = if (showSealDate) {
@@ -210,7 +209,7 @@ fun MSCalender(
                                         currentYearMonth = selectedMonth
                                     }
 
-                                    onDateSelected(date.atTime(0, 0, 0, 0))
+                                    onDateSelected(date)
                                 }
                             },
                         contentAlignment = Alignment.Center
