@@ -12,6 +12,9 @@ import kotlin.time.ExperimentalTime
 fun LocalDateTime?.toYearMonthDay(): String =
     "${this?.year}. ${this?.month?.number.toString().padStart(2, '0')}. ${this?.day.toString().padStart(2, '0')}"
 
+fun LocalDate?.toYearMonthDay(): String =
+    "${this?.year}. ${this?.month?.number.toString().padStart(2, '0')}. ${this?.day.toString().padStart(2, '0')}"
+
 fun LocalDateTime?.toYearMonthDayWeek(): String =
     "${this?.year}. ${this?.month?.number.toString().padStart(2, '0')}. ${this?.day.toString().padStart(2, '0')}. ${this?.dayOfWeek?.toKoreanShort()}"
 
