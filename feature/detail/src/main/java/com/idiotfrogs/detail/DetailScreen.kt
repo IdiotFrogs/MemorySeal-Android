@@ -72,7 +72,6 @@ import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
 import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
@@ -144,7 +143,6 @@ fun DetailScreen(
         Clock.System
             .todayIn(TimeZone.of("Asia/Seoul"))
             .plus(1, DateTimeUnit.DAY)
-            .atTime(0, 0, 0, 0)
     }
     var selectedOpenAt by remember { mutableStateOf(defaultOpenAt) }
 
@@ -167,7 +165,7 @@ fun DetailScreen(
             confirmText = "묻기",
             cancelText = "취소",
             onConfirm = {
-                onAction(DetailAction.BuryConfirmClicked(selectedOpenAt.date))
+                onAction(DetailAction.BuryConfirmClicked(selectedOpenAt))
                 showBuryDialog = false
             },
             onCancel = { showBuryDialog = false },
