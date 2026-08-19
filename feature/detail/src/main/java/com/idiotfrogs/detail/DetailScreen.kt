@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -304,39 +305,52 @@ fun DetailScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wavyStroke(
-                            color = MSTheme.color.primaryLight,
-                            fillColor = MSTheme.color.primaryLight,
-                            contentPadding = 16.dp,
-                        ),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                        .background(
+                            color = MSTheme.color.greyG5,
+                            shape = RoundedCornerShape(12.dp),
+                        )
+                        .padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    MSText(
-                        modifier = Modifier.weight(1f),
-                        text = "타임캡슐이 열렸어요!\n함께 쌓인 추억을 보러가요.",
-                        fontSize = 14.dp,
-                        color = MSTheme.color.primaryDark,
+                    Image(
+                        modifier = Modifier.size(16.dp),
+                        painter = painterResource(R.drawable.ic_shovel),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(MSTheme.color.white),
                     )
 
-                    Spacer(Modifier.width(12.dp))
+                    Spacer(Modifier.width(8.dp))
 
-                    MSButton(
-                        onClick = { onAction(DetailAction.PreviewClicked(capsuleId)) },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MSTheme.color.greyG5,
-                        ),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 9.dp),
+                    MSText(
+                        modifier = Modifier.weight(1f),
+                        text = "티켓이 오픈되었어요!",
+                        fontSize = 14.dp,
+                        color = MSTheme.color.white,
+                    )
+
+                    Row(
+                        modifier = Modifier.noRippleClickable { onAction(DetailAction.PreviewClicked(capsuleId)) },
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         MSText(
                             text = "보러가기",
                             fontSize = 12.dp,
+                            fontWeight = FontWeight.Medium,
                             color = MSTheme.color.white,
+                        )
+
+                        Spacer(Modifier.width(4.dp))
+
+                        Image(
+                            modifier = Modifier.size(16.dp),
+                            painter = painterResource(R.drawable.ic_chevron_right),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(MSTheme.color.white),
                         )
                     }
                 }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(24.dp))
             }
 
             MSText(
@@ -481,78 +495,88 @@ fun DetailScreen(
                     )
                 }
 
-                TimeCapsuleStatus.OPENED -> Unit
+                TimeCapsuleStatus.OPENED -> {
+                    Spacer(Modifier.height(28.dp))
+                    MSDashHorizontalDivider(
+                        thickness = 2.dp,
+                        dashWidth = 8.dp,
+                        gapWidth = 8.dp,
+                        color = MSTheme.color.greyG1,
+                    )
+                }
             }
 
-            Spacer(Modifier.height(28.dp))
+            if (status != TimeCapsuleStatus.OPENED) {
+                Spacer(Modifier.height(28.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                MSText(
-                    text = "나의 추억 메시지",
-                    color = MSTheme.color.greyG4,
-                )
-                Image(
-                    modifier = Modifier
-                        .size(16.dp)
-                        .noRippleClickable { onAction(DetailAction.MessageSectionClicked(capsuleId)) },
-                    painter = painterResource(R.drawable.ic_chevron_right),
-                    contentDescription = "추억 메시지 상세 아이콘"
-                )
-            }
-
-            Spacer(Modifier.height(20.dp))
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .wavyStroke(
-                            color = MSTheme.color.primaryLight,
-                            fillColor = MSTheme.color.primaryLight,
-                            contentPadding = 16.dp,
-                        ),
-                    verticalArrangement = Arrangement.Center,
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     MSText(
-                        text = "메시지",
-                        fontSize = 12.dp,
-                        color = MSTheme.color.primaryDark,
+                        text = "나의 추억 메시지",
+                        color = MSTheme.color.greyG4,
                     )
-                    Spacer(Modifier.height(4.dp))
-                    MSText(
-                        text = "${capsule?.myContentCount}개 등록",
-                        fontSize = 12.dp,
-                        fontWeight = FontWeight.Medium,
-                        color = MSTheme.color.primaryDark,
+                    Image(
+                        modifier = Modifier
+                            .size(16.dp)
+                            .noRippleClickable { onAction(DetailAction.MessageSectionClicked(capsuleId)) },
+                        painter = painterResource(R.drawable.ic_chevron_right),
+                        contentDescription = "추억 메시지 상세 아이콘"
                     )
                 }
 
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .wavyStroke(
-                            color = MSTheme.color.primaryLight,
-                            fillColor = MSTheme.color.primaryLight,
-                            contentPadding = 16.dp,
-                        ),
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    MSText(
-                        text = "사진",
-                        fontSize = 12.dp,
-                        color = MSTheme.color.primaryDark,
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    MSText(
-                        text = "${capsule?.myImageCount}개 등록",
-                        fontSize = 12.dp,
-                        fontWeight = FontWeight.Medium,
-                        color = MSTheme.color.primaryDark,
-                    )
+                Spacer(Modifier.height(20.dp))
+
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .wavyStroke(
+                                color = MSTheme.color.primaryLight,
+                                fillColor = MSTheme.color.primaryLight,
+                                contentPadding = 16.dp,
+                            ),
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        MSText(
+                            text = "메시지",
+                            fontSize = 12.dp,
+                            color = MSTheme.color.primaryDark,
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        MSText(
+                            text = "${capsule?.myContentCount}개 등록",
+                            fontSize = 12.dp,
+                            fontWeight = FontWeight.Medium,
+                            color = MSTheme.color.primaryDark,
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .wavyStroke(
+                                color = MSTheme.color.primaryLight,
+                                fillColor = MSTheme.color.primaryLight,
+                                contentPadding = 16.dp,
+                            ),
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        MSText(
+                            text = "사진",
+                            fontSize = 12.dp,
+                            color = MSTheme.color.primaryDark,
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        MSText(
+                            text = "${capsule?.myImageCount}개 등록",
+                            fontSize = 12.dp,
+                            fontWeight = FontWeight.Medium,
+                            color = MSTheme.color.primaryDark,
+                        )
+                    }
                 }
             }
 
