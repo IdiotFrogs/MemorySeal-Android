@@ -137,7 +137,6 @@ fun DetailScreen(
     val status = capsule?.timeCapsuleStatus ?: TimeCapsuleStatus.BEFOREBURIED
     val role = capsule?.userRole ?: TimeCapsuleRole.CONTRIBUTOR
     val isHost = role == TimeCapsuleRole.HOST
-    val isBuried = status == TimeCapsuleStatus.BURIED
     var showBuryDialog by remember { mutableStateOf(false) }
 
     val defaultOpenAt = remember {
@@ -275,7 +274,7 @@ fun DetailScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 24.dp)
         ) {
-            if (isBuried) {
+            if (status == TimeCapsuleStatus.BURIED) {
                 Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
@@ -381,16 +380,17 @@ fun DetailScreen(
                 color = MSTheme.color.greyG3,
             )
 
+            Spacer(Modifier.height(28.dp))
+            MSDashHorizontalDivider(
+                thickness = 2.dp,
+                dashWidth = 8.dp,
+                gapWidth = 8.dp,
+                color = MSTheme.color.greyG1,
+            )
+
             when (status) {
                 TimeCapsuleStatus.BEFOREBURIED -> {
                     if (isHost) {
-                        Spacer(Modifier.height(28.dp))
-                        MSDashHorizontalDivider(
-                            thickness = 2.dp,
-                            dashWidth = 8.dp,
-                            gapWidth = 8.dp,
-                            color = MSTheme.color.greyG1,
-                        )
                         Spacer(Modifier.height(28.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -423,25 +423,10 @@ fun DetailScreen(
                             gapWidth = 8.dp,
                             color = MSTheme.color.greyG1,
                         )
-                    } else {
-                        Spacer(Modifier.height(28.dp))
-                        MSDashHorizontalDivider(
-                            thickness = 2.dp,
-                            dashWidth = 8.dp,
-                            gapWidth = 8.dp,
-                            color = MSTheme.color.greyG1,
-                        )
                     }
                 }
 
                 TimeCapsuleStatus.BURIED -> {
-                    Spacer(Modifier.height(28.dp))
-                    MSDashHorizontalDivider(
-                        thickness = 2.dp,
-                        dashWidth = 8.dp,
-                        gapWidth = 8.dp,
-                        color = MSTheme.color.greyG1,
-                    )
                     Spacer(Modifier.height(28.dp))
                     Box(
                         modifier = Modifier
@@ -495,15 +480,7 @@ fun DetailScreen(
                     )
                 }
 
-                TimeCapsuleStatus.OPENED -> {
-                    Spacer(Modifier.height(28.dp))
-                    MSDashHorizontalDivider(
-                        thickness = 2.dp,
-                        dashWidth = 8.dp,
-                        gapWidth = 8.dp,
-                        color = MSTheme.color.greyG1,
-                    )
-                }
+                TimeCapsuleStatus.OPENED -> Unit
             }
 
             if (status != TimeCapsuleStatus.OPENED) {
