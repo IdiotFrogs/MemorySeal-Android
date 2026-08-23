@@ -181,6 +181,7 @@ fun HomeTicket(
         if (guideItem != null) {
             Image(
                 modifier = Modifier
+                    .aspectRatio(guideItem.width / guideItem.height)
                     .size(width = guideItem.width, height = guideItem.height)
                     .align(Alignment.BottomCenter),
                 painter = painterResource(guideItem.imgRes),
@@ -198,6 +199,6 @@ private fun HomeTicketPreview() {
         createdAt = "2027. 10. 24.",
         title = "제목입니다.",
         imageUrl = null,
-        step = 0
+        step = 1
     )
 }
