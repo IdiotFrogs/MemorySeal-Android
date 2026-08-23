@@ -213,9 +213,9 @@ fun WateringDetailScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(48.dp)
                 .padding(horizontal = 20.dp)
-                .padding(bottom = 20.dp),
+                .padding(bottom = 20.dp)
+                .height(48.dp),
             onClick = { onAction.invoke(WateringDetailAction.WateringClicked) },
             colors = ButtonDefaults.buttonColors(
                 containerColor = MSTheme.color.black,
