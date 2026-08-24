@@ -154,7 +154,7 @@ fun WateringDetailScreen(
             Spacer(modifier = Modifier.height(40.dp))
             LazyVerticalGrid(
                 modifier = Modifier.padding(horizontal = 20.dp),
-                columns = GridCells.Adaptive(minSize = 54.dp),
+                columns = GridCells.Fixed(5),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
@@ -167,7 +167,7 @@ fun WateringDetailScreen(
                     item?.let { item ->
                         Box(
                             modifier = Modifier
-                                .requiredSize(54.dp) // 강제 width 늘어짐 방지
+                                .size(54.dp)
                                 .wavyStroke(
                                     strokeWidth = 4.dp,
                                     color = if (item.isWatered) {
