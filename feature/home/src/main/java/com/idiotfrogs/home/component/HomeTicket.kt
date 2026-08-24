@@ -177,7 +177,7 @@ fun HomeTicket(
                 }
             }
         }
-        val guideItem = GuideItem.entries.getOrNull(step -1) // index 보정
+        val guideItem = GuideItem.entries.getOrNull(step - 2) // step 1 보정 + index 보정
         if (guideItem != null) {
             Image(
                 modifier = Modifier
