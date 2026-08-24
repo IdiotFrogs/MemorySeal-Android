@@ -20,8 +20,9 @@ class WateringPagingSource(
     private val sort: String,
     // 리스트 외 메타 데이터를 전달하기 위한 callbacks
     private val onMetaLoaded: (wateringMeta: WateringMeta) -> Unit,
-): PagingSource<Int, WateringContentResponse>() {
-    private var prevLastDate: LocalDate? = null
+) : PagingSource<Int, WateringContentResponse>() {
+    // 다음 페이지가 시작할 날짜
+    private var cursor: LocalDate? = null
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, WateringContentResponse> {
         return try {
@@ -31,30 +32,30 @@ class WateringPagingSource(
             val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
             val buriedDay = today.minus(response.totalDays - 1, DateTimeUnit.DAY)
 
-            val byDate = response.waterings.content.associateBy { it.wateredDate }
+            val content = response.waterings.content
+            val byDate = content.associateBy { it.wateredDate }
+
             val isDesc = sort.equals("desc", ignoreCase = true)
 
-            val filled = if (byDate.isEmpty()) emptyList() else {
-                val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-                val buriedDay = today.minus(response.totalDays - 1, DateTimeUnit.DAY)
-                val dates = if (isDesc) {
-                    generateSequence(today) {
-                        it.minus(1, DateTimeUnit.DAY).takeIf { day ->  day >= buriedDay }
-                    }
-                } else {
-                    generateSequence(buriedDay) {
-                        it.plus(1, DateTimeUnit.DAY).takeIf { day -> day <= today }
-                    }
-                }
-                dates.map { date ->
-                    byDate[date] ?: WateringContentResponse(
-                        wateredDate = date,
-                        isWatered = false,
-                        userId = null,
-                        profileImageUrl = null
-                    )
-                }.toList()
+            val start = cursor ?: if (isDesc) today else buriedDay
+            val end = when {
+                response.waterings.last -> if (isDesc) buriedDay else today
+                content.isEmpty() -> start
+                else -> content.last().wateredDate
             }
+            val dates = if (isDesc) {
+                generateSequence(start) {
+                    it.minus(1, DateTimeUnit.DAY).takeIf { day -> day >= end }
+                }
+            } else {
+                generateSequence(start) {
+                    it.plus(1, DateTimeUnit.DAY).takeIf { day -> day <= end }
+                }
+            }
+            val filled = dates.map {
+                byDate[it] ?: WateringContentResponse(it, false, null, null)
+            }.toList()
+            cursor = if (isDesc) end.minus(1, DateTimeUnit.DAY) else end.plus(1, DateTimeUnit.DAY)
             // 갱신되는 경우 메타도 함께 업데이트
             if (params is LoadParams.Refresh) {
                 onMetaLoaded(
