@@ -1,7 +1,6 @@
 package com.idiotfrogs.model.timecapsule
 
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
 
 @Serializable

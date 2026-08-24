@@ -36,7 +36,6 @@ import com.idiotfrogs.profile.component.ProfileCard
 import com.idiotfrogs.profile.component.ProfileHeader
 import com.idiotfrogs.profile.component.ProfileTicketCard
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
 import kotlinx.datetime.todayIn
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -158,8 +157,7 @@ private fun ProfileScreenPreview() {
                 MyTimeCapsuleResponse(
                     timeCapsuleId = 0L,
                     title = "제목입니다. 제목입니다.",
-                    createdAt = Clock.System
-                        .todayIn(TimeZone.currentSystemDefault()),
+                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault()),
                     mainImageUrl = "",
                     role = TimeCapsuleRole.CONTRIBUTOR,
                     timeCapsuleStatus = TimeCapsuleStatus.BURIED,
