@@ -14,10 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -83,10 +86,22 @@ fun WateringRoute(
         }
     }
 
+    val lazyListState = rememberLazyListState()
+    val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
+
+    LaunchedEffect(watering.loadState.refresh) {
+        // 로딩 상태가 아닌 경우 -> 로딩이 완료된 상태
+        if (watering.loadState.refresh is LoadState.NotLoading) {
+            val todayIndex = watering.itemSnapshotList.indexOfFirst { it?.wateredDate == today }
+            if (todayIndex != -1) lazyListState.scrollToItem(todayIndex)
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         state.data?.let { data ->
             WateringScreen(
                 watering = watering,
+                lazyListState = lazyListState,
                 data = data,
                 onAction = viewModel::onAction
             )
@@ -110,6 +125,7 @@ enum class WateringItem(val imgRes: Int, val width: Dp, val height: Dp) {
 @Composable
 fun WateringScreen(
     watering: LazyPagingItems<WateringContentResponse>,
+    lazyListState: LazyListState,
     onAction: (WateringAction) -> Unit,
     data: WateringMeta,
 ) {
@@ -213,6 +229,7 @@ fun WateringScreen(
                 .fillMaxWidth()
                 .height(64.dp)
                 .padding(horizontal = 20.dp),
+            state = lazyListState,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -327,6 +344,7 @@ private fun WateringScreenPreview() {
     WateringScreen(
         watering = flowOf(PagingData.empty<WateringContentResponse>())
             .collectAsLazyPagingItems(),
+        lazyListState = rememberLazyListState(),
         data = WateringMeta(
             totalDays = 20,
             wateringCount = 1,
