@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -53,8 +54,11 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import kotlin.time.Clock
 
 @Composable
 fun WateringRoute(
@@ -203,6 +207,7 @@ fun WateringScreen(
             drawStopIndicator = { } // 끝 점 제거
         )
         Spacer(modifier = Modifier.height(32.dp))
+        val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
         LazyRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -216,36 +221,34 @@ fun WateringScreen(
                 key = watering.itemKey { it.wateredDate.toString() }
             ) { index ->
                 val item = watering[index]
-                val highlightItem = index == 0
+                val highlightItem = item?.wateredDate == today
                 item?.let { item ->
-                    Box(
-                        modifier = Modifier
-                            .size(
-                                if (highlightItem) 64.dp else 48.dp
+                    if (item.wateredDate < today && !item.isWatered) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .wavyStroke(
+                                    strokeWidth = 4.dp,
+                                    color = MSTheme.color.greyG1,
+                                    cornerRadius = 48.dp,
+                                    amplitude = 1.dp,
+                                    spacing = 2.dp,
+                                    fillColor = MSTheme.color.greyG1
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                modifier = Modifier.size(20.dp),
+                                painter = painterResource(R.drawable.ic_xmark),
+                                colorFilter = ColorFilter.tint(MSTheme.color.greyG3),
+                                contentDescription = "not_watered"
                             )
-                            .wavyStroke(
-                                strokeWidth = 4.dp,
-                                color = if (item.isWatered) {
-                                    MSTheme.color.primaryNormal
-                                } else {
-                                    MSTheme.color.greyG1
-                                },
-                                cornerRadius = if (highlightItem) 64.dp else 48.dp, // 원형
-                                amplitude = 1.dp,
-                                spacing = 2.dp,
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        MSText(
-                            text = if (highlightItem) "오늘" else (index + 1).toString(),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.dp,
-                            color = MSTheme.color.black
-                        )
-                        GlideImage(
+                        }
+                    } else {
+                        Box(
                             modifier = Modifier
                                 .size(
-                                    if (highlightItem) 48.dp else 32.dp
+                                    if (highlightItem) 64.dp else 48.dp
                                 )
                                 .wavyStroke(
                                     strokeWidth = 4.dp,
@@ -254,13 +257,38 @@ fun WateringScreen(
                                     } else {
                                         MSTheme.color.greyG1
                                     },
-                                    cornerRadius = if (highlightItem) 48.dp else 32.dp, // 원형
+                                    cornerRadius = if (highlightItem) 64.dp else 48.dp, // 원형
                                     amplitude = 1.dp,
                                     spacing = 2.dp,
-                                    clipContent = true
                                 ),
-                            imageModel = { item.profileImageUrl }
-                        )
+                            contentAlignment = Alignment.Center
+                        ) {
+                            MSText(
+                                text = if (highlightItem) "오늘" else (index + 1).toString(),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.dp,
+                                color = MSTheme.color.black
+                            )
+                            GlideImage(
+                                modifier = Modifier
+                                    .size(
+                                        if (highlightItem) 48.dp else 32.dp
+                                    )
+                                    .wavyStroke(
+                                        strokeWidth = 4.dp,
+                                        color = if (item.isWatered) {
+                                            MSTheme.color.primaryNormal
+                                        } else {
+                                            MSTheme.color.greyG1
+                                        },
+                                        cornerRadius = if (highlightItem) 48.dp else 32.dp, // 원형
+                                        amplitude = 1.dp,
+                                        spacing = 2.dp,
+                                        clipContent = true
+                                    ),
+                                imageModel = { item.profileImageUrl }
+                            )
+                        }
                     }
                 }
             }

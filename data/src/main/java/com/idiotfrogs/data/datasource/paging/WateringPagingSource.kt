@@ -30,12 +30,20 @@ class WateringPagingSource(
             val response = timeCapsuleService.getWatering(capsuleId, page, LOAD_SIZE, sort)
 
             val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
-            val buriedDay = today.minus(response.totalDays - 1, DateTimeUnit.DAY)
 
             val content = response.waterings.content
             val byDate = content.associateBy { it.wateredDate }
 
             val isDesc = sort.equals("desc", ignoreCase = true)
+            val buriedDay = response.waterings.content.takeIf { it.isNotEmpty() }
+                ?.let {
+                    if (isDesc) {
+                        response.waterings.content.last().wateredDate
+                    } else {
+                        response.waterings.content.first().wateredDate
+                    }
+                } ?: today
+
 
             val start = cursor ?: if (isDesc) today else buriedDay
             val end = when {
@@ -67,10 +75,39 @@ class WateringPagingSource(
                 )
             }
 
-            Log.d("TAG", filled.toString())
+            // 오늘은 제외해야 하므로 -1 해줌
+            val count = (response.totalDays - response.waterings.totalElements - 1).toInt()
+
+            val result = when {
+                // 만약 역방향 호출 + 첫 페이지라면 오늘 이후 item 채우기
+                isDesc && page == 0 -> {
+                    filled.toMutableList().apply {
+                        addAll(
+                            0, List(count) {
+                                WateringContentResponse(
+                                    today.plus(it + 1, DateTimeUnit.DAY), false, null, null
+                                )
+                            }.reversed()
+                        )
+                    }.toList()
+                }
+                // 만약 정방향 호출 + 마지막 페이지라면 오늘 이후 item 채우기
+                !isDesc && response.waterings.last -> {
+                    filled.toMutableList().apply {
+                        addAll(filled.lastIndex + 1, List(count) {
+                            WateringContentResponse(
+                                today.plus(it + 1, DateTimeUnit.DAY), false, null, null
+                            )
+                        }
+                        )
+                    }
+                }
+                else -> filled
+            }
+            Log.d("TAG", result.toString())
 
             LoadResult.Page(
-                data = filled,
+                data = result,
                 prevKey = if (page == 0) null else page - 1,
                 nextKey = if (response.waterings.last) null else page + 1
             )

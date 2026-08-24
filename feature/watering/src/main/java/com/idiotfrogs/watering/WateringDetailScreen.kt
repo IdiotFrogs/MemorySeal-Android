@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
@@ -24,6 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -51,8 +51,11 @@ import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
+import kotlin.time.Clock
 
 @Composable
 fun WateringDetailRoute(
@@ -152,6 +155,7 @@ fun WateringDetailScreen(
                 drawStopIndicator = { } // 끝 점 제거
             )
             Spacer(modifier = Modifier.height(40.dp))
+            val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
             LazyVerticalGrid(
                 modifier = Modifier.padding(horizontal = 20.dp),
                 columns = GridCells.Fixed(5),
@@ -163,33 +167,33 @@ fun WateringDetailScreen(
                     key = watering.itemKey { it.wateredDate.toString() }
                 ) { index ->
                     val item = watering[index]
-                    val highlightItem = index == 0
+                    val highlightItem = item?.wateredDate == Clock.System.todayIn(TimeZone.currentSystemDefault())
                     item?.let { item ->
-                        Box(
-                            modifier = Modifier
-                                .size(54.dp)
-                                .wavyStroke(
-                                    strokeWidth = 4.dp,
-                                    color = if (item.isWatered) {
-                                        MSTheme.color.primaryNormal
-                                    } else {
-                                        MSTheme.color.greyG1
-                                    },
-                                    cornerRadius = 54.dp, // 원형
-                                    amplitude = 1.dp,
-                                    spacing = 2.dp,
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            MSText(
-                                text = if (highlightItem) "오늘" else (index + 1).toString(),
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 14.dp,
-                                color = MSTheme.color.black
-                            )
-                            GlideImage(
+                        if (item.wateredDate < today && !item.isWatered) {
+                            Box(
                                 modifier = Modifier
-                                    .size(38.dp)
+                                    .size(48.dp)
+                                    .wavyStroke(
+                                        strokeWidth = 4.dp,
+                                        color = MSTheme.color.greyG1,
+                                        cornerRadius = 48.dp,
+                                        amplitude = 1.dp,
+                                        spacing = 2.dp,
+                                        fillColor = MSTheme.color.greyG1
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    modifier = Modifier.size(20.dp),
+                                    painter = painterResource(R.drawable.ic_xmark),
+                                    colorFilter = ColorFilter.tint(MSTheme.color.greyG3),
+                                    contentDescription = "not_watered"
+                                )
+                            }
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .size(54.dp)
                                     .wavyStroke(
                                         strokeWidth = 4.dp,
                                         color = if (item.isWatered) {
@@ -197,13 +201,36 @@ fun WateringDetailScreen(
                                         } else {
                                             MSTheme.color.greyG1
                                         },
-                                        cornerRadius = 38.dp, // 원형
+                                        cornerRadius = 54.dp, // 원형
                                         amplitude = 1.dp,
                                         spacing = 2.dp,
-                                        clipContent = true
                                     ),
-                                imageModel = { item.profileImageUrl }
-                            )
+                                contentAlignment = Alignment.Center
+                            ) {
+                                MSText(
+                                    text = if (highlightItem) "오늘" else (index + 1).toString(),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 14.dp,
+                                    color = MSTheme.color.black
+                                )
+                                GlideImage(
+                                    modifier = Modifier
+                                        .size(38.dp)
+                                        .wavyStroke(
+                                            strokeWidth = 4.dp,
+                                            color = if (item.isWatered) {
+                                                MSTheme.color.primaryNormal
+                                            } else {
+                                                MSTheme.color.greyG1
+                                            },
+                                            cornerRadius = 38.dp, // 원형
+                                            amplitude = 1.dp,
+                                            spacing = 2.dp,
+                                            clipContent = true
+                                        ),
+                                    imageModel = { item.profileImageUrl }
+                                )
+                            }
                         }
                     }
                 }
