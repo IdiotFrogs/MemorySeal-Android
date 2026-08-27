@@ -7,35 +7,26 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDetailHeader
 import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
+import com.idiotfrogs.designsystem.component.MSTimeCapsuleContentItem
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
-import com.idiotfrogs.preview.component.PreviewCollaboratorListItem
-import com.idiotfrogs.preview.component.PreviewListItem
-import kotlinx.coroutines.flow.distinctUntilChanged
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -71,70 +62,6 @@ fun PreviewScreen(
     onAction: (PreviewAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val collaborators = data.collaborators
-    val contentGroups = data.contentGroups
-    val myUserId = collaborators.firstOrNull { it.isMe }?.userId
-    val collaboratorListState = rememberLazyListState()
-    val contentListState = rememberLazyListState()
-    var selectedUserId by rememberSaveable { mutableStateOf<Long?>(null) }
-    val hasScrolledContent by remember {
-        derivedStateOf {
-            contentListState.firstVisibleItemScrollOffset > 0 ||
-                contentListState.firstVisibleItemIndex > 0
-        }
-    }
-    val currentSelectedUserId = selectedUserId
-        ?: contentGroups.firstOrNull()?.userId
-        ?: myUserId
-
-    LaunchedEffect(contentGroups.isNotEmpty(), collaborators) {
-        if (selectedUserId == null) {
-            selectedUserId = contentGroups.firstOrNull()?.userId ?: myUserId
-        }
-    }
-
-    LaunchedEffect(contentListState, contentGroups) {
-        snapshotFlow { contentListState.firstVisibleItemIndex }
-            .distinctUntilChanged()
-            .collect { index ->
-                contentGroups
-                    .getOrNull(index)
-                    ?.userId
-                    ?.let { selectedUserId = it }
-            }
-    }
-
-    LaunchedEffect(
-        contentListState,
-        contentGroups.size,
-        hasScrolledContent,
-        data.isContentLast,
-        data.isContentLoadingMore,
-    ) {
-        snapshotFlow { contentListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-            .distinctUntilChanged()
-            .collect { lastVisibleIndex ->
-                val shouldLoadNextPage = hasScrolledContent &&
-                    lastVisibleIndex != null &&
-                    contentGroups.isNotEmpty() &&
-                    lastVisibleIndex >= contentGroups.lastIndex &&
-                    !data.isContentLast &&
-                    !data.isContentLoadingMore
-
-                if (shouldLoadNextPage) {
-                    onAction(PreviewAction.NextContentPageRequested)
-                }
-            }
-    }
-
-    LaunchedEffect(currentSelectedUserId, collaborators) {
-        val collaboratorIndex = collaborators.indexOfFirst { it.userId == currentSelectedUserId }
-
-        if (collaboratorIndex >= 0) {
-            collaboratorListState.animateScrollToItem(collaboratorIndex)
-        }
-    }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -143,44 +70,43 @@ fun PreviewScreen(
     ) {
         MSDetailHeader(
             title = "미리보기",
+            fontSize = 20.dp,
             navigateToBack = { onAction(PreviewAction.BackClicked) },
         )
 
-        LazyRow(
-            state = collaboratorListState,
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            items(
-                items = collaborators,
-                key = { it.userId },
-            ) { collaborator ->
-                PreviewCollaboratorListItem(
-                    collaborator = collaborator,
-                    isSelected = collaborator.userId == currentSelectedUserId,
-                )
-            }
-        }
-
-        HorizontalDivider(
-            modifier = Modifier.fillMaxWidth(),
-            thickness = 1.dp,
-            color = MSTheme.color.greyG1
-        )
-
         LazyColumn(
-            state = contentListState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                horizontal = 20.dp,
-                vertical = 24.dp
+                start = 20.dp,
+                end = 20.dp,
+                top = 12.dp,
+                bottom = 24.dp
             ),
             verticalArrangement = Arrangement.spacedBy(24.dp),
         ) {
-            if (contentGroups.isEmpty()) {
-                item {
+            item(key = "preview-guide") {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(70.dp)
+                        .wavyStroke(
+                            color = MSTheme.color.bgNormal,
+                            fillColor = MSTheme.color.bgNormal,
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    MSText(
+                        text = "미리보기는 자신이 등록한 내용만\n확인하실 수 있습니다.",
+                        fontSize = 14.dp,
+                        fontWeight = FontWeight.Medium,
+                        color = MSTheme.color.greyG4,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+
+            if (data.contents.isEmpty()) {
+                item(key = "preview-empty") {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -196,23 +122,17 @@ fun PreviewScreen(
                     }
                 }
             } else {
-                contentGroups.forEach { contentGroup ->
-                    item(key = "user-${contentGroup.userId}") {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            contentGroup.contents.forEachIndexed { index, content ->
-                                val isMine = contentGroup.userId == myUserId
-
-                                PreviewListItem(
-                                    contentGroup = contentGroup,
-                                    content = content,
-                                    isMine = isMine,
-                                    showAuthor = !isMine && index == 0,
-                                )
-                            }
-                        }
-                    }
+                items(
+                    items = data.contents,
+                    key = { it.contentId },
+                ) { content ->
+                    MSTimeCapsuleContentItem(
+                        message = content.content?.takeIf { it.isNotBlank() },
+                        imageUrls = content.attachedFiles
+                            .orEmpty()
+                            .map { it.fileUrl },
+                        isMine = true,
+                    )
                 }
             }
         }
