@@ -47,7 +47,7 @@ class DetailViewModel @AssistedInject constructor(
             intent { reduce { state.copy(isLoading = true) } }
 
             val capsuleDeferred = async { getTimeCapsuleUseCase(capsuleId) }
-            val collaboratorsDeferred = async { getTimeCapsuleCollaboratorsUseCase(capsuleId, 0, 20) }
+            val collaboratorsDeferred = async { getTimeCapsuleCollaboratorsUseCase(capsuleId, 0, 12) }
 
             val capsuleResult = capsuleDeferred.await()
             val collaboratorsResult = collaboratorsDeferred.await()

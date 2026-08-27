@@ -134,6 +134,10 @@ fun DetailScreen(
     val hazeState = rememberHazeState()
     val scrollState = rememberScrollState()
     val capsule = data.capsule
+    val collaborators = data.collaborators?.content.orEmpty()
+    val totalCollaboratorCount = data.collaborators?.totalElements ?: 0
+    val visibleCollaborators = collaborators.take(if (totalCollaboratorCount > 12) 11 else 12)
+    val hiddenCollaboratorCount = totalCollaboratorCount - visibleCollaborators.size
     val status = capsule?.timeCapsuleStatus ?: TimeCapsuleStatus.BEFOREBURIED
     val role = capsule?.userRole ?: TimeCapsuleRole.CONTRIBUTOR
     val isHost = role == TimeCapsuleRole.HOST
@@ -569,7 +573,7 @@ fun DetailScreen(
                         append("멤버 ")
                         withStyle(
                             SpanStyle(color = MSTheme.color.primaryNormal)
-                        ) { append(data.collaborators?.content?.size.toString()) }
+                        ) { append(totalCollaboratorCount.toString()) }
                     },
                     color = MSTheme.color.greyG4
                 )
@@ -588,7 +592,7 @@ fun DetailScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                data.collaborators?.content?.forEach { collaborator ->
+                visibleCollaborators.forEach { collaborator ->
                     GlideImage(
                         modifier = Modifier
                             .size(48.dp)
@@ -603,6 +607,29 @@ fun DetailScreen(
                             ),
                         imageModel = { collaborator.profileImageUrl },
                     )
+                }
+
+                if (hiddenCollaboratorCount > 0) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .wavyStroke(
+                                color = MSTheme.color.greyG5,
+                                fillColor = MSTheme.color.white,
+                                strokeWidth = 3.dp,
+                                cornerRadius = 24.dp,
+                                amplitude = 1.dp,
+                                spacing = 2.dp,
+                                clipContent = true,
+                            ),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        MSText(
+                            text = "+$hiddenCollaboratorCount",
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF0B0B0B),
+                        )
+                    }
                 }
             }
         }
