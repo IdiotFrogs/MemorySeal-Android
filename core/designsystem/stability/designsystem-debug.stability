@@ -379,6 +379,15 @@ public fun com.idiotfrogs.designsystem.util.DisableRippleEffect(content: @[Compo
     - content: STABLE (composable function type)
 
 @Composable
+public fun com.idiotfrogs.designsystem.util.LoadNextPageEffect(listState: androidx.compose.foundation.lazy.LazyListState, canLoadMore: kotlin.Boolean, onLoadNextPage: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - listState: STABLE (marked @Stable or @Immutable)
+    - canLoadMore: STABLE (primitive type)
+    - onLoadNextPage: STABLE (function type)
+
+@Composable
 public fun com.idiotfrogs.designsystem.util.keyboardAutoScroll(scrollState: androidx.compose.foundation.ScrollState): androidx.compose.ui.Modifier
   skippable: true
   restartable: true
