@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.filter
 fun LoadNextPageEffect(
     listState: LazyListState,
     canLoadMore: Boolean,
-    expectedLastItemKey: Any? = null,
+    expectedLastItemKey: String? = null,
     onLoadNextPage: () -> Unit,
 ) {
     val currentCanLoadMore by rememberUpdatedState(canLoadMore)

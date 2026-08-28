@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,14 +29,16 @@ import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun MSTimeCapsuleContentItem(
-    message: String?,
-    imageUrls: List<String>,
+    uiModel: MSTimeCapsuleContentUiModel,
     isMine: Boolean,
     authorNickname: String = "",
     authorProfileImageUrl: String = "",
     showAuthor: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
+    val message = uiModel.message
+    val imageUrls = uiModel.imageUrls
+
     if (isMine) {
         Column(
             modifier = modifier.fillMaxWidth(),
@@ -150,3 +153,9 @@ private fun AuthorProfilePlaceholder() {
         contentScale = ContentScale.Crop,
     )
 }
+
+@Immutable
+data class MSTimeCapsuleContentUiModel(
+    val message: String?,
+    val imageUrls: List<String>,
+)

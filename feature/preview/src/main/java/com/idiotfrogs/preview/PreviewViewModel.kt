@@ -2,7 +2,6 @@ package com.idiotfrogs.preview
 
 import androidx.compose.runtime.Immutable
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleContentUseCase
-import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.base.DataUiState
 import dagger.assisted.Assisted
@@ -31,7 +30,7 @@ class PreviewViewModel @AssistedInject constructor(
                 intent {
                     reduce {
                         state.copy(
-                            data = PreviewData(contents = contents),
+                            data = PreviewData(contents = contents.map { it.toUiModel() }),
                             isLoading = false,
                             errorMessage = null,
                         )
@@ -63,7 +62,7 @@ class PreviewViewModel @AssistedInject constructor(
 
 @Immutable
 data class PreviewData(
-    val contents: List<MyCapsuleContentsData> = emptyList(),
+    val contents: List<PreviewContentUiModel> = emptyList(),
 )
 
 @Immutable

@@ -1,6 +1,7 @@
 package com.idiotfrogs.memory
 
 import androidx.compose.runtime.Immutable
+import com.idiotfrogs.designsystem.component.MSTimeCapsuleContentUiModel
 
 @Immutable
 data class MemoryCollaboratorUiModel(
@@ -22,6 +23,5 @@ data class MemoryContentUiModel(
 @Immutable
 data class MemoryContentItemUiModel(
     val contentId: Long,
-    val message: String?,
-    val imageUrls: List<String>,
+    val uiModel: MSTimeCapsuleContentUiModel,
 )

@@ -1,5 +1,6 @@
 package com.idiotfrogs.memory
 
+import com.idiotfrogs.designsystem.component.MSTimeCapsuleContentUiModel
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponseData
 import com.idiotfrogs.model.timecapsule.TimeCapsuleContentResponseData
@@ -28,7 +29,9 @@ internal fun TimeCapsuleContentResponseData.toUiModel(
 internal fun CapsuleContentsData.toUiModel(): MemoryContentItemUiModel {
     return MemoryContentItemUiModel(
         contentId = contentId,
-        message = content,
-        imageUrls = attachedFileUrls.orEmpty(),
+        uiModel = MSTimeCapsuleContentUiModel(
+            message = content,
+            imageUrls = attachedFileUrls.orEmpty(),
+        ),
     )
 }

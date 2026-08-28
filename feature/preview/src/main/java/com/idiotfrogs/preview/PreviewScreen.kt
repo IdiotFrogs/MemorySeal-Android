@@ -127,10 +127,7 @@ fun PreviewScreen(
                     key = { it.contentId },
                 ) { content ->
                     MSTimeCapsuleContentItem(
-                        message = content.content?.takeIf { it.isNotBlank() },
-                        imageUrls = content.attachedFiles
-                            .orEmpty()
-                            .map { it.fileUrl },
+                        uiModel = content.uiModel,
                         isMine = true,
                     )
                 }

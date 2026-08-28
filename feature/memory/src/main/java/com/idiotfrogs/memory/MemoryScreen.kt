@@ -184,8 +184,7 @@ fun MemoryScreen(
                                 val isMine = memoryContent.userId == myUserId
 
                                 MSTimeCapsuleContentItem(
-                                    message = content.message,
-                                    imageUrls = content.imageUrls,
+                                    uiModel = content.uiModel,
                                     isMine = isMine,
                                     authorNickname = memoryContent.nickname,
                                     authorProfileImageUrl = memoryContent.profileImageUrl,
