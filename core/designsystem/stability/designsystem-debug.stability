@@ -5,6 +5,12 @@
 //   ./gradlew :designsystem:stabilityDump
 
 @Composable
+private fun com.idiotfrogs.designsystem.component.AuthorProfilePlaceholder(): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+
+@Composable
 private fun com.idiotfrogs.designsystem.component.GalleryImage(image: kotlin.String, modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: true
   restartable: true
@@ -271,6 +277,18 @@ public fun com.idiotfrogs.designsystem.component.MSTextField(modifier: androidx.
     - leadingContent: STABLE (composable function type)
 
 @Composable
+public fun com.idiotfrogs.designsystem.component.MSTimeCapsuleContentItem(uiModel: com.idiotfrogs.designsystem.component.MSTimeCapsuleContentUiModel, isMine: kotlin.Boolean, authorNickname: kotlin.String, authorProfileImageUrl: kotlin.String, showAuthor: kotlin.Boolean, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - uiModel: STABLE (marked @Stable or @Immutable)
+    - isMine: STABLE (primitive type)
+    - authorNickname: STABLE (String is immutable)
+    - authorProfileImageUrl: STABLE (String is immutable)
+    - showAuthor: STABLE (primitive type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+
+@Composable
 public fun com.idiotfrogs.designsystem.component.MSTitleDialog(title: kotlin.String, onConfirm: kotlin.Function0<kotlin.Unit>, onCancel: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, confirmText: kotlin.String, cancelText: kotlin.String, confirmButtonColor: androidx.compose.ui.graphics.Color, cancelButtonColor: androidx.compose.ui.graphics.Color, confirmTextColor: androidx.compose.ui.graphics.Color, cancelTextColor: androidx.compose.ui.graphics.Color, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.ColumnScope, kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
@@ -379,12 +397,13 @@ public fun com.idiotfrogs.designsystem.util.DisableRippleEffect(content: @[Compo
     - content: STABLE (composable function type)
 
 @Composable
-public fun com.idiotfrogs.designsystem.util.LoadNextPageEffect(listState: androidx.compose.foundation.lazy.LazyListState, canLoadMore: kotlin.Boolean, onLoadNextPage: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.designsystem.util.LoadNextPageEffect(listState: androidx.compose.foundation.lazy.LazyListState, canLoadMore: kotlin.Boolean, expectedLastItemKey: kotlin.String?, onLoadNextPage: kotlin.Function0<kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
   params:
     - listState: STABLE (marked @Stable or @Immutable)
     - canLoadMore: STABLE (primitive type)
+    - expectedLastItemKey: STABLE (class with no mutable properties)
     - onLoadNextPage: STABLE (function type)
 
 @Composable

@@ -7,30 +7,33 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 
 @Composable
 fun LoadNextPageEffect(
     listState: LazyListState,
     canLoadMore: Boolean,
+    expectedLastItemKey: String? = null,
     onLoadNextPage: () -> Unit,
 ) {
     val currentCanLoadMore by rememberUpdatedState(canLoadMore)
+    val currentExpectedLastItemKey by rememberUpdatedState(expectedLastItemKey)
     val currentOnLoadNextPage by rememberUpdatedState(onLoadNextPage)
 
     LaunchedEffect(listState) {
         snapshotFlow {
             val layoutInfo = listState.layoutInfo
-            layoutInfo.visibleItemsInfo.lastOrNull()?.index to layoutInfo.totalItemsCount
+            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
+            val hasReachedEnd = if (currentExpectedLastItemKey == null) {
+                lastVisibleItem != null &&
+                    layoutInfo.totalItemsCount > 0 &&
+                    lastVisibleItem.index >= layoutInfo.totalItemsCount - 1
+            } else { lastVisibleItem?.key == currentExpectedLastItemKey && !listState.canScrollForward }
+
+            currentCanLoadMore && hasReachedEnd
         }
             .distinctUntilChanged()
-            .collect { (lastVisibleIndex, totalItemsCount) ->
-                val hasReachedEnd = lastVisibleIndex != null &&
-                    totalItemsCount > 0 &&
-                    lastVisibleIndex >= totalItemsCount - 1
-
-                if (currentCanLoadMore && hasReachedEnd) {
-                    currentOnLoadNextPage()
-                }
-            }
+            .filter { hasReachedEnd -> hasReachedEnd }
+            .collect { currentOnLoadNextPage() }
     }
 }

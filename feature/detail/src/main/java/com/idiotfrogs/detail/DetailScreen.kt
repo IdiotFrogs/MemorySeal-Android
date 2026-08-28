@@ -98,7 +98,7 @@ fun DetailRoute(
             DetailSideEffect.NavigateToBack -> navigator.popBackStack()
             is DetailSideEffect.NavigateToFriend -> navigator.navigate(Routes.Friend(event.id))
             is DetailSideEffect.NavigateToMessage -> navigator.navigate(Routes.Message(event.id))
-            is DetailSideEffect.NavigateToPreview -> navigator.navigate(Routes.Preview(event.id))
+            is DetailSideEffect.NavigateToMemory -> navigator.navigate(Routes.Memory(event.id))
             is DetailSideEffect.NavigateToManagement -> navigator.navigate(
                 Routes.Management(
                     id = event.id,
@@ -332,7 +332,7 @@ fun DetailScreen(
                     )
 
                     Row(
-                        modifier = Modifier.noRippleClickable { onAction(DetailAction.PreviewClicked(capsuleId)) },
+                        modifier = Modifier.noRippleClickable { onAction(DetailAction.MemoryClicked(capsuleId)) },
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         MSText(

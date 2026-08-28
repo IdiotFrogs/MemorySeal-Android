@@ -1,4 +1,4 @@
-package com.idiotfrogs.preview.component
+package com.idiotfrogs.designsystem.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,23 +23,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.idiotfrogs.designsystem.component.MSGalleryLayout
-import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.preview.PreviewContentGroupUiModel
-import com.idiotfrogs.preview.PreviewContentUiModel
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun PreviewListItem(
-    contentGroup: PreviewContentGroupUiModel,
-    content: PreviewContentUiModel,
+fun MSTimeCapsuleContentItem(
+    uiModel: MSTimeCapsuleContentUiModel,
     isMine: Boolean,
-    showAuthor: Boolean,
+    authorNickname: String = "",
+    authorProfileImageUrl: String = "",
+    showAuthor: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
-    val message = content.message
+    val message = uiModel.message
+    val imageUrls = uiModel.imageUrls
 
     if (isMine) {
         Column(
@@ -61,13 +60,13 @@ fun PreviewListItem(
                 )
             }
 
-            if (content.imageUrls.isNotEmpty()) {
+            if (imageUrls.isNotEmpty()) {
                 if (message != null) {
                     Spacer(Modifier.height(8.dp))
                 }
 
                 MSGalleryLayout(
-                    images = content.imageUrls,
+                    images = imageUrls,
                     isSeal = false,
                 )
             }
@@ -84,26 +83,12 @@ fun PreviewListItem(
                         .size(24.dp)
                         .clip(CircleShape)
                         .background(MSTheme.color.greyG1),
-                    imageModel = { contentGroup.profileImageUrl },
+                    imageModel = { authorProfileImageUrl },
                     loading = {
-                        Image(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape),
-                            painter = painterResource(R.drawable.img_empty_profile),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                        )
+                        AuthorProfilePlaceholder()
                     },
                     failure = {
-                        Image(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .clip(CircleShape),
-                            painter = painterResource(R.drawable.img_empty_profile),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
-                        )
+                        AuthorProfilePlaceholder()
                     },
                 )
             } else {
@@ -117,7 +102,7 @@ fun PreviewListItem(
             ) {
                 if (showAuthor) {
                     MSText(
-                        text = contentGroup.nickname,
+                        text = authorNickname,
                         fontSize = 10.dp,
                         fontWeight = FontWeight.Medium,
                         color = MSTheme.color.greyG3,
@@ -142,13 +127,13 @@ fun PreviewListItem(
                     )
                 }
 
-                if (content.imageUrls.isNotEmpty()) {
+                if (imageUrls.isNotEmpty()) {
                     if (message != null) {
                         Spacer(Modifier.height(8.dp))
                     }
 
                     MSGalleryLayout(
-                        images = content.imageUrls,
+                        images = imageUrls,
                         isSeal = false,
                     )
                 }
@@ -156,3 +141,21 @@ fun PreviewListItem(
         }
     }
 }
+
+@Composable
+private fun AuthorProfilePlaceholder() {
+    Image(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(CircleShape),
+        painter = painterResource(R.drawable.img_empty_profile),
+        contentDescription = null,
+        contentScale = ContentScale.Crop,
+    )
+}
+
+@Immutable
+data class MSTimeCapsuleContentUiModel(
+    val message: String?,
+    val imageUrls: List<String>,
+)
