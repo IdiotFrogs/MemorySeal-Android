@@ -1,7 +1,8 @@
-package com.idiotfrogs.preview.component
+package com.idiotfrogs.memory.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,18 +26,21 @@ import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.wavyStroke
-import com.idiotfrogs.preview.PreviewCollaboratorUiModel
+import com.idiotfrogs.memory.MemoryCollaboratorUiModel
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun PreviewCollaboratorListItem(
-    collaborator: PreviewCollaboratorUiModel,
+fun MemoryCollaboratorListItem(
+    collaborator: MemoryCollaboratorUiModel,
     isSelected: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier.width(if (isSelected) 80.dp else 60.dp),
+        modifier = modifier
+            .width(if (isSelected) 80.dp else 60.dp)
+            .clickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(

@@ -47,7 +47,7 @@ class DetailViewModel @AssistedInject constructor(
             intent { reduce { state.copy(isLoading = true) } }
 
             val capsuleDeferred = async { getTimeCapsuleUseCase(capsuleId) }
-            val collaboratorsDeferred = async { getTimeCapsuleCollaboratorsUseCase(capsuleId, 0, 20) }
+            val collaboratorsDeferred = async { getTimeCapsuleCollaboratorsUseCase(capsuleId, 0, 12) }
 
             val capsuleResult = capsuleDeferred.await()
             val collaboratorsResult = collaboratorsDeferred.await()
@@ -111,13 +111,13 @@ class DetailViewModel @AssistedInject constructor(
                 val sideEffect = if (status == TimeCapsuleStatus.BEFOREBURIED) {
                     DetailSideEffect.NavigateToMessage(action.id)
                 } else {
-                    DetailSideEffect.NavigateToPreview(action.id)
+                    DetailSideEffect.NavigateToMemory(action.id)
                 }
 
                 postSideEffect(sideEffect)
             }
             is DetailAction.ManagementClicked -> intent { postSideEffect(DetailSideEffect.NavigateToManagement(action.id, action.title)) }
-            is DetailAction.PreviewClicked -> intent { postSideEffect(DetailSideEffect.NavigateToPreview(action.id)) }
+            is DetailAction.MemoryClicked -> intent { postSideEffect(DetailSideEffect.NavigateToMemory(action.id)) }
             DetailAction.BackClicked -> intent { postSideEffect(DetailSideEffect.NavigateToBack) }
             is DetailAction.BuryConfirmClicked -> buryTimeCapsule(action.openedAt)
             is DetailAction.WateringClicked -> intent { postSideEffect(DetailSideEffect.NavigateToWatering(action.id))}
@@ -147,7 +147,7 @@ sealed interface DetailAction {
     data class MemberSectionClicked(val id: Long) : DetailAction
     data class MessageSectionClicked(val id: Long) : DetailAction
     data class ManagementClicked(val id: Long, val title: String) : DetailAction
-    data class PreviewClicked(val id: Long) : DetailAction
+    data class MemoryClicked(val id: Long) : DetailAction
     data object BackClicked : DetailAction
     data class BuryConfirmClicked(val openedAt: LocalDate) : DetailAction
     data class WateringClicked(val id: Long) : DetailAction
@@ -156,7 +156,7 @@ sealed interface DetailAction {
 sealed interface DetailSideEffect {
     data class NavigateToFriend(val id: Long) : DetailSideEffect
     data class NavigateToMessage(val id: Long) : DetailSideEffect
-    data class NavigateToPreview(val id: Long) : DetailSideEffect
+    data class NavigateToMemory(val id: Long) : DetailSideEffect
     data class NavigateToManagement(val id: Long, val title: String) : DetailSideEffect
     data class NavigateToWatering(val id: Long) : DetailSideEffect
     data object NavigateToBack : DetailSideEffect

@@ -30,6 +30,7 @@ import com.idiotfrogs.detail.DetailRoute
 import com.idiotfrogs.friend.FriendRoute
 import com.idiotfrogs.home.HomeRoute
 import com.idiotfrogs.management.ManagementRoute
+import com.idiotfrogs.memory.MemoryRoute
 import com.idiotfrogs.message.MessageRoute
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.MSNavigatorImpl
@@ -107,8 +108,8 @@ class MainActivity : ComponentActivity() {
                                         ).show()
                                     }
                                 }
-                                is MainNavigationEvent.NavigateToPreview -> {
-                                    navigator.navigate(Routes.Preview(event.capsuleId))
+                                is MainNavigationEvent.NavigateToMemory -> {
+                                    navigator.navigate(Routes.Memory(event.capsuleId))
                                 }
                             }
                         }
@@ -141,6 +142,7 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Detail> { DetailRoute(capsuleId = it.id) }
                                 entry<Routes.Message> { MessageRoute(capsuleId = it.id) }
                                 entry<Routes.Preview> { PreviewRoute(capsuleId = it.id) }
+                                entry<Routes.Memory> { MemoryRoute(capsuleId = it.id) }
                                 entry<Routes.Friend> { FriendRoute(it.id) }
                                 entry<Routes.Management> {
                                     ManagementRoute(
