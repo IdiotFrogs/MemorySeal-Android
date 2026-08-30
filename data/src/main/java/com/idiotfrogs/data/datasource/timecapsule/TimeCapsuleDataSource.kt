@@ -87,5 +87,7 @@ interface TimeCapsuleDataSource {
         fileIds: List<Long>,
     )
 
+    suspend fun getWatering(capsuleId: Long, page: Int, size: Int, sort: String): WateringResponse
+
     suspend fun watering(capsuleId: Long)
 }

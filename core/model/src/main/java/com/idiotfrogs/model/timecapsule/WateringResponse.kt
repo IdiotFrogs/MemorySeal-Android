@@ -27,10 +27,3 @@ data class WateringContentResponse(
     val userId: Long?,
     val profileImageUrl: String?,
 )
-
-// 실제 통신용이 아님, Paging 요소를 제외한 meta
-data class WateringMeta(
-    val totalDays: Long,
-    val wateringCount: Long,
-    val stage: Int
-)
