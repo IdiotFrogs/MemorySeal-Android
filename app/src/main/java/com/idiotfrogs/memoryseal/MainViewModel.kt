@@ -55,7 +55,7 @@ class MainViewModel @Inject constructor(
         val event = when (type) {
             "member" -> MainNavigationEvent.NavigateToFriend(id)
             "detail" -> MainNavigationEvent.NavigateToDetail(id)
-            "open" -> MainNavigationEvent.NavigateToPreview(id)
+            "open" -> MainNavigationEvent.NavigateToMemory(id)
             else -> return
         }
 
@@ -134,5 +134,5 @@ sealed interface MainNavigationEvent {
         val capsuleId: Long,
         val toastMessage: String? = null,
     ) : MainNavigationEvent
-    data class NavigateToPreview(val capsuleId: Long) : MainNavigationEvent
+    data class NavigateToMemory(val capsuleId: Long) : MainNavigationEvent
 }

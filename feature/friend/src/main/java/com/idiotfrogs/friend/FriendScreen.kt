@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -48,21 +49,23 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDashHorizontalDivider
 import com.idiotfrogs.designsystem.component.MSDetailHeader
+import com.idiotfrogs.designsystem.component.MSLoadingIndicator
 import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTextField
 import com.idiotfrogs.designsystem.component.MSTitleDialog
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.LoadNextPageEffect
 import com.idiotfrogs.friend.component.FriendBottomSheetItem
 import com.idiotfrogs.friend.component.FriendDialogState
 import com.idiotfrogs.friend.component.FriendInviteButton
 import com.idiotfrogs.friend.component.FriendListItem
 import com.idiotfrogs.friend.component.FriendTopNotification
-import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponseData
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.resource.R
+import com.idiotfrogs.util.paging.PaginationState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.delay
@@ -134,12 +137,19 @@ fun FriendScreen(
     val focusManager = LocalFocusManager.current
     val hazeState = rememberHazeState()
     val searchTextFieldState = rememberTextFieldState()
+    val listState = rememberLazyListState()
     var selectedMember by remember { mutableStateOf<TimeCapsuleCollaboratorsResponseData?>(null) }
     var dialogState by remember { mutableStateOf<FriendDialogState>(FriendDialogState.None) }
     var currentUserRole by remember { mutableStateOf<TimeCapsuleRole?>(null) }
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val collaborators = data.collaborators
-    val members = collaborators?.content.orEmpty()
+    val members = collaborators.items
+
+    LoadNextPageEffect(
+        listState = listState,
+        canLoadMore = collaborators.canLoadMore,
+        onLoadNextPage = { onAction(FriendAction.NextCollaboratorsPageRequested) },
+    )
 
     LaunchedEffect(members) {
         members.firstOrNull { it.isMe }?.contributorRole?.let {
@@ -149,6 +159,7 @@ fun FriendScreen(
 
     Box {
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxSize()
                 .hazeSource(hazeState)
@@ -219,7 +230,7 @@ fun FriendScreen(
                     MSText(text = "멤버")
                     Spacer(Modifier.width(4.dp))
                     MSText(
-                        text = (collaborators?.totalElements ?: members.size).toString(),
+                        text = collaborators.totalElements.toString(),
                         color = MSTheme.color.primaryDark,
                     )
                 }
@@ -243,6 +254,19 @@ fun FriendScreen(
                         null
                     },
                 )
+            }
+
+            if (collaborators.isLoadingMore) {
+                item(key = "isLoadingMore") {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        MSLoadingIndicator()
+                    }
+                }
             }
         }
 
@@ -338,8 +362,8 @@ fun FriendScreenPreview() {
         capsuleId = 0L,
         toastState = FriendScreenActionState.IDLE,
         data = CollaboratorsData(
-            collaborators = TimeCapsuleCollaboratorsResponse(
-                content = listOf(
+            collaborators = PaginationState(
+                items = listOf(
                     TimeCapsuleCollaboratorsResponseData(
                         contributorRole = TimeCapsuleRole.CONTRIBUTOR,
                         nickname = "검정 복숭아",
@@ -365,10 +389,9 @@ fun FriendScreenPreview() {
                         isMe = false,
                     ),
                 ),
-                totalPages = 1,
-                totalElements = 3,
-                number = 0,
-                last = true,
+                totalElements = 3L,
+                currentPage = 0,
+                isLast = true,
             ),
         ),
         onAction = {},

@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
@@ -72,7 +73,6 @@ import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atTime
 import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
 import kotlin.time.Clock
@@ -98,7 +98,7 @@ fun DetailRoute(
             DetailSideEffect.NavigateToBack -> navigator.popBackStack()
             is DetailSideEffect.NavigateToFriend -> navigator.navigate(Routes.Friend(event.id))
             is DetailSideEffect.NavigateToMessage -> navigator.navigate(Routes.Message(event.id))
-            is DetailSideEffect.NavigateToPreview -> navigator.navigate(Routes.Preview(event.id))
+            is DetailSideEffect.NavigateToMemory -> navigator.navigate(Routes.Memory(event.id))
             is DetailSideEffect.NavigateToManagement -> navigator.navigate(
                 Routes.Management(
                     id = event.id,
@@ -134,17 +134,19 @@ fun DetailScreen(
     val hazeState = rememberHazeState()
     val scrollState = rememberScrollState()
     val capsule = data.capsule
+    val collaborators = data.collaborators?.content.orEmpty()
+    val totalCollaboratorCount = data.collaborators?.totalElements ?: 0
+    val visibleCollaborators = collaborators.take(if (totalCollaboratorCount > 12) 11 else 12)
+    val hiddenCollaboratorCount = totalCollaboratorCount - visibleCollaborators.size
     val status = capsule?.timeCapsuleStatus ?: TimeCapsuleStatus.BEFOREBURIED
     val role = capsule?.userRole ?: TimeCapsuleRole.CONTRIBUTOR
     val isHost = role == TimeCapsuleRole.HOST
-    val isBuried = status == TimeCapsuleStatus.BURIED
     var showBuryDialog by remember { mutableStateOf(false) }
 
     val defaultOpenAt = remember {
         Clock.System
             .todayIn(TimeZone.of("Asia/Seoul"))
             .plus(1, DateTimeUnit.DAY)
-            .atTime(0, 0, 0, 0)
     }
     var selectedOpenAt by remember { mutableStateOf(defaultOpenAt) }
 
@@ -167,7 +169,7 @@ fun DetailScreen(
             confirmText = "묻기",
             cancelText = "취소",
             onConfirm = {
-                onAction(DetailAction.BuryConfirmClicked(selectedOpenAt.date))
+                onAction(DetailAction.BuryConfirmClicked(selectedOpenAt))
                 showBuryDialog = false
             },
             onCancel = { showBuryDialog = false },
@@ -276,7 +278,7 @@ fun DetailScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 24.dp)
         ) {
-            if (isBuried) {
+            if (status == TimeCapsuleStatus.BURIED) {
                 Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
@@ -306,39 +308,52 @@ fun DetailScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wavyStroke(
-                            color = MSTheme.color.primaryLight,
-                            fillColor = MSTheme.color.primaryLight,
-                            contentPadding = 16.dp,
-                        ),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                        .background(
+                            color = MSTheme.color.greyG5,
+                            shape = RoundedCornerShape(12.dp),
+                        )
+                        .padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    MSText(
-                        modifier = Modifier.weight(1f),
-                        text = "타임캡슐이 열렸어요!\n함께 쌓인 추억을 보러가요.",
-                        fontSize = 14.dp,
-                        color = MSTheme.color.primaryDark,
+                    Image(
+                        modifier = Modifier.size(16.dp),
+                        painter = painterResource(R.drawable.ic_shovel),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(MSTheme.color.white),
                     )
 
-                    Spacer(Modifier.width(12.dp))
+                    Spacer(Modifier.width(8.dp))
 
-                    MSButton(
-                        onClick = { onAction(DetailAction.PreviewClicked(capsuleId)) },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MSTheme.color.greyG5,
-                        ),
-                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 9.dp),
+                    MSText(
+                        modifier = Modifier.weight(1f),
+                        text = "티켓이 오픈되었어요!",
+                        fontSize = 14.dp,
+                        color = MSTheme.color.white,
+                    )
+
+                    Row(
+                        modifier = Modifier.noRippleClickable { onAction(DetailAction.MemoryClicked(capsuleId)) },
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         MSText(
                             text = "보러가기",
                             fontSize = 12.dp,
+                            fontWeight = FontWeight.Medium,
                             color = MSTheme.color.white,
+                        )
+
+                        Spacer(Modifier.width(4.dp))
+
+                        Image(
+                            modifier = Modifier.size(16.dp),
+                            painter = painterResource(R.drawable.ic_chevron_right),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(MSTheme.color.white),
                         )
                     }
                 }
 
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(24.dp))
             }
 
             MSText(
@@ -369,16 +384,17 @@ fun DetailScreen(
                 color = MSTheme.color.greyG3,
             )
 
+            Spacer(Modifier.height(28.dp))
+            MSDashHorizontalDivider(
+                thickness = 2.dp,
+                dashWidth = 8.dp,
+                gapWidth = 8.dp,
+                color = MSTheme.color.greyG1,
+            )
+
             when (status) {
                 TimeCapsuleStatus.BEFOREBURIED -> {
                     if (isHost) {
-                        Spacer(Modifier.height(28.dp))
-                        MSDashHorizontalDivider(
-                            thickness = 2.dp,
-                            dashWidth = 8.dp,
-                            gapWidth = 8.dp,
-                            color = MSTheme.color.greyG1,
-                        )
                         Spacer(Modifier.height(28.dp))
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -411,25 +427,10 @@ fun DetailScreen(
                             gapWidth = 8.dp,
                             color = MSTheme.color.greyG1,
                         )
-                    } else {
-                        Spacer(Modifier.height(28.dp))
-                        MSDashHorizontalDivider(
-                            thickness = 2.dp,
-                            dashWidth = 8.dp,
-                            gapWidth = 8.dp,
-                            color = MSTheme.color.greyG1,
-                        )
                     }
                 }
 
                 TimeCapsuleStatus.BURIED -> {
-                    Spacer(Modifier.height(28.dp))
-                    MSDashHorizontalDivider(
-                        thickness = 2.dp,
-                        dashWidth = 8.dp,
-                        gapWidth = 8.dp,
-                        color = MSTheme.color.greyG1,
-                    )
                     Spacer(Modifier.height(28.dp))
                     Box(
                         modifier = Modifier
@@ -486,75 +487,77 @@ fun DetailScreen(
                 TimeCapsuleStatus.OPENED -> Unit
             }
 
-            Spacer(Modifier.height(28.dp))
+            if (status != TimeCapsuleStatus.OPENED) {
+                Spacer(Modifier.height(28.dp))
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                MSText(
-                    text = "나의 추억 메시지",
-                    color = MSTheme.color.greyG4,
-                )
-                Image(
-                    modifier = Modifier
-                        .size(16.dp)
-                        .noRippleClickable { onAction(DetailAction.MessageSectionClicked(capsuleId)) },
-                    painter = painterResource(R.drawable.ic_chevron_right),
-                    contentDescription = "추억 메시지 상세 아이콘"
-                )
-            }
-
-            Spacer(Modifier.height(20.dp))
-
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .wavyStroke(
-                            color = MSTheme.color.primaryLight,
-                            fillColor = MSTheme.color.primaryLight,
-                            contentPadding = 16.dp,
-                        ),
-                    verticalArrangement = Arrangement.Center,
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     MSText(
-                        text = "메시지",
-                        fontSize = 12.dp,
-                        color = MSTheme.color.primaryDark,
+                        text = "나의 추억 메시지",
+                        color = MSTheme.color.greyG4,
                     )
-                    Spacer(Modifier.height(4.dp))
-                    MSText(
-                        text = "${capsule?.myContentCount}개 등록",
-                        fontSize = 12.dp,
-                        fontWeight = FontWeight.Medium,
-                        color = MSTheme.color.primaryDark,
+                    Image(
+                        modifier = Modifier
+                            .size(16.dp)
+                            .noRippleClickable { onAction(DetailAction.MessageSectionClicked(capsuleId)) },
+                        painter = painterResource(R.drawable.ic_chevron_right),
+                        contentDescription = "추억 메시지 상세 아이콘"
                     )
                 }
 
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .wavyStroke(
-                            color = MSTheme.color.primaryLight,
-                            fillColor = MSTheme.color.primaryLight,
-                            contentPadding = 16.dp,
-                        ),
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    MSText(
-                        text = "사진",
-                        fontSize = 12.dp,
-                        color = MSTheme.color.primaryDark,
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    MSText(
-                        text = "${capsule?.myImageCount}개 등록",
-                        fontSize = 12.dp,
-                        fontWeight = FontWeight.Medium,
-                        color = MSTheme.color.primaryDark,
-                    )
+                Spacer(Modifier.height(20.dp))
+
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .wavyStroke(
+                                color = MSTheme.color.primaryLight,
+                                fillColor = MSTheme.color.primaryLight,
+                                contentPadding = 16.dp,
+                            ),
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        MSText(
+                            text = "메시지",
+                            fontSize = 12.dp,
+                            color = MSTheme.color.primaryDark,
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        MSText(
+                            text = "${capsule?.myContentCount}개 등록",
+                            fontSize = 12.dp,
+                            fontWeight = FontWeight.Medium,
+                            color = MSTheme.color.primaryDark,
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .wavyStroke(
+                                color = MSTheme.color.primaryLight,
+                                fillColor = MSTheme.color.primaryLight,
+                                contentPadding = 16.dp,
+                            ),
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        MSText(
+                            text = "사진",
+                            fontSize = 12.dp,
+                            color = MSTheme.color.primaryDark,
+                        )
+                        Spacer(Modifier.height(4.dp))
+                        MSText(
+                            text = "${capsule?.myImageCount}개 등록",
+                            fontSize = 12.dp,
+                            fontWeight = FontWeight.Medium,
+                            color = MSTheme.color.primaryDark,
+                        )
+                    }
                 }
             }
 
@@ -570,7 +573,7 @@ fun DetailScreen(
                         append("멤버 ")
                         withStyle(
                             SpanStyle(color = MSTheme.color.primaryNormal)
-                        ) { append(data.collaborators?.content?.size.toString()) }
+                        ) { append(totalCollaboratorCount.toString()) }
                     },
                     color = MSTheme.color.greyG4
                 )
@@ -589,7 +592,7 @@ fun DetailScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                data.collaborators?.content?.forEach { collaborator ->
+                visibleCollaborators.forEach { collaborator ->
                     GlideImage(
                         modifier = Modifier
                             .size(48.dp)
@@ -604,6 +607,29 @@ fun DetailScreen(
                             ),
                         imageModel = { collaborator.profileImageUrl },
                     )
+                }
+
+                if (hiddenCollaboratorCount > 0) {
+                    Box(
+                        modifier = Modifier
+                            .size(48.dp)
+                            .wavyStroke(
+                                color = MSTheme.color.greyG5,
+                                fillColor = MSTheme.color.white,
+                                strokeWidth = 3.dp,
+                                cornerRadius = 24.dp,
+                                amplitude = 1.dp,
+                                spacing = 2.dp,
+                                clipContent = true,
+                            ),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        MSText(
+                            text = "+$hiddenCollaboratorCount",
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF0B0B0B),
+                        )
+                    }
                 }
             }
         }
