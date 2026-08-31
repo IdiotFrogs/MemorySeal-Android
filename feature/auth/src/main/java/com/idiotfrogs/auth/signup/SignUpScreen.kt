@@ -66,7 +66,7 @@ fun SignUpRoute(
         when (event) {
             SignUpSideEffect.NavigateToHome -> {
                 navigator.clear()
-                navigator.navigate(Routes.Home)
+                navigator.navigate(Routes.Home())
             }
             SignUpSideEffect.NavigateToBack -> navigator.popBackStack()
         }

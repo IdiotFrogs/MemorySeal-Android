@@ -106,8 +106,8 @@ class MainActivity : ComponentActivity() {
                                         ).show()
                                     }
                                 }
-                                is MainNavigationEvent.NavigateToMemory -> {
-                                    navigator.navigate(Routes.Memory(event.capsuleId))
+                                is MainNavigationEvent.NavigateToHome -> {
+                                    navigator.navigate(Routes.Home(event.capsuleId))
                                 }
                             }
                         }
@@ -132,7 +132,7 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Splash> { SplashRoute() }
                                 entry<Routes.Login> { LoginRoute() }
                                 entry<Routes.SignUp> { SignUpRoute() }
-                                entry<Routes.Home> { HomeRoute() }
+                                entry<Routes.Home> { HomeRoute(openedId = it.openedId) }
                                 entry<Routes.Create> { CreateRoute() }
                                 entry<Routes.Profile> { ProfileRoute() }
                                 entry<Routes.EditProfile> { EditProfileRoute() }

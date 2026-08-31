@@ -80,7 +80,8 @@ enum class OpenStep { INTERACTION, ANIMATION, NONE }
 
 @Composable
 fun HomeRoute(
-    viewModel: HomeViewModel = hiltViewModel()
+    openedId: Long?,
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
@@ -89,6 +90,12 @@ fun HomeRoute(
     var clickedCapsuleId by remember { mutableLongStateOf(-1L) }
 
     val visibleState = remember { MutableTransitionState(false) }
+
+    LaunchedEffect(openedId) {
+        if (openedId != null) {
+            viewModel.onAction(HomeAction.ShowOpenAnimation(openedId))
+        }
+    }
 
     LaunchedEffect(showToast) {
         if (!showToast) return@LaunchedEffect
@@ -165,8 +172,11 @@ fun HomeRoute(
                             image = clickedCapsule?.mainImageUrl,
                             composition = { composition!! }, // 위에서 체크해서 non-null, 람다를 통한 지연 읽기
                             confirmClick = {
+                                // 상태 초기화
+                                clickedCapsuleId = -1L
+                                currentOpenStep = OpenStep.NONE
                                 // id가 유효하지 않은 경우 해당 페이지 예외 발생 -> 뒤로 이동
-                                navigator.navigate(Routes.Detail(clickedCapsuleId))
+                                navigator.navigate(Routes.Memory(clickedCapsuleId))
                             }
                         )
                     }

@@ -99,6 +99,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    // 홈에서 티켓을 클릭해서 진입할 때 체크
     private fun checkTimeCapsule(capsuleId: Long, timeCapsuleStatus: TimeCapsuleStatus) = safeLaunch {
         val capsuleIds = getViewedTimeCapsuleUseCase.capsuleIds.first()
 
@@ -110,12 +111,18 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    // 푸시 타고 진입할 때 바로 애니메이션 랜딩
+    private fun showOpenAnimation(capsuleId: Long) {
+        intent { postSideEffect(HomeSideEffect.ShowOpenAnimation(capsuleId)) }
+    }
+
     override fun onAction(action: HomeAction) {
         intent {
             when (action) {
                 HomeAction.CreateClicked -> postSideEffect(HomeSideEffect.NavigateToCreate)
                 HomeAction.ProfileClicked -> postSideEffect(HomeSideEffect.NavigateToProfile)
                 is HomeAction.TimeCapsuleClicked -> checkTimeCapsule(action.id, action.timeCapsuleStatus)
+                is HomeAction.ShowOpenAnimation -> showOpenAnimation(action.id)
                 is HomeAction.JoinCodeSubmitted -> requestCollaborator(PendingCollaboratorsRequest(action.code))
                 HomeAction.Refresh -> fetchHome()
             }
@@ -140,6 +147,7 @@ sealed interface HomeAction {
     data object CreateClicked : HomeAction
     data object ProfileClicked : HomeAction
     data class TimeCapsuleClicked(val id: Long, val timeCapsuleStatus: TimeCapsuleStatus) : HomeAction
+    data class ShowOpenAnimation(val id: Long) : HomeAction
     data class JoinCodeSubmitted(val code: String) : HomeAction
     data object Refresh : HomeAction
 }
