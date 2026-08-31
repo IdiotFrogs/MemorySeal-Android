@@ -22,25 +22,7 @@ public fun com.idiotfrogs.home.HomeScreen(showToast: kotlin.Boolean, data: com.i
     - onAction: STABLE (function type)
 
 @Composable
-public fun com.idiotfrogs.home.component.HomeHeader(profileUrl: kotlin.String?, navigateToProfile: kotlin.Function0<kotlin.Unit>): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - profileUrl: STABLE (class with no mutable properties)
-    - navigateToProfile: STABLE (function type)
-
-@Composable
-public fun com.idiotfrogs.home.component.HomeJoinContainer(isShow: kotlin.Boolean, textFieldState: androidx.compose.foundation.text.input.TextFieldState, onCancel: kotlin.Function0<kotlin.Unit>, onJoin: kotlin.Function0<kotlin.Unit>): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - isShow: STABLE (primitive type)
-    - textFieldState: STABLE (marked @Stable or @Immutable)
-    - onCancel: STABLE (function type)
-    - onJoin: STABLE (function type)
-
-@Composable
-public fun com.idiotfrogs.home.component.HomeTicket(buried: kotlin.Boolean, createdAt: kotlin.String, title: kotlin.String, imageUrl: kotlin.String?, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+public fun com.idiotfrogs.home.component.HomeTicket(buried: kotlin.Boolean, createdAt: kotlin.String, title: kotlin.String, imageUrl: kotlin.String?, step: kotlin.Int, modifier: androidx.compose.ui.Modifier): kotlin.Unit
   skippable: true
   restartable: true
   params:
@@ -48,5 +30,6 @@ public fun com.idiotfrogs.home.component.HomeTicket(buried: kotlin.Boolean, crea
     - createdAt: STABLE (String is immutable)
     - title: STABLE (String is immutable)
     - imageUrl: STABLE (class with no mutable properties)
+    - step: STABLE (primitive type)
     - modifier: STABLE (marked @Stable or @Immutable)
 
