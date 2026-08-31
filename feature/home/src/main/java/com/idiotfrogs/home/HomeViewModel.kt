@@ -1,7 +1,9 @@
 package com.idiotfrogs.home
 
 import androidx.compose.runtime.Immutable
+import androidx.lifecycle.viewModelScope
 import com.idiotfrogs.domain.usecase.auth.PutFcmTokenUseCase
+import com.idiotfrogs.domain.usecase.timecapsule.AddViewedTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetViewedTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.RequestCollaboratorUseCase
@@ -19,6 +21,7 @@ import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
@@ -31,6 +34,7 @@ class HomeViewModel @Inject constructor(
     private val fcmTokenProvider: FcmTokenProvider,
     private val putFcmTokenUseCase: PutFcmTokenUseCase,
     private val getViewedTimeCapsuleUseCase: GetViewedTimeCapsuleUseCase,
+    private val addViewedTimeCapsuleUseCase: AddViewedTimeCapsuleUseCase,
 ) : BaseViewModel<HomeUiState, HomeSideEffect, HomeAction>() {
 
     override val container: Container<HomeUiState, HomeSideEffect> = container(
@@ -116,6 +120,10 @@ class HomeViewModel @Inject constructor(
         intent { postSideEffect(HomeSideEffect.ShowOpenAnimation(capsuleId)) }
     }
 
+    private fun seenTimeCapsule(capsuleId: Long) {
+        viewModelScope.launch { addViewedTimeCapsuleUseCase.invoke(capsuleId) }
+    }
+
     override fun onAction(action: HomeAction) {
         intent {
             when (action) {
@@ -125,6 +133,7 @@ class HomeViewModel @Inject constructor(
                 is HomeAction.ShowOpenAnimation -> showOpenAnimation(action.id)
                 is HomeAction.JoinCodeSubmitted -> requestCollaborator(PendingCollaboratorsRequest(action.code))
                 HomeAction.Refresh -> fetchHome()
+                is HomeAction.SeenTimeCapsule -> seenTimeCapsule(action.id)
             }
         }
     }
@@ -150,6 +159,7 @@ sealed interface HomeAction {
     data class ShowOpenAnimation(val id: Long) : HomeAction
     data class JoinCodeSubmitted(val code: String) : HomeAction
     data object Refresh : HomeAction
+    data class SeenTimeCapsule(val id: Long) : HomeAction
 }
 
 sealed interface HomeSideEffect {

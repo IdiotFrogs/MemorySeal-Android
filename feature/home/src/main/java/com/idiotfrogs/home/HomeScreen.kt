@@ -161,6 +161,7 @@ fun HomeRoute(
                 // 배경 지정 안하면 홈 화면이 비쳐보임
                 Box(
                     modifier = Modifier
+                        .noRippleClickable { /** no-op */ }
                         .fillMaxSize()
                         .background(Color.White)
                 ) {
@@ -175,6 +176,8 @@ fun HomeRoute(
                                 // 상태 초기화
                                 clickedCapsuleId = -1L
                                 currentOpenStep = OpenStep.NONE
+                                // 로컬에 오픈 확인 이력 저장
+                                viewModel.onAction(HomeAction.SeenTimeCapsule(clickedCapsuleId))
                                 // id가 유효하지 않은 경우 해당 페이지 예외 발생 -> 뒤로 이동
                                 navigator.navigate(Routes.Memory(clickedCapsuleId))
                             }
