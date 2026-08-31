@@ -1,8 +1,10 @@
 package com.idiotfrogs.profile.profile
 
 import androidx.compose.runtime.Immutable
+import com.idiotfrogs.domain.usecase.auth.LogoutUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
+import com.idiotfrogs.domain.usecase.user.WithdrawUseCase
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.model.user.ProfileResponse
@@ -19,7 +21,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val getMyTimeCapsuleUseCase: GetMyTimeCapsuleUseCase,
-    private val getMyProfileUseCase: GetMyProfileUseCase
+    private val getMyProfileUseCase: GetMyProfileUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val withdrawUseCase: WithdrawUseCase
 ) : BaseViewModel<ProfileUiState, ProfileSideEffect, ProfileAction>() {
 
     override val container: Container<ProfileUiState, ProfileSideEffect> = container(
@@ -72,8 +76,38 @@ class ProfileViewModel @Inject constructor(
         }
     }
 
+    private fun logout() {
+        safeLaunch {
+            logoutUseCase.invoke()
+                .onSuccess {
+                    intent {
+                        postSideEffect(ProfileSideEffect.NavigateToLogin)
+                    }
+                }
+                .onFailure { /** no-op */ }
+        }
+    }
+
+    private fun withdraw() {
+        safeLaunch {
+            intent { reduce { state.copy(isLoading = true) } }
+
+            withdrawUseCase()
+                .onSuccess {
+                    intent {
+                        reduce { state.copy(isLoading = false, errorMessage = null) }
+                        postSideEffect(ProfileSideEffect.NavigateToLogin)
+                    }
+                }.onFailure {
+                    intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                }
+        }
+    }
+
     override fun onAction(action: ProfileAction) {
         when (action) {
+            ProfileAction.LogoutConfirmed -> logout()
+            ProfileAction.WithdrawConfirmed -> withdraw()
             ProfileAction.EditProfileClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToEditProfile) }
             ProfileAction.SettingClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToSetting) }
             ProfileAction.BackClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToBack) }
@@ -100,6 +134,8 @@ sealed interface ProfileAction {
     data object EditProfileClicked : ProfileAction
     data object BackClicked : ProfileAction
     data class TicketClicked(val id: Long) : ProfileAction
+    data object LogoutConfirmed : ProfileAction
+    data object WithdrawConfirmed : ProfileAction
 }
 
 sealed interface ProfileSideEffect {
@@ -107,4 +143,5 @@ sealed interface ProfileSideEffect {
     data object NavigateToEditProfile : ProfileSideEffect
     data object NavigateToBack : ProfileSideEffect
     data class NavigateToDetail(val id: Long) : ProfileSideEffect
+    data object NavigateToLogin : ProfileSideEffect
 }
