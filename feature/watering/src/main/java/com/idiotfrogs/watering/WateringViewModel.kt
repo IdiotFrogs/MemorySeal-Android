@@ -81,13 +81,14 @@ class WateringViewModel @AssistedInject constructor(
                     state.copy(
                         data = WateringData(
                             stage = response.stage,
-                            waterings = PaginationState(
-                                items = waterings.toList(),
-                                currentPage = 0,
-                                totalElements = response.waterings.totalElements,
-                                isLast = response.waterings.last,
-                                isLoadingMore = false
-                            ),
+                            waterings = PaginationState<WateringContentResponse>()
+                                .addPage(
+                                    isReplace = true,
+                                    newItems = waterings.toList(),
+                                    page = 0,
+                                    totalElements = response.waterings.totalElements,
+                                    isLast = response.waterings.last,
+                                ),
                             wateringCount = response.wateringCount,
                             totalDays = response.totalDays
                         ),
@@ -138,12 +139,14 @@ class WateringViewModel @AssistedInject constructor(
                     state.copy(
                         data = WateringData(
                             stage = response.stage,
-                            waterings = PaginationState(
-                                items = items.toList(),
-                                currentPage = response.waterings.number,
-                                totalElements = response.waterings.totalElements,
-                                isLast = response.waterings.last
-                            ),
+                            waterings = PaginationState<WateringContentResponse>()
+                                .addPage(
+                                    isReplace = true,
+                                    newItems = items.toList(),
+                                    page = response.waterings.number,
+                                    totalElements = response.waterings.totalElements,
+                                    isLast = response.waterings.last
+                                ),
                             wateringCount = response.wateringCount,
                             totalDays = response.totalDays
                         ),

@@ -26,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -48,6 +47,7 @@ import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.LoadPrevPageEffect
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
@@ -55,8 +55,6 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.resource.R
 import com.idiotfrogs.watering.WateringViewModel.Companion.WATERING_LOAD_SIZE
 import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import org.orbitmvi.orbit.compose.collectAsState
@@ -141,18 +139,14 @@ fun WateringScreen(
     // 로드된 구간의 왼쪽 끝 (전부 로드되면 0)
     val loadedMinIndex = data.waterings.totalElements.toInt() - adjustLoadedRecord
 
-    // 만약 왼쪽으로 스크롤 해 처음 보이는 셀이 로드 경계면 다음 페이지 요청하여 데이터를 채움
-    LaunchedEffect(lazyListState, loadedMinIndex, data.waterings) {
-        snapshotFlow {
-            lazyListState.firstVisibleItemIndex <= loadedMinIndex + 5 // 미리 당겨올 값 조정
-                    && data.waterings.canLoadMore
-                    && !data.waterings.isLoadingMore
-                    && scrolledToday // 없으면 계속해서 index가 0이므로 페이지를 연속해서 호출
-        }
-            .distinctUntilChanged()
-            .filter { it }
-            .collect { onAction.invoke(WateringAction.NextWateringRequested) }
-    }
+    LoadPrevPageEffect(
+        lazyListState = lazyListState,
+        loadedMinIndex = loadedMinIndex,
+        canLoadMore = data.waterings.canLoadMore,
+        isLoadingMore = !data.waterings.isLoadingMore,
+        scrolledToday = scrolledToday,
+        onLoadPrevPage = { onAction.invoke(WateringAction.NextWateringRequested) }
+    )
 
     Column(
         modifier = Modifier
