@@ -397,14 +397,26 @@ public fun com.idiotfrogs.designsystem.util.DisableRippleEffect(content: @[Compo
     - content: STABLE (composable function type)
 
 @Composable
-public fun com.idiotfrogs.designsystem.util.LoadNextPageEffect(listState: androidx.compose.foundation.lazy.LazyListState, canLoadMore: kotlin.Boolean, expectedLastItemKey: kotlin.String?, onLoadNextPage: kotlin.Function0<kotlin.Unit>): kotlin.Unit
-  skippable: true
+public fun com.idiotfrogs.designsystem.util.LoadNextPageEffect(scrollableState: androidx.compose.foundation.gestures.ScrollableState, canLoadMore: kotlin.Boolean, expectedLastItemKey: kotlin.String?, onLoadNextPage: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: false
   restartable: true
   params:
-    - listState: STABLE (marked @Stable or @Immutable)
+    - scrollableState: RUNTIME (requires runtime check)
     - canLoadMore: STABLE (primitive type)
     - expectedLastItemKey: STABLE (class with no mutable properties)
     - onLoadNextPage: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.designsystem.util.LoadPrevPageEffect(lazyListState: androidx.compose.foundation.lazy.LazyListState, loadedMinIndex: kotlin.Int, canLoadMore: kotlin.Boolean, isLoadingMore: kotlin.Boolean, scrolledToday: kotlin.Boolean, onLoadPrevPage: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - lazyListState: STABLE (marked @Stable or @Immutable)
+    - loadedMinIndex: STABLE (primitive type)
+    - canLoadMore: STABLE (primitive type)
+    - isLoadingMore: STABLE (primitive type)
+    - scrolledToday: STABLE (primitive type)
+    - onLoadPrevPage: STABLE (function type)
 
 @Composable
 public fun com.idiotfrogs.designsystem.util.keyboardAutoScroll(scrollState: androidx.compose.foundation.ScrollState): androidx.compose.ui.Modifier
