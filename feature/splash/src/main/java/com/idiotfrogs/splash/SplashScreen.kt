@@ -65,7 +65,7 @@ fun SplashRoute(
         when (event) {
             SplashSideEffect.NavigateToHome -> {
                 navigator.clear()
-                navigator.navigate(Routes.Home)
+                navigator.navigate(Routes.Home())
             }
             SplashSideEffect.NavigateToLogin -> {
                 navigator.clear()

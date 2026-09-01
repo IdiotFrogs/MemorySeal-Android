@@ -1,7 +1,7 @@
 package com.idiotfrogs.profile.profile
 
 import androidx.compose.runtime.Immutable
-import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
+import com.idiotfrogs.domain.usecase.timecapsule.GetOpenedMyTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val getMyTimeCapsuleUseCase: GetMyTimeCapsuleUseCase,
+    private val getOpenedMyTimeCapsuleUseCase: GetOpenedMyTimeCapsuleUseCase,
     private val getMyProfileUseCase: GetMyProfileUseCase
 ) : BaseViewModel<ProfileUiState, ProfileSideEffect, ProfileAction>() {
 
@@ -41,7 +41,7 @@ class ProfileViewModel @Inject constructor(
             intent { reduce { state.copy(isLoading = true) } }
 
             val userDeferred = async { getMyProfileUseCase() }
-            val capsulesDeferred = async { getMyTimeCapsuleUseCase() }
+            val capsulesDeferred = async { getOpenedMyTimeCapsuleUseCase() }
 
             val userResult = userDeferred.await()
             val capsulesResult = capsulesDeferred.await()

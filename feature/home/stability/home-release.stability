@@ -5,10 +5,11 @@
 //   ./gradlew :home:stabilityDump
 
 @Composable
-public fun com.idiotfrogs.home.HomeRoute(viewModel: com.idiotfrogs.home.HomeViewModel): kotlin.Unit
+public fun com.idiotfrogs.home.HomeRoute(openedId: kotlin.Long?, viewModel: com.idiotfrogs.home.HomeViewModel): kotlin.Unit
   skippable: false
   restartable: true
   params:
+    - openedId: STABLE (class with no mutable properties)
     - viewModel: UNSTABLE (has mutable properties or unstable members)
 
 @Composable
@@ -49,4 +50,21 @@ public fun com.idiotfrogs.home.component.HomeTicket(buried: kotlin.Boolean, crea
     - title: STABLE (String is immutable)
     - imageUrl: STABLE (class with no mutable properties)
     - modifier: STABLE (marked @Stable or @Immutable)
+
+@Composable
+public fun com.idiotfrogs.home.component.OpenAnimation(image: kotlin.String?, composition: kotlin.Function0<com.airbnb.lottie.LottieComposition>, confirmClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - image: STABLE (class with no mutable properties)
+    - composition: STABLE (function type)
+    - confirmClick: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.home.component.OpenInteraction(image: kotlin.String?, onFinish: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - image: STABLE (class with no mutable properties)
+    - onFinish: STABLE (function type)
 

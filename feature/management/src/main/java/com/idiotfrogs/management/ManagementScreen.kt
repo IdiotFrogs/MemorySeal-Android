@@ -62,7 +62,7 @@ fun ManagementRoute(
 
     viewModel.collectSideEffect { event ->
         when (event) {
-            ManagementSideEffect.NavigateToHome -> navigator.navigate(Routes.Home)
+            ManagementSideEffect.NavigateToHome -> navigator.navigate(Routes.Home())
             ManagementSideEffect.NavigateToBack -> navigator.popBackStack()
             ManagementSideEffect.NavigateToFriend -> navigator.navigate(Routes.Friend(capsuleId))
         }

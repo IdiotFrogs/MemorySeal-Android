@@ -17,4 +17,5 @@ dependencies {
     androidTestImplementation(libs.androidx.test.espresso)
 
     implementation(libs.kotlinx.datetime)
+    implementation(libs.lottie.compose)
 }

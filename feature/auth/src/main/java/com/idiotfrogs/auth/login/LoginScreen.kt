@@ -48,7 +48,7 @@ fun LoginRoute(
             LoginSideEffect.NavigateToSignUp -> navigator.navigate(Routes.SignUp)
             LoginSideEffect.NavigateToHome -> {
                 navigator.clear()
-                navigator.navigate(Routes.Home)
+                navigator.navigate(Routes.Home())
             }
         }
     }

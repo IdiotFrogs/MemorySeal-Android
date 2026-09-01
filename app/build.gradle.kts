@@ -23,6 +23,7 @@ dependencies {
     implementation(project(":core:util"))
     implementation(project(":core:di"))
     implementation(project(":core:app-link"))
+    implementation(project(":domain"))
     implementation(project(":common:resource"))
     implementation(project(":common:notification"))
 

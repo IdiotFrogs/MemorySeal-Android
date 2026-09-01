@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.idiotfrogs.app_link.AppLink
 import com.idiotfrogs.app_link.AppLinkManager
 import com.idiotfrogs.app_link.JoinInviteResult
+import com.idiotfrogs.domain.usecase.timecapsule.GetViewedTimeCapsuleUseCase
 import com.idiotfrogs.util.exception.LoginRequiredException
 import com.idiotfrogs.util.sideEffect.AppSideEffect
 import com.idiotfrogs.util.sideEffect.MSSideEffect
@@ -16,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,6 +26,7 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val appLinkManager: AppLinkManager,
+    private val getViewedTimeCapsuleUseCase: GetViewedTimeCapsuleUseCase,
 ) : ViewModel() {
     private val _event = MutableSharedFlow<MainEvent>()
     val event = _event.asSharedFlow()
@@ -52,14 +55,22 @@ class MainViewModel @Inject constructor(
     ) {
         val id = capsuleId?.toLongOrNull() ?: return
 
-        val event = when (type) {
-            "member" -> MainNavigationEvent.NavigateToFriend(id)
-            "detail" -> MainNavigationEvent.NavigateToDetail(id)
-            "open" -> MainNavigationEvent.NavigateToMemory(id)
-            else -> return
+        viewModelScope.launch {
+            val event = when (type) {
+                "member" -> MainNavigationEvent.NavigateToFriend(id)
+                "detail" -> MainNavigationEvent.NavigateToDetail(id)
+                "open" -> {
+                    val viewedTimeCapsuleIds = getViewedTimeCapsuleUseCase.capsuleIds.first()
+                    if (id in viewedTimeCapsuleIds) {
+                        MainNavigationEvent.NavigateToHome(id)
+                    } else {
+                        MainNavigationEvent.NavigateToDetail(id)
+                    }
+                }
+                else -> return@launch
+            }
+            _navigationEvent.send(event)
         }
-
-        _navigationEvent.trySend(event)
     }
 
     fun onAppLinkReceived(uri: Uri) {
@@ -134,5 +145,5 @@ sealed interface MainNavigationEvent {
         val capsuleId: Long,
         val toastMessage: String? = null,
     ) : MainNavigationEvent
-    data class NavigateToMemory(val capsuleId: Long) : MainNavigationEvent
+    data class NavigateToHome(val capsuleId: Long) : MainNavigationEvent
 }

@@ -1,6 +1,9 @@
 package com.idiotfrogs.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,11 +32,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,6 +47,8 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSMenuFab
@@ -59,6 +66,8 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.extension.toYearMonthDay
+import com.idiotfrogs.home.component.OpenAnimation
+import com.idiotfrogs.home.component.OpenInteraction
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.resource.R
 import dev.chrisbanes.haze.hazeSource
@@ -67,13 +76,26 @@ import kotlinx.coroutines.delay
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
+enum class OpenStep { INTERACTION, ANIMATION, NONE }
+
 @Composable
 fun HomeRoute(
-    viewModel: HomeViewModel = hiltViewModel()
+    openedId: Long?,
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
     var showToast by remember { mutableStateOf(false) }
+    var currentOpenStep by remember { mutableStateOf(OpenStep.NONE) }
+    var clickedCapsuleId by remember { mutableLongStateOf(-1L) }
+
+    val visibleState = remember { MutableTransitionState(false) }
+
+    LaunchedEffect(openedId) {
+        if (openedId != null) {
+            viewModel.onAction(HomeAction.ShowOpenAnimation(openedId))
+        }
+    }
 
     LaunchedEffect(showToast) {
         if (!showToast) return@LaunchedEffect
@@ -87,6 +109,10 @@ fun HomeRoute(
             HomeSideEffect.NavigateToProfile -> navigator.navigate(Routes.Profile)
             is HomeSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(it.id))
             HomeSideEffect.ShowToast -> showToast = true
+            is HomeSideEffect.ShowOpenAnimation -> {
+                clickedCapsuleId = it.id
+                currentOpenStep = OpenStep.INTERACTION
+            }
         }
     }
 
@@ -101,6 +127,66 @@ fun HomeRoute(
         }
 
         MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
+
+        // 로티를 미리 로드해둬야 함
+        val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.ticket_open))
+        val ready = composition != null
+
+        // 만약 클릭한 캡슐이 있다면 파생해서 해당 캡슐 데이터를 얻음
+        val clickedCapsule by remember {
+            derivedStateOf {
+                if (clickedCapsuleId == -1L) {
+                    null
+                } else {
+                    uiState.data?.capsules?.flatMap { it.value }?.find { it.timeCapsuleId == clickedCapsuleId }
+                }
+            }
+        }
+
+        LaunchedEffect(currentOpenStep, ready) {
+            if (currentOpenStep == OpenStep.ANIMATION && ready) {
+                visibleState.targetState = true
+            }
+        }
+
+        when (currentOpenStep) {
+            OpenStep.INTERACTION -> {
+                OpenInteraction(
+                    image = clickedCapsule?.mainImageUrl,
+                    onFinish = { currentOpenStep = OpenStep.ANIMATION}
+                )
+            }
+            // 가드 조건(if) - 매칭된 조건에 대한 추가 검사 제공
+            OpenStep.ANIMATION if ready -> {
+                // 배경 지정 안하면 홈 화면이 비쳐보임
+                Box(
+                    modifier = Modifier
+                        .noRippleClickable { /** no-op */ }
+                        .fillMaxSize()
+                        .background(Color.White)
+                ) {
+                    AnimatedVisibility(
+                        visibleState = visibleState,
+                        enter = fadeIn(tween(500))
+                    ) {
+                        OpenAnimation(
+                            image = clickedCapsule?.mainImageUrl,
+                            composition = { composition!! }, // 위에서 체크해서 non-null, 람다를 통한 지연 읽기
+                            confirmClick = {
+                                // 로컬에 오픈 확인 이력 저장
+                                viewModel.onAction(HomeAction.SeenTimeCapsule(clickedCapsuleId))
+                                // id가 유효하지 않은 경우 해당 페이지 예외 발생 -> 뒤로 이동
+                                navigator.navigate(Routes.Memory(clickedCapsuleId))
+                                // 상태 초기화
+                                clickedCapsuleId = -1L
+                                currentOpenStep = OpenStep.NONE
+                            }
+                        )
+                    }
+                }
+            }
+            else -> Unit
+        }
     }
 }
 
@@ -265,7 +351,12 @@ fun HomeScreen(
                             items(data) {
                                 HomeTicket(
                                     modifier = Modifier.noRippleClickable {
-                                        onAction(HomeAction.TimeCapsuleClicked(it.timeCapsuleId))
+                                        onAction(
+                                            HomeAction.TimeCapsuleClicked(
+                                                it.timeCapsuleId,
+                                                it.timeCapsuleStatus
+                                            )
+                                        )
                                     },
                                     buried = it.timeCapsuleStatus == TimeCapsuleStatus.BURIED,
                                     createdAt = it.createdAt.toYearMonthDay(),
