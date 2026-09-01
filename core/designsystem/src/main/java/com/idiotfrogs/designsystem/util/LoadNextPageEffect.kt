@@ -49,7 +49,7 @@ fun LoadNextPageEffect(
 
 @Composable
 fun LoadPrevPageEffect(
-    lazyListState: LazyListState,
+    scrollableState: ScrollableState,
     loadedMinIndex: Int,
     canLoadMore: Boolean,
     isLoadingMore: Boolean,
@@ -62,9 +62,9 @@ fun LoadPrevPageEffect(
     val currentScrolledToday by rememberUpdatedState(scrolledToday)
     val currentOnLoadPrevPage by rememberUpdatedState(onLoadPrevPage)
 
-    LaunchedEffect(lazyListState) {
+    LaunchedEffect(scrollableState) {
         snapshotFlow {
-            lazyListState.firstVisibleItemIndex <= currentLoadedMinIndex + 5 // 미리 당겨올 값 조정
+           (scrollableState.firstVisibleItemIndex ?: return@snapshotFlow false) <= currentLoadedMinIndex + 5 // 미리 당겨올 값 조정
                     && currentCanLoadMore && !currentIsLoadingMore
                     && currentScrolledToday // 없으면 계속해서 index가 0이므로 페이지를 연속해서 호출
         }
@@ -88,3 +88,11 @@ private val ScrollableState.lastPagingItem: PagingItem?
         }
         else -> null
     }
+
+private val ScrollableState.firstVisibleItemIndex: Int?
+    get() = when (this) {
+        is LazyListState -> this.layoutInfo.visibleItemsInfo.firstOrNull()?.index
+        is LazyGridState -> this.layoutInfo.visibleItemsInfo.firstOrNull()?.index
+        else -> null
+    }
+

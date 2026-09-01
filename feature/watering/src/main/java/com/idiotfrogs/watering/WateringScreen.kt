@@ -140,7 +140,7 @@ fun WateringScreen(
     val loadedMinIndex = data.waterings.totalElements.toInt() - adjustLoadedRecord
 
     LoadPrevPageEffect(
-        lazyListState = lazyListState,
+        scrollableState = lazyListState,
         loadedMinIndex = loadedMinIndex,
         canLoadMore = data.waterings.canLoadMore,
         isLoadingMore = !data.waterings.isLoadingMore,
