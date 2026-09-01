@@ -18,6 +18,6 @@ class LocalRepositoryImpl @Inject constructor(
     }
 
     override suspend fun addCapsuleId(capsuleId: Long) {
-        localDataSource.addCapsuleId(capsuleIds.toString())
+        localDataSource.addCapsuleId(capsuleId.toString())
     }
 }

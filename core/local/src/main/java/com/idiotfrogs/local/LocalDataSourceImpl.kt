@@ -64,7 +64,8 @@ class LocalDataSourceImpl @Inject constructor(
 
     override suspend fun addCapsuleId(capsuleId: String) {
         dataStore.edit { preferences ->
-            (preferences[CAPSULE_ID_KEY] ?: emptySet()) + capsuleId
+            preferences[CAPSULE_ID_KEY] =
+                (preferences[CAPSULE_ID_KEY] ?: emptySet()) + capsuleId
         }
     }
 }
