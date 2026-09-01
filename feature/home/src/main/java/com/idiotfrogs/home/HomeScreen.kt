@@ -254,11 +254,7 @@ fun HomeScreen(
                         LazyColumn(
                             state = lazyListState,
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(
-                                top = 24.dp,
-                                start = 20.dp,
-                                end = 20.dp
-                            ),
+                            contentPadding = PaddingValues(top = 24.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(16.dp),
                         ) {
@@ -270,7 +266,8 @@ fun HomeScreen(
                                     buried = it.timeCapsuleStatus == TimeCapsuleStatus.BURIED,
                                     createdAt = it.createdAt.toYearMonthDay(),
                                     title = it.title,
-                                    imageUrl = it.mainImageUrl
+                                    imageUrl = it.mainImageUrl,
+                                    step = it.stage
                                 )
                             }
                         }

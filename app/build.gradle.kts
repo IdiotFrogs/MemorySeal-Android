@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":feature:message"))
     implementation(project(":feature:preview"))
     implementation(project(":feature:memory"))
+    implementation(project(":feature:watering"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))
     implementation(project(":core:util"))

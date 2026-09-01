@@ -11,7 +11,8 @@ data class MyTimeCapsuleResponse(
     val createdAt: LocalDate,
     val mainImageUrl: String,
     val timeCapsuleStatus: TimeCapsuleStatus,
-    val role: TimeCapsuleRole
+    val role: TimeCapsuleRole,
+    val stage: Int,
 )
 
 enum class TimeCapsuleStatus { OPENED, BURIED, BEFOREBURIED }

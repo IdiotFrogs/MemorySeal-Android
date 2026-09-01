@@ -160,8 +160,8 @@ private fun ProfileScreenPreview() {
                     createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault()),
                     mainImageUrl = "",
                     role = TimeCapsuleRole.CONTRIBUTOR,
-                    timeCapsuleStatus = TimeCapsuleStatus.BURIED
-
+                    timeCapsuleStatus = TimeCapsuleStatus.BURIED,
+                    stage = 1
                 )
             )
         ),

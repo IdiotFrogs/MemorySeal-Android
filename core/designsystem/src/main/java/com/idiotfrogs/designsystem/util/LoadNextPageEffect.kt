@@ -1,6 +1,8 @@
 package com.idiotfrogs.designsystem.util
 
+import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -9,9 +11,15 @@ import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
+data class PagingItem(
+    val index: Int,
+    val key: Any,
+    val totalItemsCount: Int
+)
+
 @Composable
 fun LoadNextPageEffect(
-    listState: LazyListState,
+    scrollableState: ScrollableState,
     canLoadMore: Boolean,
     expectedLastItemKey: String? = null,
     onLoadNextPage: () -> Unit,
@@ -20,15 +28,16 @@ fun LoadNextPageEffect(
     val currentExpectedLastItemKey by rememberUpdatedState(expectedLastItemKey)
     val currentOnLoadNextPage by rememberUpdatedState(onLoadNextPage)
 
-    LaunchedEffect(listState) {
+    LaunchedEffect(scrollableState) {
         snapshotFlow {
-            val layoutInfo = listState.layoutInfo
-            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
+            val pagingItem = scrollableState.lastPagingItem ?: return@snapshotFlow false
+            // 위에서 null 체크를 했으므로 이후 null check가 필요 없음
             val hasReachedEnd = if (currentExpectedLastItemKey == null) {
-                lastVisibleItem != null &&
-                    layoutInfo.totalItemsCount > 0 &&
-                    lastVisibleItem.index >= layoutInfo.totalItemsCount - 1
-            } else { lastVisibleItem?.key == currentExpectedLastItemKey && !listState.canScrollForward }
+                pagingItem.totalItemsCount > 0 &&
+                pagingItem.index >= pagingItem.totalItemsCount - 1
+            } else {
+                pagingItem.key == currentExpectedLastItemKey && !scrollableState.canScrollForward
+            }
 
             currentCanLoadMore && hasReachedEnd
         }
@@ -37,3 +46,53 @@ fun LoadNextPageEffect(
             .collect { currentOnLoadNextPage() }
     }
 }
+
+@Composable
+fun LoadPrevPageEffect(
+    scrollableState: ScrollableState,
+    loadedMinIndex: Int,
+    canLoadMore: Boolean,
+    isLoadingMore: Boolean,
+    scrolledToday: Boolean,
+    onLoadPrevPage: () -> Unit
+) {
+    val currentLoadedMinIndex by rememberUpdatedState(loadedMinIndex)
+    val currentCanLoadMore by rememberUpdatedState(canLoadMore)
+    val currentIsLoadingMore by rememberUpdatedState(isLoadingMore)
+    val currentScrolledToday by rememberUpdatedState(scrolledToday)
+    val currentOnLoadPrevPage by rememberUpdatedState(onLoadPrevPage)
+
+    LaunchedEffect(scrollableState) {
+        snapshotFlow {
+           (scrollableState.firstVisibleItemIndex ?: return@snapshotFlow false) <= currentLoadedMinIndex + 5 // 미리 당겨올 값 조정
+                    && currentCanLoadMore && !currentIsLoadingMore
+                    && currentScrolledToday // 없으면 계속해서 index가 0이므로 페이지를 연속해서 호출
+        }
+            .distinctUntilChanged()
+            .filter { it }
+            .collect { currentOnLoadPrevPage() }
+    }
+}
+
+private val ScrollableState.lastPagingItem: PagingItem?
+    get() = when (this) {
+        is LazyListState -> this.layoutInfo.let {
+            it.visibleItemsInfo.lastOrNull()?.let { lastVisibleItemInfo ->
+                PagingItem(lastVisibleItemInfo.index, lastVisibleItemInfo.key, it.totalItemsCount)
+            }
+        }
+        is LazyGridState -> this.layoutInfo.let {
+            it.visibleItemsInfo.lastOrNull()?.let { lastVisibleItemInfo ->
+                PagingItem(lastVisibleItemInfo.index, lastVisibleItemInfo.key, it.totalItemsCount)
+            }
+        }
+        else -> null
+    }
+
+private val ScrollableState.firstVisibleItemIndex: Int?
+    get() = when (this) {
+        is LazyListState -> this.layoutInfo.visibleItemsInfo.firstOrNull()?.index
+        is LazyGridState -> this.layoutInfo.visibleItemsInfo.firstOrNull()?.index
+        else -> null
+    }
+

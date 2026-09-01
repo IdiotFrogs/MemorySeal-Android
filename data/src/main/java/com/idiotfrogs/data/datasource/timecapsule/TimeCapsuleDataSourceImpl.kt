@@ -11,6 +11,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.WateringResponse
 import com.idiotfrogs.network.service.TimeCapsuleService
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -146,5 +147,23 @@ class TimeCapsuleDataSourceImpl @Inject constructor(
             contentIds = contentIds,
             fileIds = fileIds
         )
+    }
+
+    override suspend fun getWatering(
+        capsuleId: Long,
+        page: Int,
+        size: Int,
+        sort: String
+    ): WateringResponse {
+        return timeCapsuleService.getWatering(
+            capsuleId = capsuleId,
+            page = page,
+            size = size,
+            sort = sort
+        )
+    }
+
+    override suspend fun watering(capsuleId: Long) {
+        return timeCapsuleService.watering(capsuleId)
     }
 }

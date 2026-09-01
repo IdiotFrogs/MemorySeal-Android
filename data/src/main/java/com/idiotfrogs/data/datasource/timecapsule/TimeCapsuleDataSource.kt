@@ -11,6 +11,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.WateringResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
@@ -85,4 +86,8 @@ interface TimeCapsuleDataSource {
         contentIds: List<Long>,
         fileIds: List<Long>,
     )
+
+    suspend fun getWatering(capsuleId: Long, page: Int, size: Int, sort: String): WateringResponse
+
+    suspend fun watering(capsuleId: Long)
 }

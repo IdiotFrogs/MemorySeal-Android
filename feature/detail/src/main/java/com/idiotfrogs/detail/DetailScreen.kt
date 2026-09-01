@@ -105,6 +105,7 @@ fun DetailRoute(
                     title = event.title,
                 )
             )
+            is DetailSideEffect.NavigateToWatering -> navigator.navigate(Routes.Watering(event.id))
             DetailSideEffect.ShowToast -> showToast = true
         }
     }
@@ -459,9 +460,7 @@ fun DetailScreen(
                             )
                             Spacer(Modifier.width(12.dp))
                             MSButton(
-                                onClick = {
-                                    // TODO 물주기 화면 또는 액션이 정해지면 연결
-                                },
+                                onClick = { onAction.invoke(DetailAction.WateringClicked(capsuleId)) },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MSTheme.color.greyG5,
                                 ),
