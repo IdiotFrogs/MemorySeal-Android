@@ -5,10 +5,11 @@
 //   ./gradlew :home:stabilityDump
 
 @Composable
-public fun com.idiotfrogs.home.HomeRoute(viewModel: com.idiotfrogs.home.HomeViewModel): kotlin.Unit
+public fun com.idiotfrogs.home.HomeRoute(openedId: kotlin.Long?, viewModel: com.idiotfrogs.home.HomeViewModel): kotlin.Unit
   skippable: false
   restartable: true
   params:
+    - openedId: STABLE (class with no mutable properties)
     - viewModel: UNSTABLE (has mutable properties or unstable members)
 
 @Composable
