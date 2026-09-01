@@ -407,11 +407,11 @@ public fun com.idiotfrogs.designsystem.util.LoadNextPageEffect(scrollableState: 
     - onLoadNextPage: STABLE (function type)
 
 @Composable
-public fun com.idiotfrogs.designsystem.util.LoadPrevPageEffect(lazyListState: androidx.compose.foundation.lazy.LazyListState, loadedMinIndex: kotlin.Int, canLoadMore: kotlin.Boolean, isLoadingMore: kotlin.Boolean, scrolledToday: kotlin.Boolean, onLoadPrevPage: kotlin.Function0<kotlin.Unit>): kotlin.Unit
-  skippable: true
+public fun com.idiotfrogs.designsystem.util.LoadPrevPageEffect(scrollableState: androidx.compose.foundation.gestures.ScrollableState, loadedMinIndex: kotlin.Int, canLoadMore: kotlin.Boolean, isLoadingMore: kotlin.Boolean, scrolledToday: kotlin.Boolean, onLoadPrevPage: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: false
   restartable: true
   params:
-    - lazyListState: STABLE (marked @Stable or @Immutable)
+    - scrollableState: RUNTIME (requires runtime check)
     - loadedMinIndex: STABLE (primitive type)
     - canLoadMore: STABLE (primitive type)
     - isLoadingMore: STABLE (primitive type)
