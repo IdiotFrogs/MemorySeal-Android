@@ -69,7 +69,6 @@ fun ProfileRoute(
             }
             ProfileSideEffect.NavigateToBack -> navigator.popBackStack()
             ProfileSideEffect.NavigateToEditProfile -> navigator.navigate(Routes.EditProfile)
-            ProfileSideEffect.NavigateToSetting -> navigator.navigate(Routes.Setting)
             is ProfileSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(event.id))
         }
     }
@@ -148,7 +147,6 @@ fun ProfileScreen(
         ProfileHeader(
             modifier = Modifier.zIndex(1f),
             onBack = { onAction(ProfileAction.BackClicked) },
-            onSetting = { onAction(ProfileAction.SettingClicked) }
         )
         Column(
             modifier = Modifier

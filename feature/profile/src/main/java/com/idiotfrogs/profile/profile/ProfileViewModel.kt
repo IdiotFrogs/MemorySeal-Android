@@ -109,7 +109,6 @@ class ProfileViewModel @Inject constructor(
             ProfileAction.LogoutConfirmed -> logout()
             ProfileAction.WithdrawConfirmed -> withdraw()
             ProfileAction.EditProfileClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToEditProfile) }
-            ProfileAction.SettingClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToSetting) }
             ProfileAction.BackClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToBack) }
             is ProfileAction.TicketClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToDetail(action.id))}
         }
@@ -130,7 +129,6 @@ data class ProfileData(
 )
 
 sealed interface ProfileAction {
-    data object SettingClicked : ProfileAction
     data object EditProfileClicked : ProfileAction
     data object BackClicked : ProfileAction
     data class TicketClicked(val id: Long) : ProfileAction
@@ -139,7 +137,6 @@ sealed interface ProfileAction {
 }
 
 sealed interface ProfileSideEffect {
-    data object NavigateToSetting : ProfileSideEffect
     data object NavigateToEditProfile : ProfileSideEffect
     data object NavigateToBack : ProfileSideEffect
     data class NavigateToDetail(val id: Long) : ProfileSideEffect
