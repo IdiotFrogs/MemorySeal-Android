@@ -2,8 +2,7 @@ package com.idiotfrogs.profile.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,15 +22,13 @@ import com.idiotfrogs.resource.R
 fun ProfileHeader(
     modifier: Modifier = Modifier,
     onBack: () -> Unit,
-    onSetting: () -> Unit
 ) {
-    Row(
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .background(MSTheme.color.white)
             .padding(horizontal = 20.dp, vertical = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        contentAlignment = Alignment.CenterStart,
     ) {
         Image(
             modifier = Modifier
@@ -41,17 +38,11 @@ fun ProfileHeader(
             contentDescription = "chevron_left",
         )
         MSText(
+            modifier = Modifier.align(Alignment.Center),
             text = "프로필",
             fontWeight = FontWeight.Bold,
             fontSize = 20.dp,
             color = MSTheme.color.greyG5
-        )
-        Image(
-            modifier = Modifier
-                .size(24.dp)
-                .noRippleClickable(onClick = onSetting),
-            painter = painterResource(R.drawable.ic_setting),
-            contentDescription = "설정"
         )
     }
 }
@@ -61,6 +52,5 @@ fun ProfileHeader(
 private fun ProfileHeaderPreview() {
     ProfileHeader(
         onBack = {},
-        onSetting = {}
     )
 }
