@@ -270,11 +270,9 @@ fun rememberAppVersion(): String {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 context.packageManager.getPackageInfo(
                     packageName, PackageManager.PackageInfoFlags.of(0)
-                )
-                    .versionName ?: ""
+                ).versionName ?: ""
             } else {
-                context.packageManager.getPackageInfo(packageName, 0)
-                    .versionName ?: ""
+                context.packageManager.getPackageInfo(packageName, 0).versionName ?: ""
             }
         }.getOrDefault("")
     }
