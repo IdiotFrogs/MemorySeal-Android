@@ -34,13 +34,12 @@ public fun com.idiotfrogs.profile.component.ProfileHeader(isChanged: kotlin.Bool
     - onSave: STABLE (function type)
 
 @Composable
-public fun com.idiotfrogs.profile.component.ProfileHeader(modifier: androidx.compose.ui.Modifier, onBack: kotlin.Function0<kotlin.Unit>, onSetting: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.profile.component.ProfileHeader(modifier: androidx.compose.ui.Modifier, onBack: kotlin.Function0<kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
   params:
     - modifier: STABLE (marked @Stable or @Immutable)
     - onBack: STABLE (function type)
-    - onSetting: STABLE (function type)
 
 @Composable
 public fun com.idiotfrogs.profile.component.ProfileTicketCard(imageUrl: kotlin.String, title: kotlin.String, date: kotlin.String, onClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
@@ -81,4 +80,10 @@ public fun com.idiotfrogs.profile.profile.ProfileScreen(data: com.idiotfrogs.pro
   params:
     - data: STABLE (marked @Stable or @Immutable)
     - onAction: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.profile.profile.rememberAppVersion(): kotlin.String
+  skippable: true
+  restartable: true
+  params:
 

@@ -38,7 +38,6 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.preview.PreviewRoute
 import com.idiotfrogs.profile.editprofile.EditProfileRoute
 import com.idiotfrogs.profile.profile.ProfileRoute
-import com.idiotfrogs.setting.SettingRoute
 import com.idiotfrogs.splash.SplashRoute
 import com.idiotfrogs.watering.WateringDetailRoute
 import com.idiotfrogs.watering.WateringRoute
@@ -138,7 +137,6 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Create> { CreateRoute() }
                                 entry<Routes.Profile> { ProfileRoute() }
                                 entry<Routes.EditProfile> { EditProfileRoute() }
-                                entry<Routes.Setting> { SettingRoute() }
                                 entry<Routes.Detail> { DetailRoute(capsuleId = it.id) }
                                 entry<Routes.Message> { MessageRoute(capsuleId = it.id) }
                                 entry<Routes.Preview> { PreviewRoute(capsuleId = it.id) }
