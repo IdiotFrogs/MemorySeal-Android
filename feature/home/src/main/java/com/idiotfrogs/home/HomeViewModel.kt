@@ -5,7 +5,7 @@ import com.idiotfrogs.domain.usecase.auth.PutFcmTokenUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.RequestCollaboratorUseCase
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
-import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.MyTimeCapsuleContent
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.model.user.ProfileResponse
@@ -118,7 +118,7 @@ data class HomeUiState(
 @Immutable
 data class HomeData(
     val user: ProfileResponse? = null,
-    val capsules: Map<TimeCapsuleRole, List<MyTimeCapsuleResponse>> = emptyMap()
+    val capsules: Map<TimeCapsuleRole, List<MyTimeCapsuleContent>> = emptyMap()
 )
 
 sealed interface HomeAction {

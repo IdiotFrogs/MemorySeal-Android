@@ -11,6 +11,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.model.timecapsule.WateringResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -21,7 +22,7 @@ interface TimeCapsuleDataSource {
         mainImage: MultipartBody.Part
     ): TimeCapsuleCreateResponse
 
-    suspend fun getMyTimeCapsule(): List<MyTimeCapsuleResponse>
+    suspend fun getMyTimeCapsule(status: TimeCapsuleStatus, page: Int, size: Int): MyTimeCapsuleResponse
 
     suspend fun deleteTimeCapsule(capsuleId: Long)
 

@@ -11,6 +11,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.model.timecapsule.WateringResponse
 import com.idiotfrogs.network.service.TimeCapsuleService
 import okhttp3.MultipartBody
@@ -30,8 +31,12 @@ class TimeCapsuleDataSourceImpl @Inject constructor(
         )
     }
 
-    override suspend fun getMyTimeCapsule(): List<MyTimeCapsuleResponse> {
-        return timeCapsuleService.getMyTimeCapsule()
+    override suspend fun getMyTimeCapsule(status: TimeCapsuleStatus, page: Int, size: Int): MyTimeCapsuleResponse {
+        return timeCapsuleService.getMyTimeCapsule(
+            status = status,
+            page = page,
+            size = size
+        )
     }
 
     override suspend fun deleteTimeCapsule(capsuleId: Long) {

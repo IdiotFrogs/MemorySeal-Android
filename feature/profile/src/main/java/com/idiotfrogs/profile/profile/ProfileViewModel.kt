@@ -5,8 +5,7 @@ import com.idiotfrogs.domain.usecase.auth.LogoutUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.domain.usecase.user.WithdrawUseCase
-import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
-import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
+import com.idiotfrogs.model.timecapsule.MyTimeCapsuleContent
 import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.base.DataUiState
@@ -62,10 +61,7 @@ class ProfileViewModel @Inject constructor(
                         state.copy(
                             data = ProfileData(
                                 user = userResult.getOrNull(),
-                                capsules = capsulesResult.getOrNull()
-                                    ?.flatMap { it.value }
-                                    ?.filter { it.timeCapsuleStatus == TimeCapsuleStatus.OPENED }
-                                    ?: emptyList(),
+                                capsules = capsulesResult.getOrNull()?.flatMap { it.value } ?: emptyList(),
                             ),
                             isLoading = false,
                             errorMessage = null,
@@ -125,7 +121,7 @@ data class ProfileUiState(
 @Immutable
 data class ProfileData(
     val user: ProfileResponse? = null,
-    val capsules: List<MyTimeCapsuleResponse> = emptyList()
+    val capsules: List<MyTimeCapsuleContent> = emptyList()
 )
 
 sealed interface ProfileAction {

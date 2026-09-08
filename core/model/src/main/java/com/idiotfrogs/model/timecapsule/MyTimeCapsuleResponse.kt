@@ -5,6 +5,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MyTimeCapsuleResponse(
+    val content: List<MyTimeCapsuleContent>,
+    val totalPages: Int,
+    val totalElements: Long,
+    val number: Int,
+    val last: Boolean,
+)
+
+@Serializable
+data class MyTimeCapsuleContent(
     val timeCapsuleId: Long,
     val title: String,
     val openedAt: LocalDate? = null,

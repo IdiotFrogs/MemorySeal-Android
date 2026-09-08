@@ -37,7 +37,7 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DrawType
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.wavyStroke
-import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.MyTimeCapsuleContent
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.model.user.ProfileResponse
@@ -291,7 +291,7 @@ private fun ProfileScreenPreview() {
                 isOnboarding = true
             ),
             capsules = listOf(
-                MyTimeCapsuleResponse(
+                MyTimeCapsuleContent(
                     timeCapsuleId = 0L,
                     title = "제목입니다. 제목입니다.",
                     createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault()),

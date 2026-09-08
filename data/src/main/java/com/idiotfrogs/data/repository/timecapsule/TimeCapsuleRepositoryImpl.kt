@@ -12,6 +12,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.util.exception.AlreadyContributorException
 import com.idiotfrogs.model.timecapsule.WateringResponse
 import com.idiotfrogs.network.service.TimeCapsuleService
@@ -39,8 +40,8 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getMyTimeCapsule(): List<MyTimeCapsuleResponse> {
-        return timeCapsuleDataSource.getMyTimeCapsule()
+    override suspend fun getMyTimeCapsule(status: TimeCapsuleStatus, page: Int, size: Int): MyTimeCapsuleResponse {
+        return timeCapsuleDataSource.getMyTimeCapsule(status, page, size)
     }
 
     override suspend fun deleteTimeCapsule(capsuleId: Long) {
