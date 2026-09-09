@@ -1,6 +1,8 @@
 package com.idiotfrogs.designsystem.component
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -29,6 +31,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -99,10 +102,16 @@ fun MSMenuFab(
             }
         }
         if (hasFab) {
+            val iconRotation by animateFloatAsState(
+                targetValue = if (expanded) 45f else 0f,
+                animationSpec = tween(200),
+                label = "fab icon rotation"
+            )
+
             FloatingActionButton(
                 modifier = Modifier
                     .wavyStroke(
-                        color = Color(0xFF29A047),
+                        color = MSTheme.color.greyG5,
                         strokeWidth = 4.dp,
                         cornerRadius = 28.dp,
                         amplitude = 1.dp,
@@ -111,7 +120,7 @@ fun MSMenuFab(
                     .size(56.dp)
                     .padding(2.dp),
                 shape = CircleShape,
-                containerColor = MSTheme.color.primaryNormal,
+                containerColor = MSTheme.color.greyG5,
                 elevation = FloatingActionButtonDefaults.elevation(
                     defaultElevation = 4.dp,
                     pressedElevation = 4.dp,
@@ -124,11 +133,10 @@ fun MSMenuFab(
                 Image(
                     modifier = Modifier
                         .size(24.dp)
-                        .graphicsLayer {
-                            rotationZ = if (expanded) 45f else 0f
-                        },
+                        .graphicsLayer { rotationZ = iconRotation },
                     painter = painterResource(imageRes),
-                    contentDescription = "fab content"
+                    contentDescription = "fab content",
+                    colorFilter = ColorFilter.tint(MSTheme.color.white)
                 )
             }
         }

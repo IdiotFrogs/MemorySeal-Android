@@ -86,7 +86,6 @@ class HomeViewModel @Inject constructor(
         requestCollaboratorUseCase(body).onSuccess {
             intent {
                 reduce { state.copy(isLoading = false, errorMessage = null) }
-                postSideEffect(HomeSideEffect.ShowToast)
                 fetchHome()
             }
         }.onFailure {
@@ -133,6 +132,4 @@ sealed interface HomeSideEffect {
     data object NavigateToCreate : HomeSideEffect
     data object NavigateToProfile : HomeSideEffect
     data class NavigateToDetail(val id: Long) : HomeSideEffect
-
-    data object ShowToast : HomeSideEffect
 }

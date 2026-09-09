@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
@@ -23,6 +24,7 @@ import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun HomeHeader(
+    selectedMenu: BottomMenu,
     profileUrl: String?,
     navigateToProfile: () -> Unit,
 ) {
@@ -33,8 +35,9 @@ fun HomeHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         MSText(
-            text = "타임 티켓",
+            text = if (selectedMenu == BottomMenu.HOME) "홈" else "오픈된 티켓",
             fontSize = 24.dp,
+            fontWeight = FontWeight.Bold,
             color = MSTheme.color.greyG5
         )
         Spacer(modifier = Modifier.weight(1f))
@@ -70,6 +73,7 @@ fun HomeHeader(
 @Composable
 private fun HomeHeaderPreview() {
     HomeHeader(
+        selectedMenu = BottomMenu.HOME,
         profileUrl = "",
         navigateToProfile = {},
     )
