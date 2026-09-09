@@ -14,18 +14,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,145 +47,102 @@ enum class GuideItem(val imgRes: Int, val width: Dp, val height: Dp) {
 
 @Composable
 fun HomeTicket(
-    buried: Boolean,
-    createdAt: String,
-    title: String,
-    imageUrl: String?,
-    step: Int,
     modifier: Modifier = Modifier,
+    buried: Boolean,
+//    createdAt: String,
+//    title: String,
+//    imageUrl: String?,
+//    step: Int,
 ) {
-    Box(modifier = modifier) {
-        Column {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .zIndex(1f)
-                    .wavyStroke(
-                        color = MSTheme.color.greyG5,
-                        cornerRadius = 16.dp,
-                        strokeWidth = 4.dp,
-                        amplitude = 1.dp,
-                        spacing = 3.dp,
-                        fillColor = MSTheme.color.primaryNormal
-                    )
-            ) {
-                Column(
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        Box(
+            modifier = Modifier
+                .zIndex(1f)
+                .wavyStroke(
+                    color = MSTheme.color.greyG5,
+                    fillColor = MSTheme.color.primaryNormal,
+                    amplitude = (1.5).dp,
+                    spacing = 4.dp,
+                )
+                .fillMaxWidth()
+                .height(55.dp),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            if (buried) {
+                Row(
                     modifier = Modifier
-                        .padding(20.dp)
-                        .fillMaxWidth()
+                        .padding(start = 12.dp)
+                        .background(
+                            color = MSTheme.color.primaryLight.copy(alpha = 0.6f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(start = 6.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(1.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (buried) {
-                        Row(
-                            modifier = Modifier
-                                .background(
-                                    color = MSTheme.color.primaryLight.copy(0.6f),
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                                .padding(6.dp),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Image(
-                                modifier = Modifier.size(16.dp),
-                                painter = painterResource(R.drawable.ic_shovels),
-                                contentDescription = "buried",
-                                colorFilter = ColorFilter.tint(MSTheme.color.greyG5)
-                            )
-                            MSText(
-                                text = "묻어짐",
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 12.dp,
-                                color = MSTheme.color.greyG5
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
+                    Image(
+                        modifier = Modifier.size(16.dp),
+                        painter = painterResource(R.drawable.ic_shovels),
+                        contentDescription = "ic_shovels"
+                    )
                     MSText(
-                        text = title,
-                        fontSize = 20.dp,
-                        fontWeight = FontWeight.Bold,
+                        text = "D-12",
+                        fontSize = 12.dp,
+                        fontWeight = FontWeight.SemiBold,
                         color = MSTheme.color.greyG5
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    MSText(
-                        text = createdAt,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.dp,
-                        color = MSTheme.color.greyG4
-                    )
-                }
-            }
-            val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .offset(y = (-10).dp)
-                    .wavyStroke(
-                        color = MSTheme.color.greyG5,
-                        cornerRadius = 16.dp,
-                        strokeWidth = 4.dp,
-                        amplitude = (1.5).dp,
-                        spacing = 4.dp,
-                        fillColor = MSTheme.color.white
-                    )
-                    .aspectRatio(1f)
-            ) {
-                imageUrl?.let {
-                    GlideImage(
-                        modifier = Modifier
-                            .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-                            .fillMaxSize()
-                            .padding(24.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .drawWithCache {
-                                onDrawWithContent {
-                                    drawContent()
-                                    drawImage(
-                                        image = mask,
-                                        dstSize = IntSize(size.width.toInt(), size.height.toInt()),
-                                        blendMode = BlendMode.DstIn
-                                    )
-                                }
-                            },
-                        imageModel = { imageUrl }
-                    )
-                } ?: run {
-                    Image(
-                        modifier = Modifier
-                            .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-                            .fillMaxSize()
-                            .padding(24.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .drawWithCache {
-                                onDrawWithContent {
-                                    drawContent()
-                                    drawImage(
-                                        image = mask,
-                                        dstSize = IntSize(size.width.toInt(), size.height.toInt()),
-                                        blendMode = BlendMode.DstIn
-                                    )
-                                }
-                            },
-                        painter = painterResource(R.drawable.img_sample),
-                        contentDescription = "thumbnail",
-                        contentScale = ContentScale.Crop
-                    )
                 }
             }
         }
-        val guideItem = GuideItem.entries.getOrNull(step - 2) // step 1 보정 + index 보정
-        if (guideItem != null) {
-            Image(
+        Box(
+            modifier = Modifier
+                .offset(y = (-10).dp)
+                .wavyStroke(
+                    color = MSTheme.color.greyG5,
+                    fillColor = MSTheme.color.white,
+                    amplitude = (1.5).dp,
+                    spacing = 4.dp,
+                )
+                .fillMaxWidth()
+                .aspectRatio(1f)
+        ) {
+            val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
+            GlideImage(
                 modifier = Modifier
-                    .aspectRatio(guideItem.width / guideItem.height)
-                    .size(width = guideItem.width, height = guideItem.height)
-                    .align(Alignment.BottomCenter),
-                painter = painterResource(guideItem.imgRes),
-                contentDescription = "ticket_guide"
+                    .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                    .fillMaxSize()
+                    .padding(12.dp)
+                    .drawWithCache {
+                        onDrawWithContent {
+                            drawContent()
+                            drawImage(
+                                image = mask,
+                                dstSize = IntSize(size.width.toInt(), size.height.toInt()),
+                                blendMode = BlendMode.DstIn
+                            )
+                        }
+                    },
+                imageModel = { R.drawable.img_sample }
             )
         }
+        Spacer(modifier = Modifier.height(2.dp)) // 위에서 offset 준 만큼 원본에서 차감
+        MSText(
+            text = "제목입니다. 제목입니다.",
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.dp,
+            color = MSTheme.color.greyG5
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        MSText(
+            text = "2027. 10. 24 ~ 2027. 10. 24 ",
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.dp,
+            color = MSTheme.color.greyG5.copy(alpha = 0.6f)
+        )
     }
 }
 
@@ -196,9 +151,9 @@ fun HomeTicket(
 private fun HomeTicketPreview() {
     HomeTicket(
         buried = true,
-        createdAt = "2027. 10. 24.",
-        title = "제목입니다.",
-        imageUrl = null,
-        step = 1
+//        createdAt = "2027. 10. 24.",
+//        title = "제목입니다.",
+//        imageUrl = null,
+//        step = 1
     )
 }

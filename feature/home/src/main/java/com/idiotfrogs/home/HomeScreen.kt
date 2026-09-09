@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -39,6 +40,7 @@ import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.home.component.BottomMenu
 import com.idiotfrogs.home.component.HomeBottomBar
 import com.idiotfrogs.home.component.HomeEmptyScreen
+import com.idiotfrogs.home.component.HomeTicket
 import com.idiotfrogs.home.component.OpenedTicket
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -137,21 +139,48 @@ fun HomeScreen(
         ) { page ->
             when (page) {
                 BottomMenu.HOME.ordinal -> {
-                    HomeEmptyScreen(
-                        modifier = Modifier.padding(top = TOP_BAR_SIZE, bottom = BOTTOM_BAR_SIZE),
-                        selectedMenu = BottomMenu.HOME
-                    )
+                    if (false) {
+                        HomeEmptyScreen(
+                            modifier = Modifier.padding(top = TOP_BAR_SIZE, bottom = BOTTOM_BAR_SIZE),
+                            selectedMenu = BottomMenu.HOME
+                        )
+                    } else {
+                        LazyVerticalGrid(
+                            modifier = Modifier.padding(top = TOP_BAR_SIZE),
+                            columns = GridCells.Fixed(2)
+                        ) {
+                            itemsIndexed(listOf(1,1,1,1,1,1)) { index, item ->
+                                val isLeft = index % 2 == 0
+                                val isLastRow = index / 2 == 2 // 추후 하드코딩에서 변경
+                                HomeTicket(
+                                    modifier = Modifier.padding(
+                                        start = if (isLeft) 20.dp else 8.dp,
+                                        end = if (isLeft) 8.dp else 20.dp,
+                                        bottom = if (isLastRow) 0.dp else 16.dp
+                                    ),
+                                    buried = index / 2 == 0
+                                )
+                            }
+                        }
+                    }
                 }
                 BottomMenu.OPENED.ordinal -> {
-                    LazyVerticalGrid(
-                        modifier = Modifier.padding(top = TOP_BAR_SIZE, start = 20.dp, end = 20.dp),
-                        columns = GridCells.Fixed(2),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(24.dp),
-                        contentPadding = PaddingValues(top = 20.dp, bottom = BOTTOM_BAR_SIZE)
-                    ) {
-                        items(10) {
-                            OpenedTicket()
+                    if (false) {
+                        HomeEmptyScreen(
+                            modifier = Modifier.padding(top = TOP_BAR_SIZE, bottom = BOTTOM_BAR_SIZE),
+                            selectedMenu = BottomMenu.OPENED
+                        )
+                    } else {
+                        LazyVerticalGrid(
+                            modifier = Modifier.padding(top = TOP_BAR_SIZE, start = 20.dp, end = 20.dp),
+                            columns = GridCells.Fixed(2),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(24.dp),
+                            contentPadding = PaddingValues(top = 20.dp, bottom = BOTTOM_BAR_SIZE)
+                        ) {
+                            items(10) {
+                                OpenedTicket()
+                            }
                         }
                     }
                 }
