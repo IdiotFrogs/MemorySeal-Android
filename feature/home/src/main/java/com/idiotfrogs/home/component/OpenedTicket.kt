@@ -40,7 +40,9 @@ fun OpenedTicket() {
                 .rotate(10f)
                 .wavyStroke(
                     color = MSTheme.color.greyG5,
-                    fillColor = MSTheme.color.white
+                    fillColor = MSTheme.color.white,
+                    amplitude = 1.dp,
+                    spacing = 4.dp,
                 )
                 .fillMaxWidth()
                 .height(40.dp)
@@ -49,7 +51,9 @@ fun OpenedTicket() {
             modifier = Modifier
                 .wavyStroke(
                     color = MSTheme.color.greyG5,
-                    fillColor = MSTheme.color.white
+                    fillColor = MSTheme.color.white,
+                    amplitude = 1.dp,
+                    spacing = 4.dp,
                 )
                 .fillMaxWidth()
                 .aspectRatio(1f)

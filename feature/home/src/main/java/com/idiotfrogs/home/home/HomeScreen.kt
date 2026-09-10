@@ -1,4 +1,4 @@
-package com.idiotfrogs.home
+package com.idiotfrogs.home.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -33,15 +33,22 @@ import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.model.MSMenuFabModel
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
+import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.home.component.HomeHeader
 import com.idiotfrogs.home.component.HomeJoinContainer
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.home.component.BottomMenu
+import com.idiotfrogs.home.component.HomeBigTicket
 import com.idiotfrogs.home.component.HomeBottomBar
 import com.idiotfrogs.home.component.HomeEmptyScreen
-import com.idiotfrogs.home.component.HomeTicket
+import com.idiotfrogs.home.component.HomeRemindBanner
+import com.idiotfrogs.home.component.HomeSectionDivider
+import com.idiotfrogs.home.component.HomeSmallTicket
 import com.idiotfrogs.home.component.OpenedTicket
+import com.idiotfrogs.home.component.Weather
+import com.idiotfrogs.home.component.maxLineItem
+import com.idiotfrogs.navigation.HomeDetailType
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
@@ -60,6 +67,7 @@ fun HomeRoute(
             HomeSideEffect.NavigateToCreate -> navigator.navigate(Routes.Create)
             HomeSideEffect.NavigateToProfile -> navigator.navigate(Routes.Profile)
             is HomeSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(it.id))
+            is HomeSideEffect.NavigateToHomeDetail -> navigator.navigate(Routes.HomeDetail(it.homeDetailType))
         }
     }
 
@@ -134,6 +142,7 @@ fun HomeScreen(
             navigateToProfile = { onAction.invoke(HomeAction.ProfileClicked) }
         )
         HorizontalPager(
+            modifier = Modifier.padding(top = TOP_BAR_SIZE),
             state = pagerState,
             userScrollEnabled = false
         ) { page ->
@@ -141,24 +150,72 @@ fun HomeScreen(
                 BottomMenu.HOME.ordinal -> {
                     if (false) {
                         HomeEmptyScreen(
-                            modifier = Modifier.padding(top = TOP_BAR_SIZE, bottom = BOTTOM_BAR_SIZE),
+                            modifier = Modifier.padding(bottom = BOTTOM_BAR_SIZE),
                             selectedMenu = BottomMenu.HOME
                         )
                     } else {
                         LazyVerticalGrid(
-                            modifier = Modifier.padding(top = TOP_BAR_SIZE),
-                            columns = GridCells.Fixed(2)
+                            columns = GridCells.Fixed(2),
+                            horizontalArrangement = Arrangement.spacedBy((-12).dp) // 줄기가 겹쳐지도록
                         ) {
-                            itemsIndexed(listOf(1,1,1,1,1,1)) { index, item ->
-                                val isLeft = index % 2 == 0
+                            if (true) {
+                                maxLineItem { HomeBigTicket(step = 1) }
+                            }
+                            if (true) { // todo: 조건 변경
+                                maxLineItem {
+                                    HomeRemindBanner(
+                                        modifier = Modifier.padding(20.dp),
+                                        weather = Weather.AUTUMN
+                                    )
+                                }
+                            }
+                            maxLineItem {
+                                HomeSectionDivider(
+                                    modifier = Modifier
+                                        .noRippleClickable {
+                                            onAction.invoke(
+                                                HomeAction.HomeDetailClicked(
+                                                    HomeDetailType.BEFORE_BURIED
+                                                )
+                                            )
+                                        }
+                                        .padding(horizontal = (22.5).dp, vertical = 20.dp),
+                                    sectionName = "타임 티켓"
+                                )
+                            }
+                            itemsIndexed(listOf(1, 1, 1, 1, 1, 1)) { index, item ->
                                 val isLastRow = index / 2 == 2 // 추후 하드코딩에서 변경
-                                HomeTicket(
+                                HomeSmallTicket(
                                     modifier = Modifier.padding(
-                                        start = if (isLeft) 20.dp else 8.dp,
-                                        end = if (isLeft) 8.dp else 20.dp,
                                         bottom = if (isLastRow) 0.dp else 16.dp
                                     ),
-                                    buried = index / 2 == 0
+                                    buried = index / 2 == 0,
+                                    step = index
+                                )
+                            }
+                            maxLineItem {
+                                HomeSectionDivider(
+                                    modifier = Modifier
+                                        .noRippleClickable {
+                                            onAction.invoke(
+                                                HomeAction.HomeDetailClicked(
+                                                    HomeDetailType.BURIED
+                                                )
+                                            )
+                                        }
+                                        .padding(horizontal = (22.5).dp)
+                                        .padding(top = 40.dp, bottom = 15.dp),
+                                    sectionName = "오픈 예정 티켓"
+                                )
+                            }
+                            itemsIndexed(listOf(1, 1, 1, 1, 1, 1)) { index, item ->
+                                val isLastRow = index / 2 == 2 // 추후 하드코딩에서 변경
+                                HomeSmallTicket(
+                                    modifier = Modifier.padding(
+                                        bottom = if (isLastRow) 0.dp else 16.dp
+                                    ),
+                                    buried = index / 2 == 0,
+                                    step = index
                                 )
                             }
                         }
@@ -167,12 +224,12 @@ fun HomeScreen(
                 BottomMenu.OPENED.ordinal -> {
                     if (false) {
                         HomeEmptyScreen(
-                            modifier = Modifier.padding(top = TOP_BAR_SIZE, bottom = BOTTOM_BAR_SIZE),
+                            modifier = Modifier.padding(bottom = BOTTOM_BAR_SIZE),
                             selectedMenu = BottomMenu.OPENED
                         )
                     } else {
                         LazyVerticalGrid(
-                            modifier = Modifier.padding(top = TOP_BAR_SIZE, start = 20.dp, end = 20.dp),
+                            modifier = Modifier.padding(horizontal = 20.dp),
                             columns = GridCells.Fixed(2),
                             horizontalArrangement = Arrangement.spacedBy(16.dp),
                             verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -186,33 +243,6 @@ fun HomeScreen(
                 }
             }
         }
-//            PullToRefreshBox(
-//                isRefreshing = isRefreshing,
-//                state = refreshState,
-//                onRefresh = { onAction.invoke(HomeAction.Refresh) }
-//            ) {
-//                LazyColumn(
-//                    state = lazyListState,
-//                    modifier = Modifier.fillMaxSize(),
-//                    contentPadding = PaddingValues(top = 24.dp),
-//                    horizontalAlignment = Alignment.CenterHorizontally,
-//                    verticalArrangement = Arrangement.spacedBy(16.dp),
-//                ) {
-//                    items(data) {
-//                        HomeTicket(
-//                            modifier = Modifier.noRippleClickable {
-//                                onAction(HomeAction.TimeCapsuleClicked(it.timeCapsuleId))
-//                            },
-//                            buried = it.timeCapsuleStatus == TimeCapsuleStatus.BURIED,
-//                            createdAt = it.createdAt.toYearMonthDay(),
-//                            title = it.title,
-//                            imageUrl = it.mainImageUrl,
-//                            step = it.stage
-//                        )
-//                    }
-//                }
-//            }
-
 
         fun onDimClick() {
             expanded = false; showJoinContainer = false
@@ -250,9 +280,4 @@ fun HomeScreenPreview() {
         isRefreshing = false,
         onAction = {},
     )
-}
-
-private enum class HomeTab(val title: String) {
-    CREATED("생성한 티켓"),
-    JOINED("참여한 티켓"),
 }

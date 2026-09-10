@@ -28,7 +28,8 @@ import com.idiotfrogs.create.CreateRoute
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.detail.DetailRoute
 import com.idiotfrogs.friend.FriendRoute
-import com.idiotfrogs.home.HomeRoute
+import com.idiotfrogs.home.detail.HomeDetailRoute
+import com.idiotfrogs.home.home.HomeRoute
 import com.idiotfrogs.management.ManagementRoute
 import com.idiotfrogs.memory.MemoryRoute
 import com.idiotfrogs.message.MessageRoute
@@ -134,6 +135,7 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Login> { LoginRoute() }
                                 entry<Routes.SignUp> { SignUpRoute() }
                                 entry<Routes.Home> { HomeRoute() }
+                                entry<Routes.HomeDetail> { HomeDetailRoute(it.homeDetailType) }
                                 entry<Routes.Create> { CreateRoute() }
                                 entry<Routes.Profile> { ProfileRoute() }
                                 entry<Routes.EditProfile> { EditProfileRoute() }

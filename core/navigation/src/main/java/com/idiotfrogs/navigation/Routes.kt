@@ -13,6 +13,10 @@ sealed interface Routes: NavKey {
     @Serializable
     data object Home : Routes
     @Serializable
+    data class HomeDetail(
+        val homeDetailType: HomeDetailType
+    ): Routes
+    @Serializable
     data object Create : Routes
     @Serializable
     data object Profile : Routes
@@ -35,3 +39,6 @@ sealed interface Routes: NavKey {
     @Serializable
     data class WateringDetail(val id: Long) : Routes
 }
+
+// 각각 '타임 티켓'과 '오픈 예정 티켓'에 대응
+enum class HomeDetailType { BEFORE_BURIED, BURIED }

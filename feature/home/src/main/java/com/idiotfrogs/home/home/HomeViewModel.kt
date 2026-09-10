@@ -1,4 +1,4 @@
-package com.idiotfrogs.home
+package com.idiotfrogs.home.home
 
 import androidx.compose.runtime.Immutable
 import com.idiotfrogs.domain.usecase.auth.PutFcmTokenUseCase
@@ -9,6 +9,7 @@ import com.idiotfrogs.model.timecapsule.MyTimeCapsuleContent
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.model.user.ProfileResponse
+import com.idiotfrogs.navigation.HomeDetailType
 import com.idiotfrogs.notification.FcmTokenProvider
 import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.base.BaseViewModel
@@ -102,6 +103,7 @@ class HomeViewModel @Inject constructor(
                 is HomeAction.TimeCapsuleClicked -> postSideEffect(HomeSideEffect.NavigateToDetail(action.id))
                 is HomeAction.JoinCodeSubmitted -> requestCollaborator(PendingCollaboratorsRequest(action.code))
                 HomeAction.Refresh -> fetchHome()
+                is HomeAction.HomeDetailClicked -> postSideEffect(HomeSideEffect.NavigateToHomeDetail(action.homeDetailType))
             }
         }
     }
@@ -126,10 +128,12 @@ sealed interface HomeAction {
     data class TimeCapsuleClicked(val id: Long) : HomeAction
     data class JoinCodeSubmitted(val code: String) : HomeAction
     data object Refresh : HomeAction
+    data class HomeDetailClicked(val homeDetailType: HomeDetailType) : HomeAction
 }
 
 sealed interface HomeSideEffect {
     data object NavigateToCreate : HomeSideEffect
     data object NavigateToProfile : HomeSideEffect
     data class NavigateToDetail(val id: Long) : HomeSideEffect
+    data class NavigateToHomeDetail(val homeDetailType: HomeDetailType) : HomeSideEffect
 }

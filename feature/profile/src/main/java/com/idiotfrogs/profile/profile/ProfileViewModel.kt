@@ -19,7 +19,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val getMyTimeCapsuleUseCase: GetMyTimeCapsuleUseCase,
     private val getMyProfileUseCase: GetMyProfileUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val withdrawUseCase: WithdrawUseCase
@@ -44,25 +43,18 @@ class ProfileViewModel @Inject constructor(
             intent { reduce { state.copy(isLoading = true) } }
 
             val userDeferred = async { getMyProfileUseCase() }
-            val capsulesDeferred = async { getMyTimeCapsuleUseCase() }
 
             val userResult = userDeferred.await()
-            val capsulesResult = capsulesDeferred.await()
-
-            val results = listOf(userResult, capsulesResult)
 
             intent {
-                if (results.any { it.isFailure }) {
-                    val errorMessage = results.first { it.isFailure }.exceptionOrNull()?.message
+                if (userResult.isFailure) {
+                    val errorMessage = userResult.exceptionOrNull()?.message
 
                     reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
                 } else {
                     reduce {
                         state.copy(
-                            data = ProfileData(
-                                user = userResult.getOrNull(),
-                                capsules = capsulesResult.getOrNull()?.flatMap { it.value } ?: emptyList(),
-                            ),
+                            data = ProfileData(user = userResult.getOrNull()),
                             isLoading = false,
                             errorMessage = null,
                         )
@@ -106,7 +98,6 @@ class ProfileViewModel @Inject constructor(
             ProfileAction.WithdrawConfirmed -> withdraw()
             ProfileAction.EditProfileClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToEditProfile) }
             ProfileAction.BackClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToBack) }
-            is ProfileAction.TicketClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToDetail(action.id))}
         }
     }
 }
@@ -120,14 +111,12 @@ data class ProfileUiState(
 
 @Immutable
 data class ProfileData(
-    val user: ProfileResponse? = null,
-    val capsules: List<MyTimeCapsuleContent> = emptyList()
+    val user: ProfileResponse? = null
 )
 
 sealed interface ProfileAction {
     data object EditProfileClicked : ProfileAction
     data object BackClicked : ProfileAction
-    data class TicketClicked(val id: Long) : ProfileAction
     data object LogoutConfirmed : ProfileAction
     data object WithdrawConfirmed : ProfileAction
 }
@@ -135,6 +124,5 @@ sealed interface ProfileAction {
 sealed interface ProfileSideEffect {
     data object NavigateToEditProfile : ProfileSideEffect
     data object NavigateToBack : ProfileSideEffect
-    data class NavigateToDetail(val id: Long) : ProfileSideEffect
     data object NavigateToLogin : ProfileSideEffect
 }

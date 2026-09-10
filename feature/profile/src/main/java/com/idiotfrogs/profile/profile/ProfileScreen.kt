@@ -37,20 +37,14 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DrawType
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.wavyStroke
-import com.idiotfrogs.model.timecapsule.MyTimeCapsuleContent
-import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
-import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.profile.component.ProfileCard
 import com.idiotfrogs.profile.component.ProfileHeader
 import com.idiotfrogs.resource.R
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.todayIn
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
-import kotlin.time.Clock
 
 const val HeaderHeight = 56
 
@@ -69,7 +63,6 @@ fun ProfileRoute(
             }
             ProfileSideEffect.NavigateToBack -> navigator.popBackStack()
             ProfileSideEffect.NavigateToEditProfile -> navigator.navigate(Routes.EditProfile)
-            is ProfileSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(event.id))
         }
     }
 
@@ -290,17 +283,6 @@ private fun ProfileScreenPreview() {
                 email = "",
                 isOnboarding = true
             ),
-            capsules = listOf(
-                MyTimeCapsuleContent(
-                    timeCapsuleId = 0L,
-                    title = "제목입니다. 제목입니다.",
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault()),
-                    mainImageUrl = "",
-                    role = TimeCapsuleRole.CONTRIBUTOR,
-                    timeCapsuleStatus = TimeCapsuleStatus.BURIED,
-                    stage = 1
-                )
-            )
         ),
         onAction = {},
     )
