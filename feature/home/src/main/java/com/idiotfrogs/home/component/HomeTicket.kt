@@ -41,11 +41,11 @@ import com.skydoves.landscapist.glide.GlideImage
 /** 사진 영역에 준 offset. 가이드 이미지도 동일하게 올려 바디 하단선에 맞춘다. */
 private val BODY_OFFSET_Y = (-10).dp
 
-enum class BigGuideItem(val imgRes: Int, val height: Dp) {
-    STEP_2(imgRes = R.drawable.img_ticket_guide_step2, height = 328.dp),
-    STEP_3(imgRes = R.drawable.img_ticket_guide_step3, height = 328.dp),
-    STEP_4(imgRes = R.drawable.img_ticket_guide_step4, height = 328.dp),
-    STEP_5(imgRes = R.drawable.img_ticket_guide_step5, height = 442.dp)
+enum class DefaultGuideItem(val imgRes: Int, val bigHeight: Dp, val midHeight: Dp) {
+    STEP_2(imgRes = R.drawable.img_ticket_guide_step2, bigHeight = 328.dp, midHeight = 302.dp),
+    STEP_3(imgRes = R.drawable.img_ticket_guide_step3, bigHeight = 328.dp, midHeight = 302.dp),
+    STEP_4(imgRes = R.drawable.img_ticket_guide_step4, bigHeight = 328.dp, midHeight = 302.dp),
+    STEP_5(imgRes = R.drawable.img_ticket_guide_step5, bigHeight = 442.dp, midHeight = 316.dp)
 }
 
 enum class SmallGuideItem(val imgRes: Int, val height: Dp) {
@@ -60,7 +60,7 @@ fun HomeBigTicket(
     step: Int,
 ) {
     // 티켓 바디(헤더 + 사진). 가이드 이미지는 이 Box 하단을 기준으로 정렬된다.
-    Box(modifier = Modifier.fillMaxWidth()) {
+    Box(modifier = modifier.fillMaxWidth()) {
         Column(
             modifier = modifier
                 .fillMaxWidth()
@@ -96,7 +96,7 @@ fun HomeBigTicket(
                         text = "2027. 10. 24.",
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.dp,
-                        color = MSTheme.color.greyG5
+                        color = MSTheme.color.greyG5.copy(alpha = 0.6f)
                     )
                 }
             }
@@ -133,13 +133,109 @@ fun HomeBigTicket(
                 )
             }
         }
-        BigGuideItem.entries.getOrNull(step - 1)?.let {
+        DefaultGuideItem.entries.getOrNull(step - 1)?.let {
             Image(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
                     .offset(y = BODY_OFFSET_Y)
                     .fillMaxWidth()
-                    .height(it.height),
+                    .height(it.bigHeight),
+                painter = painterResource(it.imgRes),
+                contentDescription = "img_ticket_guide"
+            )
+        }
+    }
+}
+
+@Composable
+fun HomeMiddleTicket(
+    modifier: Modifier = Modifier,
+    step: Int
+) {
+    // 티켓 바디(헤더 + 사진). 가이드 이미지는 이 Box 하단을 기준으로 정렬된다.
+    Box(modifier = modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                // 바깥 27/31dp는 Pager의 contentPadding으로 올라갔다(HomeOpenedBanner 참고).
+                // 51-27 / 53-31 이라 바디가 그려지는 위치·크기는 이전과 동일하다.
+                .padding(start = 24.dp, end = 22.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .zIndex(1f)
+                    .wavyStroke(
+                        color = MSTheme.color.greyG5,
+                        fillColor = MSTheme.color.primaryNormal,
+                        strokeWidth = 4.dp,
+                        amplitude = 1.dp,
+                        spacing = 4.dp,
+                    )
+                    .fillMaxWidth()
+                    .height(89.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    MSText(
+                        text = "제목입니다. 제목입니다.",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.dp,
+                        color = MSTheme.color.greyG5
+                    )
+                    MSText(
+                        text = "2027. 10. 24.",
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.dp,
+                        color = MSTheme.color.greyG5.copy(alpha = 0.6f)
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .offset(y = BODY_OFFSET_Y)
+                    .wavyStroke(
+                        strokeWidth = 4.dp,
+                        color = MSTheme.color.greyG5,
+                        fillColor = MSTheme.color.white,
+                        amplitude = (1.5).dp,
+                        spacing = 4.dp,
+                    )
+                    .fillMaxWidth()
+                    .height(278.dp)
+            ) {
+                val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
+                GlideImage(
+                    modifier = Modifier
+                        .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                        .fillMaxSize()
+                        .padding(24.dp)
+                        .drawWithCache {
+                            onDrawWithContent {
+                                drawContent()
+                                drawImage(
+                                    image = mask,
+                                    dstSize = IntSize(size.width.toInt(), size.height.toInt()),
+                                    blendMode = BlendMode.DstIn
+                                )
+                            }
+                        },
+                    imageModel = { R.drawable.img_sample }
+                )
+            }
+        }
+        DefaultGuideItem.entries.getOrNull(step - 1)?.let {
+            Image(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .offset(y = BODY_OFFSET_Y)
+                    // 기존 padding(27/31)은 Pager의 contentPadding으로 옮겼다.
+                    .fillMaxWidth()
+                    .height(it.midHeight),
                 painter = painterResource(it.imgRes),
                 contentDescription = "img_ticket_guide"
             )

@@ -98,6 +98,6 @@ fun HomeRemindBanner(
 
 @Preview
 @Composable
-fun HomeRemindBannerPreview() {
+private fun HomeRemindBannerPreview() {
     HomeRemindBanner(weather = Weather.AUTUMN)
 }

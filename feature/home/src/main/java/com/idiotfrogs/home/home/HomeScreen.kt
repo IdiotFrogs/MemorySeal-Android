@@ -42,6 +42,7 @@ import com.idiotfrogs.home.component.BottomMenu
 import com.idiotfrogs.home.component.HomeBigTicket
 import com.idiotfrogs.home.component.HomeBottomBar
 import com.idiotfrogs.home.component.HomeEmptyScreen
+import com.idiotfrogs.home.component.HomeOpenedBanner
 import com.idiotfrogs.home.component.HomeRemindBanner
 import com.idiotfrogs.home.component.HomeSectionDivider
 import com.idiotfrogs.home.component.HomeSmallTicket
@@ -159,7 +160,11 @@ fun HomeScreen(
                             horizontalArrangement = Arrangement.spacedBy((-12).dp) // 줄기가 겹쳐지도록
                         ) {
                             if (true) {
-                                maxLineItem { HomeBigTicket(step = 1) }
+                                maxLineItem {
+                                    HomeOpenedBanner(
+                                        capsuleSteps = listOf(1,2,3,4)
+                                    )
+                                }
                             }
                             if (true) { // todo: 조건 변경
                                 maxLineItem {
