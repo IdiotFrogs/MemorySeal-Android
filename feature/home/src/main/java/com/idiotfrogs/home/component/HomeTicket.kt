@@ -62,7 +62,7 @@ fun HomeBigTicket(
     // 티켓 바디(헤더 + 사진). 가이드 이미지는 이 Box 하단을 기준으로 정렬된다.
     Box(modifier = modifier.fillMaxWidth()) {
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 20.dp, end = 21.dp)
         ) {

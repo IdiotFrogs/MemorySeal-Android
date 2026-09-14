@@ -159,17 +159,23 @@ fun HomeScreen(
                             columns = GridCells.Fixed(2),
                             horizontalArrangement = Arrangement.spacedBy((-12).dp) // 줄기가 겹쳐지도록
                         ) {
-                            if (true) {
+                            val showOpenedBanner = true
+                            val showRemindBanner = true
+                            if (showOpenedBanner) {
                                 maxLineItem {
                                     HomeOpenedBanner(
-                                        capsuleSteps = listOf(1,2,3,4)
+                                        modifier = Modifier.padding(top = 12.dp),
+                                        capsuleSteps = listOf(1)
                                     )
                                 }
                             }
-                            if (true) { // todo: 조건 변경
+                            if (showRemindBanner) { // todo: 조건 변경
                                 maxLineItem {
                                     HomeRemindBanner(
-                                        modifier = Modifier.padding(20.dp),
+                                        modifier = Modifier.padding(
+                                            top = if (showOpenedBanner) 0.dp else 20.dp,
+                                            start = 20.dp, end = 20.dp, bottom = 20.dp
+                                        ),
                                         weather = Weather.AUTUMN
                                     )
                                 }

@@ -1,8 +1,11 @@
 package com.idiotfrogs.home.component
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -12,8 +15,10 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -43,6 +48,8 @@ fun HomeOpenedBanner(
     modifier: Modifier = Modifier,
     capsuleSteps: List<Int>,
 ) {
+    val pagerState = rememberPagerState { capsuleSteps.size }
+
     Box(modifier = modifier) {
         Box(
             modifier = Modifier.fillMaxWidth(),
@@ -70,12 +77,21 @@ fun HomeOpenedBanner(
                 contentScale = ContentScale.FillBounds
             )
         }
+        val alpha by animateFloatAsState(
+            targetValue = if (pagerState.isScrollInProgress) 0f else 1f,
+            animationSpec = tween()
+        )
         Image(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(290.dp)
+                .height(
+                    if (capsuleSteps.size == 1) 490.dp else 290.dp
+                )
                 .padding(horizontal = 28.dp)
-                .padding(top = 13.dp),
+                .padding(
+                    top = if (capsuleSteps.size == 1) 0.dp else 13.dp
+                )
+                .alpha(alpha),
             painter = painterResource(R.drawable.bg_light),
             contentDescription = "bg_light",
             contentScale = ContentScale.FillBounds
@@ -83,18 +99,17 @@ fun HomeOpenedBanner(
         // 단일 티켓인 경우 디자인이 다름
         if (capsuleSteps.size == 1) {
             HomeBigTicket(
-                modifier = Modifier.padding(top = 68.dp),
+                modifier = Modifier.padding(top = 67.dp),
                 step = capsuleSteps.first()
             )
+            Spacer(modifier = Modifier.height(32.dp))
             return
         }
-
-        val pagerState = rememberPagerState { capsuleSteps.size }
         HorizontalPager(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(460.dp)
-                .padding(top = 68.dp),
+                .padding(top = 56.dp), // 가운데 티켓 높이가 아닌 티켓 영역 기준
             state = pagerState,
             contentPadding = PaddingValues(start = 27.dp, end = 31.dp), // 티켓 바깥 여백
             pageSpacing = (-84).dp, // 음수 간격이기 때문에 각 페이지가 해당 값 만큼 포개진다.
