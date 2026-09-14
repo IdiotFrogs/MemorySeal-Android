@@ -1,18 +1,32 @@
 package com.idiotfrogs.home.component
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
+import com.idiotfrogs.designsystem.component.MSText
+import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.wavyStroke
+import com.idiotfrogs.resource.R
 import kotlin.math.absoluteValue
 
 // 좌우 티켓 기울기
@@ -29,26 +43,68 @@ fun HomeOpenedBanner(
     modifier: Modifier = Modifier,
     capsuleSteps: List<Int>,
 ) {
-    // 단일 티켓인 경우 디자인이 다름
-    if (capsuleSteps.size == 1) {
-        HomeBigTicket(modifier = modifier, step = capsuleSteps.first())
-        return
-    }
-
-    val pagerState = rememberPagerState { capsuleSteps.size }
-    HorizontalPager(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(460.dp),
-        state = pagerState,
-        contentPadding = PaddingValues(start = 27.dp, end = 31.dp), // 티켓 바깥 여백
-        pageSpacing = (-84).dp, // 음수 간격이기 때문에 각 페이지가 해당 값 만큼 포개진다.
-        beyondViewportPageCount = 1, // 양 옆에도 보여야 하므로 해당 페이지 외 미리 로드
-    ) { page ->
-        HomeMiddleTicket(
-            modifier = Modifier.deckPage(pagerState, page),
-            step = capsuleSteps[page],
+    Box(modifier = modifier) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            MSText(
+                modifier = Modifier
+                    .size(width = 132.dp, height = 43.dp)
+                    .wavyStroke(
+                        color = MSTheme.color.greyG5,
+                        fillColor = MSTheme.color.white,
+                        cornerRadius = 35.dp
+                    )
+                    .wrapContentHeight(Alignment.CenterVertically),
+                text = "지금 열 수 있어요",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.dp,
+                color = MSTheme.color.black,
+                textAlign = TextAlign.Center
+            )
+            Image(
+                modifier = Modifier.size(width = 132.dp, height = 43.dp),
+                painter = painterResource(R.drawable.bg_callout),
+                contentDescription = "bg_callout",
+                contentScale = ContentScale.FillBounds
+            )
+        }
+        Image(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(290.dp)
+                .padding(horizontal = 28.dp)
+                .padding(top = 13.dp),
+            painter = painterResource(R.drawable.bg_light),
+            contentDescription = "bg_light",
+            contentScale = ContentScale.FillBounds
         )
+        // 단일 티켓인 경우 디자인이 다름
+        if (capsuleSteps.size == 1) {
+            HomeBigTicket(
+                modifier = Modifier.padding(top = 68.dp),
+                step = capsuleSteps.first()
+            )
+            return
+        }
+
+        val pagerState = rememberPagerState { capsuleSteps.size }
+        HorizontalPager(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(460.dp)
+                .padding(top = 68.dp),
+            state = pagerState,
+            contentPadding = PaddingValues(start = 27.dp, end = 31.dp), // 티켓 바깥 여백
+            pageSpacing = (-84).dp, // 음수 간격이기 때문에 각 페이지가 해당 값 만큼 포개진다.
+            beyondViewportPageCount = 1, // 양 옆에도 보여야 하므로 해당 페이지 외 미리 로드
+        ) { page ->
+            HomeMiddleTicket(
+                modifier = Modifier.deckPage(pagerState, page),
+                step = capsuleSteps[page],
+            )
+        }
     }
 }
 
