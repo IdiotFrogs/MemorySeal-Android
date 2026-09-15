@@ -2,8 +2,9 @@ package com.idiotfrogs.network.service
 
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
+import com.idiotfrogs.model.timecapsule.JoinRequestResponse
 import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
-import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.MyTimeCapsuleListResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleContentResponse
@@ -34,7 +35,7 @@ interface TimeCapsuleService {
     ): TimeCapsuleCreateResponse
 
     @GET("time-capsules/my")
-    suspend fun getMyTimeCapsule(): List<MyTimeCapsuleResponse>
+    suspend fun getMyTimeCapsule(@Query("size") size: Int): MyTimeCapsuleListResponse
 
     @DELETE("time-capsules/{capsuleId}")
     suspend fun deleteTimeCapsule(@Path("capsuleId") capsuleId: Long)
@@ -56,7 +57,7 @@ interface TimeCapsuleService {
     suspend fun joinTimeCapsule(@Path("capsuleId") capsuleId: Long): TimeCapsuleResponse
 
     @POST("time-capsules/join-request")
-    suspend fun requestCollaborator(@Body body: PendingCollaboratorsRequest)
+    suspend fun requestCollaborator(@Body body: PendingCollaboratorsRequest): JoinRequestResponse
 
     @PUT("time-capsules/{capsuleId}/bury")
     suspend fun buryTimeCapsule(
