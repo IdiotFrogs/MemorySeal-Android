@@ -2,6 +2,7 @@ package com.idiotfrogs.data.datasource.timecapsule
 
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
+import com.idiotfrogs.model.timecapsule.JoinRequestResponse
 import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
@@ -38,7 +39,7 @@ interface TimeCapsuleDataSource {
 
     suspend fun joinTimeCapsule(capsuleId: Long): TimeCapsuleResponse
 
-    suspend fun requestCollaborator(body: PendingCollaboratorsRequest)
+    suspend fun requestCollaborator(body: PendingCollaboratorsRequest): JoinRequestResponse
 
     suspend fun buryTimeCapsule(
         capsuleId: Long,
