@@ -255,7 +255,11 @@ fun HomeScreen(
                                                     )
                                                 }
                                                 .padding(horizontal = (22.5).dp)
-                                                .padding(top = 40.dp, bottom = 15.dp),
+                                                .padding(
+                                                    // 만약 묻기전 티켓이 없다면 맨 위이므로 패딩 값이 없다
+                                                    top = if (data.beforeBuried.isEmpty()) 0.dp else 40.dp,
+                                                    bottom = 15.dp
+                                                ),
                                             sectionName = "오픈 예정 티켓"
                                         )
                                     }

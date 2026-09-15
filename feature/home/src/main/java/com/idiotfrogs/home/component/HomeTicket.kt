@@ -37,7 +37,8 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
-
+// 0단계, 1단계 보정 값
+private const val INDEX_ADJUST_VALUE = 2
 /** 사진 영역에 준 offset. 가이드 이미지도 동일하게 올려 바디 하단선에 맞춘다. */
 private val BODY_OFFSET_Y = (-10).dp
 
@@ -133,7 +134,7 @@ fun HomeBigTicket(
                 )
             }
         }
-        DefaultGuideItem.entries.getOrNull(step - 1)?.let {
+        DefaultGuideItem.entries.getOrNull(step - INDEX_ADJUST_VALUE)?.let {
             Image(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -228,7 +229,7 @@ fun HomeMiddleTicket(
                 )
             }
         }
-        DefaultGuideItem.entries.getOrNull(step - 1)?.let {
+        DefaultGuideItem.entries.getOrNull(step - INDEX_ADJUST_VALUE)?.let {
             Image(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
@@ -331,7 +332,7 @@ fun HomeSmallTicket(
                     )
                 }
             }
-            SmallGuideItem.entries.getOrNull(step - 1)?.let {
+            SmallGuideItem.entries.getOrNull(step - INDEX_ADJUST_VALUE)?.let {
                 Image(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
