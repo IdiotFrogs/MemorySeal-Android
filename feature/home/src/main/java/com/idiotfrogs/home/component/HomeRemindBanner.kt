@@ -21,16 +21,23 @@ import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.wavyStroke
+import com.idiotfrogs.model.home.Season
 import com.idiotfrogs.resource.R
 
-enum class Weather(val text: String) {
-    SPRING("봄"), SUMMER("여름"), AUTUMN("가을"), WINTER("겨울")
+private fun Season.getSeasonText(): String {
+    return when (this) {
+        Season.SPRING -> "봄"
+        Season.SUMMER -> "여름"
+        Season.FALL -> "가을"
+        Season.WINTER -> "겨울"
+    }
 }
 
 @Composable
 fun HomeRemindBanner(
     modifier: Modifier = Modifier,
-    weather: Weather
+    season: Season,
+    content: String
 ) {
     Column(
         modifier = modifier
@@ -57,13 +64,13 @@ fun HomeRemindBanner(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 MSText(
-                    text = "지난 ${weather.text} 우리",
+                    text = "지난 ${season.getSeasonText()} 우리",
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.dp,
                     color = MSTheme.color.greyG5
                 )
                 MSText(
-                    text = "티켓이름티켓이름티켓이름",
+                    text = content,
                     fontWeight = FontWeight.Medium,
                     fontSize = 16.dp,
                     color = MSTheme.color.greyG5
@@ -99,5 +106,8 @@ fun HomeRemindBanner(
 @Preview
 @Composable
 private fun HomeRemindBannerPreview() {
-    HomeRemindBanner(weather = Weather.AUTUMN)
+    HomeRemindBanner(
+        season = Season.FALL,
+        content = "내용내용내용내용내용"
+    )
 }

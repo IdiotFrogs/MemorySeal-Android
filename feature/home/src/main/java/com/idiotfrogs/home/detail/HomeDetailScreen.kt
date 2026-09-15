@@ -52,13 +52,13 @@ fun HomeDetailScreen(homeDetailType: HomeDetailType) {
         LazyVerticalGrid(columns = GridCells.Fixed(2)) {
             itemsIndexed(listOf(1, 1, 1, 1, 1, 1)) { index, item ->
                 val isLastRow = index / 2 == 2 // 추후 하드코딩에서 변경
-                HomeSmallTicket(
-                    modifier = Modifier.padding(
-                        bottom = if (isLastRow) 0.dp else 16.dp
-                    ),
-                    buried = index / 2 == 0,
-                    step = index
-                )
+//                HomeSmallTicket(
+//                    modifier = Modifier.padding(
+//                        bottom = if (isLastRow) 0.dp else 16.dp
+//                    ),
+//                    buried = index / 2 == 0,
+//                    step = index
+//                )
             }
         }
     }

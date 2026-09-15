@@ -37,3 +37,17 @@ fun LocalDate?.toOpenRemainingText(): String {
         else -> "오픈"
     }
 }
+
+@OptIn(ExperimentalTime::class)
+fun LocalDate?.toDdayCount(): String? {
+    if (this == null) return null
+
+    val today = Clock.System.todayIn(TimeZone.of("Asia/Seoul"))
+    val diff = toEpochDays() - today.toEpochDays()
+
+    return when {
+        diff > 0L -> "D-$diff"
+        diff == 0L -> "D-Day"
+        else -> null // 해당 케이스는 오류 상황이라 표시 x
+    }
+}

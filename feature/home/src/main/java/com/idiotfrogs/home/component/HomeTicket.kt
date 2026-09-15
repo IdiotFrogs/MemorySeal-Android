@@ -246,10 +246,10 @@ fun HomeMiddleTicket(
 @Composable
 fun HomeSmallTicket(
     modifier: Modifier = Modifier,
-    buried: Boolean,
-//    createdAt: String,
-//    title: String,
-//    imageUrl: String?,
+    dDayCount: String?,
+    createdAt: String,
+    title: String,
+    imageUrl: String?,
     step: Int,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -273,7 +273,7 @@ fun HomeSmallTicket(
                         .height(55.dp),
                     contentAlignment = Alignment.CenterStart
                 ) {
-                    if (buried) {
+                    if (dDayCount != null) {
                         Row(
                             modifier = Modifier
                                 .padding(start = 12.dp)
@@ -291,7 +291,7 @@ fun HomeSmallTicket(
                                 contentDescription = "ic_shovels"
                             )
                             MSText(
-                                text = "D-12",
+                                text = dDayCount,
                                 fontSize = 12.dp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MSTheme.color.greyG5
@@ -327,7 +327,7 @@ fun HomeSmallTicket(
                                     )
                                 }
                             },
-                        imageModel = { R.drawable.img_sample }
+                        imageModel = { imageUrl ?: R.drawable.img_sample }
                     )
                 }
             }
@@ -351,14 +351,14 @@ fun HomeSmallTicket(
         ) {
             Spacer(modifier = Modifier.height(2.dp)) // 위에서 offset 준 만큼 원본에서 차감
             MSText(
-                text = "제목입니다. 제목입니다.",
+                text = title,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.dp,
                 color = MSTheme.color.greyG5
             )
             Spacer(modifier = Modifier.height(8.dp))
             MSText(
-                text = "2027. 10. 24",
+                text = createdAt,
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.dp,
                 color = MSTheme.color.greyG5.copy(alpha = 0.6f)
@@ -371,10 +371,10 @@ fun HomeSmallTicket(
 @Composable
 private fun HomeSmallTicketPreview() {
     HomeSmallTicket(
-        buried = true,
-//        createdAt = "2027. 10. 24.",
-//        title = "제목입니다.",
-//        imageUrl = null,
+        dDayCount = "D-15",
+        createdAt = "2027. 10. 24.",
+        title = "제목입니다.",
+        imageUrl = null,
         step = 1
     )
 }

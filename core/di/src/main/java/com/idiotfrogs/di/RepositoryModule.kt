@@ -2,6 +2,8 @@ package com.idiotfrogs.di
 
 import com.idiotfrogs.data.repository.auth.AuthRepository
 import com.idiotfrogs.data.repository.auth.AuthRepositoryImpl
+import com.idiotfrogs.data.repository.home.HomeRepository
+import com.idiotfrogs.data.repository.home.HomeRepositoryImpl
 import com.idiotfrogs.data.repository.local.LocalRepository
 import com.idiotfrogs.data.repository.local.LocalRepositoryImpl
 import com.idiotfrogs.data.repository.timecapsule.TimeCapsuleRepository
@@ -35,4 +37,9 @@ interface RepositoryModule {
     fun bindsLocalRepository(
         localRepositoryImpl: LocalRepositoryImpl,
     ): LocalRepository
+
+    @Binds
+    fun bindsHomeRepository(
+        homeRepositoryImpl: HomeRepositoryImpl
+    ): HomeRepository
 }
