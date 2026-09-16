@@ -167,11 +167,11 @@ class MainActivity : ComponentActivity() {
 
     private fun handlePush(intent: Intent?) {
         mainViewModel.onPushReceived(
-            type = intent?.getStringExtra("type"),
+            action = intent?.getStringExtra("action"),
             capsuleId = intent?.getStringExtra("capsuleId"),
         )
 
-        intent?.removeExtra("type")
+        intent?.removeExtra("action")
         intent?.removeExtra("capsuleId")
     }
 
