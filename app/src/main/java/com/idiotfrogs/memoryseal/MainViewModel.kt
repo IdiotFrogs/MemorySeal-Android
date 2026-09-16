@@ -47,12 +47,12 @@ class MainViewModel @Inject constructor(
     }
 
     fun onPushReceived(
-        type: String?,
+        action: String?,
         capsuleId: String?,
     ) {
         val id = capsuleId?.toLongOrNull() ?: return
 
-        val event = when (type) {
+        val event = when (action) {
             "member" -> MainNavigationEvent.NavigateToFriend(id)
             "detail" -> MainNavigationEvent.NavigateToDetail(id)
             "open" -> MainNavigationEvent.NavigateToMemory(id)
