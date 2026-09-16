@@ -10,6 +10,9 @@ data class SeasonBannerResponse(
     val mainImageUrl: String = "",
     val season: Season? = null,
     val capsuleId: Long? = null,
-)
+) {
+    val isValid: Boolean
+        get() = content.isNotBlank() && title.isNotBlank() && mainImageUrl.isNotBlank() && capsuleId != null
+}
 
 enum class Season { SPRING, SUMMER, FALL, WINTER }

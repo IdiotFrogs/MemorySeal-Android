@@ -190,7 +190,7 @@ fun HomeScreen(
                                         )
                                     }
                                 }
-                                if (data.seasonBanner != null) {
+                                if (data.seasonBanner != null && data.seasonBanner.isValid) {
                                     maxLineItem {
                                         HomeRemindBanner(
                                             modifier = Modifier
