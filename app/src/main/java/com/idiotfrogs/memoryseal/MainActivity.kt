@@ -36,6 +36,7 @@ import com.idiotfrogs.message.MessageRoute
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.MSNavigatorImpl
 import com.idiotfrogs.navigation.Routes
+import com.idiotfrogs.open.OpenRoute
 import com.idiotfrogs.preview.PreviewRoute
 import com.idiotfrogs.profile.editprofile.EditProfileRoute
 import com.idiotfrogs.profile.profile.ProfileRoute
@@ -152,6 +153,7 @@ class MainActivity : ComponentActivity() {
                                 }
                                 entry<Routes.Watering> { WateringRoute(capsuleId = it.id) }
                                 entry<Routes.WateringDetail> { WateringDetailRoute(capsuleId = it.id) }
+                                entry<Routes.Open> { OpenRoute(capsuleId = it.id) }
                             },
                         )
                     }
@@ -169,11 +171,11 @@ class MainActivity : ComponentActivity() {
 
     private fun handlePush(intent: Intent?) {
         mainViewModel.onPushReceived(
-            type = intent?.getStringExtra("type"),
+            action = intent?.getStringExtra("action"),
             capsuleId = intent?.getStringExtra("capsuleId"),
         )
 
-        intent?.removeExtra("type")
+        intent?.removeExtra("action")
         intent?.removeExtra("capsuleId")
     }
 

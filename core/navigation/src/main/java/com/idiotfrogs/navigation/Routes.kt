@@ -38,6 +38,8 @@ sealed interface Routes: NavKey {
     data class Watering(val id: Long) : Routes
     @Serializable
     data class WateringDetail(val id: Long) : Routes
+    @Serializable
+    data class Open(val id: Long) : Routes
 }
 
 // 각각 '타임 티켓'과 '오픈 예정 티켓'에 대응
