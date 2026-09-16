@@ -65,6 +65,7 @@ class DetailViewModel @AssistedInject constructor(
                     // 반드시 애니메이션 재생 여부와 오픈 여부를 함께 검사해야 한다
                     if (capsule?.animationShown == false && capsule.timeCapsuleStatus == TimeCapsuleStatus.OPENED) {
                         postSideEffect(DetailSideEffect.NavigateToOpen(capsuleId))
+                        RefreshSideEffect.tryEmit(RefreshEvent.Home)
                     } else {
                         // 만약 디테일 로드 이후 홈이 리프레시 되어야 한다면
                         if (refreshHome) RefreshSideEffect.tryEmit(RefreshEvent.Home)
