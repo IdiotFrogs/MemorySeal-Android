@@ -24,6 +24,7 @@ import org.orbitmvi.orbit.viewmodel.container
 @HiltViewModel(assistedFactory = DetailViewModel.Factory::class)
 class DetailViewModel @AssistedInject constructor(
     @Assisted private val capsuleId: Long,
+    @Assisted private val refreshHome: Boolean,
     private val getTimeCapsuleUseCase: GetTimeCapsuleUseCase,
     private val getTimeCapsuleCollaboratorsUseCase: GetTimeCapsuleCollaboratorsUseCase,
     private val buryTimeCapsuleUseCase: BuryTimeCapsuleUseCase,
@@ -65,6 +66,8 @@ class DetailViewModel @AssistedInject constructor(
                     if (capsule?.animationShown == false && capsule.timeCapsuleStatus == TimeCapsuleStatus.OPENED) {
                         postSideEffect(DetailSideEffect.NavigateToOpen(capsuleId))
                     } else {
+                        // 만약 디테일 로드 이후 홈이 리프레시 되어야 한다면
+                        if (refreshHome) RefreshSideEffect.tryEmit(RefreshEvent.Home)
                         reduce {
                             state.copy(
                                 data = TimeCapsuleData(
@@ -89,6 +92,7 @@ class DetailViewModel @AssistedInject constructor(
                 capsuleId = capsuleId,
                 body = BuryTimeCapsuleRequest(openedAt),
             ).onSuccess { response ->
+                RefreshSideEffect.tryEmit(RefreshEvent.Home)
                 intent {
                     reduce {
                         val currentData = state.data ?: TimeCapsuleData()
@@ -132,7 +136,7 @@ class DetailViewModel @AssistedInject constructor(
 
     @AssistedFactory
     interface Factory {
-        fun create(capsuleId: Long): DetailViewModel
+        fun create(capsuleId: Long, refreshHome: Boolean): DetailViewModel
     }
 }
 
