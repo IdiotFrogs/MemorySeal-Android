@@ -93,9 +93,11 @@ class HomeViewModel @Inject constructor(
                     Log.d("TTT", errorMessage.toString())
                     reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
                 } else {
+                    // 비동기로 여러 API 호출하므로 실행 시점에 데이터 있는지 파악
+                    val latestData = state.data ?: HomeData()
                     reduce {
                         state.copy(
-                            data = HomeData(
+                            data = latestData.copy(
                                 user = userResult.getOrNull(),
                                 beforeBuried = beforeBuriedResult.getOrNull()?.content ?: emptyList(),
                                 buried = buriedResult.getOrNull()?.content ?: emptyList(),
@@ -118,7 +120,8 @@ class HomeViewModel @Inject constructor(
             page = 0,
             size = 10,
         ).onSuccess {
-            val latestData = state.data ?: return@onSuccess
+            // 비동기로 여러 API 호출하므로 실행 시점에 데이터 있는지 파악
+            val latestData = state.data ?: HomeData()
             intent {
                 reduce {
                     state.copy(

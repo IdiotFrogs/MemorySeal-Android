@@ -300,14 +300,21 @@ fun HomeScreen(
                             onRefresh = { onAction.invoke(HomeAction.RefreshOpened) }
                         ) {
                             LazyVerticalGrid(
-                                modifier = Modifier.padding(horizontal = 20.dp),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 20.dp),
                                 columns = GridCells.Fixed(2),
                                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                                 verticalArrangement = Arrangement.spacedBy(24.dp),
                                 contentPadding = PaddingValues(top = 20.dp, bottom = BOTTOM_BAR_SIZE)
                             ) {
                                 items(data.opened.items) {
-                                    OpenedTicket()
+                                    OpenedTicket(
+                                        title = it.title,
+                                        createAt = it.createdAt.toYearMonthDay(),
+                                        openedAt = it.openedAt.toYearMonthDay(),
+                                        imageUrl = it.mainImageUrl
+                                    )
                                 }
                             }
                         }

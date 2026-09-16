@@ -29,7 +29,12 @@ import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
-fun OpenedTicket() {
+fun OpenedTicket(
+    title: String,
+    createAt: String,
+    openedAt: String,
+    imageUrl: String?,
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -74,19 +79,19 @@ fun OpenedTicket() {
                             )
                         }
                     },
-                imageModel = { R.drawable.img_sample }
+                imageModel = { imageUrl ?: R.drawable.img_sample }
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
         MSText(
-            text = "제목입니다. 제목입니다.",
+            text = title,
             fontWeight = FontWeight.Bold,
             fontSize = 16.dp,
             color = MSTheme.color.greyG5
         )
         Spacer(modifier = Modifier.height(8.dp))
         MSText(
-            text = "2027. 10. 24 ~ 2027. 10. 24 ",
+            text = "$createAt ~ $openedAt",
             fontWeight = FontWeight.Normal,
             fontSize = 12.dp,
             color = MSTheme.color.greyG5.copy(alpha = 0.6f)
@@ -97,5 +102,10 @@ fun OpenedTicket() {
 @Preview(widthDp = 160, heightDp = 286)
 @Composable
 fun OpenedTicketPreview() {
-    OpenedTicket()
+    OpenedTicket(
+        title = "테스트트",
+        createAt = "2026. 09. 15",
+        openedAt = "2026. 09. 16",
+        imageUrl = null
+    )
 }
