@@ -60,7 +60,9 @@ class DetailViewModel @AssistedInject constructor(
 
                     reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
                 } else {
-                    if (capsuleResult.getOrNull()?.animationShown == false) {
+                    val capsule = capsuleResult.getOrNull()
+                    // 반드시 애니메이션 재생 여부와 오픈 여부를 함께 검사해야 한다
+                    if (capsule?.animationShown == false && capsule.timeCapsuleStatus == TimeCapsuleStatus.OPENED) {
                         postSideEffect(DetailSideEffect.NavigateToOpen(capsuleId))
                     } else {
                         reduce {

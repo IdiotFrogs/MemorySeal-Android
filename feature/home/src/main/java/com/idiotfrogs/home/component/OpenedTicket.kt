@@ -30,13 +30,14 @@ import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun OpenedTicket(
+    modifier: Modifier = Modifier,
     title: String,
     createAt: String,
     openedAt: String,
     imageUrl: String?,
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
     ) {

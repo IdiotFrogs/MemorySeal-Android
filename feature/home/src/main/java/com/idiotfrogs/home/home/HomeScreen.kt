@@ -177,6 +177,7 @@ fun HomeScreen(
                             onRefresh = { onAction.invoke(HomeAction.RefreshHome) }
                         ) {
                             LazyVerticalGrid(
+                                modifier = Modifier.fillMaxSize(),
                                 columns = GridCells.Fixed(2),
                                 horizontalArrangement = Arrangement.spacedBy((-12).dp) // 줄기가 겹쳐지도록
                             ) {
@@ -310,6 +311,13 @@ fun HomeScreen(
                             ) {
                                 items(data.opened.items) {
                                     OpenedTicket(
+                                        modifier = Modifier.noRippleClickable {
+                                            onAction.invoke(
+                                                HomeAction.TimeCapsuleClicked(
+                                                    it.timeCapsuleId
+                                                )
+                                            )
+                                        },
                                         title = it.title,
                                         createAt = it.createdAt.toYearMonthDay(),
                                         openedAt = it.openedAt.toYearMonthDay(),
