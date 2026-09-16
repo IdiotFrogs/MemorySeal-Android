@@ -39,8 +39,9 @@ import com.idiotfrogs.open.OpenRoute
 import com.idiotfrogs.preview.PreviewRoute
 import com.idiotfrogs.profile.editprofile.EditProfileRoute
 import com.idiotfrogs.profile.profile.ProfileRoute
-import com.idiotfrogs.setting.SettingRoute
 import com.idiotfrogs.splash.SplashRoute
+import com.idiotfrogs.watering.WateringDetailRoute
+import com.idiotfrogs.watering.WateringRoute
 import dagger.hilt.android.AndroidEntryPoint
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -107,8 +108,8 @@ class MainActivity : ComponentActivity() {
                                         ).show()
                                     }
                                 }
-                                is MainNavigationEvent.NavigateToHome -> {
-                                    navigator.navigate(Routes.Home(event.capsuleId))
+                                is MainNavigationEvent.NavigateToMemory -> {
+                                    navigator.navigate(Routes.Memory(event.capsuleId))
                                 }
                             }
                         }
@@ -137,7 +138,6 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Create> { CreateRoute() }
                                 entry<Routes.Profile> { ProfileRoute() }
                                 entry<Routes.EditProfile> { EditProfileRoute() }
-                                entry<Routes.Setting> { SettingRoute() }
                                 entry<Routes.Detail> { DetailRoute(capsuleId = it.id) }
                                 entry<Routes.Message> { MessageRoute(capsuleId = it.id) }
                                 entry<Routes.Preview> { PreviewRoute(capsuleId = it.id) }
@@ -149,6 +149,8 @@ class MainActivity : ComponentActivity() {
                                         capsuleTitle = it.title,
                                     )
                                 }
+                                entry<Routes.Watering> { WateringRoute(capsuleId = it.id) }
+                                entry<Routes.WateringDetail> { WateringDetailRoute(capsuleId = it.id) }
                                 entry<Routes.Open> {
                                     OpenRoute(capsuleId = it.id)
                                 }
@@ -169,11 +171,11 @@ class MainActivity : ComponentActivity() {
 
     private fun handlePush(intent: Intent?) {
         mainViewModel.onPushReceived(
-            type = intent?.getStringExtra("type"),
+            action = intent?.getStringExtra("action"),
             capsuleId = intent?.getStringExtra("capsuleId"),
         )
 
-        intent?.removeExtra("type")
+        intent?.removeExtra("action")
         intent?.removeExtra("capsuleId")
     }
 

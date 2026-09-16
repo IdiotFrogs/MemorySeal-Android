@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -105,6 +106,7 @@ fun DetailRoute(
                     title = event.title,
                 )
             )
+            is DetailSideEffect.NavigateToWatering -> navigator.navigate(Routes.Watering(event.id))
             DetailSideEffect.ShowToast -> showToast = true
         }
     }
@@ -459,9 +461,7 @@ fun DetailScreen(
                             )
                             Spacer(Modifier.width(12.dp))
                             MSButton(
-                                onClick = {
-                                    // TODO 물주기 화면 또는 액션이 정해지면 연결
-                                },
+                                onClick = { onAction.invoke(DetailAction.WateringClicked(capsuleId)) },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = MSTheme.color.greyG5,
                                 ),
@@ -588,47 +588,45 @@ fun DetailScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                visibleCollaborators.forEach { collaborator ->
-                    GlideImage(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .wavyStroke(
-                                color = MSTheme.color.greyG5,
-                                fillColor = MSTheme.color.white,
-                                strokeWidth = 3.dp,
-                                cornerRadius = 24.dp,
-                                amplitude = 1.dp,
-                                spacing = 2.dp,
-                                clipContent = true,
-                            ),
-                        imageModel = { collaborator.profileImageUrl },
+            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                val columnCount = 6
+                val gap = 8.dp
+                val cellSize = (maxWidth - gap * (columnCount - 1)) / columnCount
+                val avatarModifier = Modifier
+                    .size(cellSize)
+                    .wavyStroke(
+                        color = MSTheme.color.greyG5,
+                        fillColor = MSTheme.color.white,
+                        strokeWidth = 3.dp,
+                        cornerRadius = cellSize / 2,
+                        amplitude = 1.dp,
+                        spacing = 2.dp,
+                        clipContent = true,
                     )
-                }
 
-                if (hiddenCollaboratorCount > 0) {
-                    Box(
-                        modifier = Modifier
-                            .size(48.dp)
-                            .wavyStroke(
-                                color = MSTheme.color.greyG5,
-                                fillColor = MSTheme.color.white,
-                                strokeWidth = 3.dp,
-                                cornerRadius = 24.dp,
-                                amplitude = 1.dp,
-                                spacing = 2.dp,
-                                clipContent = true,
-                            ),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        MSText(
-                            text = "+$hiddenCollaboratorCount",
-                            fontWeight = FontWeight.Medium,
-                            color = Color(0xFF0B0B0B),
+                FlowRow(
+                    maxItemsInEachRow = columnCount,
+                    horizontalArrangement = Arrangement.spacedBy(gap),
+                    verticalArrangement = Arrangement.spacedBy(gap),
+                ) {
+                    visibleCollaborators.forEach { collaborator ->
+                        GlideImage(
+                            modifier = avatarModifier,
+                            imageModel = { collaborator.profileImageUrl },
                         )
+                    }
+
+                    if (hiddenCollaboratorCount > 0) {
+                        Box(
+                            modifier = avatarModifier,
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            MSText(
+                                text = "+$hiddenCollaboratorCount",
+                                fontWeight = FontWeight.Medium,
+                                color = Color(0xFF0B0B0B),
+                            )
+                        }
                     }
                 }
             }

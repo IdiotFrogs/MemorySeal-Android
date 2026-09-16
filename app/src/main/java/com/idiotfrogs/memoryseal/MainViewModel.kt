@@ -16,7 +16,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,7 +24,6 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val appLinkManager: AppLinkManager,
-    private val getViewedTimeCapsuleUseCase: GetViewedTimeCapsuleUseCase,
 ) : ViewModel() {
     private val _event = MutableSharedFlow<MainEvent>()
     val event = _event.asSharedFlow()
@@ -49,27 +47,19 @@ class MainViewModel @Inject constructor(
     }
 
     fun onPushReceived(
-        type: String?,
+        action: String?,
         capsuleId: String?,
     ) {
         val id = capsuleId?.toLongOrNull() ?: return
 
-        viewModelScope.launch {
-            val event = when (type) {
-                "member" -> MainNavigationEvent.NavigateToFriend(id)
-                "detail" -> MainNavigationEvent.NavigateToDetail(id)
-                "open" -> {
-                    val viewedTimeCapsuleIds = getViewedTimeCapsuleUseCase.capsuleIds.first()
-                    if (id in viewedTimeCapsuleIds) {
-                        MainNavigationEvent.NavigateToHome(id)
-                    } else {
-                        MainNavigationEvent.NavigateToDetail(id)
-                    }
-                }
-                else -> return@launch
-            }
-            _navigationEvent.send(event)
+        val event = when (action) {
+            "member" -> MainNavigationEvent.NavigateToFriend(id)
+            "detail" -> MainNavigationEvent.NavigateToDetail(id)
+            "open" -> MainNavigationEvent.NavigateToMemory(id)
+            else -> return
         }
+
+        _navigationEvent.trySend(event)
     }
 
     fun onAppLinkReceived(uri: Uri) {
@@ -144,5 +134,5 @@ sealed interface MainNavigationEvent {
         val capsuleId: Long,
         val toastMessage: String? = null,
     ) : MainNavigationEvent
-    data class NavigateToHome(val capsuleId: Long) : MainNavigationEvent
+    data class NavigateToMemory(val capsuleId: Long) : MainNavigationEvent
 }

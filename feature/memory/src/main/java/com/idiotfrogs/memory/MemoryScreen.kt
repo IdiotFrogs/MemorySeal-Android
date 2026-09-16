@@ -82,14 +82,14 @@ fun MemoryScreen(
         ?: sequentialMemoryContents
 
     LoadNextPageEffect(
-        listState = collaboratorListState,
+        scrollableState = collaboratorListState,
         canLoadMore = data.collaborators.canLoadMore,
         onLoadNextPage = { onAction(MemoryAction.NextCollaboratorsPageRequested) },
     )
 
     if (data.selectedCollaboratorIndex == null) {
         LoadNextPageEffect(
-            listState = contentListState,
+            scrollableState = contentListState,
             canLoadMore = data.memoryContents.canLoadMore,
             expectedLastItemKey = sequentialMemoryContents.lastOrNull()?.let { "user-${it.collaboratorIndex}" },
             onLoadNextPage = { onAction(MemoryAction.NextMemoryContentPageRequested) },

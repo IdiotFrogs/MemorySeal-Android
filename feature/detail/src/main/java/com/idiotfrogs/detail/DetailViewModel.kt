@@ -120,6 +120,7 @@ class DetailViewModel @AssistedInject constructor(
             is DetailAction.MemoryClicked -> intent { postSideEffect(DetailSideEffect.NavigateToMemory(action.id)) }
             DetailAction.BackClicked -> intent { postSideEffect(DetailSideEffect.NavigateToBack) }
             is DetailAction.BuryConfirmClicked -> buryTimeCapsule(action.openedAt)
+            is DetailAction.WateringClicked -> intent { postSideEffect(DetailSideEffect.NavigateToWatering(action.id))}
         }
     }
 
@@ -149,6 +150,7 @@ sealed interface DetailAction {
     data class MemoryClicked(val id: Long) : DetailAction
     data object BackClicked : DetailAction
     data class BuryConfirmClicked(val openedAt: LocalDate) : DetailAction
+    data class WateringClicked(val id: Long) : DetailAction
 }
 
 sealed interface DetailSideEffect {
@@ -156,6 +158,7 @@ sealed interface DetailSideEffect {
     data class NavigateToMessage(val id: Long) : DetailSideEffect
     data class NavigateToMemory(val id: Long) : DetailSideEffect
     data class NavigateToManagement(val id: Long, val title: String) : DetailSideEffect
+    data class NavigateToWatering(val id: Long) : DetailSideEffect
     data object NavigateToBack : DetailSideEffect
     data object ShowToast : DetailSideEffect
 }

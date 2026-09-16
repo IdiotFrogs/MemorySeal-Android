@@ -22,7 +22,7 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-enum class DrawType { TOP, BOTTOM, START, END, ALL }
+enum class DrawType { TOP, BOTTOM, START, END, ALL, TOP_SIDES }
 enum class WavyAlign { INNER, OUTER }
 
 fun Modifier.wavyStroke(
@@ -102,6 +102,16 @@ fun Modifier.wavyStroke(
                         seed = seed + size.width.roundToInt() + size.height.roundToInt() * 1_000_003L,
                     )
                 }
+                DrawType.TOP_SIDES -> {
+                    makeTopSidesWavyPath(
+                        rect = rect,
+                        cornerRadius = radius,
+                        spacing = spacingPx,
+                        amplitude = ampPx,
+                        seed = seed + size.width.roundToInt() +
+                                size.height.roundToInt() * 1_000_003L,
+                    )
+                }
             }
 
             val fillPath = if (drawType == DrawType.ALL) {
@@ -129,6 +139,10 @@ fun Modifier.wavyStroke(
                             lineTo(0f, size.height)
                             lineTo(0f, 0f)
                             lineTo(size.width, 0f)
+                        }
+                        DrawType.TOP_SIDES -> {
+                            lineTo(rect.right, size.height)
+                            lineTo(rect.left, size.height)
                         }
                     }
                     close()
@@ -362,6 +376,90 @@ private fun makeSingleAxisWavyPath(
             quadraticTo(current.x, current.y, mid.x, mid.y)
         }
 
+        lineTo(points.last().x, points.last().y)
+    }
+}
+
+private fun makeTopSidesWavyPath(
+    rect: Rect,
+    cornerRadius: Float,
+    spacing: Float,
+    amplitude: Float,
+    seed: Long,
+): Path {
+    val wavyData = mutableListOf<WavyData>()
+
+    fun line(from: Offset, to: Offset, normal: Offset) {
+        val dx = to.x - from.x
+        val dy = to.y - from.y
+        val length = hypot(dx, dy)
+        val count = max(1, (length / spacing).toInt())
+
+        repeat(count) { i ->
+            val t = i / count.toFloat()
+            wavyData += WavyData(
+                point = Offset(from.x + dx * t, from.y + dy * t),
+                normal = normal,
+            )
+        }
+    }
+
+    fun arc(center: Offset, radius: Float, start: Float, end: Float) {
+        val count = max(1, (abs(end - start) * radius / spacing).toInt())
+
+        repeat(count) { i ->
+            val t = i / count.toFloat()
+            val angle = start + (end - start) * t
+            wavyData += WavyData(
+                point = Offset(
+                    center.x + cos(angle) * radius,
+                    center.y + sin(angle) * radius,
+                ),
+                normal = Offset(cos(angle), sin(angle)),
+            )
+        }
+    }
+
+    line(
+        Offset(rect.left, rect.bottom - cornerRadius),
+        Offset(rect.left, rect.top + cornerRadius),
+        Offset(-1f, 0f)
+    )
+    arc(
+        Offset(rect.left + cornerRadius, rect.top + cornerRadius),
+        cornerRadius, PI.toFloat(), PI.toFloat() * 1.5f
+    )
+    line(
+        Offset(rect.left + cornerRadius, rect.top),
+        Offset(rect.right - cornerRadius, rect.top),
+        Offset(0f, -1f)
+    )
+    arc(
+        Offset(rect.right - cornerRadius, rect.top + cornerRadius),
+        cornerRadius, -PI.toFloat() / 2f, 0f
+    )
+    line(
+        Offset(rect.right, rect.top + cornerRadius),
+        Offset(rect.right, rect.bottom - cornerRadius),
+        Offset(1f, 0f)
+    )
+
+    var nextSeed = seed
+    val points = wavyData.map {
+        nextSeed = nextSeed * 6364136223846793005L + 1442695040888963407L
+        val random = ((nextSeed ushr 1) % 2000L) / 1000f - 1f
+        val offset = random * amplitude
+        it.point + it.normal * offset
+    }
+
+    return Path().apply {
+        if (points.isEmpty()) return@apply
+
+        moveTo(points.first().x, points.first().y)
+        points.zipWithNext { current, next ->
+            val mid = midpoint(current, next)
+            quadraticTo(current.x, current.y, mid.x, mid.y)
+        }
         lineTo(points.last().x, points.last().y)
     }
 }

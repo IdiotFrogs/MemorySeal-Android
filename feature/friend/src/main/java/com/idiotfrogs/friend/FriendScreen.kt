@@ -146,7 +146,7 @@ fun FriendScreen(
     val members = collaborators.items
 
     LoadNextPageEffect(
-        listState = listState,
+        scrollableState = listState,
         canLoadMore = collaborators.canLoadMore,
         onLoadNextPage = { onAction(FriendAction.NextCollaboratorsPageRequested) },
     )

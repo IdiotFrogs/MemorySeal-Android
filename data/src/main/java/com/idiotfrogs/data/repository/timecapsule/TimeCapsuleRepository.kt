@@ -2,6 +2,7 @@ package com.idiotfrogs.data.repository.timecapsule
 
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
+import com.idiotfrogs.model.timecapsule.JoinRequestResponse
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
@@ -11,6 +12,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.WateringResponse
 import java.io.File
 
 interface TimeCapsuleRepository {
@@ -35,7 +37,7 @@ interface TimeCapsuleRepository {
 
     suspend fun joinTimeCapsule(capsuleId: Long): TimeCapsuleResponse
 
-    suspend fun requestCollaborator(body: PendingCollaboratorsRequest)
+    suspend fun requestCollaborator(body: PendingCollaboratorsRequest): JoinRequestResponse
 
     suspend fun buryTimeCapsule(
         capsuleId: Long,
@@ -84,4 +86,13 @@ interface TimeCapsuleRepository {
         contentIds: List<Long>,
         fileIds: List<Long>,
     )
+
+    suspend fun getWatering(
+        capsuleId: Long,
+        page: Int,
+        size: Int,
+        sort: String,
+    ): WateringResponse
+
+    suspend fun watering(capsuleId: Long)
 }

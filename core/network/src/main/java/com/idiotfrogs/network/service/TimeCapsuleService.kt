@@ -2,8 +2,9 @@ package com.idiotfrogs.network.service
 
 import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
+import com.idiotfrogs.model.timecapsule.JoinRequestResponse
 import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
-import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.MyTimeCapsuleListResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleContentResponse
@@ -11,6 +12,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.WateringResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -33,7 +35,7 @@ interface TimeCapsuleService {
     ): TimeCapsuleCreateResponse
 
     @GET("time-capsules/my")
-    suspend fun getMyTimeCapsule(): List<MyTimeCapsuleResponse>
+    suspend fun getMyTimeCapsule(@Query("size") size: Int): MyTimeCapsuleListResponse
 
     @DELETE("time-capsules/{capsuleId}")
     suspend fun deleteTimeCapsule(@Path("capsuleId") capsuleId: Long)
@@ -55,7 +57,7 @@ interface TimeCapsuleService {
     suspend fun joinTimeCapsule(@Path("capsuleId") capsuleId: Long): TimeCapsuleResponse
 
     @POST("time-capsules/join-request")
-    suspend fun requestCollaborator(@Body body: PendingCollaboratorsRequest)
+    suspend fun requestCollaborator(@Body body: PendingCollaboratorsRequest): JoinRequestResponse
 
     @PUT("time-capsules/{capsuleId}/bury")
     suspend fun buryTimeCapsule(
@@ -116,5 +118,18 @@ interface TimeCapsuleService {
     suspend fun deleteTimeCapsuleContent(
         @Query("contentIds") contentIds: List<Long>,
         @Query("fileIds") fileIds: List<Long>,
+    )
+
+    @GET("time-capsules/{capsuleId}/water")
+    suspend fun getWatering(
+        @Path("capsuleId") capsuleId: Long,
+        @Query("page") page: Int,
+        @Query("size") size: Int,
+        @Query("sort") sort: String
+    ): WateringResponse
+
+    @POST("time-capsules/{capsuleId}/water")
+    suspend fun watering(
+        @Path("capsuleId") capsuleId: Long
     )
 }

@@ -16,12 +16,13 @@ data class PaginationState<T>(
         copy(isLoadingMore = isLoadingMore)
 
     fun addPage(
+        isReplace: Boolean = false,
         newItems: List<T>,
         page: Int,
         totalElements: Long,
         isLast: Boolean,
     ): PaginationState<T> = copy(
-        items = if (page == 0) newItems else items + newItems,
+        items = if (page == 0 || isReplace) newItems else items + newItems,
         currentPage = page,
         totalElements = totalElements,
         isLast = isLast,

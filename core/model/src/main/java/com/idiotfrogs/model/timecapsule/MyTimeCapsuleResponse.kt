@@ -4,6 +4,15 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class MyTimeCapsuleListResponse(
+    val content: List<MyTimeCapsuleResponse>,
+    val totalPages: Int,
+    val totalElements: Int,
+    val number: Int,
+    val last: Boolean,
+)
+
+@Serializable
 data class MyTimeCapsuleResponse(
     val timeCapsuleId: Long,
     val title: String,
@@ -11,7 +20,8 @@ data class MyTimeCapsuleResponse(
     val createdAt: LocalDate,
     val mainImageUrl: String,
     val timeCapsuleStatus: TimeCapsuleStatus,
-    val role: TimeCapsuleRole
+    val role: TimeCapsuleRole,
+    val stage: Int,
 )
 
 enum class TimeCapsuleStatus { OPENED, BURIED, BEFOREBURIED }

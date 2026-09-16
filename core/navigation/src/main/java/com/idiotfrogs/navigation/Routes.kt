@@ -11,15 +11,13 @@ sealed interface Routes: NavKey {
     @Serializable
     data object SignUp : Routes
     @Serializable
-    data class Home(val openedId: Long? = null) : Routes
+    data object Home : Routes
     @Serializable
     data object Create : Routes
     @Serializable
     data object Profile : Routes
     @Serializable
     data object EditProfile : Routes
-    @Serializable
-    data object Setting : Routes
     @Serializable
     data class Friend(val id: Long) : Routes
     @Serializable
@@ -32,6 +30,10 @@ sealed interface Routes: NavKey {
     data class Preview(val id: Long) : Routes
     @Serializable
     data class Memory(val id: Long) : Routes
+    @Serializable
+    data class Watering(val id: Long) : Routes
+    @Serializable
+    data class WateringDetail(val id: Long) : Routes
     @Serializable
     data class Open(val id: Long) : Routes
 }

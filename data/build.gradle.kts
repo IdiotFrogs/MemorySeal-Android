@@ -14,8 +14,12 @@ dependencies {
     implementation(project(":core:util"))
     implementation(project(":common:extension"))
 
+    implementation(libs.kotlinx.datetime)
+
     implementation(libs.okhttp)
     implementation(libs.retrofit)
+
+    implementation(libs.paging.runtime)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
