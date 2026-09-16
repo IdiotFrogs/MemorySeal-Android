@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.idiotfrogs.app_link.AppLink
 import com.idiotfrogs.app_link.AppLinkManager
 import com.idiotfrogs.app_link.JoinInviteResult
-import com.idiotfrogs.domain.usecase.timecapsule.GetViewedTimeCapsuleUseCase
 import com.idiotfrogs.util.exception.LoginRequiredException
 import com.idiotfrogs.util.sideEffect.AppSideEffect
 import com.idiotfrogs.util.sideEffect.MSSideEffect

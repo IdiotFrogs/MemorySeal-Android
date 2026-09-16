@@ -35,6 +35,7 @@ import com.idiotfrogs.message.MessageRoute
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.MSNavigatorImpl
 import com.idiotfrogs.navigation.Routes
+import com.idiotfrogs.open.OpenRoute
 import com.idiotfrogs.preview.PreviewRoute
 import com.idiotfrogs.profile.editprofile.EditProfileRoute
 import com.idiotfrogs.profile.profile.ProfileRoute
@@ -132,7 +133,7 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Splash> { SplashRoute() }
                                 entry<Routes.Login> { LoginRoute() }
                                 entry<Routes.SignUp> { SignUpRoute() }
-                                entry<Routes.Home> { HomeRoute(openedId = it.openedId) }
+                                entry<Routes.Home> { HomeRoute() }
                                 entry<Routes.Create> { CreateRoute() }
                                 entry<Routes.Profile> { ProfileRoute() }
                                 entry<Routes.EditProfile> { EditProfileRoute() }
@@ -147,6 +148,9 @@ class MainActivity : ComponentActivity() {
                                         capsuleId = it.id,
                                         capsuleTitle = it.title,
                                     )
+                                }
+                                entry<Routes.Open> {
+                                    OpenRoute(capsuleId = it.id)
                                 }
                             },
                         )

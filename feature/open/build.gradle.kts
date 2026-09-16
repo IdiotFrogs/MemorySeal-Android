@@ -3,12 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.idiotfrogs.home"
+    namespace = "com.idiotfrogs.open"
 }
 
 dependencies {
     implementation(project(":common:extension"))
-    implementation(project(":common:notification"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -16,5 +15,5 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext)
     androidTestImplementation(libs.androidx.test.espresso)
 
-    implementation(libs.kotlinx.datetime)
+    implementation(libs.lottie.compose)
 }

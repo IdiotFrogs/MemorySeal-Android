@@ -10,14 +10,7 @@ class LocalRepositoryImpl @Inject constructor(
 ): LocalRepository {
     override val accessToken = localDataSource.accessToken
 
-    override val capsuleIds = localDataSource.capsuleIds
-        .map { ids -> ids.mapNotNull { it.toLongOrNull() }.toSet() }
-
     override suspend fun clearTokens() {
         localDataSource.clearTokens()
-    }
-
-    override suspend fun addCapsuleId(capsuleId: Long) {
-        localDataSource.addCapsuleId(capsuleId.toString())
     }
 }

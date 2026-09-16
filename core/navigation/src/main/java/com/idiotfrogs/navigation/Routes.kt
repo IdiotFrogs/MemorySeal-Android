@@ -32,4 +32,6 @@ sealed interface Routes: NavKey {
     data class Preview(val id: Long) : Routes
     @Serializable
     data class Memory(val id: Long) : Routes
+    @Serializable
+    data class Open(val id: Long) : Routes
 }
