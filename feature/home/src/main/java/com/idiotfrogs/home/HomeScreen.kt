@@ -264,11 +264,7 @@ fun HomeScreen(
                             items(data) {
                                 HomeTicket(
                                     modifier = Modifier.noRippleClickable {
-                                        onAction(
-                                            HomeAction.TimeCapsuleClicked(
-                                                it.timeCapsuleId
-                                            )
-                                        )
+                                        onAction.invoke(HomeAction.TimeCapsuleClicked(it.timeCapsuleId))
                                     },
                                     buried = it.timeCapsuleStatus == TimeCapsuleStatus.BURIED,
                                     createdAt = it.createdAt.toYearMonthDay(),

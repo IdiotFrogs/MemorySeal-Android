@@ -29,9 +29,7 @@ class OpenViewModel @AssistedInject constructor(
 
     fun fetchOpen() = intent {
         getTimeCapsuleUseCase.invoke(capsuleId)
-            .onSuccess {
-                reduce { state.copy(data = OpenData(imageUrl = it.mainImageUrl)) }
-            }
+            .onSuccess { reduce { state.copy(data = OpenData(imageUrl = it.mainImageUrl)) } }
             .onFailure { /** no-op */ }
     }
 

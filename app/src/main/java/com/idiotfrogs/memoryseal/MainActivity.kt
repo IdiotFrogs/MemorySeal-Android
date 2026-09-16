@@ -151,9 +151,7 @@ class MainActivity : ComponentActivity() {
                                 }
                                 entry<Routes.Watering> { WateringRoute(capsuleId = it.id) }
                                 entry<Routes.WateringDetail> { WateringDetailRoute(capsuleId = it.id) }
-                                entry<Routes.Open> {
-                                    OpenRoute(capsuleId = it.id)
-                                }
+                                entry<Routes.Open> { OpenRoute(capsuleId = it.id) }
                             },
                         )
                     }
