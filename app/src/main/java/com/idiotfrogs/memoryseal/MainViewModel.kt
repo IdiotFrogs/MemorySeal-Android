@@ -54,8 +54,8 @@ class MainViewModel @Inject constructor(
 
         val event = when (action) {
             "member" -> MainNavigationEvent.NavigateToFriend(id)
-            "detail" -> MainNavigationEvent.NavigateToDetail(id)
-            "open" -> MainNavigationEvent.NavigateToMemory(id)
+            // 오픈도 detail에서 열람 이력 확인 후 애니메이션 노출 여부 결정
+            "detail", "open" -> MainNavigationEvent.NavigateToDetail(id)
             else -> return
         }
 

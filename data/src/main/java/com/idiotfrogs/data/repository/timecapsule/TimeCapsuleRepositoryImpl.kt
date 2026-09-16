@@ -14,9 +14,9 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
+import com.idiotfrogs.model.timecapsule.TimeCapsuleUnopenedContent
 import com.idiotfrogs.util.exception.AlreadyContributorException
 import com.idiotfrogs.model.timecapsule.WateringResponse
-import com.idiotfrogs.network.service.TimeCapsuleService
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -26,7 +26,6 @@ import java.io.File
 import javax.inject.Inject
 
 class TimeCapsuleRepositoryImpl @Inject constructor(
-    private val timeCapsuleService: TimeCapsuleService,
     private val timeCapsuleDataSource: TimeCapsuleDataSource
 ) : TimeCapsuleRepository {
     override suspend fun createTimeCapsule(
@@ -189,6 +188,10 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
 
     override suspend fun watering(capsuleId: Long) {
         return timeCapsuleDataSource.watering(capsuleId)
+    }
+
+    override suspend fun getUnopened(): List<TimeCapsuleUnopenedContent> {
+        return timeCapsuleDataSource.getUnopened()
     }
 
 

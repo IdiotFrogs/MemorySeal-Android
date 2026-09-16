@@ -60,15 +60,19 @@ class DetailViewModel @AssistedInject constructor(
 
                     reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
                 } else {
-                    reduce {
-                        state.copy(
-                            data = TimeCapsuleData(
-                                capsule = capsuleResult.getOrNull(),
-                                collaborators = collaboratorsResult.getOrNull(),
-                            ),
-                            isLoading = false,
-                            errorMessage = null,
-                        )
+                    if (capsuleResult.getOrNull()?.animationShown == false) {
+                        postSideEffect(DetailSideEffect.NavigateToOpen(capsuleId))
+                    } else {
+                        reduce {
+                            state.copy(
+                                data = TimeCapsuleData(
+                                    capsule = capsuleResult.getOrNull(),
+                                    collaborators = collaboratorsResult.getOrNull(),
+                                ),
+                                isLoading = false,
+                                errorMessage = null,
+                            )
+                        }
                     }
                 }
             }
@@ -160,5 +164,6 @@ sealed interface DetailSideEffect {
     data class NavigateToManagement(val id: Long, val title: String) : DetailSideEffect
     data class NavigateToWatering(val id: Long) : DetailSideEffect
     data object NavigateToBack : DetailSideEffect
+    data class NavigateToOpen(val id: Long) : DetailSideEffect
     data object ShowToast : DetailSideEffect
 }

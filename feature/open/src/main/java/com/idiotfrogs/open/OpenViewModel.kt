@@ -23,7 +23,7 @@ class OpenViewModel @AssistedInject constructor(
 
     override fun onAction(action: OpenAction) {
         when (action) {
-            OpenAction.DoneClick -> intent { postSideEffect(OpenSideEffect.NavigateToDetail(capsuleId)) }
+            OpenAction.DoneClick -> intent { postSideEffect(OpenSideEffect.NavigateToMemory(capsuleId)) }
         }
     }
 
@@ -56,5 +56,5 @@ sealed interface OpenAction {
 }
 
 sealed interface OpenSideEffect {
-    data class NavigateToDetail(val capsuleId: Long) : OpenSideEffect
+    data class NavigateToMemory(val capsuleId: Long) : OpenSideEffect
 }

@@ -107,6 +107,7 @@ fun DetailRoute(
                 )
             )
             is DetailSideEffect.NavigateToWatering -> navigator.navigate(Routes.Watering(event.id))
+            is DetailSideEffect.NavigateToOpen -> navigator.navigate(Routes.Open(event.id))
             DetailSideEffect.ShowToast -> showToast = true
         }
     }

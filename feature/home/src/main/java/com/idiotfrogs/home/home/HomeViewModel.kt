@@ -5,6 +5,7 @@ import androidx.compose.runtime.Immutable
 import com.idiotfrogs.domain.usecase.auth.PutFcmTokenUseCase
 import com.idiotfrogs.domain.usecase.home.GetSeasonBannerUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
+import com.idiotfrogs.domain.usecase.timecapsule.GetUnopenedUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.RequestCollaboratorUseCase
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.home.home.HomeSideEffect.*
@@ -13,6 +14,7 @@ import com.idiotfrogs.model.timecapsule.MyTimeCapsuleContent
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
+import com.idiotfrogs.model.timecapsule.TimeCapsuleUnopenedContent
 import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.navigation.HomeDetailType
 import com.idiotfrogs.notification.FcmTokenProvider
@@ -32,6 +34,7 @@ import kotlin.collections.emptyList
 class HomeViewModel @Inject constructor(
     private val getMyTimeCapsuleUseCase: GetMyTimeCapsuleUseCase,
     private val getMyProfileUseCase: GetMyProfileUseCase,
+    private val getUnopenedUseCase: GetUnopenedUseCase,
     private val requestCollaboratorUseCase: RequestCollaboratorUseCase,
     private val fcmTokenProvider: FcmTokenProvider,
     private val putFcmTokenUseCase: PutFcmTokenUseCase,
@@ -78,13 +81,15 @@ class HomeViewModel @Inject constructor(
                 )
             }
             val seasonBannerDeferred = async { getSeasonBannerUseCase.invoke() }
+            val unopenedDeferred = async { getUnopenedUseCase.invoke() }
 
             val userResult = userDeferred.await()
             val beforeBuriedResult = beforeBuriedDeferred.await()
             val buriedResult = buriedDeferred.await()
             val seasonBannerResponse = seasonBannerDeferred.await()
+            val unopenedResponse = unopenedDeferred.await()
 
-            val results = listOf(userResult, beforeBuriedResult, buriedResult, seasonBannerResponse)
+            val results = listOf(userResult, beforeBuriedResult, buriedResult, seasonBannerResponse, unopenedResponse)
 
             intent {
                 if (results.any { it.isFailure }) {
@@ -101,7 +106,8 @@ class HomeViewModel @Inject constructor(
                                 user = userResult.getOrNull(),
                                 beforeBuried = beforeBuriedResult.getOrNull()?.content ?: emptyList(),
                                 buried = buriedResult.getOrNull()?.content ?: emptyList(),
-                                seasonBanner = seasonBannerResponse.getOrNull()
+                                seasonBanner = seasonBannerResponse.getOrNull(),
+                                unopenedBanner = unopenedResponse.getOrNull()
                             ),
                             isLoading = false,
                             errorMessage = null,
@@ -261,6 +267,7 @@ data class HomeData(
     val buried: List<MyTimeCapsuleContent> = emptyList(),
     val opened: PaginationState<MyTimeCapsuleContent> = PaginationState(),
     val seasonBanner: SeasonBannerResponse? = null,
+    val unopenedBanner: List<TimeCapsuleUnopenedContent>? = null
 )
 
 internal fun PaginationState<MyTimeCapsuleContent>.addPage(

@@ -13,6 +13,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
+import com.idiotfrogs.model.timecapsule.TimeCapsuleUnopenedContent
 import com.idiotfrogs.model.timecapsule.WateringResponse
 import java.io.File
 
@@ -96,4 +97,6 @@ interface TimeCapsuleRepository {
     ): WateringResponse
 
     suspend fun watering(capsuleId: Long)
+
+    suspend fun getUnopened(): List<TimeCapsuleUnopenedContent>
 }

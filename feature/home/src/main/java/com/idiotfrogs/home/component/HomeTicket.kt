@@ -58,6 +58,9 @@ enum class SmallGuideItem(val imgRes: Int, val height: Dp) {
 @Composable
 fun HomeBigTicket(
     modifier: Modifier = Modifier,
+    title: String,
+    openedAt: String,
+    imageUrl: String?,
     step: Int,
 ) {
     // 티켓 바디(헤더 + 사진). 가이드 이미지는 이 Box 하단을 기준으로 정렬된다.
@@ -88,13 +91,13 @@ fun HomeBigTicket(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     MSText(
-                        text = "제목입니다. 제목입니다.",
+                        text = title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 24.dp,
                         color = MSTheme.color.greyG5
                     )
                     MSText(
-                        text = "2027. 10. 24.",
+                        text = openedAt,
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.dp,
                         color = MSTheme.color.greyG5.copy(alpha = 0.6f)
@@ -130,7 +133,7 @@ fun HomeBigTicket(
                                 )
                             }
                         },
-                    imageModel = { R.drawable.img_sample }
+                    imageModel = { imageUrl ?: R.drawable.img_sample }
                 )
             }
         }
@@ -151,6 +154,9 @@ fun HomeBigTicket(
 @Composable
 fun HomeMiddleTicket(
     modifier: Modifier = Modifier,
+    title: String,
+    openedAt: String,
+    imageUrl: String?,
     step: Int
 ) {
     // 티켓 바디(헤더 + 사진). 가이드 이미지는 이 Box 하단을 기준으로 정렬된다.
@@ -183,13 +189,13 @@ fun HomeMiddleTicket(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     MSText(
-                        text = "제목입니다. 제목입니다.",
+                        text = title,
                         fontWeight = FontWeight.Bold,
                         fontSize = 20.dp,
                         color = MSTheme.color.greyG5
                     )
                     MSText(
-                        text = "2027. 10. 24.",
+                        text = openedAt,
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.dp,
                         color = MSTheme.color.greyG5.copy(alpha = 0.6f)
@@ -225,7 +231,7 @@ fun HomeMiddleTicket(
                                 )
                             }
                         },
-                    imageModel = { R.drawable.img_sample }
+                    imageModel = { imageUrl ?: R.drawable.img_sample }
                 )
             }
         }

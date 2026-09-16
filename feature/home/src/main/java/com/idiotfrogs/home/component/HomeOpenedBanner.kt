@@ -30,7 +30,10 @@ import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.wavyStroke
+import com.idiotfrogs.extension.toYearMonthDay
+import com.idiotfrogs.model.timecapsule.TimeCapsuleUnopenedContent
 import com.idiotfrogs.resource.R
 import kotlin.math.absoluteValue
 
@@ -46,9 +49,10 @@ private val SIDE_OFFSET_Y = 22.dp
 @Composable
 fun HomeOpenedBanner(
     modifier: Modifier = Modifier,
-    capsuleSteps: List<Int>,
+    unopenedList: List<TimeCapsuleUnopenedContent>,
+    onClick: (capsuleId: Long) -> Unit,
 ) {
-    val pagerState = rememberPagerState { capsuleSteps.size }
+    val pagerState = rememberPagerState { unopenedList.size }
 
     Box(modifier = modifier) {
         Box(
@@ -85,11 +89,11 @@ fun HomeOpenedBanner(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(
-                    if (capsuleSteps.size == 1) 490.dp else 290.dp
+                    if (unopenedList.size == 1) 490.dp else 290.dp
                 )
                 .padding(horizontal = 28.dp)
                 .padding(
-                    top = if (capsuleSteps.size == 1) 0.dp else 13.dp
+                    top = if (unopenedList.size == 1) 0.dp else 13.dp
                 )
                 .alpha(alpha),
             painter = painterResource(R.drawable.bg_light),
@@ -97,10 +101,15 @@ fun HomeOpenedBanner(
             contentScale = ContentScale.FillBounds
         )
         // 단일 티켓인 경우 디자인이 다름
-        if (capsuleSteps.size == 1) {
+        if (unopenedList.size == 1) {
             HomeBigTicket(
-                modifier = Modifier.padding(top = 67.dp),
-                step = capsuleSteps.first()
+                modifier = Modifier
+                    .noRippleClickable { onClick.invoke(unopenedList.first().timeCapsuleId) }
+                    .padding(top = 67.dp),
+                title = unopenedList.first().title,
+                openedAt = unopenedList.first().openedAt.toYearMonthDay(),
+                imageUrl = unopenedList.first().mainImageUrl,
+                step = 1,
             )
             Spacer(modifier = Modifier.height(32.dp))
             return
@@ -116,8 +125,13 @@ fun HomeOpenedBanner(
             beyondViewportPageCount = 1, // 양 옆에도 보여야 하므로 해당 페이지 외 미리 로드
         ) { page ->
             HomeMiddleTicket(
-                modifier = Modifier.deckPage(pagerState, page),
-                step = capsuleSteps[page],
+                modifier = Modifier
+                    .noRippleClickable { onClick.invoke(unopenedList[page].timeCapsuleId) }
+                    .deckPage(pagerState, page),
+                title = unopenedList[page].title,
+                openedAt = unopenedList[page].openedAt.toYearMonthDay(),
+                imageUrl = unopenedList[page].mainImageUrl,
+                step = 1,
             )
         }
     }
@@ -145,5 +159,8 @@ private fun Modifier.deckPage(state: PagerState, page: Int): Modifier {
 @Preview(showBackground = true, heightDp = 520)
 @Composable
 private fun HomeOpenedBannerPreview() {
-    HomeOpenedBanner(capsuleSteps = listOf(2, 3, 4))
+    HomeOpenedBanner(
+        unopenedList = emptyList(),
+        onClick = {}
+    )
 }

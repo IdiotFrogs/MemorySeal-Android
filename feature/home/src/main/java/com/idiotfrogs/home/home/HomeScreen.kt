@@ -180,12 +180,12 @@ fun HomeScreen(
                                 columns = GridCells.Fixed(2),
                                 horizontalArrangement = Arrangement.spacedBy((-12).dp) // 줄기가 겹쳐지도록
                             ) {
-                                val showOpenedBanner = true
-                                if (showOpenedBanner) {
+                                if (!data.unopenedBanner.isNullOrEmpty()) {
                                     maxLineItem {
                                         HomeOpenedBanner(
                                             modifier = Modifier.padding(top = 12.dp),
-                                            capsuleSteps = listOf(1)
+                                            unopenedList = data.unopenedBanner,
+                                            onClick = { onAction.invoke(HomeAction.TimeCapsuleClicked(it)) }
                                         )
                                     }
                                 }
@@ -194,7 +194,7 @@ fun HomeScreen(
                                         HomeRemindBanner(
                                             modifier = Modifier
                                                 .padding(
-                                                    top = if (showOpenedBanner) 0.dp else 20.dp,
+                                                    top = if (!data.unopenedBanner.isNullOrEmpty()) 0.dp else 20.dp,
                                                     start = 20.dp, end = 20.dp, bottom = 20.dp
                                                 )
                                                 .noRippleClickable {

@@ -13,6 +13,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
+import com.idiotfrogs.model.timecapsule.TimeCapsuleUnopenedContent
 import com.idiotfrogs.model.timecapsule.WateringResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -137,4 +138,7 @@ interface TimeCapsuleService {
     suspend fun watering(
         @Path("capsuleId") capsuleId: Long
     )
+
+    @GET("time-capsules/unopened")
+    suspend fun getUnopened(): List<TimeCapsuleUnopenedContent>
 }
