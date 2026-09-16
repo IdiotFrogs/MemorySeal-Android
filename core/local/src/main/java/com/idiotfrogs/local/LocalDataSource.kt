@@ -7,6 +7,8 @@ interface LocalDataSource {
     val refreshToken: Flow<String>
     val accessTokenExpiresIn: Flow<Long>
 
+    val capsuleIds: Flow<Set<String>>
+
     suspend fun setTokens(
         accessToken: String,
         refreshToken: String,
@@ -14,4 +16,6 @@ interface LocalDataSource {
     )
 
     suspend fun clearTokens()
+
+    suspend fun addCapsuleId(capsuleId: String)
 }

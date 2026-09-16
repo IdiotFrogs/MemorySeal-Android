@@ -34,4 +34,6 @@ sealed interface Routes: NavKey {
     data class Watering(val id: Long) : Routes
     @Serializable
     data class WateringDetail(val id: Long) : Routes
+    @Serializable
+    data class Open(val id: Long) : Routes
 }

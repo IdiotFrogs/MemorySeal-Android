@@ -27,7 +27,7 @@ class HomeViewModel @Inject constructor(
     private val requestCollaboratorUseCase: RequestCollaboratorUseCase,
     private val fcmTokenProvider: FcmTokenProvider,
     private val putFcmTokenUseCase: PutFcmTokenUseCase,
-): BaseViewModel<HomeUiState, HomeSideEffect, HomeAction>() {
+) : BaseViewModel<HomeUiState, HomeSideEffect, HomeAction>() {
 
     override val container: Container<HomeUiState, HomeSideEffect> = container(
         initialState = HomeUiState(),
@@ -100,9 +100,9 @@ class HomeViewModel @Inject constructor(
             when (action) {
                 HomeAction.CreateClicked -> postSideEffect(HomeSideEffect.NavigateToCreate)
                 HomeAction.ProfileClicked -> postSideEffect(HomeSideEffect.NavigateToProfile)
-                is HomeAction.TimeCapsuleClicked -> postSideEffect(HomeSideEffect.NavigateToDetail(action.id))
                 is HomeAction.JoinCodeSubmitted -> requestCollaborator(PendingCollaboratorsRequest(action.code))
                 HomeAction.Refresh -> fetchHome()
+                is HomeAction.TimeCapsuleClicked -> intent { postSideEffect(HomeSideEffect.NavigateToDetail(action.id)) }
             }
         }
     }
@@ -124,8 +124,8 @@ data class HomeData(
 sealed interface HomeAction {
     data object CreateClicked : HomeAction
     data object ProfileClicked : HomeAction
-    data class TimeCapsuleClicked(val id: Long) : HomeAction
     data class JoinCodeSubmitted(val code: String) : HomeAction
+    data class TimeCapsuleClicked(val id: Long) : HomeAction
     data object Refresh : HomeAction
 }
 
@@ -135,4 +135,5 @@ sealed interface HomeSideEffect {
     data class NavigateToDetail(val id: Long) : HomeSideEffect
 
     data object ShowToast : HomeSideEffect
+    data class ShowOpenAnimation(val id: Long) : HomeSideEffect
 }

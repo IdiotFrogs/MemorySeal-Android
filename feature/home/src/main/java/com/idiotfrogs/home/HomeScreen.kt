@@ -1,5 +1,6 @@
 package com.idiotfrogs.home
 
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -69,7 +71,7 @@ import org.orbitmvi.orbit.compose.collectSideEffect
 
 @Composable
 fun HomeRoute(
-    viewModel: HomeViewModel = hiltViewModel()
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
@@ -87,6 +89,7 @@ fun HomeRoute(
             HomeSideEffect.NavigateToProfile -> navigator.navigate(Routes.Profile)
             is HomeSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(it.id))
             HomeSideEffect.ShowToast -> showToast = true
+            is HomeSideEffect.ShowOpenAnimation -> navigator.navigate(Routes.Open(it.id))
         }
     }
 
@@ -261,7 +264,7 @@ fun HomeScreen(
                             items(data) {
                                 HomeTicket(
                                     modifier = Modifier.noRippleClickable {
-                                        onAction(HomeAction.TimeCapsuleClicked(it.timeCapsuleId))
+                                        onAction.invoke(HomeAction.TimeCapsuleClicked(it.timeCapsuleId))
                                     },
                                     buried = it.timeCapsuleStatus == TimeCapsuleStatus.BURIED,
                                     createdAt = it.createdAt.toYearMonthDay(),
