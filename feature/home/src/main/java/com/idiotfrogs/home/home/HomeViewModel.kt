@@ -207,22 +207,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun refreshOpened() {
-        intent {
-            val homeData = state.data
-            val seasonBanner = getSeasonBannerUseCase.invoke()
-            reduce {
-                state.copy(
-                    data = homeData?.copy(
-                        opened = PaginationState(),
-                        seasonBanner = seasonBanner.getOrNull()
-                    )
-                )
-            }
-        }
-        loadNextOpened()
-    }
-
     private fun requestCollaborator(body: PendingCollaboratorsRequest) = safeLaunch {
         intent { reduce { state.copy(isLoading = true) } }
 
@@ -247,7 +231,7 @@ class HomeViewModel @Inject constructor(
                 HomeAction.RefreshHome -> fetchHome()
                 is HomeAction.HomeDetailClicked -> postSideEffect(NavigateToHomeDetail(action.homeDetailType))
                 HomeAction.NextOpenedPageRequested -> loadNextOpened()
-                HomeAction.RefreshOpened -> refreshOpened()
+                HomeAction.RefreshOpened -> fetchOpened()
             }
         }
     }
