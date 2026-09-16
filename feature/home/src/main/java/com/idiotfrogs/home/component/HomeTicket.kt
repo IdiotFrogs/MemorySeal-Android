@@ -46,7 +46,7 @@ enum class DefaultGuideItem(val imgRes: Int, val bigHeight: Dp, val midHeight: D
     STEP_2(imgRes = R.drawable.img_ticket_guide_step2, bigHeight = 328.dp, midHeight = 302.dp),
     STEP_3(imgRes = R.drawable.img_ticket_guide_step3, bigHeight = 328.dp, midHeight = 302.dp),
     STEP_4(imgRes = R.drawable.img_ticket_guide_step4, bigHeight = 328.dp, midHeight = 302.dp),
-    STEP_5(imgRes = R.drawable.img_ticket_guide_step5, bigHeight = 442.dp, midHeight = 316.dp)
+    STEP_5(imgRes = R.drawable.img_ticket_guide_step5, bigHeight = 442.dp, midHeight = 390.dp)
 }
 
 enum class SmallGuideItem(val imgRes: Int, val height: Dp) {
