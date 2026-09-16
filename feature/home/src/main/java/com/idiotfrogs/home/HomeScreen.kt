@@ -266,8 +266,7 @@ fun HomeScreen(
                                     modifier = Modifier.noRippleClickable {
                                         onAction(
                                             HomeAction.TimeCapsuleClicked(
-                                                it.timeCapsuleId,
-                                                it.timeCapsuleStatus
+                                                it.timeCapsuleId
                                             )
                                         )
                                     },
