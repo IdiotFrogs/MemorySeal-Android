@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.idiotfrogs.designsystem.component.MSActionContainer
 import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTitleDialog
@@ -84,7 +87,9 @@ fun ProfileScreen(
     onAction: (ProfileAction) -> Unit
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
-    var showWithdrawDialog by remember { mutableStateOf(false) }
+    var showWithdrawSheet by remember { mutableStateOf(false) }
+
+    val textFieldState = rememberTextFieldState()
 
     if (showLogoutDialog) {
         MSTitleDialog(
@@ -109,26 +114,31 @@ fun ProfileScreen(
         )
     }
 
-    if (showWithdrawDialog) {
-        MSTitleDialog(
+    if (showWithdrawSheet) {
+        MSActionContainer(
             title = "회원탈퇴",
-            confirmText = "탈퇴",
-            cancelText = "취소",
-            onConfirm = {
-                showWithdrawDialog = false
+            subtitle = "",
+            content = "",
+            textFieldState = textFieldState,
+            hint = "",
+            primaryButtonEnabled = textFieldState.text.isNotEmpty(),
+            primaryButtonText = "탈퇴",
+            primaryWavyStrokeColor = if (textFieldState.text.isNotEmpty()) {
+                MSTheme.color.red
+            } else {
+                Color(0xFFF3BBBB)
+            },
+            primaryButtonColors = ButtonDefaults.buttonColors(
+                containerColor = MSTheme.color.red,
+                disabledContainerColor = Color(0xFFF3BBBB)
+            ),
+            secondaryWavyStrokeColor = MSTheme.color.greyG1,
+            secondaryButtonText = "취소",
+            onPrimaryClick = {
+                showWithdrawSheet = false
                 onAction.invoke(ProfileAction.WithdrawConfirmed)
             },
-            onCancel = { showWithdrawDialog = false },
-            content = {
-                Spacer(modifier = Modifier.height(8.dp))
-                MSText(
-                    text = "메실 회원을 탈퇴하시겠습니까?\n티켓에 저장된 내용은 삭제되지 않습니다.",
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.dp,
-                    color = MSTheme.color.greyG5
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-            }
+            onSecondaryClick = { showWithdrawSheet = false }
         )
     }
 
@@ -232,7 +242,7 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
-                        .noRippleClickable { showWithdrawDialog = true },
+                        .noRippleClickable { showWithdrawSheet = true },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {

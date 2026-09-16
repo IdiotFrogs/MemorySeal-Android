@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.button.MSButton
@@ -74,6 +75,126 @@ fun MSActionContainer(
             textAlign = TextAlign.Center,
         )
         Spacer(modifier = Modifier.height(16.dp))
+        MSTextField(
+            modifier = Modifier.fillMaxWidth(),
+            textFieldState = textFieldState,
+            hint = hint,
+            focusedBorderColor = focusedBorderColor,
+            unfocusedBorderColor = unfocusedBorderColor,
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            MSButton(
+                modifier = Modifier
+                    .weight(secondaryButtonWeight)
+                    .height(48.dp),
+                onClick = onSecondaryClick,
+                colors = secondaryButtonColors,
+                pressColors = secondaryPressColors,
+                wavyStrokeColor = secondaryWavyStrokeColor,
+            ) {
+                MSText(
+                    text = secondaryButtonText,
+                    fontSize = 16.dp,
+                    color = secondaryTextColor,
+                )
+            }
+            MSButton(
+                modifier = Modifier
+                    .weight(primaryButtonWeight)
+                    .height(48.dp),
+                enabled = primaryButtonEnabled,
+                onClick = onPrimaryClick,
+                colors = primaryButtonColors,
+                pressColors = primaryPressColors,
+                wavyStrokeColor = primaryWavyStrokeColor,
+            ) {
+                MSText(
+                    text = primaryButtonText,
+                    fontSize = 16.dp,
+                    color = primaryTextColor,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun MSActionContainer(
+    title: String,
+    subtitle: String,
+    content: String,
+    hint: String,
+    textFieldState: TextFieldState,
+    primaryButtonText: String,
+    primaryWavyStrokeColor: Color,
+    secondaryWavyStrokeColor: Color,
+    onPrimaryClick: () -> Unit,
+    onSecondaryClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    primaryButtonEnabled: Boolean = textFieldState.text.isNotEmpty(),
+    secondaryButtonText: String= "취소",
+    primaryButtonWeight: Float = 1f,
+    secondaryButtonWeight: Float = 1f,
+    focusedBorderColor: Color = MSTheme.color.primaryNormal,
+    unfocusedBorderColor: Color = MSTheme.color.greyG1,
+    primaryButtonColors: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = MSTheme.color.primaryNormal,
+        disabledContainerColor = MSTheme.color.primaryLight,
+    ),
+    primaryPressColors: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = MSTheme.color.primaryDark,
+        disabledContainerColor = MSTheme.color.primaryLight,
+    ),
+    primaryTextColor: Color = MSTheme.color.white,
+    secondaryButtonColors: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = MSTheme.color.greyG1,
+        disabledContainerColor = MSTheme.color.greyG1,
+    ),
+    secondaryPressColors: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = MSTheme.color.greyG1,
+        disabledContainerColor = MSTheme.color.greyG1,
+    ),
+    secondaryTextColor: Color = MSTheme.color.greyG5,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                color = MSTheme.color.white,
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            )
+            .padding(horizontal = 20.dp, vertical = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        MSText(
+            modifier = Modifier.fillMaxWidth(),
+            text = title,
+            fontSize = 20.dp,
+            fontWeight = FontWeight.Bold,
+            color = MSTheme.color.greyG5
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        MSText(
+            modifier = Modifier.fillMaxWidth(),
+            text = subtitle,
+            fontSize = 16.dp,
+            fontWeight = FontWeight.Normal,
+            color = MSTheme.color.greyG5,
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        MSText(
+            modifier = Modifier.fillMaxWidth(),
+            text = content,
+            fontSize = 14.dp,
+            fontWeight = FontWeight.Normal,
+            color = MSTheme.color.greyG3,
+        )
+        Spacer(modifier = Modifier.height(24.dp))
         MSTextField(
             modifier = Modifier.fillMaxWidth(),
             textFieldState = textFieldState,
