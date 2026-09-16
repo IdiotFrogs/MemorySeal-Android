@@ -6,6 +6,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class SeasonBannerResponse(
     val content: String = "",
+    val title: String = "",
+    val mainImageUrl: String = "",
     val season: Season? = null,
     val capsuleId: Long? = null,
 )

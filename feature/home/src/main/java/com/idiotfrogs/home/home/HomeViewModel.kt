@@ -95,7 +95,6 @@ class HomeViewModel @Inject constructor(
                 if (results.any { it.isFailure }) {
                     val errorMessage = results.first { it.isFailure }.exceptionOrNull()?.message
 
-                    Log.d("TTT", errorMessage.toString())
                     reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
                 } else {
                     // 비동기로 여러 API 호출하므로 실행 시점에 데이터 있는지 파악

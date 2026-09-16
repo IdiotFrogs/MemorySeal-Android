@@ -109,7 +109,7 @@ fun HomeOpenedBanner(
                 title = unopenedList.first().title,
                 openedAt = unopenedList.first().openedAt.toYearMonthDay(),
                 imageUrl = unopenedList.first().mainImageUrl,
-                step = 1,
+                step = unopenedList.first().stage,
             )
             Spacer(modifier = Modifier.height(32.dp))
             return
@@ -131,7 +131,7 @@ fun HomeOpenedBanner(
                 title = unopenedList[page].title,
                 openedAt = unopenedList[page].openedAt.toYearMonthDay(),
                 imageUrl = unopenedList[page].mainImageUrl,
-                step = 1,
+                step = unopenedList[page].stage,
             )
         }
     }

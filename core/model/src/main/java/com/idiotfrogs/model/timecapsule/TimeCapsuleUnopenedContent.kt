@@ -8,5 +8,6 @@ data class TimeCapsuleUnopenedContent(
     val timeCapsuleId: Long,
     val title: String,
     val openedAt: LocalDate,
-    val mainImageUrl: String
+    val mainImageUrl: String,
+    val stage: Int
 )

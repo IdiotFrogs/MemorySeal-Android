@@ -21,23 +21,15 @@ import androidx.compose.ui.unit.dp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.wavyStroke
-import com.idiotfrogs.model.home.Season
 import com.idiotfrogs.resource.R
-
-private fun Season.getSeasonText(): String {
-    return when (this) {
-        Season.SPRING -> "봄"
-        Season.SUMMER -> "여름"
-        Season.FALL -> "가을"
-        Season.WINTER -> "겨울"
-    }
-}
+import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
 fun HomeRemindBanner(
     modifier: Modifier = Modifier,
-    season: Season,
-    content: String
+    title: String,
+    content: String,
+    mainImageUrl: String,
 ) {
     Column(
         modifier = modifier
@@ -64,13 +56,13 @@ fun HomeRemindBanner(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 MSText(
-                    text = "지난 ${season.getSeasonText()} 우리",
+                    text = content,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.dp,
                     color = MSTheme.color.greyG5
                 )
                 MSText(
-                    text = content,
+                    text = title,
                     fontWeight = FontWeight.Medium,
                     fontSize = 16.dp,
                     color = MSTheme.color.greyG5
@@ -84,11 +76,9 @@ fun HomeRemindBanner(
                         clipContent = true
                     )
             ) {
-                Image(
+                GlideImage(
                     modifier = Modifier.fillMaxSize(),
-                    painter = painterResource(R.drawable.img_sample),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = "img_ticket"
+                    imageModel = { mainImageUrl.takeIf { it.isNotEmpty() } ?: R.drawable.img_sample },
                 )
             }
         }
@@ -107,7 +97,8 @@ fun HomeRemindBanner(
 @Composable
 private fun HomeRemindBannerPreview() {
     HomeRemindBanner(
-        season = Season.FALL,
-        content = "내용내용내용내용내용"
+        title = "제목제목제목제목",
+        content = "내용내용내용내용내용",
+        mainImageUrl = ""
     )
 }

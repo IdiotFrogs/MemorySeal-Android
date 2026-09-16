@@ -203,7 +203,8 @@ fun HomeScreen(
                                                         onAction.invoke(HomeAction.TimeCapsuleClicked(it))
                                                     }
                                                 },
-                                            season = data.seasonBanner.season ?: return@maxLineItem,
+                                            title = data.seasonBanner.title,
+                                            mainImageUrl = data.seasonBanner.mainImageUrl,
                                             content = data.seasonBanner.content
                                         )
                                     }
