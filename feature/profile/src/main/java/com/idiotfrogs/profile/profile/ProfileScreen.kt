@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,6 +32,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.idiotfrogs.designsystem.component.MSActionContainer
+import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTitleDialog
@@ -37,20 +41,15 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DrawType
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.wavyStroke
-import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
-import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
-import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.profile.component.ProfileCard
 import com.idiotfrogs.profile.component.ProfileHeader
+import com.idiotfrogs.profile.component.ProfileWithdrawBottomSheet
 import com.idiotfrogs.resource.R
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.todayIn
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
-import kotlin.time.Clock
 
 const val HeaderHeight = 56
 
@@ -69,7 +68,6 @@ fun ProfileRoute(
             }
             ProfileSideEffect.NavigateToBack -> navigator.popBackStack()
             ProfileSideEffect.NavigateToEditProfile -> navigator.navigate(Routes.EditProfile)
-            is ProfileSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(event.id))
         }
     }
 
@@ -91,7 +89,9 @@ fun ProfileScreen(
     onAction: (ProfileAction) -> Unit
 ) {
     var showLogoutDialog by remember { mutableStateOf(false) }
-    var showWithdrawDialog by remember { mutableStateOf(false) }
+    var showWithdrawSheet by remember { mutableStateOf(false) }
+
+    val textFieldState = rememberTextFieldState()
 
     if (showLogoutDialog) {
         MSTitleDialog(
@@ -107,29 +107,6 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 MSText(
                     text = "메실에서 로그아웃 하시겠습니까?",
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.dp,
-                    color = MSTheme.color.greyG5
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-        )
-    }
-
-    if (showWithdrawDialog) {
-        MSTitleDialog(
-            title = "회원탈퇴",
-            confirmText = "탈퇴",
-            cancelText = "취소",
-            onConfirm = {
-                showWithdrawDialog = false
-                onAction.invoke(ProfileAction.WithdrawConfirmed)
-            },
-            onCancel = { showWithdrawDialog = false },
-            content = {
-                Spacer(modifier = Modifier.height(8.dp))
-                MSText(
-                    text = "메실 회원을 탈퇴하시겠습니까?\n티켓에 저장된 내용은 삭제되지 않습니다.",
                     fontWeight = FontWeight.Normal,
                     fontSize = 16.dp,
                     color = MSTheme.color.greyG5
@@ -239,7 +216,7 @@ fun ProfileScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
-                        .noRippleClickable { showWithdrawDialog = true },
+                        .noRippleClickable { showWithdrawSheet = true },
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -257,6 +234,19 @@ fun ProfileScreen(
                 }
             }
         }
+        MSDim(
+            visible = showWithdrawSheet,
+            onDismiss = { showWithdrawSheet = false }
+        )
+        ProfileWithdrawBottomSheet(
+            isShow = showWithdrawSheet,
+            textFieldState = textFieldState,
+            onCancel = { showWithdrawSheet = false },
+            onWithdraw = {
+                showWithdrawSheet = false
+                onAction.invoke(ProfileAction.WithdrawConfirmed)
+            },
+        )
     }
 }
 
@@ -290,17 +280,6 @@ private fun ProfileScreenPreview() {
                 email = "",
                 isOnboarding = true
             ),
-            capsules = listOf(
-                MyTimeCapsuleResponse(
-                    timeCapsuleId = 0L,
-                    title = "제목입니다. 제목입니다.",
-                    createdAt = Clock.System.todayIn(TimeZone.currentSystemDefault()),
-                    mainImageUrl = "",
-                    role = TimeCapsuleRole.CONTRIBUTOR,
-                    timeCapsuleStatus = TimeCapsuleStatus.BURIED,
-                    stage = 1
-                )
-            )
         ),
         onAction = {},
     )

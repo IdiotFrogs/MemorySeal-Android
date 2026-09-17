@@ -39,7 +39,10 @@ fun OpenRoute(
 
     viewModel.collectSideEffect { event ->
         when (event) {
-            is OpenSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(event.capsuleId))
+            is OpenSideEffect.NavigateToMemory -> {
+                navigator.popBackStack()
+                navigator.navigate(Routes.Memory(event.capsuleId))
+            }
         }
     }
 

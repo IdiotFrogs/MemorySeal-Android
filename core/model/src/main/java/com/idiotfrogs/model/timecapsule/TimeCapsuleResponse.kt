@@ -15,4 +15,5 @@ data class TimeCapsuleResponse(
     val userRole: TimeCapsuleRole,
     val myContentCount: Int,
     val myImageCount: Int,
+    val animationShown: Boolean,
 )

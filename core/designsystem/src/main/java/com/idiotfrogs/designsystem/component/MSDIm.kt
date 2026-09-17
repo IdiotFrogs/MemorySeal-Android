@@ -18,6 +18,7 @@ import com.idiotfrogs.designsystem.util.noRippleClickable
 
 @Composable
 fun MSDim(
+    modifier: Modifier = Modifier,
     visible: Boolean,
     onDismiss: () -> Unit,
     color: Color = Color(0x3D444444),
@@ -31,7 +32,7 @@ fun MSDim(
 
     if (alpha > 0f) {
         Box(
-            Modifier
+            modifier
                 .fillMaxSize()
                 .background(color.copy(alpha = color.alpha * alpha))
                 .noRippleClickable(

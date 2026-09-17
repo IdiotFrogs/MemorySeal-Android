@@ -46,6 +46,35 @@ public fun com.idiotfrogs.designsystem.component.MSActionContainer(title: kotlin
     - secondaryTextColor: STABLE (marked @Stable or @Immutable)
 
 @Composable
+public fun com.idiotfrogs.designsystem.component.MSActionContainer(title: kotlin.String, subtitle: kotlin.String, content: kotlin.String, hint: kotlin.String, textFieldState: androidx.compose.foundation.text.input.TextFieldState, primaryButtonText: kotlin.String, primaryWavyStrokeColor: androidx.compose.ui.graphics.Color, secondaryWavyStrokeColor: androidx.compose.ui.graphics.Color, onPrimaryClick: kotlin.Function0<kotlin.Unit>, onSecondaryClick: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, primaryButtonEnabled: kotlin.Boolean, secondaryButtonText: kotlin.String, primaryButtonWeight: kotlin.Float, secondaryButtonWeight: kotlin.Float, focusedBorderColor: androidx.compose.ui.graphics.Color, unfocusedBorderColor: androidx.compose.ui.graphics.Color, primaryButtonColors: androidx.compose.material3.ButtonColors, primaryPressColors: androidx.compose.material3.ButtonColors, primaryTextColor: androidx.compose.ui.graphics.Color, secondaryButtonColors: androidx.compose.material3.ButtonColors, secondaryPressColors: androidx.compose.material3.ButtonColors, secondaryTextColor: androidx.compose.ui.graphics.Color): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - title: STABLE (String is immutable)
+    - subtitle: STABLE (String is immutable)
+    - content: STABLE (String is immutable)
+    - hint: STABLE (String is immutable)
+    - textFieldState: STABLE (marked @Stable or @Immutable)
+    - primaryButtonText: STABLE (String is immutable)
+    - primaryWavyStrokeColor: STABLE (marked @Stable or @Immutable)
+    - secondaryWavyStrokeColor: STABLE (marked @Stable or @Immutable)
+    - onPrimaryClick: STABLE (function type)
+    - onSecondaryClick: STABLE (function type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - primaryButtonEnabled: STABLE (primitive type)
+    - secondaryButtonText: STABLE (String is immutable)
+    - primaryButtonWeight: STABLE (primitive type)
+    - secondaryButtonWeight: STABLE (primitive type)
+    - focusedBorderColor: STABLE (marked @Stable or @Immutable)
+    - unfocusedBorderColor: STABLE (marked @Stable or @Immutable)
+    - primaryButtonColors: STABLE (marked @Stable or @Immutable)
+    - primaryPressColors: STABLE (marked @Stable or @Immutable)
+    - primaryTextColor: STABLE (marked @Stable or @Immutable)
+    - secondaryButtonColors: STABLE (marked @Stable or @Immutable)
+    - secondaryPressColors: STABLE (marked @Stable or @Immutable)
+    - secondaryTextColor: STABLE (marked @Stable or @Immutable)
+
+@Composable
 public fun com.idiotfrogs.designsystem.component.MSAnnotatedText(text: androidx.compose.ui.text.AnnotatedString, modifier: androidx.compose.ui.Modifier, fontSize: androidx.compose.ui.unit.Dp, color: androidx.compose.ui.graphics.Color, fontFamily: androidx.compose.ui.text.font.FontFamily, fontWeight: androidx.compose.ui.text.font.FontWeight, letterSpacing: androidx.compose.ui.unit.TextUnit, textDecoration: androidx.compose.ui.text.style.TextDecoration?, textAlign: androidx.compose.ui.text.style.TextAlign?, lineHeight: androidx.compose.ui.unit.TextUnit, overflow: androidx.compose.ui.text.style.TextOverflow, softWrap: kotlin.Boolean, maxLines: kotlin.Int, minLines: kotlin.Int, style: androidx.compose.ui.text.TextStyle): kotlin.Unit
   skippable: true
   restartable: true
@@ -116,10 +145,11 @@ public fun com.idiotfrogs.designsystem.component.MSDialog(title: kotlin.String, 
     - cancelTextColor: STABLE (marked @Stable or @Immutable)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.MSDim(visible: kotlin.Boolean, onDismiss: kotlin.Function0<kotlin.Unit>, color: androidx.compose.ui.graphics.Color, animationSpec: androidx.compose.animation.core.FiniteAnimationSpec<kotlin.Float>): kotlin.Unit
+public fun com.idiotfrogs.designsystem.component.MSDim(modifier: androidx.compose.ui.Modifier, visible: kotlin.Boolean, onDismiss: kotlin.Function0<kotlin.Unit>, color: androidx.compose.ui.graphics.Color, animationSpec: androidx.compose.animation.core.FiniteAnimationSpec<kotlin.Float>): kotlin.Unit
   skippable: false
   restartable: true
   params:
+    - modifier: STABLE (marked @Stable or @Immutable)
     - visible: STABLE (primitive type)
     - onDismiss: STABLE (function type)
     - color: STABLE (marked @Stable or @Immutable)

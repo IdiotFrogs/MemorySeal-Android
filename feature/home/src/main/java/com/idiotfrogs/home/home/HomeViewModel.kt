@@ -1,0 +1,294 @@
+package com.idiotfrogs.home.home
+
+import androidx.compose.runtime.Immutable
+import com.idiotfrogs.domain.usecase.auth.PutFcmTokenUseCase
+import com.idiotfrogs.domain.usecase.home.GetSeasonBannerUseCase
+import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
+import com.idiotfrogs.domain.usecase.timecapsule.GetUnopenedUseCase
+import com.idiotfrogs.domain.usecase.timecapsule.RequestCollaboratorUseCase
+import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
+import com.idiotfrogs.home.home.HomeSideEffect.*
+import com.idiotfrogs.model.home.Season
+import com.idiotfrogs.model.home.SeasonBannerResponse
+import com.idiotfrogs.model.timecapsule.MyTimeCapsuleContent
+import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
+import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
+import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
+import com.idiotfrogs.model.timecapsule.TimeCapsuleUnopenedContent
+import com.idiotfrogs.model.user.ProfileResponse
+import com.idiotfrogs.navigation.HomeDetailType
+import com.idiotfrogs.notification.FcmTokenProvider
+import com.idiotfrogs.util.base.DataUiState
+import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.paging.PaginationState
+import com.idiotfrogs.util.sideEffect.RefreshEvent
+import com.idiotfrogs.util.sideEffect.RefreshSideEffect
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
+import org.orbitmvi.orbit.Container
+import org.orbitmvi.orbit.viewmodel.container
+import javax.inject.Inject
+import kotlin.collections.emptyList
+import kotlin.time.Clock
+
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val getMyTimeCapsuleUseCase: GetMyTimeCapsuleUseCase,
+    private val getMyProfileUseCase: GetMyProfileUseCase,
+    private val getUnopenedUseCase: GetUnopenedUseCase,
+    private val requestCollaboratorUseCase: RequestCollaboratorUseCase,
+    private val fcmTokenProvider: FcmTokenProvider,
+    private val putFcmTokenUseCase: PutFcmTokenUseCase,
+    private val getSeasonBannerUseCase: GetSeasonBannerUseCase
+): BaseViewModel<HomeUiState, HomeSideEffect, HomeAction>() {
+
+    override val container: Container<HomeUiState, HomeSideEffect> = container(
+        initialState = HomeUiState(),
+        onCreate = {
+            fetchHome()
+            fetchOpened()
+            syncFcmToken()
+            RefreshSideEffect.events.collect {
+                if (it is RefreshEvent.Home) {
+                    fetchHome()
+                    fetchOpened()
+                }
+            }
+        }
+    )
+
+    private fun syncFcmToken() {
+        safeLaunch {
+            val fcmToken = fcmTokenProvider.getToken()
+            putFcmTokenUseCase(fcmToken).onFailure {
+                // TODO 로그 남기기 (Firebase)
+            }
+        }
+    }
+
+    private fun fetchHome() {
+        safeLaunch {
+            intent { reduce { state.copy(isLoading = true) } }
+
+            val userDeferred = async { getMyProfileUseCase() }
+            val beforeBuriedDeferred = async {
+                getMyTimeCapsuleUseCase(
+                    status = TimeCapsuleStatus.BEFOREBURIED, page = 0, size = 6
+                )
+            }
+            val buriedDeferred = async {
+                getMyTimeCapsuleUseCase(
+                    status = TimeCapsuleStatus.BURIED, page = 0, size = 6
+                )
+            }
+            val seasonBannerDeferred = async { getSeasonBannerUseCase.invoke() }
+            val unopenedDeferred = async { getUnopenedUseCase.invoke() }
+
+            val userResult = userDeferred.await()
+            val beforeBuriedResult = beforeBuriedDeferred.await()
+            val buriedResult = buriedDeferred.await()
+            val seasonBannerResponse = seasonBannerDeferred.await()
+            val unopenedResponse = unopenedDeferred.await()
+
+            val results = listOf(userResult, beforeBuriedResult, buriedResult, seasonBannerResponse, unopenedResponse)
+
+            intent {
+                if (results.any { it.isFailure }) {
+                    val errorMessage = results.first { it.isFailure }.exceptionOrNull()?.message
+
+                    reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
+                } else {
+                    // 비동기로 여러 API 호출하므로 실행 시점에 데이터 있는지 파악
+                    val latestData = state.data ?: HomeData()
+                    reduce {
+                        state.copy(
+                            data = latestData.copy(
+                                user = userResult.getOrNull(),
+                                beforeBuried = beforeBuriedResult.getOrNull()?.content ?: emptyList(),
+                                buried = buriedResult.getOrNull()?.content ?: emptyList(),
+                                seasonBanner = seasonBannerResponse.getOrNull(),
+                                unopenedBanner = unopenedResponse.getOrNull()
+                            ),
+                            isLoading = false,
+                            errorMessage = null,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun fetchOpened() = intent {
+        intent { reduce { state.copy(isLoading = true) } }
+
+        getMyTimeCapsuleUseCase(
+            status = TimeCapsuleStatus.OPENED,
+            page = 0,
+            size = 10,
+        ).onSuccess {
+            // 비동기로 여러 API 호출하므로 실행 시점에 데이터 있는지 파악
+            val latestData = state.data ?: HomeData()
+            intent {
+                reduce {
+                    state.copy(
+                        data = latestData.copy(opened = PaginationState<MyTimeCapsuleContent>().addPage(it)),
+                        isLoading = false,
+                        errorMessage = null,
+                    )
+                }
+            }
+        }.onFailure {
+            intent {
+                reduce {
+                    state.copy(
+                        isLoading = false,
+                        errorMessage = it.message
+                    )
+                }
+            }
+        }
+    }
+
+    private fun loadNextOpened() = intent {
+        val currentData = state.data ?: return@intent
+        val opened = currentData.opened
+
+        if (state.isLoading || !opened.canLoadMore) return@intent
+
+        val currentPage = opened.currentPage
+        val nextPage = currentPage + 1
+
+        reduce {
+            state.copy(
+                data = currentData.copy(
+                    opened = opened.setLoadingMore(true),
+                ),
+            )
+        }
+
+        getMyTimeCapsuleUseCase(
+            status = TimeCapsuleStatus.OPENED,
+            page = nextPage,
+            size = 10,
+        ).onSuccess { response ->
+            val latestData = state.data ?: return@onSuccess
+            val latestOpened = latestData.opened
+            val isCurrentRequest = latestOpened.currentPage == currentPage &&
+                    latestOpened.isLoadingMore
+
+            if (!isCurrentRequest) return@onSuccess
+
+            reduce {
+                state.copy(
+                    data = latestData.copy(
+                        opened = latestOpened.addPage(response),
+                    ),
+                    errorMessage = null,
+                )
+            }
+        }.onFailure { error ->
+            val latestData = state.data ?: return@onFailure
+            val latestOpened = latestData.opened
+            val isCurrentRequest = latestOpened.currentPage == currentPage &&
+                    latestOpened.isLoadingMore
+
+            if (!isCurrentRequest) return@onFailure
+
+            reduce {
+                state.copy(
+                    data = latestData.copy(
+                        opened = latestOpened.setLoadingMore(false),
+                    ),
+                    errorMessage = error.message,
+                )
+            }
+        }
+    }
+
+    private fun requestCollaborator(body: PendingCollaboratorsRequest) = safeLaunch {
+        intent { reduce { state.copy(isLoading = true) } }
+
+        requestCollaboratorUseCase(body).onSuccess {
+            intent {
+                reduce { state.copy(isLoading = false, errorMessage = null) }
+                fetchHome()
+            }
+        }.onFailure {
+            intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+            // TODO 추 후 에러 핸들링 맞추기 (공동 작업자 이미 신청한 사용자라면 409)
+        }
+    }
+
+    private fun remindBannerClicked(id: Long) = intent {
+        // 진입 전 낙관적으로 배너를 업데이트 한다
+        reduce {
+            val latestData = state.data
+            state.copy(data = latestData?.copy(seasonBanner = null))
+        }
+        postSideEffect(HomeSideEffect.NavigateToDetail(id))
+    }
+
+    override fun onAction(action: HomeAction) {
+        intent {
+            when (action) {
+                HomeAction.CreateClicked -> postSideEffect(HomeSideEffect.NavigateToCreate)
+                HomeAction.ProfileClicked -> postSideEffect(HomeSideEffect.NavigateToProfile)
+                is HomeAction.TimeCapsuleClicked -> postSideEffect(NavigateToDetail(action.id))
+                is HomeAction.RemindBannerClicked -> remindBannerClicked(action.id)
+                is HomeAction.JoinCodeSubmitted -> requestCollaborator(PendingCollaboratorsRequest(action.code))
+                HomeAction.RefreshHome -> fetchHome()
+                is HomeAction.HomeDetailClicked -> postSideEffect(NavigateToHomeDetail(action.homeDetailType))
+                HomeAction.NextOpenedPageRequested -> loadNextOpened()
+                HomeAction.RefreshOpened -> fetchOpened()
+            }
+        }
+    }
+}
+
+@Immutable
+data class HomeUiState(
+    override val data: HomeData? = null,
+    override val isLoading: Boolean = false,
+    override val errorMessage: String? = null,
+) : DataUiState<HomeData>
+
+@Immutable
+data class HomeData(
+    val user: ProfileResponse? = null,
+    val beforeBuried: List<MyTimeCapsuleContent> = emptyList(),
+    val buried: List<MyTimeCapsuleContent> = emptyList(),
+    val opened: PaginationState<MyTimeCapsuleContent> = PaginationState(),
+    val seasonBanner: SeasonBannerResponse? = null,
+    val unopenedBanner: List<TimeCapsuleUnopenedContent>? = null
+)
+
+internal fun PaginationState<MyTimeCapsuleContent>.addPage(
+    response: MyTimeCapsuleResponse,
+): PaginationState<MyTimeCapsuleContent> = addPage(
+    newItems = response.content,
+    page = response.number,
+    totalElements = response.totalElements,
+    isLast = response.last,
+)
+
+sealed interface HomeAction {
+    data object CreateClicked : HomeAction
+    data object ProfileClicked : HomeAction
+    data class TimeCapsuleClicked(val id: Long) : HomeAction
+    data class RemindBannerClicked(val id: Long) : HomeAction
+    data class JoinCodeSubmitted(val code: String) : HomeAction
+    data object RefreshHome : HomeAction
+    data object RefreshOpened : HomeAction
+    data object NextOpenedPageRequested : HomeAction
+    data class HomeDetailClicked(val homeDetailType: HomeDetailType) : HomeAction
+}
+
+sealed interface HomeSideEffect {
+    data object NavigateToCreate : HomeSideEffect
+    data object NavigateToProfile : HomeSideEffect
+    data class NavigateToDetail(val id: Long) : HomeSideEffect
+    data class NavigateToHomeDetail(val homeDetailType: HomeDetailType) : HomeSideEffect
+}

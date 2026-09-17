@@ -1,0 +1,169 @@
+package com.idiotfrogs.home.component
+
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
+import androidx.compose.ui.zIndex
+import com.idiotfrogs.designsystem.component.MSText
+import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.noRippleClickable
+import com.idiotfrogs.designsystem.util.wavyStroke
+import com.idiotfrogs.extension.toYearMonthDay
+import com.idiotfrogs.model.timecapsule.TimeCapsuleUnopenedContent
+import com.idiotfrogs.resource.R
+import kotlin.math.absoluteValue
+
+// 좌우 티켓 기울기
+private const val SIDE_ROTATION = 15f
+
+// 좌우 티켓 투명도
+private const val SIDE_ALPHA = 0.12f
+
+// 좌우 티켓을 중앙에 대비해서 아래로 내릴 크기
+private val SIDE_OFFSET_Y = 22.dp
+
+@Immutable
+data class UnopenedList(val contents: List<TimeCapsuleUnopenedContent>)
+
+@Composable
+fun HomeOpenedBanner(
+    modifier: Modifier = Modifier,
+    unopenedList: UnopenedList,
+    onClick: (capsuleId: Long) -> Unit,
+) {
+    val pagerState = rememberPagerState { unopenedList.contents.size }
+
+    Box(modifier = modifier) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            MSText(
+                modifier = Modifier
+                    .size(width = 132.dp, height = 43.dp)
+                    .wavyStroke(
+                        color = MSTheme.color.greyG5,
+                        fillColor = MSTheme.color.white,
+                        cornerRadius = 35.dp
+                    )
+                    .wrapContentHeight(Alignment.CenterVertically),
+                text = "지금 열 수 있어요",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.dp,
+                color = MSTheme.color.black,
+                textAlign = TextAlign.Center
+            )
+            Image(
+                modifier = Modifier.size(width = 132.dp, height = 43.dp),
+                painter = painterResource(R.drawable.bg_callout),
+                contentDescription = "bg_callout",
+                contentScale = ContentScale.FillBounds
+            )
+        }
+        val alpha by animateFloatAsState(
+            targetValue = if (pagerState.isScrollInProgress) 0f else 1f,
+            animationSpec = tween()
+        )
+        Image(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(if (unopenedList.contents.size == 1) 490.dp else 290.dp)
+                .padding(
+                    top = if (unopenedList.contents.size == 1) 0.dp else 13.dp,
+                    start = 28.dp,
+                    end = 28.dp
+                )
+                .alpha(alpha),
+            painter = painterResource(R.drawable.bg_light),
+            contentDescription = "bg_light",
+            contentScale = ContentScale.FillBounds
+        )
+        // 단일 티켓인 경우 디자인이 다름
+        if (unopenedList.contents.size == 1) {
+            HomeBigTicket(
+                modifier = Modifier
+                    .noRippleClickable { onClick.invoke(unopenedList.contents.first().timeCapsuleId) }
+                    .padding(top = 67.dp),
+                title = unopenedList.contents.first().title,
+                openedAt = unopenedList.contents.first().openedAt.toYearMonthDay(),
+                imageUrl = unopenedList.contents.first().mainImageUrl,
+                step = unopenedList.contents.first().stage,
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            return
+        }
+        HorizontalPager(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(460.dp)
+                .padding(top = 56.dp), // 가운데 티켓 높이가 아닌 티켓 영역 기준
+            state = pagerState,
+            contentPadding = PaddingValues(start = 27.dp, end = 31.dp), // 티켓 바깥 여백
+            pageSpacing = (-84).dp, // 음수 간격이기 때문에 각 페이지가 해당 값 만큼 포개진다.
+            beyondViewportPageCount = 1, // 양 옆에도 보여야 하므로 해당 페이지 외 미리 로드
+        ) { page ->
+            HomeMiddleTicket(
+                modifier = Modifier
+                    .noRippleClickable { onClick.invoke(unopenedList.contents[page].timeCapsuleId) }
+                    .deckPage(pagerState, page),
+                title = unopenedList.contents[page].title,
+                openedAt = unopenedList.contents[page].openedAt.toYearMonthDay(),
+                imageUrl = unopenedList.contents[page].mainImageUrl,
+                step = unopenedList.contents[page].stage,
+            )
+        }
+    }
+}
+
+// 포개진 카드 덱 모양으로 변환하는 함수
+// 중앙은 원본 색상이며 좌/우로 갈수록 최대 15도 기울며 0.12% 까지 옅어진다.
+private fun Modifier.deckPage(state: PagerState, page: Int): Modifier {
+    // 중앙에 있는 페이지 대비 거리 값
+    val distanceFromCenter = (page - state.currentPage).absoluteValue
+
+    return this
+        .zIndex(-distanceFromCenter.toFloat()) // 중앙 (0)을 기준으로 음수 값
+        .graphicsLayer {
+            val offset = state.getOffsetDistanceInPages(page) // 중앙 기준 얼마나 떨어져 있는지 (소수점)
+                .coerceIn(-1f, 1f)
+            val distance = offset.absoluteValue
+
+            rotationZ = SIDE_ROTATION * offset
+            translationY = SIDE_OFFSET_Y.toPx() * distance
+            alpha = lerp(1f, SIDE_ALPHA, distance)
+        }
+}
+
+@Preview(showBackground = true, heightDp = 520)
+@Composable
+private fun HomeOpenedBannerPreview() {
+    HomeOpenedBanner(
+        unopenedList = UnopenedList(emptyList()),
+        onClick = {}
+    )
+}

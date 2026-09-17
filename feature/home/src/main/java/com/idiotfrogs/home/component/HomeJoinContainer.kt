@@ -15,7 +15,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import com.idiotfrogs.designsystem.component.MSActionContainer
 import com.idiotfrogs.designsystem.theme.MSTheme
-import com.idiotfrogs.resource.R
 
 @Composable
 fun BoxScope.HomeJoinContainer(

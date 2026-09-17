@@ -4,7 +4,7 @@ import com.idiotfrogs.model.timecapsule.BuryTimeCapsuleRequest
 import com.idiotfrogs.model.timecapsule.CapsuleContentsData
 import com.idiotfrogs.model.timecapsule.JoinRequestResponse
 import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
-import com.idiotfrogs.model.timecapsule.MyTimeCapsuleListResponse
+import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleContentResponse
@@ -12,6 +12,8 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleInviteCodeResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
+import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
+import com.idiotfrogs.model.timecapsule.TimeCapsuleUnopenedContent
 import com.idiotfrogs.model.timecapsule.WateringResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -35,7 +37,11 @@ interface TimeCapsuleService {
     ): TimeCapsuleCreateResponse
 
     @GET("time-capsules/my")
-    suspend fun getMyTimeCapsule(@Query("size") size: Int): MyTimeCapsuleListResponse
+    suspend fun getMyTimeCapsule(
+        @Query("status") status: TimeCapsuleStatus,
+        @Query("page") page: Int,
+        @Query("size") size: Int
+    ): MyTimeCapsuleResponse
 
     @DELETE("time-capsules/{capsuleId}")
     suspend fun deleteTimeCapsule(@Path("capsuleId") capsuleId: Long)
@@ -132,4 +138,7 @@ interface TimeCapsuleService {
     suspend fun watering(
         @Path("capsuleId") capsuleId: Long
     )
+
+    @GET("time-capsules/unopened")
+    suspend fun getUnopened(): List<TimeCapsuleUnopenedContent>
 }

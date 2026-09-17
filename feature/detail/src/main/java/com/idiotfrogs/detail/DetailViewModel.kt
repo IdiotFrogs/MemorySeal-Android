@@ -60,15 +60,22 @@ class DetailViewModel @AssistedInject constructor(
 
                     reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
                 } else {
-                    reduce {
-                        state.copy(
-                            data = TimeCapsuleData(
-                                capsule = capsuleResult.getOrNull(),
-                                collaborators = collaboratorsResult.getOrNull(),
-                            ),
-                            isLoading = false,
-                            errorMessage = null,
-                        )
+                    val capsule = capsuleResult.getOrNull()
+                    // 반드시 애니메이션 재생 여부와 오픈 여부를 함께 검사해야 한다
+                    if (capsule?.animationShown == false && capsule.timeCapsuleStatus == TimeCapsuleStatus.OPENED) {
+                        postSideEffect(DetailSideEffect.NavigateToOpen(capsuleId))
+                        RefreshSideEffect.tryEmit(RefreshEvent.Home)
+                    } else {
+                        reduce {
+                            state.copy(
+                                data = TimeCapsuleData(
+                                    capsule = capsuleResult.getOrNull(),
+                                    collaborators = collaboratorsResult.getOrNull(),
+                                ),
+                                isLoading = false,
+                                errorMessage = null,
+                            )
+                        }
                     }
                 }
             }
@@ -83,6 +90,7 @@ class DetailViewModel @AssistedInject constructor(
                 capsuleId = capsuleId,
                 body = BuryTimeCapsuleRequest(openedAt),
             ).onSuccess { response ->
+                RefreshSideEffect.tryEmit(RefreshEvent.Home)
                 intent {
                     reduce {
                         val currentData = state.data ?: TimeCapsuleData()
@@ -160,5 +168,6 @@ sealed interface DetailSideEffect {
     data class NavigateToManagement(val id: Long, val title: String) : DetailSideEffect
     data class NavigateToWatering(val id: Long) : DetailSideEffect
     data object NavigateToBack : DetailSideEffect
+    data class NavigateToOpen(val id: Long) : DetailSideEffect
     data object ShowToast : DetailSideEffect
 }

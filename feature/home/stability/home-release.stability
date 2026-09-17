@@ -5,27 +5,44 @@
 //   ./gradlew :home:stabilityDump
 
 @Composable
-public fun com.idiotfrogs.home.HomeRoute(viewModel: com.idiotfrogs.home.HomeViewModel): kotlin.Unit
-  skippable: false
-  restartable: true
-  params:
-    - viewModel: UNSTABLE (has mutable properties or unstable members)
-
-@Composable
-public fun com.idiotfrogs.home.HomeScreen(showToast: kotlin.Boolean, data: com.idiotfrogs.home.HomeData, isRefreshing: kotlin.Boolean, onAction: kotlin.Function1<com.idiotfrogs.home.HomeAction, kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.home.component.HomeBigTicket(modifier: androidx.compose.ui.Modifier, title: kotlin.String, openedAt: kotlin.String, imageUrl: kotlin.String?, step: kotlin.Int): kotlin.Unit
   skippable: true
   restartable: true
   params:
-    - showToast: STABLE (primitive type)
-    - data: STABLE (marked @Stable or @Immutable)
-    - isRefreshing: STABLE (primitive type)
-    - onAction: STABLE (function type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - title: STABLE (String is immutable)
+    - openedAt: STABLE (String is immutable)
+    - imageUrl: STABLE (class with no mutable properties)
+    - step: STABLE (primitive type)
 
 @Composable
-public fun com.idiotfrogs.home.component.HomeHeader(profileUrl: kotlin.String?, navigateToProfile: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.home.component.HomeBottomBar(modifier: androidx.compose.ui.Modifier, expanded: kotlin.Boolean, showDim: kotlin.Boolean, fabMenuList: com.idiotfrogs.home.component.FabMenuList, selectedMenu: com.idiotfrogs.home.component.BottomMenu, onSelectChange: kotlin.Function1<com.idiotfrogs.home.component.BottomMenu, kotlin.Unit>, onExpandChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onClickDim: kotlin.Function0<kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
   params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - expanded: STABLE (primitive type)
+    - showDim: STABLE (primitive type)
+    - fabMenuList: STABLE (marked @Stable or @Immutable)
+    - selectedMenu: STABLE (class with no mutable properties)
+    - onSelectChange: STABLE (function type)
+    - onExpandChange: STABLE (function type)
+    - onClickDim: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.home.component.HomeEmptyScreen(modifier: androidx.compose.ui.Modifier, selectedMenu: com.idiotfrogs.home.component.BottomMenu): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - selectedMenu: STABLE (class with no mutable properties)
+
+@Composable
+public fun com.idiotfrogs.home.component.HomeHeader(selectedMenu: com.idiotfrogs.home.component.BottomMenu, profileUrl: kotlin.String?, navigateToProfile: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - selectedMenu: STABLE (class with no mutable properties)
     - profileUrl: STABLE (class with no mutable properties)
     - navigateToProfile: STABLE (function type)
 
@@ -40,14 +57,95 @@ public fun com.idiotfrogs.home.component.HomeJoinContainer(isShow: kotlin.Boolea
     - onJoin: STABLE (function type)
 
 @Composable
-public fun com.idiotfrogs.home.component.HomeTicket(buried: kotlin.Boolean, createdAt: kotlin.String, title: kotlin.String, imageUrl: kotlin.String?, step: kotlin.Int, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+public fun com.idiotfrogs.home.component.HomeMiddleTicket(modifier: androidx.compose.ui.Modifier, title: kotlin.String, openedAt: kotlin.String, imageUrl: kotlin.String?, step: kotlin.Int): kotlin.Unit
   skippable: true
   restartable: true
   params:
-    - buried: STABLE (primitive type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - title: STABLE (String is immutable)
+    - openedAt: STABLE (String is immutable)
+    - imageUrl: STABLE (class with no mutable properties)
+    - step: STABLE (primitive type)
+
+@Composable
+public fun com.idiotfrogs.home.component.HomeOpenedBanner(modifier: androidx.compose.ui.Modifier, unopenedList: com.idiotfrogs.home.component.UnopenedList, onClick: kotlin.Function1<@[ParameterName(name = \): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - unopenedList: STABLE (marked @Stable or @Immutable)
+    - onClick: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.home.component.HomeRemindBanner(modifier: androidx.compose.ui.Modifier, title: kotlin.String, content: kotlin.String, mainImageUrl: kotlin.String): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - title: STABLE (String is immutable)
+    - content: STABLE (String is immutable)
+    - mainImageUrl: STABLE (String is immutable)
+
+@Composable
+public fun com.idiotfrogs.home.component.HomeSectionDivider(modifier: androidx.compose.ui.Modifier, sectionName: kotlin.String): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - sectionName: STABLE (String is immutable)
+
+@Composable
+public fun com.idiotfrogs.home.component.HomeSmallTicket(modifier: androidx.compose.ui.Modifier, dDayCount: kotlin.String?, createdAt: kotlin.String, title: kotlin.String, imageUrl: kotlin.String?, step: kotlin.Int): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - dDayCount: STABLE (class with no mutable properties)
     - createdAt: STABLE (String is immutable)
     - title: STABLE (String is immutable)
     - imageUrl: STABLE (class with no mutable properties)
     - step: STABLE (primitive type)
+
+@Composable
+public fun com.idiotfrogs.home.component.OpenedTicket(modifier: androidx.compose.ui.Modifier, title: kotlin.String, createAt: kotlin.String, openedAt: kotlin.String, imageUrl: kotlin.String?): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
     - modifier: STABLE (marked @Stable or @Immutable)
+    - title: STABLE (String is immutable)
+    - createAt: STABLE (String is immutable)
+    - openedAt: STABLE (String is immutable)
+    - imageUrl: STABLE (class with no mutable properties)
+
+@Composable
+public fun com.idiotfrogs.home.detail.HomeDetailRoute(homeDetailType: com.idiotfrogs.navigation.HomeDetailType, viewModel: com.idiotfrogs.home.detail.HomeDetailViewModel): kotlin.Unit
+  skippable: false
+  restartable: true
+  params:
+    - homeDetailType: STABLE (class with no mutable properties)
+    - viewModel: UNSTABLE (has mutable properties or unstable members)
+
+@Composable
+public fun com.idiotfrogs.home.detail.HomeDetailScreen(data: com.idiotfrogs.home.detail.HomeDetailData, onAction: kotlin.Function1<com.idiotfrogs.home.detail.HomeDetailAction, kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - data: STABLE (marked @Stable or @Immutable)
+    - onAction: STABLE (function type)
+
+@Composable
+public fun com.idiotfrogs.home.home.HomeRoute(viewModel: com.idiotfrogs.home.home.HomeViewModel): kotlin.Unit
+  skippable: false
+  restartable: true
+  params:
+    - viewModel: UNSTABLE (has mutable properties or unstable members)
+
+@Composable
+public fun com.idiotfrogs.home.home.HomeScreen(data: com.idiotfrogs.home.home.HomeData, isRefreshing: kotlin.Boolean, onAction: kotlin.Function1<com.idiotfrogs.home.home.HomeAction, kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - data: STABLE (marked @Stable or @Immutable)
+    - isRefreshing: STABLE (primitive type)
+    - onAction: STABLE (function type)
 

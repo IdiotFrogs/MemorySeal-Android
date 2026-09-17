@@ -1,0 +1,374 @@
+package com.idiotfrogs.home.home
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.idiotfrogs.designsystem.component.MSDim
+import com.idiotfrogs.designsystem.component.MSLoadingOverlay
+import com.idiotfrogs.designsystem.model.MSMenuFabModel
+import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.DevicePreview
+import com.idiotfrogs.designsystem.util.LoadNextPageEffect
+import com.idiotfrogs.designsystem.util.noRippleClickable
+import com.idiotfrogs.extension.toDdayCount
+import com.idiotfrogs.extension.toYearMonthDay
+import com.idiotfrogs.home.component.HomeHeader
+import com.idiotfrogs.home.component.HomeJoinContainer
+import com.idiotfrogs.navigation.LocalComposeMSNavigator
+import com.idiotfrogs.navigation.Routes
+import com.idiotfrogs.home.component.BottomMenu
+import com.idiotfrogs.home.component.FabMenuList
+import com.idiotfrogs.home.component.HomeBottomBar
+import com.idiotfrogs.home.component.HomeEmptyScreen
+import com.idiotfrogs.home.component.HomeOpenedBanner
+import com.idiotfrogs.home.component.HomeRemindBanner
+import com.idiotfrogs.home.component.HomeSectionDivider
+import com.idiotfrogs.home.component.HomeSmallTicket
+import com.idiotfrogs.home.component.OpenedTicket
+import com.idiotfrogs.home.component.UnopenedList
+import com.idiotfrogs.home.component.maxLineItem
+import com.idiotfrogs.navigation.HomeDetailType
+import org.orbitmvi.orbit.compose.collectAsState
+import org.orbitmvi.orbit.compose.collectSideEffect
+
+private val TOP_BAR_SIZE = 56.dp
+private val BOTTOM_BAR_SIZE = 80.dp
+
+@Composable
+fun HomeRoute(
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    val navigator = LocalComposeMSNavigator.current
+    val uiState by viewModel.collectAsState()
+
+    viewModel.collectSideEffect {
+        when (it) {
+            HomeSideEffect.NavigateToCreate -> navigator.navigate(Routes.Create)
+            HomeSideEffect.NavigateToProfile -> navigator.navigate(Routes.Profile)
+            is HomeSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(it.id))
+            is HomeSideEffect.NavigateToHomeDetail -> navigator.navigate(Routes.HomeDetail(it.homeDetailType))
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        uiState.data?.let { data ->
+            HomeScreen(
+                data = data,
+                isRefreshing = uiState.isLoading,
+                onAction = viewModel::onAction
+            )
+        }
+
+        MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreen(
+    data: HomeData,
+    isRefreshing: Boolean,
+    onAction: (HomeAction) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    var showJoinContainer by remember { mutableStateOf(false) }
+
+    val ime = WindowInsets.ime
+    val density = LocalDensity.current
+    val imeHeight by remember { derivedStateOf { ime.getBottom(density) } }
+    val showDim by remember { derivedStateOf { expanded || showJoinContainer } }
+
+    val menuList by remember {
+        mutableStateOf(
+            FabMenuList(
+                listOf(
+                    MSMenuFabModel("새 티켓 생성하기") {
+                        expanded = false
+                        onAction.invoke(HomeAction.CreateClicked)
+                    },
+                    MSMenuFabModel("참여코드로 합류하기") {
+                        expanded = false
+                        showJoinContainer = true
+                    },
+                )
+            )
+        )
+    }
+
+    val textFieldState = rememberTextFieldState()
+    val pagerState = rememberPagerState(initialPage = 0) { BottomMenu.entries.size }
+
+    LaunchedEffect(imeHeight) {
+        if (showJoinContainer && imeHeight == 0) {
+            showJoinContainer = false
+            expanded = false
+        }
+    }
+
+    var selectedMenu by remember { mutableStateOf(BottomMenu.HOME) }
+
+    LaunchedEffect(selectedMenu) {
+        pagerState.animateScrollToPage(selectedMenu.ordinal)
+    }
+
+    val lazyGridState = rememberLazyGridState()
+
+    LoadNextPageEffect(
+        scrollableState = lazyGridState,
+        canLoadMore = data.opened.canLoadMore,
+        onLoadNextPage = { onAction(HomeAction.NextOpenedPageRequested) },
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MSTheme.color.white)
+            .systemBarsPadding()
+    ) {
+        HomeHeader(
+            selectedMenu = selectedMenu,
+            profileUrl = data.user?.profileImageUrl,
+            navigateToProfile = { onAction.invoke(HomeAction.ProfileClicked) }
+        )
+        HorizontalPager(
+            modifier = Modifier.padding(top = TOP_BAR_SIZE),
+            state = pagerState,
+            userScrollEnabled = false
+        ) { page ->
+            when (page) {
+                BottomMenu.HOME.ordinal -> {
+                    if (data.buried.isEmpty() && data.beforeBuried.isEmpty()) {
+                        HomeEmptyScreen(
+                            modifier = Modifier.padding(bottom = BOTTOM_BAR_SIZE),
+                            selectedMenu = BottomMenu.HOME
+                        )
+                    } else {
+                        val refreshState = rememberPullToRefreshState()
+                        PullToRefreshBox(
+                            isRefreshing = isRefreshing,
+                            state = refreshState,
+                            onRefresh = { onAction.invoke(HomeAction.RefreshHome) }
+                        ) {
+                            LazyVerticalGrid(
+                                modifier = Modifier.fillMaxSize(),
+                                columns = GridCells.Fixed(2),
+                                horizontalArrangement = Arrangement.spacedBy((-12).dp) // 줄기가 겹쳐지도록
+                            ) {
+                                if (data.seasonBanner != null && data.seasonBanner.isValid) {
+                                    maxLineItem {
+                                        HomeRemindBanner(
+                                            modifier = Modifier
+                                                .padding(top = 12.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
+                                                .noRippleClickable {
+                                                    data.seasonBanner.capsuleId?.let {
+                                                        onAction.invoke(HomeAction.RemindBannerClicked(it))
+                                                    }
+                                                },
+                                            title = data.seasonBanner.title,
+                                            mainImageUrl = data.seasonBanner.mainImageUrl,
+                                            content = data.seasonBanner.content
+                                        )
+                                    }
+                                }
+                                if (!data.unopenedBanner.isNullOrEmpty()) {
+                                    maxLineItem {
+                                        HomeOpenedBanner(
+                                            modifier = Modifier.padding(
+                                                top = if (data.seasonBanner != null && data.seasonBanner.isValid) 0.dp else 20.dp
+                                            ),
+                                            unopenedList = UnopenedList(data.unopenedBanner),
+                                            onClick = { onAction.invoke(HomeAction.TimeCapsuleClicked(it)) }
+                                        )
+                                    }
+                                }
+                                if (data.beforeBuried.isNotEmpty()) {
+                                    maxLineItem {
+                                        HomeSectionDivider(
+                                            modifier = Modifier
+                                                .noRippleClickable {
+                                                    onAction.invoke(
+                                                        HomeAction.HomeDetailClicked(
+                                                            HomeDetailType.BEFORE_BURIED
+                                                        )
+                                                    )
+                                                }
+                                                .padding(horizontal = (22.5).dp, vertical = 20.dp),
+                                            sectionName = "타임 티켓"
+                                        )
+                                    }
+                                    itemsIndexed(data.beforeBuried) { index, item ->
+                                        val isLastRow = index / 2 == data.beforeBuried.lastIndex / 2
+                                        HomeSmallTicket(
+                                            modifier = Modifier
+                                                .padding(
+                                                    bottom = if (isLastRow) 0.dp else 16.dp
+                                                )
+                                                .noRippleClickable {
+                                                    onAction.invoke(HomeAction.TimeCapsuleClicked(item.timeCapsuleId))
+                                                },
+                                            dDayCount = item.openedAt?.toDdayCount(),
+                                            createdAt = item.createdAt.toYearMonthDay(),
+                                            title = item.title,
+                                            imageUrl = item.mainImageUrl,
+                                            step = item.stage
+                                        )
+                                    }
+                                }
+                                // 만약 묻은 티켓이 없다면 하단에 공간 홛보
+                                if (data.buried.isEmpty()) {
+                                    maxLineItem { Spacer(modifier = Modifier.height(112.dp)) }
+                                } else {
+                                    maxLineItem {
+                                        HomeSectionDivider(
+                                            modifier = Modifier
+                                                .noRippleClickable {
+                                                    onAction.invoke(
+                                                        HomeAction.HomeDetailClicked(
+                                                            HomeDetailType.BURIED
+                                                        )
+                                                    )
+                                                }
+                                                .padding(horizontal = (22.5).dp)
+                                                .padding(
+                                                    // 만약 묻기전 티켓이 없다면 맨 위이므로 패딩 값이 없다
+                                                    top = if (data.beforeBuried.isEmpty()) 0.dp else 40.dp,
+                                                    bottom = 15.dp
+                                                ),
+                                            sectionName = "오픈 예정 티켓"
+                                        )
+                                    }
+                                    itemsIndexed(data.buried) { index, item ->
+                                        val isLastRow = index / 2 == data.buried.lastIndex / 2
+                                        HomeSmallTicket(
+                                            modifier = Modifier
+                                                .padding(
+                                                    bottom = if (isLastRow) 0.dp else 16.dp
+                                                )
+                                                .noRippleClickable {
+                                                    onAction.invoke(HomeAction.TimeCapsuleClicked(item.timeCapsuleId))
+                                                },
+                                            dDayCount = item.openedAt?.toDdayCount(),
+                                            createdAt = item.createdAt.toYearMonthDay(),
+                                            title = item.title,
+                                            imageUrl = item.mainImageUrl,
+                                            step = item.stage
+                                        )
+                                    }
+                                    maxLineItem { Spacer(modifier = Modifier.height(112.dp)) }
+                                }
+                            }
+                        }
+                    }
+                }
+                BottomMenu.OPENED.ordinal -> {
+                    if (data.opened.items.isEmpty()) {
+                        HomeEmptyScreen(
+                            modifier = Modifier.padding(bottom = BOTTOM_BAR_SIZE),
+                            selectedMenu = BottomMenu.OPENED
+                        )
+                    } else {
+                        val refreshState = rememberPullToRefreshState()
+                        PullToRefreshBox(
+                            isRefreshing = isRefreshing,
+                            state = refreshState,
+                            onRefresh = { onAction.invoke(HomeAction.RefreshOpened) }
+                        ) {
+                            LazyVerticalGrid(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 20.dp),
+                                columns = GridCells.Fixed(2),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(24.dp),
+                                contentPadding = PaddingValues(top = 20.dp, bottom = BOTTOM_BAR_SIZE)
+                            ) {
+                                items(data.opened.items) {
+                                    OpenedTicket(
+                                        modifier = Modifier.noRippleClickable {
+                                            onAction.invoke(
+                                                HomeAction.TimeCapsuleClicked(
+                                                    it.timeCapsuleId
+                                                )
+                                            )
+                                        },
+                                        title = it.title,
+                                        createAt = it.createdAt.toYearMonthDay(),
+                                        openedAt = it.openedAt.toYearMonthDay(),
+                                        imageUrl = it.mainImageUrl
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        fun onDimClick() {
+            expanded = false; showJoinContainer = false
+        }
+
+        MSDim(
+            modifier = Modifier.padding(bottom = 80.dp), // 하단바 영역 침범 x
+            visible = showDim,
+            onDismiss = { onDimClick() }
+        )
+        HomeBottomBar(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            selectedMenu = selectedMenu,
+            showDim = showDim,
+            fabMenuList = menuList,
+            expanded = expanded,
+            onSelectChange = { selectedMenu = it },
+            onExpandChange = { expanded = it },
+            onClickDim = { onDimClick() }
+        )
+        HomeJoinContainer(
+            isShow = showJoinContainer,
+            textFieldState = textFieldState,
+            onJoin = { onAction(HomeAction.JoinCodeSubmitted(textFieldState.text.toString())) },
+            onCancel = { showJoinContainer = false }
+        )
+    }
+}
+
+@DevicePreview
+@Composable
+fun HomeScreenPreview() {
+    HomeScreen(
+        data = HomeData(),
+        isRefreshing = false,
+        onAction = {},
+    )
+}

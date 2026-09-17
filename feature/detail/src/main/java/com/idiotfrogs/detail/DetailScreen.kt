@@ -82,7 +82,10 @@ import kotlin.time.ExperimentalTime
 @Composable
 fun DetailRoute(
     capsuleId: Long,
-    viewModel: DetailViewModel = hiltViewModel<DetailViewModel, DetailViewModel.Factory>(key = capsuleId.toString()) { it.create(capsuleId) },
+    viewModel: DetailViewModel =
+        hiltViewModel<DetailViewModel, DetailViewModel.Factory>(
+            key = capsuleId.toString()
+        ) { it.create(capsuleId) },
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
@@ -107,6 +110,7 @@ fun DetailRoute(
                 )
             )
             is DetailSideEffect.NavigateToWatering -> navigator.navigate(Routes.Watering(event.id))
+            is DetailSideEffect.NavigateToOpen -> navigator.replace(Routes.Open(event.id))
             DetailSideEffect.ShowToast -> showToast = true
         }
     }

@@ -14,18 +14,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -39,108 +37,293 @@ import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
+// 0단계, 1단계 보정 값
+private const val INDEX_ADJUST_VALUE = 2
+/** 사진 영역에 준 offset. 가이드 이미지도 동일하게 올려 바디 하단선에 맞춘다. */
+private val BODY_OFFSET_Y = (-10).dp
 
-enum class GuideItem(val imgRes: Int, val width: Dp, val height: Dp) {
-    STEP_2(imgRes = R.drawable.img_ticket_guide_step2, width = 395.dp, height = 359.dp),
-    STEP_3(imgRes = R.drawable.img_ticket_guide_step3, width = 394.dp, height = 363.dp),
-    STEP_4(imgRes = R.drawable.img_ticket_guide_step4, width = 383.dp, height = 354.dp),
-    STEP_5(imgRes = R.drawable.img_ticket_guide_step5, width = 383.dp, height = 446.dp)
+enum class DefaultGuideItem(val imgRes: Int, val bigHeight: Dp, val midHeight: Dp) {
+    STEP_2(imgRes = R.drawable.img_ticket_guide_step2, bigHeight = 328.dp, midHeight = 302.dp),
+    STEP_3(imgRes = R.drawable.img_ticket_guide_step3, bigHeight = 328.dp, midHeight = 302.dp),
+    STEP_4(imgRes = R.drawable.img_ticket_guide_step4, bigHeight = 328.dp, midHeight = 302.dp),
+    STEP_5(imgRes = R.drawable.img_ticket_guide_step5, bigHeight = 442.dp, midHeight = 390.dp)
+}
+
+enum class SmallGuideItem(val imgRes: Int, val height: Dp) {
+    STEP_2(imgRes = R.drawable.img_ticket_guide_step2_small, height = 148.dp),
+    STEP_3(imgRes = R.drawable.img_ticket_guide_step3_small, height = 156.dp),
+    STEP_4(imgRes = R.drawable.img_ticket_guide_step4_small, height = 183.dp),
 }
 
 @Composable
-fun HomeTicket(
-    buried: Boolean,
+fun HomeBigTicket(
+    modifier: Modifier = Modifier,
+    title: String,
+    openedAt: String,
+    imageUrl: String?,
+    step: Int,
+) {
+    // 티켓 바디(헤더 + 사진). 가이드 이미지는 이 Box 하단을 기준으로 정렬된다.
+    Box(modifier = modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 21.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .zIndex(1f)
+                    .wavyStroke(
+                        color = MSTheme.color.greyG5,
+                        fillColor = MSTheme.color.primaryNormal,
+                        strokeWidth = 4.dp,
+                        amplitude = 1.dp,
+                        spacing = 4.dp,
+                    )
+                    .fillMaxWidth()
+                    .height(94.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    MSText(
+                        text = title,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 24.dp,
+                        color = MSTheme.color.greyG5
+                    )
+                    MSText(
+                        text = openedAt,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.dp,
+                        color = MSTheme.color.greyG5.copy(alpha = 0.6f)
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .offset(y = BODY_OFFSET_Y)
+                    .wavyStroke(
+                        strokeWidth = 4.dp,
+                        color = MSTheme.color.greyG5,
+                        fillColor = MSTheme.color.white,
+                        amplitude = (1.5).dp,
+                        spacing = 4.dp,
+                    )
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+            ) {
+                val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
+                GlideImage(
+                    modifier = Modifier
+                        .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                        .fillMaxSize()
+                        .padding(24.dp)
+                        .drawWithCache {
+                            onDrawWithContent {
+                                drawContent()
+                                drawImage(
+                                    image = mask,
+                                    dstSize = IntSize(size.width.toInt(), size.height.toInt()),
+                                    blendMode = BlendMode.DstIn
+                                )
+                            }
+                        },
+                    imageModel = { imageUrl ?: R.drawable.img_sample }
+                )
+            }
+        }
+        DefaultGuideItem.entries.getOrNull(step - INDEX_ADJUST_VALUE)?.let {
+            Image(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .offset(y = BODY_OFFSET_Y)
+                    .fillMaxWidth()
+                    .height(it.bigHeight),
+                painter = painterResource(it.imgRes),
+                contentDescription = "img_ticket_guide"
+            )
+        }
+    }
+}
+
+@Composable
+fun HomeMiddleTicket(
+    modifier: Modifier = Modifier,
+    title: String,
+    openedAt: String,
+    imageUrl: String?,
+    step: Int
+) {
+    // 티켓 바디(헤더 + 사진). 가이드 이미지는 이 Box 하단을 기준으로 정렬된다.
+    Box(modifier = modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                // 바깥 27/31dp는 Pager의 contentPadding으로 올라갔다(HomeOpenedBanner 참고).
+                // 51-27 / 53-31 이라 바디가 그려지는 위치·크기는 이전과 동일하다.
+                .padding(start = 24.dp, end = 22.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .zIndex(1f)
+                    .wavyStroke(
+                        color = MSTheme.color.greyG5,
+                        fillColor = MSTheme.color.primaryNormal,
+                        strokeWidth = 4.dp,
+                        amplitude = 1.dp,
+                        spacing = 4.dp,
+                    )
+                    .fillMaxWidth()
+                    .height(89.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    MSText(
+                        text = title,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.dp,
+                        color = MSTheme.color.greyG5
+                    )
+                    MSText(
+                        text = openedAt,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.dp,
+                        color = MSTheme.color.greyG5.copy(alpha = 0.6f)
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .offset(y = BODY_OFFSET_Y)
+                    .wavyStroke(
+                        strokeWidth = 4.dp,
+                        color = MSTheme.color.greyG5,
+                        fillColor = MSTheme.color.white,
+                        amplitude = (1.5).dp,
+                        spacing = 4.dp,
+                    )
+                    .fillMaxWidth()
+                    .height(278.dp)
+            ) {
+                val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
+                GlideImage(
+                    modifier = Modifier
+                        .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                        .fillMaxSize()
+                        .padding(24.dp)
+                        .drawWithCache {
+                            onDrawWithContent {
+                                drawContent()
+                                drawImage(
+                                    image = mask,
+                                    dstSize = IntSize(size.width.toInt(), size.height.toInt()),
+                                    blendMode = BlendMode.DstIn
+                                )
+                            }
+                        },
+                    imageModel = { imageUrl ?: R.drawable.img_sample }
+                )
+            }
+        }
+        DefaultGuideItem.entries.getOrNull(step - INDEX_ADJUST_VALUE)?.let {
+            Image(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .offset(y = BODY_OFFSET_Y)
+                    // 기존 padding(27/31)은 Pager의 contentPadding으로 옮겼다.
+                    .fillMaxWidth()
+                    .height(it.midHeight),
+                painter = painterResource(it.imgRes),
+                contentDescription = "img_ticket_guide"
+            )
+        }
+    }
+}
+
+@Composable
+fun HomeSmallTicket(
+    modifier: Modifier = Modifier,
+    dDayCount: String?,
     createdAt: String,
     title: String,
     imageUrl: String?,
     step: Int,
-    modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier) {
-        Column {
-            Box(
+    Column(modifier = modifier.fillMaxWidth()) {
+        // 티켓 바디(헤더 + 사진). 가이드 이미지는 이 Box 하단을 기준으로 정렬된다.
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .zIndex(1f)
-                    .wavyStroke(
-                        color = MSTheme.color.greyG5,
-                        cornerRadius = 16.dp,
-                        strokeWidth = 4.dp,
-                        amplitude = 1.dp,
-                        spacing = 3.dp,
-                        fillColor = MSTheme.color.primaryNormal
-                    )
+                    .padding(start = 14.dp, end = 16.dp)
             ) {
-                Column(
+                Box(
                     modifier = Modifier
-                        .padding(20.dp)
+                        .zIndex(1f)
+                        .wavyStroke(
+                            color = MSTheme.color.greyG5,
+                            fillColor = MSTheme.color.primaryNormal,
+                            amplitude = 1.dp,
+                            spacing = 4.dp,
+                        )
                         .fillMaxWidth()
+                        .height(55.dp),
+                    contentAlignment = Alignment.CenterStart
                 ) {
-                    if (buried) {
+                    if (dDayCount != null) {
                         Row(
                             modifier = Modifier
+                                .padding(start = 12.dp)
                                 .background(
-                                    color = MSTheme.color.primaryLight.copy(0.6f),
-                                    shape = RoundedCornerShape(12.dp)
+                                    color = MSTheme.color.primaryLight.copy(alpha = 0.6f),
+                                    shape = RoundedCornerShape(8.dp)
                                 )
-                                .padding(6.dp),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                .padding(start = 6.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(1.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Image(
                                 modifier = Modifier.size(16.dp),
                                 painter = painterResource(R.drawable.ic_shovels),
-                                contentDescription = "buried",
-                                colorFilter = ColorFilter.tint(MSTheme.color.greyG5)
+                                contentDescription = "ic_shovels"
                             )
                             MSText(
-                                text = "묻어짐",
-                                fontWeight = FontWeight.SemiBold,
+                                text = dDayCount,
                                 fontSize = 12.dp,
+                                fontWeight = FontWeight.SemiBold,
                                 color = MSTheme.color.greyG5
                             )
                         }
-                        Spacer(modifier = Modifier.height(12.dp))
                     }
-                    MSText(
-                        text = title,
-                        fontSize = 20.dp,
-                        fontWeight = FontWeight.Bold,
-                        color = MSTheme.color.greyG5
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    MSText(
-                        text = createdAt,
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 14.dp,
-                        color = MSTheme.color.greyG4
-                    )
                 }
-            }
-            val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .offset(y = (-10).dp)
-                    .wavyStroke(
-                        color = MSTheme.color.greyG5,
-                        cornerRadius = 16.dp,
-                        strokeWidth = 4.dp,
-                        amplitude = (1.5).dp,
-                        spacing = 4.dp,
-                        fillColor = MSTheme.color.white
-                    )
-                    .aspectRatio(1f)
-            ) {
-                imageUrl?.let {
+                Box(
+                    modifier = Modifier
+                        .offset(y = BODY_OFFSET_Y)
+                        .wavyStroke(
+                            color = MSTheme.color.greyG5,
+                            fillColor = MSTheme.color.white,
+                            amplitude = (1.5).dp,
+                            spacing = 4.dp,
+                        )
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                ) {
+                    val mask = ImageBitmap.imageResource(id = R.drawable.img_mask_main)
                     GlideImage(
                         modifier = Modifier
                             .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
                             .fillMaxSize()
-                            .padding(24.dp)
-                            .clip(RoundedCornerShape(8.dp))
+                            .padding(12.dp)
                             .drawWithCache {
                                 onDrawWithContent {
                                     drawContent()
@@ -151,41 +334,41 @@ fun HomeTicket(
                                     )
                                 }
                             },
-                        imageModel = { imageUrl }
-                    )
-                } ?: run {
-                    Image(
-                        modifier = Modifier
-                            .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-                            .fillMaxSize()
-                            .padding(24.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .drawWithCache {
-                                onDrawWithContent {
-                                    drawContent()
-                                    drawImage(
-                                        image = mask,
-                                        dstSize = IntSize(size.width.toInt(), size.height.toInt()),
-                                        blendMode = BlendMode.DstIn
-                                    )
-                                }
-                            },
-                        painter = painterResource(R.drawable.img_sample),
-                        contentDescription = "thumbnail",
-                        contentScale = ContentScale.Crop
+                        imageModel = { imageUrl ?: R.drawable.img_sample }
                     )
                 }
             }
+            SmallGuideItem.entries.getOrNull(step - INDEX_ADJUST_VALUE)?.let {
+                Image(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .offset(y = BODY_OFFSET_Y)
+                        .fillMaxWidth()
+                        .height(it.height),
+                    painter = painterResource(it.imgRes),
+                    contentDescription = "img_ticket_guide"
+                )
+            }
         }
-        val guideItem = GuideItem.entries.getOrNull(step - 2) // step 1 보정 + index 보정
-        if (guideItem != null) {
-            Image(
-                modifier = Modifier
-                    .aspectRatio(guideItem.width / guideItem.height)
-                    .size(width = guideItem.width, height = guideItem.height)
-                    .align(Alignment.BottomCenter),
-                painter = painterResource(guideItem.imgRes),
-                contentDescription = "ticket_guide"
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(start = 14.dp, end = 16.dp)
+        ) {
+            Spacer(modifier = Modifier.height(2.dp)) // 위에서 offset 준 만큼 원본에서 차감
+            MSText(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.dp,
+                color = MSTheme.color.greyG5
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            MSText(
+                text = createdAt,
+                fontWeight = FontWeight.Normal,
+                fontSize = 12.dp,
+                color = MSTheme.color.greyG5.copy(alpha = 0.6f)
             )
         }
     }
@@ -193,9 +376,9 @@ fun HomeTicket(
 
 @Preview(showBackground = true)
 @Composable
-private fun HomeTicketPreview() {
-    HomeTicket(
-        buried = true,
+private fun HomeSmallTicketPreview() {
+    HomeSmallTicket(
+        dDayCount = "D-15",
         createdAt = "2027. 10. 24.",
         title = "제목입니다.",
         imageUrl = null,

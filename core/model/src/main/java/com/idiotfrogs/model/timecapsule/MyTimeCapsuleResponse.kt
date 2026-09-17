@@ -4,16 +4,16 @@ import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MyTimeCapsuleListResponse(
-    val content: List<MyTimeCapsuleResponse>,
+data class MyTimeCapsuleResponse(
+    val content: List<MyTimeCapsuleContent>,
     val totalPages: Int,
-    val totalElements: Int,
+    val totalElements: Long,
     val number: Int,
     val last: Boolean,
 )
 
 @Serializable
-data class MyTimeCapsuleResponse(
+data class MyTimeCapsuleContent(
     val timeCapsuleId: Long,
     val title: String,
     val openedAt: LocalDate? = null,
