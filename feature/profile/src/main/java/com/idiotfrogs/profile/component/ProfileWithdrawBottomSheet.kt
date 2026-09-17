@@ -48,6 +48,10 @@ fun BoxScope.ProfileWithdrawBottomSheet(
             } else {
                 Color(0xFFF3BBBB)
             },
+            primaryPressColors = ButtonDefaults.buttonColors(
+                containerColor = MSTheme.color.red,
+                disabledContainerColor = Color(0xFFF3BBBB)
+            ),
             primaryButtonColors = ButtonDefaults.buttonColors(
                 containerColor = MSTheme.color.red,
                 disabledContainerColor = Color(0xFFF3BBBB)
