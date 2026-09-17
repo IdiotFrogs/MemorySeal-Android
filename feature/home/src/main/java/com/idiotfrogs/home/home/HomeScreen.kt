@@ -48,6 +48,7 @@ import com.idiotfrogs.home.component.HomeJoinContainer
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.home.component.BottomMenu
+import com.idiotfrogs.home.component.FabMenuList
 import com.idiotfrogs.home.component.HomeBottomBar
 import com.idiotfrogs.home.component.HomeEmptyScreen
 import com.idiotfrogs.home.component.HomeOpenedBanner
@@ -55,6 +56,7 @@ import com.idiotfrogs.home.component.HomeRemindBanner
 import com.idiotfrogs.home.component.HomeSectionDivider
 import com.idiotfrogs.home.component.HomeSmallTicket
 import com.idiotfrogs.home.component.OpenedTicket
+import com.idiotfrogs.home.component.UnopenedList
 import com.idiotfrogs.home.component.maxLineItem
 import com.idiotfrogs.navigation.HomeDetailType
 import org.orbitmvi.orbit.compose.collectAsState
@@ -109,15 +111,17 @@ fun HomeScreen(
 
     val menuList by remember {
         mutableStateOf(
-            listOf(
-                MSMenuFabModel("새 티켓 생성하기") {
-                    expanded = false
-                    onAction.invoke(HomeAction.CreateClicked)
-                },
-                MSMenuFabModel("참여코드로 합류하기") {
-                    expanded = false
-                    showJoinContainer = true
-                },
+            FabMenuList(
+                listOf(
+                    MSMenuFabModel("새 티켓 생성하기") {
+                        expanded = false
+                        onAction.invoke(HomeAction.CreateClicked)
+                    },
+                    MSMenuFabModel("참여코드로 합류하기") {
+                        expanded = false
+                        showJoinContainer = true
+                    },
+                )
             )
         )
     }
@@ -185,7 +189,7 @@ fun HomeScreen(
                                     maxLineItem {
                                         HomeOpenedBanner(
                                             modifier = Modifier.padding(top = 12.dp),
-                                            unopenedList = data.unopenedBanner,
+                                            unopenedList = UnopenedList(data.unopenedBanner),
                                             onClick = { onAction.invoke(HomeAction.TimeCapsuleClicked(it)) }
                                         )
                                     }

@@ -130,9 +130,7 @@ class HomeViewModel @Inject constructor(
             intent {
                 reduce {
                     state.copy(
-                        data = latestData.copy(
-                            opened = PaginationState<MyTimeCapsuleContent>().addPage(it)
-                        ),
+                        data = latestData.copy(opened = PaginationState<MyTimeCapsuleContent>().addPage(it)),
                         isLoading = false,
                         errorMessage = null,
                     )

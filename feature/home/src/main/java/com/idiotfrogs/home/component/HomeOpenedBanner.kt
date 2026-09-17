@@ -15,6 +15,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,13 +47,16 @@ private const val SIDE_ALPHA = 0.12f
 // 좌우 티켓을 중앙에 대비해서 아래로 내릴 크기
 private val SIDE_OFFSET_Y = 22.dp
 
+@Immutable
+data class UnopenedList(val contents: List<TimeCapsuleUnopenedContent>)
+
 @Composable
 fun HomeOpenedBanner(
     modifier: Modifier = Modifier,
-    unopenedList: List<TimeCapsuleUnopenedContent>,
+    unopenedList: UnopenedList,
     onClick: (capsuleId: Long) -> Unit,
 ) {
-    val pagerState = rememberPagerState { unopenedList.size }
+    val pagerState = rememberPagerState { unopenedList.contents.size }
 
     Box(modifier = modifier) {
         Box(
@@ -88,12 +92,11 @@ fun HomeOpenedBanner(
         Image(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(
-                    if (unopenedList.size == 1) 490.dp else 290.dp
-                )
-                .padding(horizontal = 28.dp)
+                .height(if (unopenedList.contents.size == 1) 490.dp else 290.dp)
                 .padding(
-                    top = if (unopenedList.size == 1) 0.dp else 13.dp
+                    top = if (unopenedList.contents.size == 1) 0.dp else 13.dp,
+                    start = 28.dp,
+                    end = 28.dp
                 )
                 .alpha(alpha),
             painter = painterResource(R.drawable.bg_light),
@@ -101,15 +104,15 @@ fun HomeOpenedBanner(
             contentScale = ContentScale.FillBounds
         )
         // 단일 티켓인 경우 디자인이 다름
-        if (unopenedList.size == 1) {
+        if (unopenedList.contents.size == 1) {
             HomeBigTicket(
                 modifier = Modifier
-                    .noRippleClickable { onClick.invoke(unopenedList.first().timeCapsuleId) }
+                    .noRippleClickable { onClick.invoke(unopenedList.contents.first().timeCapsuleId) }
                     .padding(top = 67.dp),
-                title = unopenedList.first().title,
-                openedAt = unopenedList.first().openedAt.toYearMonthDay(),
-                imageUrl = unopenedList.first().mainImageUrl,
-                step = unopenedList.first().stage,
+                title = unopenedList.contents.first().title,
+                openedAt = unopenedList.contents.first().openedAt.toYearMonthDay(),
+                imageUrl = unopenedList.contents.first().mainImageUrl,
+                step = unopenedList.contents.first().stage,
             )
             Spacer(modifier = Modifier.height(32.dp))
             return
@@ -126,12 +129,12 @@ fun HomeOpenedBanner(
         ) { page ->
             HomeMiddleTicket(
                 modifier = Modifier
-                    .noRippleClickable { onClick.invoke(unopenedList[page].timeCapsuleId) }
+                    .noRippleClickable { onClick.invoke(unopenedList.contents[page].timeCapsuleId) }
                     .deckPage(pagerState, page),
-                title = unopenedList[page].title,
-                openedAt = unopenedList[page].openedAt.toYearMonthDay(),
-                imageUrl = unopenedList[page].mainImageUrl,
-                step = unopenedList[page].stage,
+                title = unopenedList.contents[page].title,
+                openedAt = unopenedList.contents[page].openedAt.toYearMonthDay(),
+                imageUrl = unopenedList.contents[page].mainImageUrl,
+                step = unopenedList.contents[page].stage,
             )
         }
     }
@@ -160,7 +163,7 @@ private fun Modifier.deckPage(state: PagerState, page: Int): Modifier {
 @Composable
 private fun HomeOpenedBannerPreview() {
     HomeOpenedBanner(
-        unopenedList = emptyList(),
+        unopenedList = UnopenedList(emptyList()),
         onClick = {}
     )
 }

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,12 +42,15 @@ import com.idiotfrogs.resource.R
 
 enum class BottomMenu { HOME, OPENED }
 
+@Immutable
+data class FabMenuList(val menus: List<MSMenuFabModel>)
+
 @Composable
 fun HomeBottomBar(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     showDim: Boolean,
-    fabMenuList: List<MSMenuFabModel>,
+    fabMenuList: FabMenuList,
     selectedMenu: BottomMenu,
     onSelectChange: (BottomMenu) -> Unit,
     onExpandChange: (Boolean) -> Unit,
@@ -187,7 +191,7 @@ fun HomeBottomBar(
             expanded = expanded,
             hasFab = true,
             offset = DpOffset(x = 0.dp, y = (-16).dp),
-            menuList = fabMenuList,
+            menuList = fabMenuList.menus,
             onClick = { onExpandChange.invoke(!expanded) },
             onDismiss = { onExpandChange.invoke(false) },
         )
@@ -209,7 +213,7 @@ private fun HomeBottomBarPreview() {
         )
     }
     HomeBottomBar(
-        fabMenuList = menuList,
+        fabMenuList = FabMenuList(menuList),
         showDim = showDim,
         expanded = expanded,
         selectedMenu = selectedMenu,

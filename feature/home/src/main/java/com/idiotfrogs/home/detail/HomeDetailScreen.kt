@@ -40,9 +40,7 @@ fun HomeDetailRoute(
     viewModel: HomeDetailViewModel =
         hiltViewModel<HomeDetailViewModel, HomeDetailViewModel.Factory>(
             key = homeDetailType.name
-        ) {
-            it.create(homeDetailType)
-          },
+        ) { it.create(homeDetailType) },
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
