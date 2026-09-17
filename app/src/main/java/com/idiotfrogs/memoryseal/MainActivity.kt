@@ -100,7 +100,7 @@ class MainActivity : ComponentActivity() {
                                     navigator.navigate(Routes.Friend(event.capsuleId))
                                 }
                                 is MainNavigationEvent.NavigateToDetail -> {
-                                    navigator.navigate(Routes.Detail(event.capsuleId, refreshHome = event.refreshHome))
+                                    navigator.navigate(Routes.Detail(event.capsuleId))
                                     event.toastMessage?.let { message ->
                                         Toast.makeText(
                                             this@MainActivity,
@@ -140,12 +140,7 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Create> { CreateRoute() }
                                 entry<Routes.Profile> { ProfileRoute() }
                                 entry<Routes.EditProfile> { EditProfileRoute() }
-                                entry<Routes.Detail> {
-                                    DetailRoute(
-                                        capsuleId = it.id,
-                                        refreshHome = it.refreshHome
-                                    )
-                                }
+                                entry<Routes.Detail> { DetailRoute(capsuleId = it.id) }
                                 entry<Routes.Message> { MessageRoute(capsuleId = it.id) }
                                 entry<Routes.Preview> { PreviewRoute(capsuleId = it.id) }
                                 entry<Routes.Memory> { MemoryRoute(capsuleId = it.id) }

@@ -23,7 +23,7 @@ sealed interface Routes: NavKey {
     @Serializable
     data class Friend(val id: Long) : Routes
     @Serializable
-    data class Detail(val id: Long, val refreshHome: Boolean = false) : Routes
+    data class Detail(val id: Long) : Routes
     @Serializable
     data class Message(val id: Long) : Routes
     @Serializable

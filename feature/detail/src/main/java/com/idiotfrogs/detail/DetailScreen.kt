@@ -82,11 +82,10 @@ import kotlin.time.ExperimentalTime
 @Composable
 fun DetailRoute(
     capsuleId: Long,
-    refreshHome: Boolean,
     viewModel: DetailViewModel =
         hiltViewModel<DetailViewModel, DetailViewModel.Factory>(
             key = capsuleId.toString()
-        ) { it.create(capsuleId, refreshHome) },
+        ) { it.create(capsuleId) },
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()

@@ -185,31 +185,30 @@ fun HomeScreen(
                                 columns = GridCells.Fixed(2),
                                 horizontalArrangement = Arrangement.spacedBy((-12).dp) // 줄기가 겹쳐지도록
                             ) {
-                                if (!data.unopenedBanner.isNullOrEmpty()) {
-                                    maxLineItem {
-                                        HomeOpenedBanner(
-                                            modifier = Modifier.padding(top = 12.dp),
-                                            unopenedList = UnopenedList(data.unopenedBanner),
-                                            onClick = { onAction.invoke(HomeAction.TimeCapsuleClicked(it)) }
-                                        )
-                                    }
-                                }
                                 if (data.seasonBanner != null && data.seasonBanner.isValid) {
                                     maxLineItem {
                                         HomeRemindBanner(
                                             modifier = Modifier
-                                                .padding(
-                                                    top = if (!data.unopenedBanner.isNullOrEmpty()) 0.dp else 20.dp,
-                                                    start = 20.dp, end = 20.dp, bottom = 20.dp
-                                                )
+                                                .padding(top = 12.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
                                                 .noRippleClickable {
                                                     data.seasonBanner.capsuleId?.let {
-                                                        onAction.invoke(HomeAction.TimeCapsuleClicked(it))
+                                                        onAction.invoke(HomeAction.RemindBannerClicked(it))
                                                     }
                                                 },
                                             title = data.seasonBanner.title,
                                             mainImageUrl = data.seasonBanner.mainImageUrl,
                                             content = data.seasonBanner.content
+                                        )
+                                    }
+                                }
+                                if (!data.unopenedBanner.isNullOrEmpty()) {
+                                    maxLineItem {
+                                        HomeOpenedBanner(
+                                            modifier = Modifier.padding(
+                                                top = if (data.seasonBanner != null && data.seasonBanner.isValid) 0.dp else 20.dp
+                                            ),
+                                            unopenedList = UnopenedList(data.unopenedBanner),
+                                            onClick = { onAction.invoke(HomeAction.TimeCapsuleClicked(it)) }
                                         )
                                     }
                                 }

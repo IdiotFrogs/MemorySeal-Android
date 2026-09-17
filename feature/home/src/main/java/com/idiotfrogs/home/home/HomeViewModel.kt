@@ -1,6 +1,5 @@
 package com.idiotfrogs.home.home
 
-import android.util.Log
 import androidx.compose.runtime.Immutable
 import com.idiotfrogs.domain.usecase.auth.PutFcmTokenUseCase
 import com.idiotfrogs.domain.usecase.home.GetSeasonBannerUseCase
@@ -9,10 +8,12 @@ import com.idiotfrogs.domain.usecase.timecapsule.GetUnopenedUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.RequestCollaboratorUseCase
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.home.home.HomeSideEffect.*
+import com.idiotfrogs.model.home.Season
 import com.idiotfrogs.model.home.SeasonBannerResponse
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleContent
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
+import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.model.timecapsule.TimeCapsuleUnopenedContent
 import com.idiotfrogs.model.user.ProfileResponse
@@ -25,10 +26,13 @@ import com.idiotfrogs.util.sideEffect.RefreshEvent
 import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 import kotlin.collections.emptyList
+import kotlin.time.Clock
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -112,6 +116,19 @@ class HomeViewModel @Inject constructor(
                             errorMessage = null,
                         )
                     }
+//                    reduce {
+//                        state.copy(
+//                            data = latestData.copy(
+//                                user = userResult.getOrNull(),
+//                                beforeBuried = beforeBuriedResult.getOrNull()?.content ?: emptyList(),
+//                                buried = buriedResult.getOrNull()?.content ?: emptyList(),
+//                                seasonBanner = seasonBannerResponse.getOrNull(),
+//                                unopenedBanner = unopenedResponse.getOrNull()
+//                            ),
+//                            isLoading = false,
+//                            errorMessage = null,
+//                        )
+//                    }
                 }
             }
         }
@@ -218,12 +235,22 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun remindBannerClicked(id: Long) = intent {
+        // 진입 전 낙관적으로 배너를 업데이트 한다
+        reduce {
+            val latestData = state.data
+            state.copy(data = latestData?.copy(seasonBanner = null))
+        }
+        postSideEffect(HomeSideEffect.NavigateToDetail(id))
+    }
+
     override fun onAction(action: HomeAction) {
         intent {
             when (action) {
                 HomeAction.CreateClicked -> postSideEffect(HomeSideEffect.NavigateToCreate)
                 HomeAction.ProfileClicked -> postSideEffect(HomeSideEffect.NavigateToProfile)
                 is HomeAction.TimeCapsuleClicked -> postSideEffect(NavigateToDetail(action.id))
+                is HomeAction.RemindBannerClicked -> remindBannerClicked(action.id)
                 is HomeAction.JoinCodeSubmitted -> requestCollaborator(PendingCollaboratorsRequest(action.code))
                 HomeAction.RefreshHome -> fetchHome()
                 is HomeAction.HomeDetailClicked -> postSideEffect(NavigateToHomeDetail(action.homeDetailType))
@@ -264,6 +291,7 @@ sealed interface HomeAction {
     data object CreateClicked : HomeAction
     data object ProfileClicked : HomeAction
     data class TimeCapsuleClicked(val id: Long) : HomeAction
+    data class RemindBannerClicked(val id: Long) : HomeAction
     data class JoinCodeSubmitted(val code: String) : HomeAction
     data object RefreshHome : HomeAction
     data object RefreshOpened : HomeAction
