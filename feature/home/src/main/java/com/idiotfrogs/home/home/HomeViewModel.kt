@@ -116,19 +116,6 @@ class HomeViewModel @Inject constructor(
                             errorMessage = null,
                         )
                     }
-//                    reduce {
-//                        state.copy(
-//                            data = latestData.copy(
-//                                user = userResult.getOrNull(),
-//                                beforeBuried = beforeBuriedResult.getOrNull()?.content ?: emptyList(),
-//                                buried = buriedResult.getOrNull()?.content ?: emptyList(),
-//                                seasonBanner = seasonBannerResponse.getOrNull(),
-//                                unopenedBanner = unopenedResponse.getOrNull()
-//                            ),
-//                            isLoading = false,
-//                            errorMessage = null,
-//                        )
-//                    }
                 }
             }
         }
