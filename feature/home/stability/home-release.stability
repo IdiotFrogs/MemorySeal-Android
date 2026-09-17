@@ -16,14 +16,14 @@ public fun com.idiotfrogs.home.component.HomeBigTicket(modifier: androidx.compos
     - step: STABLE (primitive type)
 
 @Composable
-public fun com.idiotfrogs.home.component.HomeBottomBar(modifier: androidx.compose.ui.Modifier, expanded: kotlin.Boolean, showDim: kotlin.Boolean, fabMenuList: kotlin.collections.List<com.idiotfrogs.designsystem.model.MSMenuFabModel>, selectedMenu: com.idiotfrogs.home.component.BottomMenu, onSelectChange: kotlin.Function1<com.idiotfrogs.home.component.BottomMenu, kotlin.Unit>, onExpandChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onClickDim: kotlin.Function0<kotlin.Unit>): kotlin.Unit
-  skippable: false
+public fun com.idiotfrogs.home.component.HomeBottomBar(modifier: androidx.compose.ui.Modifier, expanded: kotlin.Boolean, showDim: kotlin.Boolean, fabMenuList: com.idiotfrogs.home.component.FabMenuList, selectedMenu: com.idiotfrogs.home.component.BottomMenu, onSelectChange: kotlin.Function1<com.idiotfrogs.home.component.BottomMenu, kotlin.Unit>, onExpandChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>, onClickDim: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
   restartable: true
   params:
     - modifier: STABLE (marked @Stable or @Immutable)
     - expanded: STABLE (primitive type)
     - showDim: STABLE (primitive type)
-    - fabMenuList: RUNTIME (requires runtime check)
+    - fabMenuList: STABLE (marked @Stable or @Immutable)
     - selectedMenu: STABLE (class with no mutable properties)
     - onSelectChange: STABLE (function type)
     - onExpandChange: STABLE (function type)
@@ -68,12 +68,12 @@ public fun com.idiotfrogs.home.component.HomeMiddleTicket(modifier: androidx.com
     - step: STABLE (primitive type)
 
 @Composable
-public fun com.idiotfrogs.home.component.HomeOpenedBanner(modifier: androidx.compose.ui.Modifier, unopenedList: kotlin.collections.List<com.idiotfrogs.model.timecapsule.TimeCapsuleUnopenedContent>, onClick: kotlin.Function1<@[ParameterName(name = \): kotlin.Unit
-  skippable: false
+public fun com.idiotfrogs.home.component.HomeOpenedBanner(modifier: androidx.compose.ui.Modifier, unopenedList: com.idiotfrogs.home.component.UnopenedList, onClick: kotlin.Function1<@[ParameterName(name = \): kotlin.Unit
+  skippable: true
   restartable: true
   params:
     - modifier: STABLE (marked @Stable or @Immutable)
-    - unopenedList: RUNTIME (requires runtime check)
+    - unopenedList: STABLE (marked @Stable or @Immutable)
     - onClick: STABLE (function type)
 
 @Composable
