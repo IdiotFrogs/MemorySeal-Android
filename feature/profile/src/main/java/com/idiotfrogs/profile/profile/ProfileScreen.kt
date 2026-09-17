@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSActionContainer
+import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTitleDialog
@@ -45,6 +46,7 @@ import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.profile.component.ProfileCard
 import com.idiotfrogs.profile.component.ProfileHeader
+import com.idiotfrogs.profile.component.ProfileWithdrawBottomSheet
 import com.idiotfrogs.resource.R
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
@@ -111,34 +113,6 @@ fun ProfileScreen(
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
-        )
-    }
-
-    if (showWithdrawSheet) {
-        MSActionContainer(
-            title = "회원탈퇴",
-            subtitle = "",
-            content = "",
-            textFieldState = textFieldState,
-            hint = "",
-            primaryButtonEnabled = textFieldState.text.isNotEmpty(),
-            primaryButtonText = "탈퇴",
-            primaryWavyStrokeColor = if (textFieldState.text.isNotEmpty()) {
-                MSTheme.color.red
-            } else {
-                Color(0xFFF3BBBB)
-            },
-            primaryButtonColors = ButtonDefaults.buttonColors(
-                containerColor = MSTheme.color.red,
-                disabledContainerColor = Color(0xFFF3BBBB)
-            ),
-            secondaryWavyStrokeColor = MSTheme.color.greyG1,
-            secondaryButtonText = "취소",
-            onPrimaryClick = {
-                showWithdrawSheet = false
-                onAction.invoke(ProfileAction.WithdrawConfirmed)
-            },
-            onSecondaryClick = { showWithdrawSheet = false }
         )
     }
 
@@ -260,6 +234,19 @@ fun ProfileScreen(
                 }
             }
         }
+        MSDim(
+            visible = showWithdrawSheet,
+            onDismiss = { showWithdrawSheet = false }
+        )
+        ProfileWithdrawBottomSheet(
+            isShow = showWithdrawSheet,
+            textFieldState = textFieldState,
+            onCancel = { showWithdrawSheet = false },
+            onWithdraw = {
+                showWithdrawSheet = false
+                onAction.invoke(ProfileAction.WithdrawConfirmed)
+            },
+        )
     }
 }
 
