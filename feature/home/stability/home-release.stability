@@ -5,29 +5,15 @@
 //   ./gradlew :home:stabilityDump
 
 @Composable
-public fun com.idiotfrogs.home.HomeRoute(viewModel: com.idiotfrogs.home.HomeViewModel): kotlin.Unit
-  skippable: false
-  restartable: true
-  params:
-    - viewModel: UNSTABLE (has mutable properties or unstable members)
-
-@Composable
-public fun com.idiotfrogs.home.HomeScreen(showToast: kotlin.Boolean, data: com.idiotfrogs.home.HomeData, isRefreshing: kotlin.Boolean, onAction: kotlin.Function1<com.idiotfrogs.home.HomeAction, kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.home.component.HomeBigTicket(modifier: androidx.compose.ui.Modifier, title: kotlin.String, openedAt: kotlin.String, imageUrl: kotlin.String?, step: kotlin.Int): kotlin.Unit
   skippable: true
   restartable: true
   params:
-    - showToast: STABLE (primitive type)
-    - data: STABLE (marked @Stable or @Immutable)
-    - isRefreshing: STABLE (primitive type)
-    - onAction: STABLE (function type)
-
-@Composable
-public fun com.idiotfrogs.home.component.HomeHeader(profileUrl: kotlin.String?, navigateToProfile: kotlin.Function0<kotlin.Unit>): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - profileUrl: STABLE (class with no mutable properties)
-    - navigateToProfile: STABLE (function type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - title: STABLE (String is immutable)
+    - openedAt: STABLE (String is immutable)
+    - imageUrl: STABLE (class with no mutable properties)
+    - step: STABLE (primitive type)
 
 @Composable
 public fun com.idiotfrogs.home.component.HomeJoinContainer(isShow: kotlin.Boolean, textFieldState: androidx.compose.foundation.text.input.TextFieldState, onCancel: kotlin.Function0<kotlin.Unit>, onJoin: kotlin.Function0<kotlin.Unit>): kotlin.Unit
@@ -40,14 +26,25 @@ public fun com.idiotfrogs.home.component.HomeJoinContainer(isShow: kotlin.Boolea
     - onJoin: STABLE (function type)
 
 @Composable
-public fun com.idiotfrogs.home.component.HomeTicket(buried: kotlin.Boolean, createdAt: kotlin.String, title: kotlin.String, imageUrl: kotlin.String?, step: kotlin.Int, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+public fun com.idiotfrogs.home.component.HomeMiddleTicket(modifier: androidx.compose.ui.Modifier, title: kotlin.String, openedAt: kotlin.String, imageUrl: kotlin.String?, step: kotlin.Int): kotlin.Unit
   skippable: true
   restartable: true
   params:
-    - buried: STABLE (primitive type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - title: STABLE (String is immutable)
+    - openedAt: STABLE (String is immutable)
+    - imageUrl: STABLE (class with no mutable properties)
+    - step: STABLE (primitive type)
+
+@Composable
+public fun com.idiotfrogs.home.component.HomeSmallTicket(modifier: androidx.compose.ui.Modifier, dDayCount: kotlin.String?, createdAt: kotlin.String, title: kotlin.String, imageUrl: kotlin.String?, step: kotlin.Int): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - dDayCount: STABLE (class with no mutable properties)
     - createdAt: STABLE (String is immutable)
     - title: STABLE (String is immutable)
     - imageUrl: STABLE (class with no mutable properties)
     - step: STABLE (primitive type)
-    - modifier: STABLE (marked @Stable or @Immutable)
 

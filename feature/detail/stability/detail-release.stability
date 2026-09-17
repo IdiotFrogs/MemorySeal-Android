@@ -5,11 +5,12 @@
 //   ./gradlew :detail:stabilityDump
 
 @Composable
-public fun com.idiotfrogs.detail.DetailRoute(capsuleId: kotlin.Long, viewModel: com.idiotfrogs.detail.DetailViewModel): kotlin.Unit
+public fun com.idiotfrogs.detail.DetailRoute(capsuleId: kotlin.Long, refreshHome: kotlin.Boolean, viewModel: com.idiotfrogs.detail.DetailViewModel): kotlin.Unit
   skippable: false
   restartable: true
   params:
     - capsuleId: STABLE (primitive type)
+    - refreshHome: STABLE (primitive type)
     - viewModel: UNSTABLE (has mutable properties or unstable members)
 
 @Composable

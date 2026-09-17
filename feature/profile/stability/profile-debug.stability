@@ -52,6 +52,16 @@ public fun com.idiotfrogs.profile.component.ProfileTicketCard(imageUrl: kotlin.S
     - onClick: STABLE (function type)
 
 @Composable
+public fun com.idiotfrogs.profile.component.ProfileWithdrawBottomSheet(isShow: kotlin.Boolean, textFieldState: androidx.compose.foundation.text.input.TextFieldState, onWithdraw: kotlin.Function0<kotlin.Unit>, onCancel: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - isShow: STABLE (primitive type)
+    - textFieldState: STABLE (marked @Stable or @Immutable)
+    - onWithdraw: STABLE (function type)
+    - onCancel: STABLE (function type)
+
+@Composable
 public fun com.idiotfrogs.profile.editprofile.EditProfileRoute(viewModel: com.idiotfrogs.profile.editprofile.EditProfileViewModel): kotlin.Unit
   skippable: false
   restartable: true
