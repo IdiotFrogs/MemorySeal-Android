@@ -1,6 +1,7 @@
 package com.idiotfrogs.detail
 
 import androidx.compose.runtime.Immutable
+import com.idiotfrogs.analytics.AnalyticsTracker
 import com.idiotfrogs.domain.usecase.timecapsule.BuryTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleCollaboratorsUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleUseCase
@@ -27,6 +28,7 @@ class DetailViewModel @AssistedInject constructor(
     private val getTimeCapsuleUseCase: GetTimeCapsuleUseCase,
     private val getTimeCapsuleCollaboratorsUseCase: GetTimeCapsuleCollaboratorsUseCase,
     private val buryTimeCapsuleUseCase: BuryTimeCapsuleUseCase,
+    private val analyticsTracker: AnalyticsTracker,
 ) : BaseViewModel<DetailUiState, DetailSideEffect, DetailAction>() {
     override val container: Container<DetailUiState, DetailSideEffect> = container(
         initialState = DetailUiState(),
@@ -66,6 +68,9 @@ class DetailViewModel @AssistedInject constructor(
                         postSideEffect(DetailSideEffect.NavigateToOpen(capsuleId))
                         RefreshSideEffect.tryEmit(RefreshEvent.Home)
                     } else {
+                        if (capsule?.timeCapsuleStatus == TimeCapsuleStatus.OPENED) {
+                            analyticsTracker.openedTicketVisited()
+                        }
                         reduce {
                             state.copy(
                                 data = TimeCapsuleData(
@@ -90,6 +95,14 @@ class DetailViewModel @AssistedInject constructor(
                 capsuleId = capsuleId,
                 body = BuryTimeCapsuleRequest(openedAt),
             ).onSuccess { response ->
+                val buriedAt = response.buriedAt
+                val scheduledOpenAt = response.openedAt
+                if (buriedAt != null && scheduledOpenAt != null) {
+                    analyticsTracker.ticketBuried(
+                        createdDays = buriedAt.toEpochDays() - response.createdAt.toEpochDays(),
+                        buriedDays = scheduledOpenAt.toEpochDays() - buriedAt.toEpochDays(),
+                    )
+                }
                 RefreshSideEffect.tryEmit(RefreshEvent.Home)
                 intent {
                     reduce {
