@@ -1,6 +1,7 @@
 package com.idiotfrogs.message
 
 import androidx.compose.runtime.Immutable
+import com.idiotfrogs.analytics.AnalyticsTracker
 import com.idiotfrogs.domain.usecase.timecapsule.CreateTimeCapsuleContentUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.DeleteTimeCapsuleContentUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleContentUseCase
@@ -25,6 +26,7 @@ class MessageViewModel @AssistedInject constructor(
     private val createTimeCapsuleContentUseCase: CreateTimeCapsuleContentUseCase,
     private val modifyTimeCapsuleContentUseCase: ModifyTimeCapsuleContentUseCase,
     private val deleteTimeCapsuleContentUseCase: DeleteTimeCapsuleContentUseCase,
+    private val analyticsTracker: AnalyticsTracker,
 ) : BaseViewModel<MessageUiState, MessageSideEffect, MessageAction>() {
 
     override val container: Container<MessageUiState, MessageSideEffect> = container(
@@ -62,6 +64,7 @@ class MessageViewModel @AssistedInject constructor(
                 content = content,
                 files = files
             ).onSuccess {
+                analyticsTracker.messageAdded(if (files.isEmpty()) "text" else "image")
                 getMyTimeCapsuleContentUseCase(capsuleId).onSuccess { contents ->
                     intent {
                         reduce {
