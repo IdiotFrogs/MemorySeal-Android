@@ -71,6 +71,8 @@ private val BOTTOM_BAR_SIZE = 80.dp
 
 @Composable
 fun HomeRoute(
+    selectedMenu: BottomMenu,
+    onSelectChange: (BottomMenu) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val navigator = LocalComposeMSNavigator.current
@@ -93,7 +95,9 @@ fun HomeRoute(
             HomeScreen(
                 data = data,
                 isRefreshing = uiState.isLoading,
-                onAction = viewModel::onAction
+                onAction = viewModel::onAction,
+                selectedMenu = selectedMenu,
+                onSelectChange = onSelectChange,
             )
         }
 
@@ -127,6 +131,8 @@ fun HomeScreen(
     data: HomeData,
     isRefreshing: Boolean,
     onAction: (HomeAction) -> Unit,
+    selectedMenu: BottomMenu,
+    onSelectChange: (BottomMenu) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     var showJoinContainer by remember { mutableStateOf(false) }
@@ -154,7 +160,7 @@ fun HomeScreen(
     }
 
     val textFieldState = rememberTextFieldState()
-    val pagerState = rememberPagerState(initialPage = 0) { BottomMenu.entries.size }
+    val pagerState = rememberPagerState(initialPage = selectedMenu.ordinal) { BottomMenu.entries.size }
 
     LaunchedEffect(imeHeight) {
         if (showJoinContainer && imeHeight == 0) {
@@ -162,8 +168,6 @@ fun HomeScreen(
             expanded = false
         }
     }
-
-    var selectedMenu by remember { mutableStateOf(BottomMenu.HOME) }
 
     LaunchedEffect(selectedMenu) {
         pagerState.animateScrollToPage(selectedMenu.ordinal)
@@ -384,7 +388,7 @@ fun HomeScreen(
             showDim = showDim,
             fabMenuList = menuList,
             expanded = expanded,
-            onSelectChange = { selectedMenu = it },
+            onSelectChange = onSelectChange,
             onExpandChange = { expanded = it },
             onClickDim = { onDimClick() }
         )
@@ -400,9 +404,12 @@ fun HomeScreen(
 @DevicePreview
 @Composable
 fun HomeScreenPreview() {
+    var selectedMenu by remember { mutableStateOf(BottomMenu.HOME) }
     HomeScreen(
         data = HomeData(),
         isRefreshing = false,
         onAction = {},
+        selectedMenu = selectedMenu,
+        onSelectChange = { selectedMenu = it },
     )
 }

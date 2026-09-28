@@ -15,7 +15,9 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -24,17 +26,20 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.idiotfrogs.auth.login.LoginRoute
 import com.idiotfrogs.auth.signup.SignUpRoute
+import com.idiotfrogs.analytics.AnalyticsTracker
 import com.idiotfrogs.create.CreateRoute
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.detail.DetailRoute
 import com.idiotfrogs.friend.FriendRoute
 import com.idiotfrogs.home.detail.HomeDetailRoute
+import com.idiotfrogs.home.component.BottomMenu
 import com.idiotfrogs.home.home.HomeRoute
 import com.idiotfrogs.management.ManagementRoute
 import com.idiotfrogs.memory.MemoryRoute
 import com.idiotfrogs.message.MessageRoute
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.navigation.MSNavigatorImpl
+import com.idiotfrogs.navigation.HomeDetailType
 import com.idiotfrogs.navigation.Routes
 import com.idiotfrogs.open.OpenRoute
 import com.idiotfrogs.preview.PreviewRoute
@@ -44,10 +49,12 @@ import com.idiotfrogs.splash.SplashRoute
 import com.idiotfrogs.watering.WateringDetailRoute
 import com.idiotfrogs.watering.WateringRoute
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject lateinit var analyticsTracker: AnalyticsTracker
     private val mainViewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,6 +68,12 @@ class MainActivity : ComponentActivity() {
                 val backStack = rememberNavBackStack(Routes.Splash)
                 val navigator = remember(backStack) { MSNavigatorImpl(backStack) }
                 val currentRoute = backStack.lastOrNull() as? Routes
+                var homeTab by remember { mutableStateOf(BottomMenu.HOME) }
+                val screenName = currentRoute?.analyticsScreenName(homeTab)
+
+                LaunchedEffect(currentRoute, screenName) {
+                    screenName?.let(analyticsTracker::visitedScreen)
+                }
                 val pendingInviteCapsuleId by mainViewModel.pendingInviteCapsuleId.collectAsState()
                 val isAuthenticatedRoute =
                     currentRoute != null &&
@@ -135,7 +148,12 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Splash> { SplashRoute() }
                                 entry<Routes.Login> { LoginRoute() }
                                 entry<Routes.SignUp> { SignUpRoute() }
-                                entry<Routes.Home> { HomeRoute() }
+                                entry<Routes.Home> {
+                                    HomeRoute(
+                                        selectedMenu = homeTab,
+                                        onSelectChange = { homeTab = it },
+                                    )
+                                }
                                 entry<Routes.HomeDetail> { HomeDetailRoute(it.homeDetailType) }
                                 entry<Routes.Create> { CreateRoute() }
                                 entry<Routes.Profile> { ProfileRoute() }
@@ -186,4 +204,27 @@ class MainActivity : ComponentActivity() {
         mainViewModel.onAppLinkReceived(uri)
         intent.data = null
     }
+}
+
+private fun Routes.analyticsScreenName(homeTab: BottomMenu): String = when (this) {
+    Routes.Splash -> "Splash"
+    Routes.Login -> "Login"
+    Routes.SignUp -> "SignUp"
+    Routes.Home -> if (homeTab == BottomMenu.HOME) "Home" else "OpenedTicketList"
+    is Routes.HomeDetail -> when (homeDetailType) {
+        HomeDetailType.BEFORE_BURIED -> "TicketList"
+        HomeDetailType.BURIED -> "BuriedTicketList"
+    }
+    Routes.Create -> "CreateTicket"
+    Routes.Profile -> "Profile"
+    Routes.EditProfile -> "EditProfile"
+    is Routes.Friend -> "Friend"
+    is Routes.Detail -> "TicketDetail"
+    is Routes.Message -> "Message"
+    is Routes.Management -> "Management"
+    is Routes.Preview -> "Preview"
+    is Routes.Memory -> "Memory"
+    is Routes.Watering -> "Watering"
+    is Routes.WateringDetail -> "WateringDetail"
+    is Routes.Open -> "TicketOpen"
 }
