@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -32,10 +33,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSLoadingOverlay
+import com.idiotfrogs.designsystem.component.MSText
+import com.idiotfrogs.designsystem.component.MSTitleDialog
 import com.idiotfrogs.designsystem.model.MSMenuFabModel
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
@@ -72,12 +76,15 @@ fun HomeRoute(
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
 
+    var showJoinErrorDialog by remember { mutableStateOf(false) }
+
     viewModel.collectSideEffect {
         when (it) {
             HomeSideEffect.NavigateToCreate -> navigator.navigate(Routes.Create)
             HomeSideEffect.NavigateToProfile -> navigator.navigate(Routes.Profile)
             is HomeSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(it.id))
             is HomeSideEffect.NavigateToHomeDetail -> navigator.navigate(Routes.HomeDetail(it.homeDetailType))
+            HomeSideEffect.ShowJoinErrorDialog -> showJoinErrorDialog = true
         }
     }
 
@@ -91,6 +98,26 @@ fun HomeRoute(
         }
 
         MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
+    }
+
+    if (showJoinErrorDialog) {
+        MSTitleDialog(
+            title = "합류 실패",
+            confirmText = "확인",
+            cancelText = "닫기",
+            onConfirm = { showJoinErrorDialog = false },
+            onCancel = { showJoinErrorDialog = false },
+            content = {
+                Spacer(modifier = Modifier.height(8.dp))
+                MSText(
+                    text = "유효하지 않거나 만료된 초대 코드입니다",
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.dp,
+                    color = MSTheme.color.greyG5
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        )
     }
 }
 
@@ -154,179 +181,184 @@ fun HomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(MSTheme.color.white)
-            .systemBarsPadding()
     ) {
-        HomeHeader(
-            selectedMenu = selectedMenu,
-            profileUrl = data.user?.profileImageUrl,
-            navigateToProfile = { onAction.invoke(HomeAction.ProfileClicked) }
-        )
-        HorizontalPager(
-            modifier = Modifier.padding(top = TOP_BAR_SIZE),
-            state = pagerState,
-            userScrollEnabled = false
-        ) { page ->
-            when (page) {
-                BottomMenu.HOME.ordinal -> {
-                    if (data.buried.isEmpty() && data.beforeBuried.isEmpty()) {
-                        HomeEmptyScreen(
-                            modifier = Modifier.padding(bottom = BOTTOM_BAR_SIZE),
-                            selectedMenu = BottomMenu.HOME
-                        )
-                    } else {
-                        val refreshState = rememberPullToRefreshState()
-                        PullToRefreshBox(
-                            isRefreshing = isRefreshing,
-                            state = refreshState,
-                            onRefresh = { onAction.invoke(HomeAction.RefreshHome) }
-                        ) {
-                            LazyVerticalGrid(
-                                modifier = Modifier.fillMaxSize(),
-                                columns = GridCells.Fixed(2),
-                                horizontalArrangement = Arrangement.spacedBy((-12).dp) // 줄기가 겹쳐지도록
+        Box(modifier = Modifier.systemBarsPadding()) {
+            HomeHeader(
+                selectedMenu = selectedMenu,
+                profileUrl = data.user?.profileImageUrl,
+                navigateToProfile = { onAction.invoke(HomeAction.ProfileClicked) }
+            )
+            HorizontalPager(
+                modifier = Modifier.padding(top = TOP_BAR_SIZE),
+                state = pagerState,
+                userScrollEnabled = false
+            ) { page ->
+                when (page) {
+                    BottomMenu.HOME.ordinal -> {
+                        if (data.buried.isEmpty() && data.beforeBuried.isEmpty()) {
+                            HomeEmptyScreen(
+                                modifier = Modifier
+                                    .padding(bottom = BOTTOM_BAR_SIZE)
+                                    .navigationBarsPadding(),
+                                selectedMenu = BottomMenu.HOME
+                            )
+                        } else {
+                            val refreshState = rememberPullToRefreshState()
+                            PullToRefreshBox(
+                                isRefreshing = isRefreshing,
+                                state = refreshState,
+                                onRefresh = { onAction.invoke(HomeAction.RefreshHome) }
                             ) {
-                                if (data.seasonBanner != null && data.seasonBanner.isValid) {
-                                    maxLineItem {
-                                        HomeRemindBanner(
-                                            modifier = Modifier
-                                                .padding(top = 12.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
-                                                .noRippleClickable {
-                                                    data.seasonBanner.capsuleId?.let {
-                                                        onAction.invoke(HomeAction.RemindBannerClicked(it))
-                                                    }
-                                                },
-                                            title = data.seasonBanner.title,
-                                            mainImageUrl = data.seasonBanner.mainImageUrl,
-                                            content = data.seasonBanner.content
-                                        )
+                                LazyVerticalGrid(
+                                    modifier = Modifier.fillMaxSize(),
+                                    columns = GridCells.Fixed(2),
+                                    horizontalArrangement = Arrangement.spacedBy((-12).dp) // 줄기가 겹쳐지도록
+                                ) {
+                                    if (data.seasonBanner != null && data.seasonBanner.isValid) {
+                                        maxLineItem {
+                                            HomeRemindBanner(
+                                                modifier = Modifier
+                                                    .padding(top = 12.dp, start = 20.dp, end = 20.dp, bottom = 20.dp)
+                                                    .noRippleClickable {
+                                                        data.seasonBanner.capsuleId?.let {
+                                                            onAction.invoke(HomeAction.RemindBannerClicked(it))
+                                                        }
+                                                    },
+                                                title = data.seasonBanner.title,
+                                                mainImageUrl = data.seasonBanner.mainImageUrl,
+                                                content = data.seasonBanner.content
+                                            )
+                                        }
                                     }
-                                }
-                                if (!data.unopenedBanner.isNullOrEmpty()) {
-                                    maxLineItem {
-                                        HomeOpenedBanner(
-                                            modifier = Modifier.padding(
-                                                top = if (data.seasonBanner != null && data.seasonBanner.isValid) 0.dp else 20.dp
-                                            ),
-                                            unopenedList = UnopenedList(data.unopenedBanner),
-                                            onClick = { onAction.invoke(HomeAction.TimeCapsuleClicked(it)) }
-                                        )
-                                    }
-                                }
-                                if (data.beforeBuried.isNotEmpty()) {
-                                    maxLineItem {
-                                        HomeSectionDivider(
-                                            modifier = Modifier
-                                                .noRippleClickable {
-                                                    onAction.invoke(
-                                                        HomeAction.HomeDetailClicked(
-                                                            HomeDetailType.BEFORE_BURIED
-                                                        )
-                                                    )
-                                                }
-                                                .padding(horizontal = (22.5).dp, vertical = 20.dp),
-                                            sectionName = "타임 티켓"
-                                        )
-                                    }
-                                    itemsIndexed(data.beforeBuried) { index, item ->
-                                        val isLastRow = index / 2 == data.beforeBuried.lastIndex / 2
-                                        HomeSmallTicket(
-                                            modifier = Modifier
-                                                .padding(
-                                                    bottom = if (isLastRow) 0.dp else 16.dp
-                                                )
-                                                .noRippleClickable {
-                                                    onAction.invoke(HomeAction.TimeCapsuleClicked(item.timeCapsuleId))
-                                                },
-                                            dDayCount = item.openedAt?.toDdayCount(),
-                                            createdAt = item.createdAt.toYearMonthDay(),
-                                            title = item.title,
-                                            imageUrl = item.mainImageUrl,
-                                            step = item.stage
-                                        )
-                                    }
-                                }
-                                // 만약 묻은 티켓이 없다면 하단에 공간 홛보
-                                if (data.buried.isEmpty()) {
-                                    maxLineItem { Spacer(modifier = Modifier.height(112.dp)) }
-                                } else {
-                                    maxLineItem {
-                                        HomeSectionDivider(
-                                            modifier = Modifier
-                                                .noRippleClickable {
-                                                    onAction.invoke(
-                                                        HomeAction.HomeDetailClicked(
-                                                            HomeDetailType.BURIED
-                                                        )
-                                                    )
-                                                }
-                                                .padding(horizontal = (22.5).dp)
-                                                .padding(
-                                                    // 만약 묻기전 티켓이 없다면 맨 위이므로 패딩 값이 없다
-                                                    top = if (data.beforeBuried.isEmpty()) 0.dp else 40.dp,
-                                                    bottom = 15.dp
+                                    if (!data.unopenedBanner.isNullOrEmpty()) {
+                                        maxLineItem {
+                                            HomeOpenedBanner(
+                                                modifier = Modifier.padding(
+                                                    top = if (data.seasonBanner != null && data.seasonBanner.isValid) 0.dp else 20.dp
                                                 ),
-                                            sectionName = "오픈 예정 티켓"
-                                        )
+                                                unopenedList = UnopenedList(data.unopenedBanner),
+                                                onClick = { onAction.invoke(HomeAction.TimeCapsuleClicked(it)) }
+                                            )
+                                        }
                                     }
-                                    itemsIndexed(data.buried) { index, item ->
-                                        val isLastRow = index / 2 == data.buried.lastIndex / 2
-                                        HomeSmallTicket(
-                                            modifier = Modifier
-                                                .padding(
-                                                    bottom = if (isLastRow) 0.dp else 16.dp
-                                                )
-                                                .noRippleClickable {
-                                                    onAction.invoke(HomeAction.TimeCapsuleClicked(item.timeCapsuleId))
-                                                },
-                                            dDayCount = item.openedAt?.toDdayCount(),
-                                            createdAt = item.createdAt.toYearMonthDay(),
-                                            title = item.title,
-                                            imageUrl = item.mainImageUrl,
-                                            step = item.stage
-                                        )
+                                    if (data.beforeBuried.isNotEmpty()) {
+                                        maxLineItem {
+                                            HomeSectionDivider(
+                                                modifier = Modifier
+                                                    .noRippleClickable {
+                                                        onAction.invoke(
+                                                            HomeAction.HomeDetailClicked(
+                                                                HomeDetailType.BEFORE_BURIED
+                                                            )
+                                                        )
+                                                    }
+                                                    .padding(horizontal = (22.5).dp, vertical = 20.dp),
+                                                sectionName = "타임 티켓"
+                                            )
+                                        }
+                                        itemsIndexed(data.beforeBuried) { index, item ->
+                                            val isLastRow = index / 2 == data.beforeBuried.lastIndex / 2
+                                            HomeSmallTicket(
+                                                modifier = Modifier
+                                                    .padding(
+                                                        bottom = if (isLastRow) 0.dp else 16.dp
+                                                    )
+                                                    .noRippleClickable {
+                                                        onAction.invoke(HomeAction.TimeCapsuleClicked(item.timeCapsuleId))
+                                                    },
+                                                dDayCount = item.openedAt?.toDdayCount(),
+                                                createdAt = item.createdAt.toYearMonthDay(),
+                                                title = item.title,
+                                                imageUrl = item.mainImageUrl,
+                                                step = item.stage
+                                            )
+                                        }
                                     }
-                                    maxLineItem { Spacer(modifier = Modifier.height(112.dp)) }
+                                    // 만약 묻은 티켓이 없다면 하단에 공간 홛보
+                                    if (data.buried.isEmpty()) {
+                                        maxLineItem { Spacer(modifier = Modifier.height(112.dp)) }
+                                    } else {
+                                        maxLineItem {
+                                            HomeSectionDivider(
+                                                modifier = Modifier
+                                                    .noRippleClickable {
+                                                        onAction.invoke(
+                                                            HomeAction.HomeDetailClicked(
+                                                                HomeDetailType.BURIED
+                                                            )
+                                                        )
+                                                    }
+                                                    .padding(horizontal = (22.5).dp)
+                                                    .padding(
+                                                        // 만약 묻기전 티켓이 없다면 맨 위이므로 패딩 값이 없다
+                                                        top = if (data.beforeBuried.isEmpty()) 0.dp else 40.dp,
+                                                        bottom = 15.dp
+                                                    ),
+                                                sectionName = "오픈 예정 티켓"
+                                            )
+                                        }
+                                        itemsIndexed(data.buried) { index, item ->
+                                            val isLastRow = index / 2 == data.buried.lastIndex / 2
+                                            HomeSmallTicket(
+                                                modifier = Modifier
+                                                    .padding(
+                                                        bottom = if (isLastRow) 0.dp else 16.dp
+                                                    )
+                                                    .noRippleClickable {
+                                                        onAction.invoke(HomeAction.TimeCapsuleClicked(item.timeCapsuleId))
+                                                    },
+                                                dDayCount = item.openedAt?.toDdayCount(),
+                                                createdAt = item.createdAt.toYearMonthDay(),
+                                                title = item.title,
+                                                imageUrl = item.mainImageUrl,
+                                                step = item.stage
+                                            )
+                                        }
+                                        maxLineItem { Spacer(modifier = Modifier.height(112.dp)) }
+                                    }
                                 }
                             }
                         }
                     }
-                }
-                BottomMenu.OPENED.ordinal -> {
-                    if (data.opened.items.isEmpty()) {
-                        HomeEmptyScreen(
-                            modifier = Modifier.padding(bottom = BOTTOM_BAR_SIZE),
-                            selectedMenu = BottomMenu.OPENED
-                        )
-                    } else {
-                        val refreshState = rememberPullToRefreshState()
-                        PullToRefreshBox(
-                            isRefreshing = isRefreshing,
-                            state = refreshState,
-                            onRefresh = { onAction.invoke(HomeAction.RefreshOpened) }
-                        ) {
-                            LazyVerticalGrid(
+                    BottomMenu.OPENED.ordinal -> {
+                        if (data.opened.items.isEmpty()) {
+                            HomeEmptyScreen(
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 20.dp),
-                                columns = GridCells.Fixed(2),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(24.dp),
-                                contentPadding = PaddingValues(top = 20.dp, bottom = BOTTOM_BAR_SIZE)
+                                    .padding(bottom = BOTTOM_BAR_SIZE)
+                                    .navigationBarsPadding(),
+                                selectedMenu = BottomMenu.OPENED
+                            )
+                        } else {
+                            val refreshState = rememberPullToRefreshState()
+                            PullToRefreshBox(
+                                isRefreshing = isRefreshing,
+                                state = refreshState,
+                                onRefresh = { onAction.invoke(HomeAction.RefreshOpened) }
                             ) {
-                                items(data.opened.items) {
-                                    OpenedTicket(
-                                        modifier = Modifier.noRippleClickable {
-                                            onAction.invoke(
-                                                HomeAction.TimeCapsuleClicked(
-                                                    it.timeCapsuleId
+                                LazyVerticalGrid(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(horizontal = 20.dp),
+                                    columns = GridCells.Fixed(2),
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                                    contentPadding = PaddingValues(top = 20.dp, bottom = BOTTOM_BAR_SIZE)
+                                ) {
+                                    items(data.opened.items) {
+                                        OpenedTicket(
+                                            modifier = Modifier.noRippleClickable {
+                                                onAction.invoke(
+                                                    HomeAction.TimeCapsuleClicked(
+                                                        it.timeCapsuleId
+                                                    )
                                                 )
-                                            )
-                                        },
-                                        title = it.title,
-                                        createAt = it.createdAt.toYearMonthDay(),
-                                        openedAt = it.openedAt.toYearMonthDay(),
-                                        imageUrl = it.mainImageUrl
-                                    )
+                                            },
+                                            title = it.title,
+                                            createAt = it.createdAt.toYearMonthDay(),
+                                            openedAt = it.openedAt.toYearMonthDay(),
+                                            imageUrl = it.mainImageUrl
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -340,7 +372,9 @@ fun HomeScreen(
         }
 
         MSDim(
-            modifier = Modifier.padding(bottom = 80.dp), // 하단바 영역 침범 x
+            modifier = Modifier
+                .padding(bottom = 80.dp)
+                .navigationBarsPadding(), // 하단바 영역 및 네비게이션 영역 침범 x
             visible = showDim,
             onDismiss = { onDimClick() }
         )

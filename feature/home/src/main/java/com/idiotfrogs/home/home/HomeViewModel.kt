@@ -217,8 +217,10 @@ class HomeViewModel @Inject constructor(
                 fetchHome()
             }
         }.onFailure {
-            intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
-            // TODO 추 후 에러 핸들링 맞추기 (공동 작업자 이미 신청한 사용자라면 409)
+            intent {
+                reduce { state.copy(isLoading = false, errorMessage = it.message) }
+                postSideEffect(HomeSideEffect.ShowJoinErrorDialog)
+            }
         }
     }
 
@@ -291,4 +293,5 @@ sealed interface HomeSideEffect {
     data object NavigateToProfile : HomeSideEffect
     data class NavigateToDetail(val id: Long) : HomeSideEffect
     data class NavigateToHomeDetail(val homeDetailType: HomeDetailType) : HomeSideEffect
+    data object ShowJoinErrorDialog: HomeSideEffect
 }
