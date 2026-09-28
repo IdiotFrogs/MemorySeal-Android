@@ -1,6 +1,7 @@
 package com.idiotfrogs.watering
 
 import androidx.compose.runtime.Immutable
+import com.idiotfrogs.analytics.AnalyticsTracker
 import com.idiotfrogs.domain.usecase.timecapsule.GetWateringUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.WateringUseCase
 import com.idiotfrogs.model.timecapsule.WateringContentResponse
@@ -25,7 +26,8 @@ import kotlin.time.Clock
 class WateringViewModel @AssistedInject constructor(
     @Assisted private val capsuleId: Long,
     private val getWateringUseCase: GetWateringUseCase,
-    private val wateringUseCase: WateringUseCase
+    private val wateringUseCase: WateringUseCase,
+    private val analyticsTracker: AnalyticsTracker,
 ): BaseViewModel<WateringState, WateringSideEffect, WateringAction>() {
     override val container: Container<WateringState, WateringSideEffect> = container(
         initialState = WateringState(),
@@ -34,7 +36,7 @@ class WateringViewModel @AssistedInject constructor(
     override fun onAction(action: WateringAction) {
         when (action) {
             WateringAction.NextWateringRequested -> loadMoreWatering()
-            WateringAction.WateringClicked -> watering()
+            is WateringAction.WateringClicked -> watering(action.stage)
             WateringAction.BackClicked -> navigateToBack()
             is WateringAction.ShowAllClicked -> navigateToWateringDetail()
         }
@@ -172,10 +174,13 @@ class WateringViewModel @AssistedInject constructor(
         }
     }
 
-    private fun watering() {
+    private fun watering(stage: Int) {
         safeLaunch {
             wateringUseCase.invoke(capsuleId)
-                .onSuccess { fetchWatering() } // 실제 0페이지 데이터를 다시 불러와 업데이트 처리
+                .onSuccess {
+                    analyticsTracker.ticketWatered(stage)
+                    fetchWatering() // 실제 0페이지 데이터를 다시 불러와 업데이트 처리
+                }
         }
     }
 
@@ -215,7 +220,7 @@ data class WateringState(
 
 sealed interface WateringAction {
     data object NextWateringRequested : WateringAction
-    data object WateringClicked : WateringAction
+    data class WateringClicked(val stage: Int) : WateringAction
     data object BackClicked : WateringAction
     data object ShowAllClicked : WateringAction
 }
