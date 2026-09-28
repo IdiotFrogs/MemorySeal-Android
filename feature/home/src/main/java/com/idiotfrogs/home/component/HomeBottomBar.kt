@@ -10,14 +10,18 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
@@ -26,6 +30,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.dropShadow
+import androidx.compose.ui.graphics.shadow.Shadow
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -56,128 +63,147 @@ fun HomeBottomBar(
     onExpandChange: (Boolean) -> Unit,
     onClickDim: () -> Unit,
 ) {
+    val density = LocalDensity.current
+    val navigationBarHeight = with(density) { WindowInsets.navigationBars.getBottom(density).toDp() }
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(80.dp + navigationBarHeight),
     ) {
-        Row(
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .height(80.dp)
         ) {
-            BoxWithConstraints(
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .height(56.dp)
-                    .wavyStroke(
-                        color = MSTheme.color.greyG5,
-                        cornerRadius = 54.dp,
-                        fillColor = MSTheme.color.white,
-                        amplitude = (0.5).dp,
-                        spacing = 2.dp
-                    )
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                val itemWidth = maxWidth / BottomMenu.entries.size
-                val indicatorOffset by animateDpAsState(
-                    targetValue = itemWidth * (BottomMenu.entries.find { it == selectedMenu }?.ordinal ?: 0),
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioLowBouncy,
-                        stiffness = Spring.StiffnessMediumLow
-                    ),
-                    label = "indicatorOffset"
-                )
-
-                Box(
+                BoxWithConstraints(
                     modifier = Modifier
-                        .width(itemWidth)
-                        .offset(x = indicatorOffset)
-                        .fillMaxHeight()
+                        .weight(1f)
+                        .height(56.dp)
+                        .dropShadow(
+                            shadow = Shadow(
+                                color = MSTheme.color.black,
+                                alpha = 0.12f, // 알파는 여기서만 적용
+                                spread = 0.dp,
+                                offset = DpOffset(x = 0.dp, y = 4.dp),
+                                radius = (7.8).dp
+                            ),
+                            shape = RoundedCornerShape(54.dp),
+                        )
                         .wavyStroke(
                             color = MSTheme.color.greyG5,
                             cornerRadius = 54.dp,
-                            fillColor = MSTheme.color.greyG5,
-                            amplitude = (0.7).dp,
-                            spacing = 2.dp,
+                            fillColor = MSTheme.color.white,
+                            amplitude = (0.5).dp,
+                            spacing = 2.dp
                         )
-                )
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    Column(
+                ) {
+                    val itemWidth = maxWidth / BottomMenu.entries.size
+                    val indicatorOffset by animateDpAsState(
+                        targetValue = itemWidth * (BottomMenu.entries.find { it == selectedMenu }?.ordinal ?: 0),
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioLowBouncy,
+                            stiffness = Spring.StiffnessMediumLow
+                        ),
+                        label = "indicatorOffset"
+                    )
+
+                    Box(
                         modifier = Modifier
-                            .weight(1f)
+                            .width(itemWidth)
+                            .offset(x = indicatorOffset)
                             .fillMaxHeight()
-                            .noRippleClickable(onClick = { onSelectChange.invoke(BottomMenu.HOME) }),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Image(
-                            modifier = Modifier.size(24.dp),
-                            painter = painterResource(
-                                if (selectedMenu == BottomMenu.HOME) {
-                                    R.drawable.ic_home_colored
+                            .wavyStroke(
+                                color = MSTheme.color.greyG5,
+                                cornerRadius = 54.dp,
+                                fillColor = MSTheme.color.greyG5,
+                                amplitude = (0.7).dp,
+                                spacing = 2.dp,
+                            )
+                    )
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .noRippleClickable(onClick = { onSelectChange.invoke(BottomMenu.HOME) }),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Image(
+                                modifier = Modifier.size(24.dp),
+                                painter = painterResource(
+                                    if (selectedMenu == BottomMenu.HOME) {
+                                        R.drawable.ic_home_colored
+                                    } else {
+                                        R.drawable.ic_home
+                                    }
+                                ),
+                                contentDescription = "ic_home"
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            MSText(
+                                text = "홈",
+                                color = if (selectedMenu == BottomMenu.HOME) {
+                                    MSTheme.color.white
                                 } else {
-                                    R.drawable.ic_home
-                                }
-                            ),
-                            contentDescription = "ic_home"
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        MSText(
-                            text = "홈",
-                            color = if (selectedMenu == BottomMenu.HOME) {
-                                MSTheme.color.white
-                            } else {
-                                MSTheme.color.greyG3
-                            },
-                            fontWeight = if (selectedMenu == BottomMenu.HOME) {
-                                FontWeight.SemiBold
-                            } else {
-                                FontWeight.Medium
-                            },
-                            fontSize = 10.dp
-                        )
-                    }
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .noRippleClickable(onClick = { onSelectChange.invoke(BottomMenu.OPENED) }),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Image(
-                            modifier = Modifier.size(24.dp),
-                            painter = painterResource(
-                                if (selectedMenu == BottomMenu.OPENED) {
-                                    R.drawable.ic_opened_ticket_colored
+                                    MSTheme.color.greyG3
+                                },
+                                fontWeight = if (selectedMenu == BottomMenu.HOME) {
+                                    FontWeight.SemiBold
                                 } else {
-                                    R.drawable.ic_opened_ticket
-                                }
-                            ),
-                            contentDescription = "ic_home"
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        MSText(
-                            text = "오픈된 티켓",
-                            color = if (selectedMenu == BottomMenu.OPENED) {
-                                MSTheme.color.white
-                            } else {
-                                MSTheme.color.greyG3
-                            },
-                            fontWeight = if (selectedMenu == BottomMenu.OPENED) {
-                                FontWeight.SemiBold
-                            } else {
-                                FontWeight.Medium
-                            },
-                            fontSize = 10.dp
-                        )
+                                    FontWeight.Medium
+                                },
+                                fontSize = 10.dp
+                            )
+                        }
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .noRippleClickable(onClick = { onSelectChange.invoke(BottomMenu.OPENED) }),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Image(
+                                modifier = Modifier.size(24.dp),
+                                painter = painterResource(
+                                    if (selectedMenu == BottomMenu.OPENED) {
+                                        R.drawable.ic_opened_ticket_colored
+                                    } else {
+                                        R.drawable.ic_opened_ticket
+                                    }
+                                ),
+                                contentDescription = "ic_home"
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            MSText(
+                                text = "오픈된 티켓",
+                                color = if (selectedMenu == BottomMenu.OPENED) {
+                                    MSTheme.color.white
+                                } else {
+                                    MSTheme.color.greyG3
+                                },
+                                fontWeight = if (selectedMenu == BottomMenu.OPENED) {
+                                    FontWeight.SemiBold
+                                } else {
+                                    FontWeight.Medium
+                                },
+                                fontSize = 10.dp
+                            )
+                        }
                     }
                 }
+                // 실제 FAB 는 딤 위에 그리므로 여기서는 자리만 잡아둔다
+                Spacer(modifier = Modifier.size(56.dp))
             }
-            // 실제 FAB 는 딤 위에 그리므로 여기서는 자리만 잡아둔다
-            Spacer(modifier = Modifier.size(56.dp))
         }
         // 하단바 영역 전체를 딤으로 덮고 FAB 만 그 위로 올려 딤에서 제외한다
         MSDim(
@@ -187,7 +213,8 @@ fun HomeBottomBar(
         MSMenuFab(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(end = 20.dp),
+                .padding(end = 20.dp)
+                .navigationBarsPadding(),
             expanded = expanded,
             hasFab = true,
             offset = DpOffset(x = 0.dp, y = (-16).dp),

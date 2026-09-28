@@ -1,6 +1,7 @@
 package com.idiotfrogs.home.detail
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSLoadingOverlay
+import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.LoadNextPageEffect
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.extension.toDdayCount
@@ -80,6 +82,7 @@ fun HomeDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MSTheme.color.white)
             .systemBarsPadding()
     ) {
         Box(
