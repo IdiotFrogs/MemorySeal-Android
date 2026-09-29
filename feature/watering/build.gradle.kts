@@ -7,6 +7,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:analytics"))
     implementation(project(":domain"))
 
     implementation(libs.paging.runtime)

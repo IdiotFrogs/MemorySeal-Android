@@ -334,8 +334,8 @@ fun WateringScreen(
                 .fillMaxWidth()
                 .height(48.dp)
                 .padding(horizontal = 20.dp),
-            enabled = !todayWatered,
-            onClick = { onAction.invoke(WateringAction.WateringClicked) },
+            enabled = !todayWatered && data.stage != null,
+            onClick = { data.stage?.let { onAction.invoke(WateringAction.WateringClicked(it)) } },
             colors = ButtonDefaults.buttonColors(
                 containerColor = MSTheme.color.black,
                 disabledContainerColor =  MSTheme.color.greyG3

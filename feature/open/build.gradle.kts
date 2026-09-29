@@ -7,6 +7,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":core:analytics"))
     implementation(project(":common:extension"))
 
     implementation(libs.androidx.core.ktx)
@@ -16,4 +17,5 @@ dependencies {
     androidTestImplementation(libs.androidx.test.espresso)
 
     implementation(libs.lottie.compose)
+    implementation(libs.kotlinx.datetime)
 }

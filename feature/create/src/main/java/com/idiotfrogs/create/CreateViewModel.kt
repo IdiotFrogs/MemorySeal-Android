@@ -1,5 +1,6 @@
 package com.idiotfrogs.create
 
+import com.idiotfrogs.analytics.AnalyticsTracker
 import com.idiotfrogs.domain.usecase.timecapsule.CreateTimeCapsuleUseCase
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateRequest
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCreateResponse
@@ -15,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateViewModel @Inject constructor(
-    private val createTimeCapsuleUseCase: CreateTimeCapsuleUseCase
+    private val createTimeCapsuleUseCase: CreateTimeCapsuleUseCase,
+    private val analyticsTracker: AnalyticsTracker,
 ) : BaseViewModel<CreateUiState, CreateSideEffect, CreateAction>() {
     override val container: Container<CreateUiState, CreateSideEffect> = container(CreateUiState())
 
@@ -43,6 +45,7 @@ class CreateViewModel @Inject constructor(
             val result = createTimeCapsuleUseCase(request, mainImage)
 
             result.onSuccess { response ->
+                analyticsTracker.ticketCreated()
                 RefreshSideEffect.tryEmit(RefreshEvent.Home)
                 intent { postSideEffect(CreateSideEffect.NavigateToDetail(response)) }
             }.onFailure { e ->
