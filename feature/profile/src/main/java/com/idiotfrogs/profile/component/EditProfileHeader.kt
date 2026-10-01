@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,7 +27,7 @@ import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.resource.R
 
 @Composable
-fun ProfileHeader(
+fun EditProfileHeader(
     isChanged: Boolean,
     modifier: Modifier = Modifier,
     onBack: () -> Unit,
@@ -59,6 +60,10 @@ fun ProfileHeader(
             cornerRadius = 8.dp,
             contentPadding = PaddingValues(horizontal = 1.dp),
             enabled = isChanged,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MSTheme.color.primaryLight,
+                disabledContainerColor = Color(0xFFE8F4EB)
+            ),
             onClick = onSave
         ) {
             MSText(
@@ -75,7 +80,7 @@ fun ProfileHeader(
 @Composable
 fun EditProfileHeaderPreview() {
     var isChanged by remember { mutableStateOf(false) }
-    ProfileHeader(
+    EditProfileHeader(
         modifier = Modifier.padding(horizontal = 20.dp),
         isChanged = isChanged,
         onBack = { },

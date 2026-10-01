@@ -46,13 +46,14 @@ fun EditProfileBottomSheet(
         ) {
             MSText(
                 modifier = Modifier
-                    .padding(vertical = 8.dp)
                     .noRippleClickable(
                         onClick = {
                             onDismiss()
                             onSelectImage()
                         }
-                    ),
+                    )
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
                 text = "앨범에서 이미지 선택",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.dp,
@@ -79,13 +80,14 @@ fun EditProfileBottomSheet(
             Spacer(modifier = Modifier.height(16.dp))
             MSText(
                 modifier = Modifier
-                    .padding(vertical = 8.dp)
                     .noRippleClickable(
                         onClick = {
                             onDismiss()
                             onDefaultImage()
                         }
-                    ),
+                    )
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
                 text = "기본 이미지 적용",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.dp,

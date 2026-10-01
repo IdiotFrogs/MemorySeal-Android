@@ -40,7 +40,7 @@ import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.profile.component.EditProfileBottomSheet
-import com.idiotfrogs.profile.component.ProfileHeader
+import com.idiotfrogs.profile.component.EditProfileHeader
 import com.idiotfrogs.resource.R
 import com.skydoves.landscapist.glide.GlideImage
 import org.orbitmvi.orbit.compose.collectAsState
@@ -115,7 +115,7 @@ fun EditProfileScreen(
             .systemBarsPadding()
             .padding(horizontal = 20.dp)
     ) {
-        ProfileHeader(
+        EditProfileHeader(
             isChanged = isChanged,
             onBack = { onAction(EditProfileAction.BackClicked) },
             onSave = {
@@ -174,10 +174,9 @@ fun EditProfileScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    modifier = Modifier.size(48.dp),
-                    painter = painterResource(R.drawable.ic_photo),
+                    modifier = Modifier.fillMaxSize(),
+                    painter = painterResource(R.drawable.img_default_profile),
                     contentDescription = "photo",
-                    colorFilter = ColorFilter.tint(MSTheme.color.greyG3)
                 )
                 Box(
                     modifier = Modifier

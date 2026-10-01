@@ -2,10 +2,8 @@ package com.idiotfrogs.profile.profile
 
 import androidx.compose.runtime.Immutable
 import com.idiotfrogs.domain.usecase.auth.LogoutUseCase
-import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.domain.usecase.user.WithdrawUseCase
-import com.idiotfrogs.model.timecapsule.MyTimeCapsuleContent
 import com.idiotfrogs.model.user.ProfileResponse
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.base.DataUiState
@@ -98,6 +96,7 @@ class ProfileViewModel @Inject constructor(
             ProfileAction.WithdrawConfirmed -> withdraw()
             ProfileAction.EditProfileClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToEditProfile) }
             ProfileAction.BackClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToBack) }
+            ProfileAction.TermsClicked -> intent { postSideEffect(ProfileSideEffect.NavigateToTerms) }
         }
     }
 }
@@ -119,10 +118,13 @@ sealed interface ProfileAction {
     data object BackClicked : ProfileAction
     data object LogoutConfirmed : ProfileAction
     data object WithdrawConfirmed : ProfileAction
+    data object TermsClicked : ProfileAction
 }
 
 sealed interface ProfileSideEffect {
     data object NavigateToEditProfile : ProfileSideEffect
     data object NavigateToBack : ProfileSideEffect
     data object NavigateToLogin : ProfileSideEffect
+    // 실제 페이지는 아니지만 네이밍 통일을 위해 Navigate 사용
+    data object NavigateToTerms : ProfileSideEffect
 }
