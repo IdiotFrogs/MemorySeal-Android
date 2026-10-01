@@ -9,6 +9,7 @@ interface MSNavigator {
     fun popBackStack()
     fun isLastRoutes(): Boolean
     fun clear()
+    fun resetToHome()
 }
 
 class MSNavigatorImpl(private val backStack: NavBackStack<NavKey>) : MSNavigator {
@@ -29,5 +30,9 @@ class MSNavigatorImpl(private val backStack: NavBackStack<NavKey>) : MSNavigator
         }
     }
     override fun clear() { backStack.clear() }
+    override fun resetToHome() {
+        backStack.clear()
+        backStack.add(Routes.Home)
+    }
 }
 
