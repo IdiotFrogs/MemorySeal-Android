@@ -35,10 +35,7 @@ import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.R
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.plus
 import kotlinx.datetime.todayIn
-import kotlinx.datetime.YearMonth
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.minusMonth
 import kotlinx.datetime.number
@@ -52,21 +49,12 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 @Composable
 fun MSCalender(
+    selectedDate: LocalDate,
     showSealDate: Boolean = false,
     onDateSelected: (LocalDate) -> Unit
 ) {
     val today = Clock.System.todayIn(TimeZone.of("Asia/Seoul"))
-    val initialSelectedDate = if (showSealDate) {
-        today.plus(1, DateTimeUnit.DAY)
-    } else {
-        today
-    }
-    val selectedDate = remember(showSealDate) {
-        mutableStateOf(initialSelectedDate)
-    }
-    var currentYearMonth by remember(showSealDate) {
-        mutableStateOf(YearMonth(initialSelectedDate.year, initialSelectedDate.month))
-    }
+    var currentYearMonth by remember(showSealDate) { mutableStateOf(selectedDate.yearMonth) }
 
     val currentMonth = today.yearMonth
     val canGoToPrevMonth = currentYearMonth > currentMonth
@@ -174,7 +162,7 @@ fun MSCalender(
             ) {
                 items(dates) { date ->
                     val isCurrentMonth = date.yearMonth == currentYearMonth
-                    val isSelected = date == selectedDate.value
+                    val isSelected = date == selectedDate
                     val isSealDate = showSealDate && date == today
                     val isPast = date < today
                     val isDisabled = !isCurrentMonth || isPast
@@ -202,8 +190,6 @@ fun MSCalender(
                             )
                             .noRippleClickable {
                                 if (!isPast && !isSealDate) {
-                                    selectedDate.value = date
-
                                     val selectedMonth = date.yearMonth
                                     if (selectedMonth != currentYearMonth) {
                                         currentYearMonth = selectedMonth
@@ -248,6 +234,7 @@ fun MSCalender(
 }
 
 
+@OptIn(ExperimentalTime::class)
 @DevicePreview
 @Composable
 private fun MsCalenderPreview() {
@@ -258,6 +245,9 @@ private fun MsCalenderPreview() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        MSCalender {}
+        MSCalender(
+            selectedDate = Clock.System.todayIn(TimeZone.of("Asia/Seoul")),
+            onDateSelected = {},
+        )
     }
 }

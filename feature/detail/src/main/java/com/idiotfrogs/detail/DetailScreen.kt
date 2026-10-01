@@ -149,14 +149,9 @@ fun DetailScreen(
     val isHost = role == TimeCapsuleRole.HOST
     var showBuryDialog by remember { mutableStateOf(false) }
 
-    val defaultOpenAt = remember {
-        Clock.System
-            .todayIn(TimeZone.of("Asia/Seoul"))
-            .plus(1, DateTimeUnit.DAY)
-    }
-    var selectedOpenAt by remember { mutableStateOf(defaultOpenAt) }
-
     if (showBuryDialog) {
+        var selectedOpenAt by remember { mutableStateOf(Clock.System.todayIn(TimeZone.of("Asia/Seoul")).plus(1, DateTimeUnit.DAY)) }
+
         MSHeaderDialog(
             header = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -188,7 +183,11 @@ fun DetailScreen(
                 color = MSTheme.color.greyG3,
             )
             Spacer(Modifier.height(32.dp))
-            MSCalender(showSealDate = true) { selectedOpenAt = it }
+            MSCalender(
+                selectedDate = selectedOpenAt,
+                showSealDate = true,
+                onDateSelected = { selectedOpenAt = it },
+            )
             Spacer(Modifier.height(32.dp))
         }
     }
