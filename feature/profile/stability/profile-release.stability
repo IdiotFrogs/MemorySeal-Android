@@ -14,6 +14,16 @@ public fun com.idiotfrogs.profile.component.EditProfileBottomSheet(onSelectImage
     - onDismiss: STABLE (function type)
 
 @Composable
+public fun com.idiotfrogs.profile.component.EditProfileHeader(isChanged: kotlin.Boolean, modifier: androidx.compose.ui.Modifier, onBack: kotlin.Function0<kotlin.Unit>, onSave: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - isChanged: STABLE (primitive type)
+    - modifier: STABLE (marked @Stable or @Immutable)
+    - onBack: STABLE (function type)
+    - onSave: STABLE (function type)
+
+@Composable
 public fun com.idiotfrogs.profile.component.ProfileCard(modifier: androidx.compose.ui.Modifier, imageUrl: kotlin.String?, nickname: kotlin.String, onEditClick: kotlin.Function0<kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
@@ -22,16 +32,6 @@ public fun com.idiotfrogs.profile.component.ProfileCard(modifier: androidx.compo
     - imageUrl: STABLE (class with no mutable properties)
     - nickname: STABLE (String is immutable)
     - onEditClick: STABLE (function type)
-
-@Composable
-public fun com.idiotfrogs.profile.component.ProfileHeader(isChanged: kotlin.Boolean, modifier: androidx.compose.ui.Modifier, onBack: kotlin.Function0<kotlin.Unit>, onSave: kotlin.Function0<kotlin.Unit>): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - isChanged: STABLE (primitive type)
-    - modifier: STABLE (marked @Stable or @Immutable)
-    - onBack: STABLE (function type)
-    - onSave: STABLE (function type)
 
 @Composable
 public fun com.idiotfrogs.profile.component.ProfileHeader(modifier: androidx.compose.ui.Modifier, onBack: kotlin.Function0<kotlin.Unit>): kotlin.Unit

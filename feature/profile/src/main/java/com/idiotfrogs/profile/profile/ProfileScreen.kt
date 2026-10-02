@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,11 +31,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.idiotfrogs.designsystem.component.MSActionContainer
 import com.idiotfrogs.designsystem.component.MSDim
 import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTitleDialog
+import com.idiotfrogs.designsystem.component.MSWebView
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DrawType
 import com.idiotfrogs.designsystem.util.noRippleClickable
@@ -51,7 +50,10 @@ import com.idiotfrogs.resource.R
 import org.orbitmvi.orbit.compose.collectAsState
 import org.orbitmvi.orbit.compose.collectSideEffect
 
-const val HeaderHeight = 56
+private const val WEB_URL = "https://memoryseal.notion.site/3ba0cafca58580cd89f2cf47e9e0d14c"
+private const val HeaderHeight = 56
+
+enum class ProfileScreenType { NORMAL, TERMS }
 
 @Composable
 fun ProfileRoute(
@@ -59,6 +61,8 @@ fun ProfileRoute(
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
+
+    var screenType by remember { mutableStateOf(ProfileScreenType.NORMAL) }
 
     viewModel.collectSideEffect { event ->
         when (event) {
@@ -68,17 +72,27 @@ fun ProfileRoute(
             }
             ProfileSideEffect.NavigateToBack -> navigator.popBackStack()
             ProfileSideEffect.NavigateToEditProfile -> navigator.navigate(Routes.EditProfile)
+            ProfileSideEffect.NavigateToTerms -> { screenType = ProfileScreenType.TERMS }
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        uiState.data?.let { data ->
-            ProfileScreen(
-                data = data,
-                onAction = viewModel::onAction
-            )
+        when (screenType) {
+            ProfileScreenType.NORMAL -> {
+                uiState.data?.let { data ->
+                    ProfileScreen(
+                        data = data,
+                        onAction = viewModel::onAction
+                    )
+                }
+            }
+            ProfileScreenType.TERMS -> {
+                MSWebView(
+                    url = WEB_URL,
+                    goToBack = { screenType = ProfileScreenType.NORMAL }
+                )
+            }
         }
-
         MSLoadingOverlay(visible = uiState.data != null && uiState.isLoading)
     }
 }
@@ -119,118 +133,124 @@ fun ProfileScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding()
+            .background(Color.White)
     ) {
-        ProfileHeader(
-            modifier = Modifier.zIndex(1f),
-            onBack = { onAction(ProfileAction.BackClicked) },
-        )
-        Column(
+        Box(
             modifier = Modifier
-                .background(Color.White)
                 .fillMaxSize()
-                .padding(horizontal = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .systemBarsPadding()
         ) {
-            ProfileCard(
-                modifier = Modifier.padding(top = (HeaderHeight + 24).dp),
-                nickname = data.user?.nickname ?: "",
-                imageUrl = data.user?.profileImageUrl?.ifEmpty { null },
-                onEditClick = { onAction(ProfileAction.EditProfileClicked) }
+            ProfileHeader(
+                modifier = Modifier.zIndex(1f),
+                onBack = { onAction(ProfileAction.BackClicked) },
             )
-            Spacer(modifier = Modifier.height(44.dp))
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .wavyStroke(
-                        drawType = DrawType.TOP_SIDES,
-                        color = MSTheme.color.bgNormal,
-                        fillColor = MSTheme.color.bgNormal
-                    )
-                    .padding(horizontal = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(
+                ProfileCard(
+                    modifier = Modifier.padding(top = (HeaderHeight + 24).dp),
+                    nickname = data.user?.nickname ?: "",
+                    imageUrl = data.user?.profileImageUrl?.ifEmpty { null },
+                    onEditClick = { onAction(ProfileAction.EditProfileClicked) }
+                )
+                Spacer(modifier = Modifier.height(44.dp))
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .weight(1f)
+                        .wavyStroke(
+                            drawType = DrawType.TOP_SIDES,
+                            color = MSTheme.color.bgNormal,
+                            fillColor = MSTheme.color.bgNormal
+                        )
+                        .padding(horizontal = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
-                    val versionName = rememberAppVersion()
-                    MSText(
-                        text = "앱 버전",
-                        fontSize = 16.dp,
-                        fontWeight = FontWeight.Medium,
-                        color = MSTheme.color.greyG5
-                    )
-                    MSText(
-                        text = "v$versionName",
-                        fontSize = 16.dp,
-                        fontWeight = FontWeight.Normal,
-                        color = MSTheme.color.greyG4
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    MSText(
-                        text = "이용 약관",
-                        fontSize = 16.dp,
-                        fontWeight = FontWeight.Medium,
-                        color = MSTheme.color.greyG5
-                    )
-                    Image(
-                        modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_chevron_right),
-                        contentDescription = "arrow_right"
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .noRippleClickable { showLogoutDialog = true },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    MSText(
-                        text = "로그아웃",
-                        fontSize = 16.dp,
-                        fontWeight = FontWeight.Medium,
-                        color = MSTheme.color.greyG5
-                    )
-                    Image(
-                        modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_chevron_right),
-                        contentDescription = "arrow_right"
-                    )
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .noRippleClickable { showWithdrawSheet = true },
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    MSText(
-                        text = "회원탈퇴",
-                        fontSize = 16.dp,
-                        fontWeight = FontWeight.Medium,
-                        color = MSTheme.color.greyG5
-                    )
-                    Image(
-                        modifier = Modifier.size(16.dp),
-                        painter = painterResource(R.drawable.ic_chevron_right),
-                        contentDescription = "arrow_right"
-                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val versionName = rememberAppVersion()
+                        MSText(
+                            text = "앱 버전",
+                            fontSize = 16.dp,
+                            fontWeight = FontWeight.Medium,
+                            color = MSTheme.color.greyG5
+                        )
+                        MSText(
+                            text = "v$versionName",
+                            fontSize = 16.dp,
+                            fontWeight = FontWeight.Normal,
+                            color = MSTheme.color.greyG4
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .noRippleClickable { onAction.invoke(ProfileAction.TermsClicked) }
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        MSText(
+                            text = "이용 약관",
+                            fontSize = 16.dp,
+                            fontWeight = FontWeight.Medium,
+                            color = MSTheme.color.greyG5
+                        )
+                        Image(
+                            modifier = Modifier.size(16.dp),
+                            painter = painterResource(R.drawable.ic_chevron_right),
+                            contentDescription = "arrow_right"
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .noRippleClickable { showLogoutDialog = true },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        MSText(
+                            text = "로그아웃",
+                            fontSize = 16.dp,
+                            fontWeight = FontWeight.Medium,
+                            color = MSTheme.color.greyG5
+                        )
+                        Image(
+                            modifier = Modifier.size(16.dp),
+                            painter = painterResource(R.drawable.ic_chevron_right),
+                            contentDescription = "arrow_right"
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .noRippleClickable { showWithdrawSheet = true },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        MSText(
+                            text = "회원탈퇴",
+                            fontSize = 16.dp,
+                            fontWeight = FontWeight.Medium,
+                            color = MSTheme.color.greyG5
+                        )
+                        Image(
+                            modifier = Modifier.size(16.dp),
+                            painter = painterResource(R.drawable.ic_chevron_right),
+                            contentDescription = "arrow_right"
+                        )
+                    }
                 }
             }
         }

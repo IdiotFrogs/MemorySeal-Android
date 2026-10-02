@@ -360,6 +360,14 @@ public fun com.idiotfrogs.designsystem.component.MSToast(hazeState: dev.chrisban
     - content: STABLE (composable function type)
 
 @Composable
+public fun com.idiotfrogs.designsystem.component.MSWebView(url: kotlin.String, goToBack: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - url: STABLE (String is immutable)
+    - goToBack: STABLE (function type)
+
+@Composable
 private fun com.idiotfrogs.designsystem.component.PatternRows(images: kotlin.collections.List<kotlin.String>): kotlin.Unit
   skippable: false
   restartable: true

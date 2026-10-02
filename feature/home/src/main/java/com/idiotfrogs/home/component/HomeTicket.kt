@@ -53,6 +53,7 @@ enum class SmallGuideItem(val imgRes: Int, val height: Dp) {
     STEP_2(imgRes = R.drawable.img_ticket_guide_step2_small, height = 148.dp),
     STEP_3(imgRes = R.drawable.img_ticket_guide_step3_small, height = 156.dp),
     STEP_4(imgRes = R.drawable.img_ticket_guide_step4_small, height = 183.dp),
+    STEP_5(imgRes = R.drawable.img_ticket_guide_step5_small, height = 214.dp)
 }
 
 @Composable
