@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -81,6 +83,8 @@ private fun CreateScreen(
     onAction: (CreateAction) -> Unit
 ) {
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val titleTextFieldState = rememberTextFieldState()
     val contentTextFieldState = rememberTextFieldState()
     val scrollState = rememberScrollState()
@@ -221,6 +225,8 @@ private fun CreateScreen(
             onClick = {
                 val file = imageUri?.toFile(context, "mainImage")
                 if (file != null) {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
                     onAction(
                         CreateAction.CreateButtonClicked(
                             titleTextFieldState.text.toString(),
