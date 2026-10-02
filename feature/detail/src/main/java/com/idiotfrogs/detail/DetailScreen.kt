@@ -184,7 +184,7 @@ fun DetailScreen(
             )
             Spacer(Modifier.height(32.dp))
             MSCalender(
-                selectedDate = selectedOpenAt,
+                selectedEpochDay = selectedOpenAt.toEpochDays(),
                 showSealDate = true,
                 onDateSelected = { selectedOpenAt = it },
             )

@@ -49,10 +49,11 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalTime::class)
 @Composable
 fun MSCalender(
-    selectedDate: LocalDate,
+    selectedEpochDay: Long,
     showSealDate: Boolean = false,
     onDateSelected: (LocalDate) -> Unit
 ) {
+    val selectedDate = LocalDate.fromEpochDays(selectedEpochDay)
     val today = Clock.System.todayIn(TimeZone.of("Asia/Seoul"))
     var currentYearMonth by remember(showSealDate) { mutableStateOf(selectedDate.yearMonth) }
 
@@ -246,7 +247,7 @@ private fun MsCalenderPreview() {
         verticalArrangement = Arrangement.Center
     ) {
         MSCalender(
-            selectedDate = Clock.System.todayIn(TimeZone.of("Asia/Seoul")),
+            selectedEpochDay = Clock.System.todayIn(TimeZone.of("Asia/Seoul")).toEpochDays(),
             onDateSelected = {},
         )
     }
