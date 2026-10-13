@@ -15,9 +15,9 @@ android {
 
     defaultConfig {
         applicationId = "com.idiotfrogs.memoryseal"
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 36
+        versionCode = 3
+        versionName = "0.0.3"
 
         vectorDrawables {
             useSupportLibrary = true
@@ -31,7 +31,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
         }
     }
 
