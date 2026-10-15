@@ -46,7 +46,7 @@ object NotificationBuilder {
         )
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.img_sample)  // TODO 타입에 맞는 Icon으로 보내기
+            .setSmallIcon(R.drawable.ic_notification_logo)
             .setContentTitle(title)
             .setContentText(body)
             .setAutoCancel(true)
