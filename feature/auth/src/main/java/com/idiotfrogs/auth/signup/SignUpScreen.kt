@@ -68,6 +68,7 @@ fun SignUpRoute(
                 navigator.clear()
                 navigator.navigate(Routes.Home)
             }
+            SignUpSideEffect.NavigateToTutorial -> navigator.navigate(Routes.Tutorial)
             SignUpSideEffect.NavigateToBack -> navigator.popBackStack()
         }
     }

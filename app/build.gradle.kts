@@ -19,6 +19,7 @@ dependencies {
     implementation(project(":feature:memory"))
     implementation(project(":feature:watering"))
     implementation(project(":feature:open"))
+    implementation(project(":feature:tutorial"))
     implementation(project(":core:designsystem"))
     implementation(project(":core:navigation"))
     implementation(project(":core:util"))

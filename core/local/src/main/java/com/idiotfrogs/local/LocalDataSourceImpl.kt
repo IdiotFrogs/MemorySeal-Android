@@ -2,6 +2,7 @@ package com.idiotfrogs.local
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -20,6 +21,9 @@ class LocalDataSourceImpl @Inject constructor(
         private val ACCESS_TOKEN_EXPIRES_IN_KEY = longPreferencesKey("access_token_expires_in")
 
         private val CAPSULE_ID_KEY = stringSetPreferencesKey("capsule_id")
+
+        // 디바이스 단위 튜토리얼 시청 여부 (최초 1회만 노출)
+        private val TUTORIAL_COMPLETED_KEY = booleanPreferencesKey("tutorial_completed")
     }
 
     override val accessToken: Flow<String> =
@@ -40,6 +44,11 @@ class LocalDataSourceImpl @Inject constructor(
     override val capsuleIds: Flow<Set<String>> =
         dataStore.data.map { preferences ->
             preferences[CAPSULE_ID_KEY] ?: emptySet()
+        }
+
+    override val tutorialCompleted: Flow<Boolean> =
+        dataStore.data.map { preferences ->
+            preferences[TUTORIAL_COMPLETED_KEY] ?: false
         }
 
     override suspend fun setTokens(
@@ -66,6 +75,12 @@ class LocalDataSourceImpl @Inject constructor(
         dataStore.edit { preferences ->
             preferences[CAPSULE_ID_KEY] =
                 (preferences[CAPSULE_ID_KEY] ?: emptySet()) + capsuleId
+        }
+    }
+
+    override suspend fun setTutorialCompleted() {
+        dataStore.edit { preferences ->
+            preferences[TUTORIAL_COMPLETED_KEY] = true
         }
     }
 }

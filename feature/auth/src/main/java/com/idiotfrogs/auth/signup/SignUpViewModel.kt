@@ -1,9 +1,11 @@
 package com.idiotfrogs.auth.signup
 
+import com.idiotfrogs.domain.usecase.local.GetTutorialCompletedUseCase
 import com.idiotfrogs.domain.usecase.user.SignUpUseCase
 import com.idiotfrogs.util.base.BaseUiState
 import com.idiotfrogs.util.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.firstOrNull
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import java.io.File
@@ -11,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
-    private val signUpUseCase: SignUpUseCase
+    private val signUpUseCase: SignUpUseCase,
+    private val getTutorialCompletedUseCase: GetTutorialCompletedUseCase,
 ) : BaseViewModel<SignUpUiState, SignUpSideEffect, SignUpAction>() {
 
     override val container: Container<SignUpUiState, SignUpSideEffect> = container(SignUpUiState())
@@ -30,8 +33,16 @@ class SignUpViewModel @Inject constructor(
             val result = signUpUseCase(nickname, file)
 
             result.onSuccess {
-                intent { reduce { state.copy(isLoading = false, errorMessage = null) } }
-                intent { postSideEffect(SignUpSideEffect.NavigateToHome) }
+                // 튜토리얼은 디바이스 단위로 최초 1회만 노출한다.
+                val tutorialCompleted = getTutorialCompletedUseCase.tutorialCompleted.firstOrNull() ?: false
+                intent {
+                    reduce { state.copy(isLoading = false, errorMessage = null) }
+                    if (tutorialCompleted) {
+                        postSideEffect(SignUpSideEffect.NavigateToHome)
+                    } else {
+                        postSideEffect(SignUpSideEffect.NavigateToTutorial)
+                    }
+                }
             }.onFailure {
                 intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
             }
@@ -51,5 +62,6 @@ sealed interface SignUpAction {
 
 sealed interface SignUpSideEffect {
     data object NavigateToHome : SignUpSideEffect
+    data object NavigateToTutorial : SignUpSideEffect
     data object NavigateToBack : SignUpSideEffect
 }
