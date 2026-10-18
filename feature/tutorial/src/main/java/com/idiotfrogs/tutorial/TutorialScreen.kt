@@ -27,8 +27,10 @@ import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.DevicePreview
+import com.idiotfrogs.designsystem.util.DrawType
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.toSp
+import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
 import com.idiotfrogs.tutorial.component.TutorialPageIndicator
 import kotlinx.coroutines.launch
@@ -107,7 +109,12 @@ fun TutorialScreen(
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth()
                     .padding(20.dp)
-                    .height(48.dp),
+                    .height(48.dp)
+                    .wavyStroke(
+                        color = MSTheme.color.primaryNormal,
+                        drawType = DrawType.ALL,
+                        clipContent = true,
+                    ),
                 onClick = {
                     if (isLastPage) {
                         onComplete()
