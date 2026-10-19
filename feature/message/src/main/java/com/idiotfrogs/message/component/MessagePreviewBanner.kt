@@ -14,11 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.button.MSButton
 import com.idiotfrogs.designsystem.theme.MSTheme
+import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.resource.R
 
@@ -70,7 +73,11 @@ fun MessagePreviewBanner(
             MSText(
                 text = "미리보기",
                 fontSize = 12.dp,
+                fontWeight = FontWeight.Bold,
                 color = MSTheme.color.white,
+                lineHeight = 12.dp.toSp(),
+                letterSpacing = 0.sp,
+                textAlign = TextAlign.Center,
             )
         }
     }

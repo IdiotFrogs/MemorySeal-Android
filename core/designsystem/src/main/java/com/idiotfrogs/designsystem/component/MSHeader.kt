@@ -12,10 +12,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.resource.R
 
@@ -26,6 +29,9 @@ fun MSDetailHeader(
     title: String = "",
     fontSize: Dp = 14.dp,
     paddingValues: PaddingValues = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
+    titleColor: Color = MSTheme.color.black,
+    lineHeight: TextUnit = TextUnit.Unspecified,
+    letterSpacing: TextUnit = TextUnit.Unspecified,
     trailingContent: @Composable (() -> Unit)? = null,
 ) {
     Box(
@@ -44,7 +50,10 @@ fun MSDetailHeader(
         MSText(
             modifier = Modifier.align(Alignment.Center),
             text = title,
-            fontSize = fontSize
+            fontSize = fontSize,
+            color = titleColor,
+            lineHeight = lineHeight,
+            letterSpacing = letterSpacing,
         )
         trailingContent?.let {
             Box(Modifier.align(Alignment.CenterEnd)) { it() }
