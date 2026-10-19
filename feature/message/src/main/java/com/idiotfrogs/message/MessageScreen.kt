@@ -36,6 +36,7 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,16 +44,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.idiotfrogs.designsystem.component.MSDetailHeader
 import com.idiotfrogs.designsystem.component.MSDim
@@ -61,9 +66,12 @@ import com.idiotfrogs.designsystem.component.MSPlainTextField
 import com.idiotfrogs.designsystem.component.MSTabBar
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.button.MSButton
+import com.idiotfrogs.designsystem.component.photoviewer.MSPhotoViewerDialog
+import com.idiotfrogs.designsystem.component.photoviewer.MSPhotoViewerUiModel
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberMultiPickerState
+import com.idiotfrogs.designsystem.util.toSp
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.extension.toFile
 import com.idiotfrogs.message.component.MessageCheckBox
@@ -115,6 +123,7 @@ fun MessageScreen(
     var messageItems by remember { mutableStateOf(emptyList<MessageListItemUiModel>()) }
     var selectedIds by rememberSaveable { mutableStateOf(emptySet<String>()) }
     var photoItems by remember { mutableStateOf(emptyList<PhotoListItemUiModel>()) }
+    var photoViewer by remember { mutableStateOf<MSPhotoViewerUiModel?>(null) }
 
     val messageTextFieldState = rememberTextFieldState()
     val focusRequester = remember { FocusRequester() }
@@ -233,6 +242,10 @@ fun MessageScreen(
         ) {
             MSDetailHeader(
                 title = "나의 추억 메시지",
+                fontSize = 18.dp,
+                titleColor = MSTheme.color.greyG5,
+                lineHeight = 24.dp.toSp(),
+                letterSpacing = 0.sp,
                 navigateToBack = { onAction(MessageAction.BackClicked) },
                 paddingValues = PaddingValues(horizontal = 20.dp, vertical = 16.dp),
             ) {
@@ -342,6 +355,18 @@ fun MessageScreen(
                                         .noRippleClickable {
                                             if (isDeleteMode) {
                                                 selectedIds = selectedIds.toggle(item.id)
+                                            } else {
+                                                val photos = photoItems
+                                                val initialIndex = photos.indexOfFirst {
+                                                    it.fileId == item.fileId
+                                                }
+                                                if (initialIndex >= 0) {
+                                                    photoViewer = MSPhotoViewerUiModel(
+                                                        authorNickname = data.myNickname,
+                                                        imageUrls = photos.map { it.imageModel },
+                                                        initialIndex = initialIndex,
+                                                    )
+                                                }
                                             }
                                         },
                                 ) {
@@ -454,21 +479,31 @@ fun MessageScreen(
                     .navigationBarsPadding()
                     .padding(end = 20.dp, bottom = 24.dp)
                     .wavyStroke(
-                        color = Color(0xFF29A047),
+                        color = MSTheme.color.greyG5,
                         strokeWidth = 4.dp,
                         cornerRadius = 28.dp,
                         amplitude = 1.dp,
                         spacing = 2.dp,
                     )
                     .size(56.dp)
-                    .padding(2.dp),
+                    .padding(2.dp)
+                    .dropShadow(
+                        shape = CircleShape,
+                        shadow = Shadow(
+                            radius = 8.dp,
+                            color = MSTheme.color.black,
+                            spread = 0.dp,
+                            offset = DpOffset(x = 0.dp, y = 4.dp),
+                            alpha = 0.25f,
+                        ),
+                    ),
                 shape = CircleShape,
-                containerColor = MSTheme.color.primaryNormal,
+                containerColor = MSTheme.color.greyG5,
                 elevation = FloatingActionButtonDefaults.elevation(
-                    defaultElevation = 4.dp,
-                    pressedElevation = 4.dp,
-                    focusedElevation = 4.dp,
-                    hoveredElevation = 4.dp,
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp,
+                    focusedElevation = 0.dp,
+                    hoveredElevation = 0.dp,
                 ),
                 onClick = {
                     when (currentTab) {
@@ -622,6 +657,15 @@ fun MessageScreen(
                     textFieldState = messageTextFieldState,
                 )
             }
+        }
+    }
+
+    photoViewer?.let { viewer ->
+        key(viewer) {
+            MSPhotoViewerDialog(
+                viewer = viewer,
+                onDismiss = { photoViewer = null },
+            )
         }
     }
 }

@@ -14,6 +14,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -24,6 +28,8 @@ import com.idiotfrogs.designsystem.component.MSDetailHeader
 import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTimeCapsuleContentItem
+import com.idiotfrogs.designsystem.component.photoviewer.MSPhotoViewerDialog
+import com.idiotfrogs.designsystem.component.photoviewer.MSPhotoViewerUiModel
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.wavyStroke
 import com.idiotfrogs.navigation.LocalComposeMSNavigator
@@ -62,6 +68,8 @@ fun PreviewScreen(
     onAction: (PreviewAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var photoViewer by remember { mutableStateOf<MSPhotoViewerUiModel?>(null) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -129,9 +137,28 @@ fun PreviewScreen(
                     MSTimeCapsuleContentItem(
                         uiModel = content.uiModel,
                         isMine = true,
+                        onImageClick = { imageIndex ->
+                            val images = content.uiModel.imageUrls
+                            if (imageIndex in images.indices) {
+                                photoViewer = MSPhotoViewerUiModel(
+                                    authorNickname = data.myNickname,
+                                    imageUrls = images,
+                                    initialIndex = imageIndex,
+                                )
+                            }
+                        },
                     )
                 }
             }
+        }
+    }
+
+    photoViewer?.let { viewer ->
+        key(viewer) {
+            MSPhotoViewerDialog(
+                viewer = viewer,
+                onDismiss = { photoViewer = null },
+            )
         }
     }
 }

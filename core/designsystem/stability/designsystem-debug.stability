@@ -116,7 +116,7 @@ public fun com.idiotfrogs.designsystem.component.MSDashHorizontalDivider(modifie
     - gapWidth: STABLE (marked @Stable or @Immutable)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.MSDetailHeader(navigateToBack: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, title: kotlin.String, fontSize: androidx.compose.ui.unit.Dp, paddingValues: androidx.compose.foundation.layout.PaddingValues, trailingContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction0<kotlin.Unit>?): kotlin.Unit
+public fun com.idiotfrogs.designsystem.component.MSDetailHeader(navigateToBack: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, title: kotlin.String, fontSize: androidx.compose.ui.unit.Dp, paddingValues: androidx.compose.foundation.layout.PaddingValues, titleColor: androidx.compose.ui.graphics.Color, lineHeight: androidx.compose.ui.unit.TextUnit, letterSpacing: androidx.compose.ui.unit.TextUnit, trailingContent: @[Composable] androidx.compose.runtime.internal.ComposableFunction0<kotlin.Unit>?): kotlin.Unit
   skippable: true
   restartable: true
   params:
@@ -125,6 +125,9 @@ public fun com.idiotfrogs.designsystem.component.MSDetailHeader(navigateToBack: 
     - title: STABLE (String is immutable)
     - fontSize: STABLE (marked @Stable or @Immutable)
     - paddingValues: STABLE (marked @Stable or @Immutable)
+    - titleColor: STABLE (marked @Stable or @Immutable)
+    - lineHeight: STABLE (marked @Stable or @Immutable)
+    - letterSpacing: STABLE (marked @Stable or @Immutable)
     - trailingContent: STABLE (composable function type)
 
 @Composable
@@ -157,12 +160,13 @@ public fun com.idiotfrogs.designsystem.component.MSDim(modifier: androidx.compos
     - animationSpec: RUNTIME (requires runtime check)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.MSGalleryLayout(images: kotlin.collections.List<kotlin.String>, isSeal: kotlin.Boolean): kotlin.Unit
+public fun com.idiotfrogs.designsystem.component.MSGalleryLayout(images: kotlin.collections.List<kotlin.String>, isSeal: kotlin.Boolean, onImageClick: kotlin.Function1<kotlin.Int, kotlin.Unit>?): kotlin.Unit
   skippable: false
   restartable: true
   params:
     - images: RUNTIME (requires runtime check)
     - isSeal: STABLE (primitive type)
+    - onImageClick: STABLE (function type)
 
 @Composable
 public fun com.idiotfrogs.designsystem.component.MSHeaderDialog(header: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.ColumnScope, kotlin.Unit>, onConfirm: kotlin.Function0<kotlin.Unit>, onCancel: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, confirmText: kotlin.String, cancelText: kotlin.String, confirmButtonColor: androidx.compose.ui.graphics.Color, cancelButtonColor: androidx.compose.ui.graphics.Color, confirmTextColor: androidx.compose.ui.graphics.Color, cancelTextColor: androidx.compose.ui.graphics.Color, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.ColumnScope, kotlin.Unit>): kotlin.Unit
@@ -308,7 +312,7 @@ public fun com.idiotfrogs.designsystem.component.MSTextField(modifier: androidx.
     - leadingContent: STABLE (composable function type)
 
 @Composable
-public fun com.idiotfrogs.designsystem.component.MSTimeCapsuleContentItem(uiModel: com.idiotfrogs.designsystem.component.MSTimeCapsuleContentUiModel, isMine: kotlin.Boolean, authorNickname: kotlin.String, authorProfileImageUrl: kotlin.String, showAuthor: kotlin.Boolean, modifier: androidx.compose.ui.Modifier): kotlin.Unit
+public fun com.idiotfrogs.designsystem.component.MSTimeCapsuleContentItem(uiModel: com.idiotfrogs.designsystem.component.MSTimeCapsuleContentUiModel, isMine: kotlin.Boolean, authorNickname: kotlin.String, authorProfileImageUrl: kotlin.String, showAuthor: kotlin.Boolean, modifier: androidx.compose.ui.Modifier, onImageClick: kotlin.Function1<kotlin.Int, kotlin.Unit>?): kotlin.Unit
   skippable: true
   restartable: true
   params:
@@ -318,6 +322,7 @@ public fun com.idiotfrogs.designsystem.component.MSTimeCapsuleContentItem(uiMode
     - authorProfileImageUrl: STABLE (String is immutable)
     - showAuthor: STABLE (primitive type)
     - modifier: STABLE (marked @Stable or @Immutable)
+    - onImageClick: STABLE (function type)
 
 @Composable
 public fun com.idiotfrogs.designsystem.component.MSTitleDialog(title: kotlin.String, onConfirm: kotlin.Function0<kotlin.Unit>, onCancel: kotlin.Function0<kotlin.Unit>, modifier: androidx.compose.ui.Modifier, confirmText: kotlin.String, cancelText: kotlin.String, confirmButtonColor: androidx.compose.ui.graphics.Color, cancelButtonColor: androidx.compose.ui.graphics.Color, confirmTextColor: androidx.compose.ui.graphics.Color, cancelTextColor: androidx.compose.ui.graphics.Color, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.ColumnScope, kotlin.Unit>): kotlin.Unit
@@ -368,35 +373,6 @@ public fun com.idiotfrogs.designsystem.component.MSWebView(url: kotlin.String, g
     - goToBack: STABLE (function type)
 
 @Composable
-private fun com.idiotfrogs.designsystem.component.PatternRows(images: kotlin.collections.List<kotlin.String>): kotlin.Unit
-  skippable: false
-  restartable: true
-  params:
-    - images: RUNTIME (requires runtime check)
-
-@Composable
-private fun com.idiotfrogs.designsystem.component.RowImages(images: kotlin.collections.List<kotlin.String>, isFirstRow: kotlin.Boolean): kotlin.Unit
-  skippable: false
-  restartable: true
-  params:
-    - images: RUNTIME (requires runtime check)
-    - isFirstRow: STABLE (primitive type)
-
-@Composable
-private fun com.idiotfrogs.designsystem.component.SingleImage(image: kotlin.String): kotlin.Unit
-  skippable: true
-  restartable: true
-  params:
-    - image: STABLE (String is immutable)
-
-@Composable
-private fun com.idiotfrogs.designsystem.component.TwoByTwo(images: kotlin.collections.List<kotlin.String>): kotlin.Unit
-  skippable: false
-  restartable: true
-  params:
-    - images: RUNTIME (requires runtime check)
-
-@Composable
 public fun com.idiotfrogs.designsystem.component.button.MSButton(modifier: androidx.compose.ui.Modifier, enabled: kotlin.Boolean, isRounded: kotlin.Boolean, cornerRadius: androidx.compose.ui.unit.Dp, colors: androidx.compose.material3.ButtonColors, pressColors: androidx.compose.material3.ButtonColors, elevation: androidx.compose.material3.ButtonElevation?, border: androidx.compose.foundation.BorderStroke?, wavyStrokeColor: androidx.compose.ui.graphics.Color?, contentPadding: androidx.compose.foundation.layout.PaddingValues, interactionSource: androidx.compose.foundation.interaction.MutableInteractionSource, onClick: kotlin.Function0<kotlin.Unit>, content: @[Composable] @[ExtensionFunctionType] androidx.compose.runtime.internal.ComposableFunction1<androidx.compose.foundation.layout.RowScope, kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
@@ -414,6 +390,31 @@ public fun com.idiotfrogs.designsystem.component.button.MSButton(modifier: andro
     - interactionSource: STABLE (marked @Stable or @Immutable)
     - onClick: STABLE (function type)
     - content: STABLE (composable function type)
+
+@Composable
+public fun com.idiotfrogs.designsystem.component.photoviewer.MSPhotoViewerDialog(viewer: com.idiotfrogs.designsystem.component.photoviewer.MSPhotoViewerUiModel, onDismiss: kotlin.Function0<kotlin.Unit>): kotlin.Unit
+  skippable: true
+  restartable: true
+  params:
+    - viewer: STABLE (marked @Stable or @Immutable)
+    - onDismiss: STABLE (function type)
+
+@Composable
+internal fun com.idiotfrogs.designsystem.component.photoviewer.ZoomablePhoto(painter: androidx.compose.ui.graphics.painter.Painter, zoomState: com.idiotfrogs.designsystem.component.photoviewer.PhotoZoomState, contentDescription: kotlin.String, canStartZoom: kotlin.Function0<kotlin.Boolean>): kotlin.Unit
+  skippable: false
+  restartable: true
+  params:
+    - painter: RUNTIME (requires runtime check)
+    - zoomState: STABLE (marked @Stable or @Immutable)
+    - contentDescription: STABLE (String is immutable)
+    - canStartZoom: STABLE (function type)
+
+@Composable
+internal fun com.idiotfrogs.designsystem.component.photoviewer.rememberPhotoThumbnailSnapLayoutInfoProvider(state: androidx.compose.foundation.lazy.LazyListState): androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
+  skippable: true
+  restartable: true
+  params:
+    - state: STABLE (marked @Stable or @Immutable)
 
 @Composable
 public fun com.idiotfrogs.designsystem.theme.MSTheme(content: @[Composable] androidx.compose.runtime.internal.ComposableFunction0<kotlin.Unit>): kotlin.Unit
@@ -463,13 +464,6 @@ public fun com.idiotfrogs.designsystem.util.keyboardAutoScroll(scrollState: andr
   restartable: true
   params:
     - scrollState: STABLE (marked @Stable or @Immutable)
-
-@Composable
-public fun com.idiotfrogs.designsystem.util.noRippleClickable(onClick: kotlin.Function0<kotlin.Unit>): androidx.compose.ui.Modifier
-  skippable: true
-  restartable: true
-  params:
-    - onClick: STABLE (function type)
 
 @Composable
 public fun com.idiotfrogs.designsystem.util.rememberFocusState(): kotlin.Pair<androidx.compose.foundation.interaction.MutableInteractionSource, kotlin.Boolean>

@@ -35,6 +35,7 @@ fun MSTimeCapsuleContentItem(
     authorProfileImageUrl: String = "",
     showAuthor: Boolean = false,
     modifier: Modifier = Modifier,
+    onImageClick: ((Int) -> Unit)? = null,
 ) {
     val message = uiModel.message
     val imageUrls = uiModel.imageUrls
@@ -68,6 +69,7 @@ fun MSTimeCapsuleContentItem(
                 MSGalleryLayout(
                     images = imageUrls,
                     isSeal = false,
+                    onImageClick = onImageClick,
                 )
             }
         }
@@ -135,6 +137,7 @@ fun MSTimeCapsuleContentItem(
                     MSGalleryLayout(
                         images = imageUrls,
                         isSeal = false,
+                        onImageClick = onImageClick,
                     )
                 }
             }
