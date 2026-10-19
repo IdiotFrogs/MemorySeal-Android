@@ -50,7 +50,7 @@ class CreateViewModel @Inject constructor(
                 intent { postSideEffect(CreateSideEffect.NavigateToDetail(response)) }
             }.onFailure { e ->
                 intent { reduce { state.copy(isLoading = false, errorMessage = e.message) } }
-                // TODO: 에러 처리 (토스트 등)
+                showErrorToast()
             }
         }
     }

@@ -40,7 +40,7 @@ class ManagementViewModel @Inject constructor(
                 intent { postSideEffect(ManagementSideEffect.NavigateToHome) }
             }.onFailure {
                 intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
-                // TODO 에러 Toast 작업?
+                showErrorToast()
             }
         }
     }
@@ -58,6 +58,8 @@ class ManagementViewModel @Inject constructor(
                     reduce { state.copy(isLoading = false, errorMessage = it.message) }
                     if (it is HostCannotLeaveException) {
                         postSideEffect(ManagementSideEffect.ShowHostCannotLeaveDialog)
+                    } else {
+                        showErrorToast()
                     }
                 }
             }

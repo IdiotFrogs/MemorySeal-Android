@@ -45,6 +45,7 @@ class SignUpViewModel @Inject constructor(
                 }
             }.onFailure {
                 intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                showErrorToast()
             }
         }
     }

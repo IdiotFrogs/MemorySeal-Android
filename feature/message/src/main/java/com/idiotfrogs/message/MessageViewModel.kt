@@ -80,10 +80,12 @@ class MessageViewModel @AssistedInject constructor(
                     }
                 }.onFailure {
                     intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                    showErrorToast()
                 }
                 RefreshSideEffect.tryEmit(RefreshEvent.Detail(capsuleId))
             }.onFailure {
                 intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                showErrorToast()
             }
         }
     }
@@ -120,6 +122,7 @@ class MessageViewModel @AssistedInject constructor(
                 }
             }.onFailure {
                 intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                showErrorToast()
             }
         }
     }
@@ -161,6 +164,7 @@ class MessageViewModel @AssistedInject constructor(
                 RefreshSideEffect.tryEmit(RefreshEvent.Detail(capsuleId))
             }.onFailure {
                 intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                showErrorToast()
             }
         }
     }

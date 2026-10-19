@@ -49,7 +49,7 @@ class ProfileViewModel @Inject constructor(
                     val errorMessage = userResult.exceptionOrNull()?.message
 
                     reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
-                    if (state.data == null) postSideEffect(ProfileSideEffect.NavigateToBack)
+                    if (state.data == null) postSideEffect(ProfileSideEffect.NavigateToBack) else showErrorToast()
                 } else {
                     reduce {
                         state.copy(
@@ -71,7 +71,7 @@ class ProfileViewModel @Inject constructor(
                         postSideEffect(ProfileSideEffect.NavigateToLogin)
                     }
                 }
-                .onFailure { /** no-op */ }
+                .onFailure { showErrorToast() }
         }
     }
 
@@ -87,6 +87,7 @@ class ProfileViewModel @Inject constructor(
                     }
                 }.onFailure {
                     intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                    showErrorToast()
                 }
         }
     }

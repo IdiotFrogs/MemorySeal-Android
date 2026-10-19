@@ -3,10 +3,12 @@ package com.idiotfrogs.auth.login
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.util.base.BaseUiState
 import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.exception.LoginCancelledException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -45,9 +47,13 @@ class LoginViewModel @Inject constructor(
                     }
                 }.onFailure {
                     intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                    showErrorToast()
                 }
             } catch (throwable: Throwable) {
                 intent { reduce { state.copy(isLoading = false, errorMessage = throwable.message) } }
+                if (throwable !is LoginCancelledException && throwable !is CancellationException) {
+                    showErrorToast()
+                }
                 throw throwable
             }
         }

@@ -78,6 +78,7 @@ class EditProfileViewModel @Inject constructor(
                     RefreshSideEffect.tryEmit(RefreshEvent.Home)
                     intent { postSideEffect(EditProfileSideEffect.NavigateToBack) }
                 }
+                .onFailure { showErrorToast() }
         }
     }
 }

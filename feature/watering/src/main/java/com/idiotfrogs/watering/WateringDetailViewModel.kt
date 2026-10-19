@@ -57,7 +57,7 @@ class WateringDetailViewModel @AssistedInject constructor(
                         errorMessage = result.exceptionOrNull()?.message
                     )
                 }
-                if (state.data == null) postSideEffect(WateringDetailSideEffect.NavigateToBack)
+                if (state.data == null) postSideEffect(WateringDetailSideEffect.NavigateToBack) else showErrorToast()
             } else {
                 val response = result.getOrElse { return@intent }
                 // totalElement - 1 = 오늘
@@ -177,6 +177,7 @@ class WateringDetailViewModel @AssistedInject constructor(
                     analyticsTracker.ticketWatered(stage)
                     fetchWatering() // 실제 0페이지 데이터를 다시 불러와 업데이트 처리
                 }
+                .onFailure { showErrorToast() }
         }
     }
 

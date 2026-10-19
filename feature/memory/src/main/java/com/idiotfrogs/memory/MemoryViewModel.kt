@@ -280,6 +280,7 @@ class MemoryViewModel @AssistedInject constructor(
                     )
                 }
             }
+            showErrorToast()
         }
     }
 

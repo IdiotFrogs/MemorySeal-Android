@@ -76,7 +76,7 @@ class FriendViewModel @AssistedInject constructor(
             }
         }.onFailure {
             intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
-            // TODO 에러 처리 어떻게 할지 논의 필요.
+            showErrorToast()
         }
     }
 
@@ -90,6 +90,7 @@ class FriendViewModel @AssistedInject constructor(
             }
         }.onFailure {
             intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+            showErrorToast()
         }
     }
 
@@ -109,9 +110,11 @@ class FriendViewModel @AssistedInject constructor(
                 }
             }.onFailure {
                 intent { reduce { reduceLoadingFailure(state, it.message) } }
+                showErrorToast()
             }
         }.onFailure {
             intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+            showErrorToast()
         }
     }
 
@@ -131,9 +134,11 @@ class FriendViewModel @AssistedInject constructor(
                 }
             }.onFailure {
                 intent { reduce { reduceLoadingFailure(state, it.message) } }
+                showErrorToast()
             }
         }.onFailure {
             intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+            showErrorToast()
         }
     }
 
@@ -165,6 +170,7 @@ class FriendViewModel @AssistedInject constructor(
             }
         }.onFailure {
             intent { reduce { reduceLoadingFailure(state, it.message) } }
+            showErrorToast()
         }
     }
 

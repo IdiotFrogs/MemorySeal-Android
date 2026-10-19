@@ -61,7 +61,7 @@ class DetailViewModel @AssistedInject constructor(
                     val errorMessage = results.first { it.isFailure }.exceptionOrNull()?.message
 
                     reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
-                    if (state.data == null) postSideEffect(DetailSideEffect.NavigateToBack)
+                    if (state.data == null) postSideEffect(DetailSideEffect.NavigateToBack) else showErrorToast()
                 } else {
                     val capsule = capsuleResult.getOrNull()
                     // 반드시 애니메이션 재생 여부와 오픈 여부를 함께 검사해야 한다
