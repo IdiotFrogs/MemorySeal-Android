@@ -65,6 +65,7 @@ fun ManagementRoute(
             ManagementSideEffect.NavigateToHome -> navigator.resetToHome()
             ManagementSideEffect.NavigateToBack -> navigator.popBackStack()
             ManagementSideEffect.NavigateToFriend -> navigator.navigate(Routes.Friend(capsuleId))
+            ManagementSideEffect.ShowHostCannotLeaveDialog -> showCannotExitDialog = true
         }
     }
 

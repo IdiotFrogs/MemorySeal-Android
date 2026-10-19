@@ -4,6 +4,7 @@ import com.idiotfrogs.domain.usecase.timecapsule.DeleteTimeCapsuleUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.LeaveTimeCapsuleUseCase
 import com.idiotfrogs.util.base.BaseUiState
 import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.exception.HostCannotLeaveException
 import com.idiotfrogs.util.sideEffect.RefreshEvent
 import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -53,8 +54,12 @@ class ManagementViewModel @Inject constructor(
                 RefreshSideEffect.tryEmit(RefreshEvent.Home)
                 intent { postSideEffect(ManagementSideEffect.NavigateToHome) }
             }.onFailure {
-                intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
-                // TODO 에러 dialog 작업
+                intent {
+                    reduce { state.copy(isLoading = false, errorMessage = it.message) }
+                    if (it is HostCannotLeaveException) {
+                        postSideEffect(ManagementSideEffect.ShowHostCannotLeaveDialog)
+                    }
+                }
             }
         }
     }
@@ -76,4 +81,5 @@ sealed interface ManagementSideEffect {
     data object NavigateToHome : ManagementSideEffect
     data object NavigateToBack : ManagementSideEffect
     data object NavigateToFriend : ManagementSideEffect
+    data object ShowHostCannotLeaveDialog : ManagementSideEffect
 }
