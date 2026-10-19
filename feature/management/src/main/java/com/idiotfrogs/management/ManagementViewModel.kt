@@ -35,11 +35,11 @@ class ManagementViewModel @Inject constructor(
             intent { reduce { state.copy(isLoading = true) } }
 
             deleteTimeCapsuleUseCase(capsuleId).onSuccess {
-                intent { reduce { state.copy(isLoading = false, errorMessage = null) } }
+                intent { reduce { state.copy(isLoading = false) } }
                 RefreshSideEffect.tryEmit(RefreshEvent.Home)
                 intent { postSideEffect(ManagementSideEffect.NavigateToHome) }
             }.onFailure {
-                intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                intent { reduce { state.copy(isLoading = false) } }
                 showErrorToast()
             }
         }
@@ -50,12 +50,12 @@ class ManagementViewModel @Inject constructor(
             intent { reduce { state.copy(isLoading = true) } }
 
             leaveTimeCapsuleUseCase(capsuleId).onSuccess {
-                intent { reduce { state.copy(isLoading = false, errorMessage = null) } }
+                intent { reduce { state.copy(isLoading = false) } }
                 RefreshSideEffect.tryEmit(RefreshEvent.Home)
                 intent { postSideEffect(ManagementSideEffect.NavigateToHome) }
             }.onFailure {
                 intent {
-                    reduce { state.copy(isLoading = false, errorMessage = it.message) }
+                    reduce { state.copy(isLoading = false) }
                     if (it is HostCannotLeaveException) {
                         postSideEffect(ManagementSideEffect.ShowHostCannotLeaveDialog)
                     } else {
@@ -69,7 +69,6 @@ class ManagementViewModel @Inject constructor(
 
 data class ManagementUiState(
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : BaseUiState
 
 sealed interface ManagementAction {

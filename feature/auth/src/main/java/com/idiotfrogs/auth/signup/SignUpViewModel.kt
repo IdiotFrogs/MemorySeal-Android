@@ -36,7 +36,7 @@ class SignUpViewModel @Inject constructor(
                 // 튜토리얼은 디바이스 단위로 최초 1회만 노출한다.
                 val tutorialCompleted = getTutorialCompletedUseCase.tutorialCompleted.firstOrNull() ?: false
                 intent {
-                    reduce { state.copy(isLoading = false, errorMessage = null) }
+                    reduce { state.copy(isLoading = false) }
                     if (tutorialCompleted) {
                         postSideEffect(SignUpSideEffect.NavigateToHome)
                     } else {
@@ -44,7 +44,7 @@ class SignUpViewModel @Inject constructor(
                     }
                 }
             }.onFailure {
-                intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                intent { reduce { state.copy(isLoading = false) } }
                 showErrorToast()
             }
         }
@@ -53,7 +53,6 @@ class SignUpViewModel @Inject constructor(
 
 data class SignUpUiState(
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : BaseUiState
 
 sealed interface SignUpAction {

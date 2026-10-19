@@ -58,9 +58,7 @@ class DetailViewModel @AssistedInject constructor(
 
             intent {
                 if (results.any { it.isFailure }) {
-                    val errorMessage = results.first { it.isFailure }.exceptionOrNull()?.message
-
-                    reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
+                    reduce { state.copy(isLoading = false) }
                     if (state.data == null) postSideEffect(DetailSideEffect.NavigateToBack) else showErrorToast()
                 } else {
                     val capsule = capsuleResult.getOrNull()
@@ -79,7 +77,6 @@ class DetailViewModel @AssistedInject constructor(
                                     collaborators = collaboratorsResult.getOrNull(),
                                 ),
                                 isLoading = false,
-                                errorMessage = null,
                             )
                         }
                     }
@@ -111,13 +108,12 @@ class DetailViewModel @AssistedInject constructor(
                         state.copy(
                             data = currentData.copy(capsule = response),
                             isLoading = false,
-                            errorMessage = null,
                         )
                     }
                 }
             }.onFailure {
                 intent {
-                    reduce { state.copy(isLoading = false, errorMessage = it.message) }
+                    reduce { state.copy(isLoading = false) }
                     postSideEffect(DetailSideEffect.ShowToast)
                 }
             }
@@ -156,7 +152,6 @@ class DetailViewModel @AssistedInject constructor(
 data class DetailUiState(
     override val data: TimeCapsuleData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<TimeCapsuleData>
 
 @Immutable

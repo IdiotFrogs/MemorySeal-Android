@@ -46,16 +46,13 @@ class ProfileViewModel @Inject constructor(
 
             intent {
                 if (userResult.isFailure) {
-                    val errorMessage = userResult.exceptionOrNull()?.message
-
-                    reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
+                    reduce { state.copy(isLoading = false) }
                     if (state.data == null) postSideEffect(ProfileSideEffect.NavigateToBack) else showErrorToast()
                 } else {
                     reduce {
                         state.copy(
                             data = ProfileData(user = userResult.getOrNull()),
                             isLoading = false,
-                            errorMessage = null,
                         )
                     }
                 }
@@ -82,11 +79,11 @@ class ProfileViewModel @Inject constructor(
             withdrawUseCase()
                 .onSuccess {
                     intent {
-                        reduce { state.copy(isLoading = false, errorMessage = null) }
+                        reduce { state.copy(isLoading = false) }
                         postSideEffect(ProfileSideEffect.NavigateToLogin)
                     }
                 }.onFailure {
-                    intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                    intent { reduce { state.copy(isLoading = false) } }
                     showErrorToast()
                 }
         }
@@ -107,7 +104,6 @@ class ProfileViewModel @Inject constructor(
 data class ProfileUiState(
     override val data: ProfileData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<ProfileData>
 
 @Immutable

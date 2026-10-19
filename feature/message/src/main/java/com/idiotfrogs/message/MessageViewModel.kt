@@ -43,13 +43,12 @@ class MessageViewModel @AssistedInject constructor(
                     state.copy(
                         data = MessageData(contents = it),
                         isLoading = false,
-                        errorMessage = null,
                     )
                 }
             }
         }.onFailure {
             intent {
-                reduce { state.copy(isLoading = false, errorMessage = it.message) }
+                reduce { state.copy(isLoading = false) }
                 postSideEffect(MessageSideEffect.NavigateToBack)
             }
         }
@@ -74,17 +73,16 @@ class MessageViewModel @AssistedInject constructor(
                             state.copy(
                                 data = MessageData(contents = contents),
                                 isLoading = false,
-                                errorMessage = null,
                             )
                         }
                     }
                 }.onFailure {
-                    intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                    intent { reduce { state.copy(isLoading = false) } }
                     showErrorToast()
                 }
                 RefreshSideEffect.tryEmit(RefreshEvent.Detail(capsuleId))
             }.onFailure {
-                intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                intent { reduce { state.copy(isLoading = false) } }
                 showErrorToast()
             }
         }
@@ -116,12 +114,11 @@ class MessageViewModel @AssistedInject constructor(
                                 }
                             ),
                             isLoading = false,
-                            errorMessage = null,
                         )
                     }
                 }
             }.onFailure {
-                intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                intent { reduce { state.copy(isLoading = false) } }
                 showErrorToast()
             }
         }
@@ -157,13 +154,12 @@ class MessageViewModel @AssistedInject constructor(
                                 }
                             ),
                             isLoading = false,
-                            errorMessage = null,
                         )
                     }
                 }
                 RefreshSideEffect.tryEmit(RefreshEvent.Detail(capsuleId))
             }.onFailure {
-                intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                intent { reduce { state.copy(isLoading = false) } }
                 showErrorToast()
             }
         }
@@ -211,7 +207,6 @@ data class MessageData(
 data class MessageUiState(
     override val data: MessageData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<MessageData>
 
 sealed interface MessageAction {

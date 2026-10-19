@@ -56,7 +56,6 @@ class OpenViewModel @AssistedInject constructor(
 data class OpenUiState(
     override val data: OpenData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<OpenData>
 
 @Immutable
