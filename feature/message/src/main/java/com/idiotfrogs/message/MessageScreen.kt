@@ -242,7 +242,7 @@ fun MessageScreen(
         ) {
             MSDetailHeader(
                 title = "나의 추억 메시지",
-                fontSize = 20.dp,
+                fontSize = 18.dp,
                 titleColor = MSTheme.color.greyG5,
                 lineHeight = 24.dp.toSp(),
                 letterSpacing = 0.sp,
