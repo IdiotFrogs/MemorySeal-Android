@@ -16,8 +16,8 @@ android {
     defaultConfig {
         applicationId = "com.idiotfrogs.memoryseal"
         targetSdk = 36
-        versionCode = 3
-        versionName = "0.0.3"
+        versionCode = 4
+        versionName = "0.0.4"
 
         vectorDrawables {
             useSupportLibrary = true
