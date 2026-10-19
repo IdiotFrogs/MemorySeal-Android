@@ -58,6 +58,7 @@ class WateringViewModel @AssistedInject constructor(
                         errorMessage = result.exceptionOrNull()?.message
                     )
                 }
+                if (state.data == null) postSideEffect(WateringSideEffect.NavigateToBack)
             } else {
                 val response = result.getOrElse { return@intent }
                 // totalElement - 1 = 오늘

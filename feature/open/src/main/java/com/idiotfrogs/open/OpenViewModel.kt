@@ -43,7 +43,7 @@ class OpenViewModel @AssistedInject constructor(
                 }
                 reduce { state.copy(data = OpenData(imageUrl = capsule.mainImageUrl)) }
             }
-            .onFailure { /** no-op */ }
+            .onFailure { postSideEffect(OpenSideEffect.NavigateToBack) }
     }
 
     @AssistedFactory
@@ -70,4 +70,5 @@ sealed interface OpenAction {
 
 sealed interface OpenSideEffect {
     data class NavigateToMemory(val capsuleId: Long) : OpenSideEffect
+    data object NavigateToBack : OpenSideEffect
 }

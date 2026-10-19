@@ -65,6 +65,7 @@ class HomeDetailViewModel @AssistedInject constructor(
                         errorMessage = it.message
                     )
                 }
+                postSideEffect(NavigateToBack)
             }
         }
     }

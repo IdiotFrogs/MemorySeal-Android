@@ -63,6 +63,7 @@ class MemoryViewModel @AssistedInject constructor(
                         errorMessage = errorMessage,
                     )
                 }
+                postSideEffect(MemorySideEffect.NavigateToBack)
             } else {
                 val collaboratorsResponse = collaboratorsResult.getOrThrow()
                 val memoryContentsResponse = memoryContentsResult.getOrThrow()

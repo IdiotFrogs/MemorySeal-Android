@@ -100,6 +100,7 @@ class HomeViewModel @Inject constructor(
                     val errorMessage = results.first { it.isFailure }.exceptionOrNull()?.message
 
                     reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
+                    showErrorToast()
                 } else {
                     // 비동기로 여러 API 호출하므로 실행 시점에 데이터 있는지 파악
                     val latestData = state.data ?: HomeData()
@@ -148,6 +149,7 @@ class HomeViewModel @Inject constructor(
                         errorMessage = it.message
                     )
                 }
+                showErrorToast()
             }
         }
     }

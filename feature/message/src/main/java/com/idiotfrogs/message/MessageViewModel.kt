@@ -48,7 +48,10 @@ class MessageViewModel @AssistedInject constructor(
                 }
             }
         }.onFailure {
-            intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+            intent {
+                reduce { state.copy(isLoading = false, errorMessage = it.message) }
+                postSideEffect(MessageSideEffect.NavigateToBack)
+            }
         }
     }
 

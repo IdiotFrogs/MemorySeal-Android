@@ -43,6 +43,7 @@ fun OpenRoute(
                 navigator.popBackStack()
                 navigator.navigate(Routes.Memory(event.capsuleId))
             }
+            OpenSideEffect.NavigateToBack -> navigator.popBackStack()
         }
     }
 

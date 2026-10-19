@@ -58,7 +58,10 @@ class FriendViewModel @AssistedInject constructor(
                 }
             }
         }.onFailure {
-            intent { reduce { reduceLoadingFailure(state, it.message) } }
+            intent {
+                reduce { reduceLoadingFailure(state, it.message) }
+                postSideEffect(FriendSideEffect.NavigateToBack)
+            }
         }
     }
 

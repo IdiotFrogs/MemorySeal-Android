@@ -51,6 +51,7 @@ class EditProfileViewModel @Inject constructor(
                             errorMessage = (result.exceptionOrNull()?.message)
                         )
                     }
+                    postSideEffect(EditProfileSideEffect.NavigateToBack)
                 } else {
                     reduce {
                         state.copy(

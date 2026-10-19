@@ -44,6 +44,7 @@ class PreviewViewModel @AssistedInject constructor(
                             errorMessage = error.message,
                         )
                     }
+                    postSideEffect(PreviewSideEffect.NavigateToBack)
                 }
             }
     }
