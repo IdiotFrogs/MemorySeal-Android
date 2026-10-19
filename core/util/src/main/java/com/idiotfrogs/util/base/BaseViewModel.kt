@@ -30,4 +30,8 @@ abstract class BaseViewModel<STATE: Any, SIDE_EFFECT: Any, ACTION> : ViewModel()
     protected fun safeLaunch(block: suspend CoroutineScope.() -> Unit) {
         safeScope.launch(block = block)
     }
+
+    protected fun showErrorToast() {
+        MSSideEffect.postSideEffect(AppSideEffect.ShowErrorToast)
+    }
 }
