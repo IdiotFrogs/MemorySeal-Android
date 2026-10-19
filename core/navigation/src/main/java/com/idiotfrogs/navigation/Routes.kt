@@ -11,6 +11,8 @@ sealed interface Routes: NavKey {
     @Serializable
     data object SignUp : Routes
     @Serializable
+    data object Tutorial : Routes
+    @Serializable
     data object Home : Routes
     @Serializable
     data class HomeDetail(val homeDetailType: HomeDetailType): Routes

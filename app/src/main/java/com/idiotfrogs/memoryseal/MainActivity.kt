@@ -46,6 +46,7 @@ import com.idiotfrogs.preview.PreviewRoute
 import com.idiotfrogs.profile.editprofile.EditProfileRoute
 import com.idiotfrogs.profile.profile.ProfileRoute
 import com.idiotfrogs.splash.SplashRoute
+import com.idiotfrogs.tutorial.TutorialRoute
 import com.idiotfrogs.watering.WateringDetailRoute
 import com.idiotfrogs.watering.WateringRoute
 import dagger.hilt.android.AndroidEntryPoint
@@ -79,7 +80,8 @@ class MainActivity : ComponentActivity() {
                     currentRoute != null &&
                         currentRoute !is Routes.Splash &&
                         currentRoute !is Routes.Login &&
-                        currentRoute !is Routes.SignUp
+                        currentRoute !is Routes.SignUp &&
+                        currentRoute !is Routes.Tutorial
 
                 LaunchedEffect(Unit) {
                     mainViewModel.event.collect { sideEffect ->
@@ -148,6 +150,7 @@ class MainActivity : ComponentActivity() {
                                 entry<Routes.Splash> { SplashRoute() }
                                 entry<Routes.Login> { LoginRoute() }
                                 entry<Routes.SignUp> { SignUpRoute() }
+                                entry<Routes.Tutorial> { TutorialRoute() }
                                 entry<Routes.Home> {
                                     HomeRoute(
                                         selectedMenu = homeTab,
@@ -210,6 +213,7 @@ private fun Routes.analyticsScreenName(homeTab: BottomMenu): String = when (this
     Routes.Splash -> "Splash"
     Routes.Login -> "Login"
     Routes.SignUp -> "SignUp"
+    Routes.Tutorial -> "Tutorial"
     Routes.Home -> if (homeTab == BottomMenu.HOME) "Home" else "OpenedTicketList"
     is Routes.HomeDetail -> when (homeDetailType) {
         HomeDetailType.BEFORE_BURIED -> "TicketList"
