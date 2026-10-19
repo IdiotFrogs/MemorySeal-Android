@@ -6,6 +6,7 @@ import com.idiotfrogs.domain.usecase.timecapsule.CreateTimeCapsuleContentUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.DeleteTimeCapsuleContentUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleContentUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.ModifyTimeCapsuleContentUseCase
+import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.model.timecapsule.MyCapsuleContentsData
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.base.DataUiState
@@ -15,6 +16,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import java.io.File
@@ -23,6 +25,7 @@ import java.io.File
 class MessageViewModel @AssistedInject constructor(
     @Assisted private val capsuleId: Long,
     private val getMyTimeCapsuleContentUseCase: GetMyTimeCapsuleContentUseCase,
+    private val getMyProfileUseCase: GetMyProfileUseCase,
     private val createTimeCapsuleContentUseCase: CreateTimeCapsuleContentUseCase,
     private val modifyTimeCapsuleContentUseCase: ModifyTimeCapsuleContentUseCase,
     private val deleteTimeCapsuleContentUseCase: DeleteTimeCapsuleContentUseCase,
@@ -37,11 +40,15 @@ class MessageViewModel @AssistedInject constructor(
     private fun fetchTimeCapsuleContent() = safeLaunch {
         intent { reduce { state.copy(isLoading = true) } }
 
-        getMyTimeCapsuleContentUseCase(capsuleId).onSuccess {
+        val profile = async { getMyProfileUseCase() }
+        val contentsResult = getMyTimeCapsuleContentUseCase(capsuleId)
+        val nickname = profile.await().getOrNull()?.nickname ?: "나"
+
+        contentsResult.onSuccess { contents ->
             intent {
                 reduce {
                     state.copy(
-                        data = MessageData(contents = it),
+                        data = MessageData(contents = contents, myNickname = nickname),
                         isLoading = false,
                         errorMessage = null,
                     )
@@ -69,7 +76,7 @@ class MessageViewModel @AssistedInject constructor(
                     intent {
                         reduce {
                             state.copy(
-                                data = MessageData(contents = contents),
+                                data = (state.data ?: MessageData()).copy(contents = contents),
                                 isLoading = false,
                                 errorMessage = null,
                             )
@@ -198,6 +205,7 @@ class MessageViewModel @AssistedInject constructor(
 @Immutable
 data class MessageData(
     val contents: List<MyCapsuleContentsData> = emptyList(),
+    val myNickname: String = "나",
 )
 
 @Immutable

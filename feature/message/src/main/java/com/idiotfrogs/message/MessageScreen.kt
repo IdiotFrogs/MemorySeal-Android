@@ -36,6 +36,7 @@ import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -61,6 +62,8 @@ import com.idiotfrogs.designsystem.component.MSPlainTextField
 import com.idiotfrogs.designsystem.component.MSTabBar
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.button.MSButton
+import com.idiotfrogs.designsystem.component.photoviewer.MSPhotoViewerDialog
+import com.idiotfrogs.designsystem.component.photoviewer.MSPhotoViewerUiModel
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.noRippleClickable
 import com.idiotfrogs.designsystem.util.rememberMultiPickerState
@@ -115,6 +118,7 @@ fun MessageScreen(
     var messageItems by remember { mutableStateOf(emptyList<MessageListItemUiModel>()) }
     var selectedIds by rememberSaveable { mutableStateOf(emptySet<String>()) }
     var photoItems by remember { mutableStateOf(emptyList<PhotoListItemUiModel>()) }
+    var photoViewer by remember { mutableStateOf<MSPhotoViewerUiModel?>(null) }
 
     val messageTextFieldState = rememberTextFieldState()
     val focusRequester = remember { FocusRequester() }
@@ -342,6 +346,18 @@ fun MessageScreen(
                                         .noRippleClickable {
                                             if (isDeleteMode) {
                                                 selectedIds = selectedIds.toggle(item.id)
+                                            } else {
+                                                val photos = photoItems
+                                                val initialIndex = photos.indexOfFirst {
+                                                    it.fileId == item.fileId
+                                                }
+                                                if (initialIndex >= 0) {
+                                                    photoViewer = MSPhotoViewerUiModel(
+                                                        authorNickname = data.myNickname,
+                                                        imageUrls = photos.map { it.imageModel },
+                                                        initialIndex = initialIndex,
+                                                    )
+                                                }
                                             }
                                         },
                                 ) {
@@ -622,6 +638,15 @@ fun MessageScreen(
                     textFieldState = messageTextFieldState,
                 )
             }
+        }
+    }
+
+    photoViewer?.let { viewer ->
+        key(viewer) {
+            MSPhotoViewerDialog(
+                viewer = viewer,
+                onDismiss = { photoViewer = null },
+            )
         }
     }
 }
