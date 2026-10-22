@@ -51,12 +51,8 @@ class WateringDetailViewModel @AssistedInject constructor(
         )
         intent {
             if (result.isFailure) {
-                reduce {
-                    state.copy(
-                        isLoading = false,
-                        errorMessage = result.exceptionOrNull()?.message
-                    )
-                }
+                reduce { state.copy(isLoading = false) }
+                if (state.data == null) postSideEffect(WateringDetailSideEffect.NavigateToBack) else showErrorToast()
             } else {
                 val response = result.getOrElse { return@intent }
                 // totalElement - 1 = 오늘
@@ -93,7 +89,6 @@ class WateringDetailViewModel @AssistedInject constructor(
                             totalDays = response.totalDays
                         ),
                         isLoading = false,
-                        errorMessage = null
                     )
                 }
             }
@@ -150,7 +145,7 @@ class WateringDetailViewModel @AssistedInject constructor(
                         ),
                     )
                 }
-            }.onFailure { error ->
+            }.onFailure {
                 val latestData = state.data ?: return@intent
                 val waterings = latestData.waterings
                 val isCurrentRequest = waterings.currentPage == currentPage &&
@@ -162,7 +157,6 @@ class WateringDetailViewModel @AssistedInject constructor(
                         data = currentData.copy(
                             waterings = waterings.setLoadingMore(false)
                         ),
-                        errorMessage = error.message
                     )
                 }
             }
@@ -176,6 +170,7 @@ class WateringDetailViewModel @AssistedInject constructor(
                     analyticsTracker.ticketWatered(stage)
                     fetchWatering() // 실제 0페이지 데이터를 다시 불러와 업데이트 처리
                 }
+                .onFailure { showErrorToast() }
         }
     }
 
@@ -206,7 +201,6 @@ data class WateringDetailData(
 data class WateringDetailState(
     override val data: WateringDetailData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<WateringDetailData>
 
 sealed interface WateringDetailAction {

@@ -45,12 +45,8 @@ class EditProfileViewModel @Inject constructor(
 
             intent {
                 if (result.isFailure) {
-                    reduce {
-                        state.copy(
-                            isLoading = false,
-                            errorMessage = (result.exceptionOrNull()?.message)
-                        )
-                    }
+                    reduce { state.copy(isLoading = false) }
+                    postSideEffect(EditProfileSideEffect.NavigateToBack)
                 } else {
                     reduce {
                         state.copy(
@@ -77,6 +73,7 @@ class EditProfileViewModel @Inject constructor(
                     RefreshSideEffect.tryEmit(RefreshEvent.Home)
                     intent { postSideEffect(EditProfileSideEffect.NavigateToBack) }
                 }
+                .onFailure { showErrorToast() }
         }
     }
 }
@@ -85,7 +82,6 @@ class EditProfileViewModel @Inject constructor(
 data class EditProfileUiState(
     override val data: EditProfileData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<EditProfileData>
 
 @Immutable

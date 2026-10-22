@@ -53,12 +53,14 @@ class FriendViewModel @AssistedInject constructor(
                     state.copy(
                         data = CollaboratorsData(PaginationState<TimeCapsuleCollaboratorsResponseData>().addPage(it)),
                         isLoading = false,
-                        errorMessage = null,
                     )
                 }
             }
         }.onFailure {
-            intent { reduce { reduceLoadingFailure(state, it.message) } }
+            intent {
+                reduce { state.copy(isLoading = false) }
+                postSideEffect(FriendSideEffect.NavigateToBack)
+            }
         }
     }
 
@@ -67,13 +69,13 @@ class FriendViewModel @AssistedInject constructor(
 
         getTimeCapsuleInviteCodeUseCase(capsuleId).onSuccess {
             intent {
-                reduce { state.copy(isLoading = false, errorMessage = null) }
+                reduce { state.copy(isLoading = false) }
                 postSideEffect(FriendSideEffect.CopyInviteCodeToClipboard(it.code))
                 postSideEffect(FriendSideEffect.ShowToast(FriendScreenActionState.COPY))
             }
         }.onFailure {
-            intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
-            // TODO 에러 처리 어떻게 할지 논의 필요.
+            intent { reduce { state.copy(isLoading = false) } }
+            showErrorToast()
         }
     }
 
@@ -82,11 +84,12 @@ class FriendViewModel @AssistedInject constructor(
 
         appLinkManager.createInviteLink(capsuleId).onSuccess { inviteLink ->
             intent {
-                reduce { state.copy(isLoading = false, errorMessage = null) }
+                reduce { state.copy(isLoading = false) }
                 postSideEffect(FriendSideEffect.ShareInviteLink(inviteLink))
             }
         }.onFailure {
-            intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+            intent { reduce { state.copy(isLoading = false) } }
+            showErrorToast()
         }
     }
 
@@ -100,15 +103,16 @@ class FriendViewModel @AssistedInject constructor(
                         state.copy(
                             data = CollaboratorsData(PaginationState<TimeCapsuleCollaboratorsResponseData>().addPage(it)),
                             isLoading = false,
-                            errorMessage = null,
                         )
                     }
                 }
             }.onFailure {
-                intent { reduce { reduceLoadingFailure(state, it.message) } }
+                intent { reduce { state.copy(isLoading = false) } }
+                showErrorToast()
             }
         }.onFailure {
-            intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+            intent { reduce { state.copy(isLoading = false) } }
+            showErrorToast()
         }
     }
 
@@ -122,15 +126,16 @@ class FriendViewModel @AssistedInject constructor(
                         state.copy(
                             data = CollaboratorsData(PaginationState<TimeCapsuleCollaboratorsResponseData>().addPage(it)),
                             isLoading = false,
-                            errorMessage = null,
                         )
                     }
                 }
             }.onFailure {
-                intent { reduce { reduceLoadingFailure(state, it.message) } }
+                intent { reduce { state.copy(isLoading = false) } }
+                showErrorToast()
             }
         }.onFailure {
-            intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+            intent { reduce { state.copy(isLoading = false) } }
+            showErrorToast()
         }
     }
 
@@ -156,12 +161,12 @@ class FriendViewModel @AssistedInject constructor(
                             searchKeyword = nickname,
                         ),
                         isLoading = false,
-                        errorMessage = null,
                     )
                 }
             }
         }.onFailure {
-            intent { reduce { reduceLoadingFailure(state, it.message) } }
+            intent { reduce { state.copy(isLoading = false) } }
+            showErrorToast()
         }
     }
 
@@ -208,7 +213,6 @@ class FriendViewModel @AssistedInject constructor(
                     data = latestData.copy(
                         collaborators = latestCollaborators.addPage(response),
                     ),
-                    errorMessage = null,
                 )
             }
         }.onFailure {
@@ -225,20 +229,9 @@ class FriendViewModel @AssistedInject constructor(
                     data = latestData.copy(
                         collaborators = latestCollaborators.setLoadingMore(false),
                     ),
-                    errorMessage = it.message,
                 )
             }
         }
-    }
-
-    private fun reduceLoadingFailure(
-        currentState: FriendUiState,
-        errorMessage: String?,
-    ): FriendUiState {
-        return currentState.copy(
-            isLoading = false,
-            errorMessage = errorMessage,
-        )
     }
 
     override fun onAction(action: FriendAction) {
@@ -263,7 +256,6 @@ class FriendViewModel @AssistedInject constructor(
 data class FriendUiState(
     override val data: CollaboratorsData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<CollaboratorsData>
 
 @Immutable

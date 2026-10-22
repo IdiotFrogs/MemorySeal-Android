@@ -42,18 +42,13 @@ class PreviewViewModel @AssistedInject constructor(
                                 myNickname = nickname,
                             ),
                             isLoading = false,
-                            errorMessage = null,
                         )
                     }
                 }
-            }.onFailure { error ->
+            }.onFailure {
                 intent {
-                    reduce {
-                        state.copy(
-                            isLoading = false,
-                            errorMessage = error.message,
-                        )
-                    }
+                    reduce { state.copy(isLoading = false) }
+                    postSideEffect(PreviewSideEffect.NavigateToBack)
                 }
             }
     }
@@ -80,7 +75,6 @@ data class PreviewData(
 data class PreviewUiState(
     override val data: PreviewData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<PreviewData>
 
 sealed interface PreviewAction {

@@ -48,9 +48,9 @@ class CreateViewModel @Inject constructor(
                 analyticsTracker.ticketCreated()
                 RefreshSideEffect.tryEmit(RefreshEvent.Home)
                 intent { postSideEffect(CreateSideEffect.NavigateToDetail(response)) }
-            }.onFailure { e ->
-                intent { reduce { state.copy(isLoading = false, errorMessage = e.message) } }
-                // TODO: 에러 처리 (토스트 등)
+            }.onFailure {
+                intent { reduce { state.copy(isLoading = false) } }
+                showErrorToast()
             }
         }
     }
@@ -58,7 +58,6 @@ class CreateViewModel @Inject constructor(
 
 data class CreateUiState(
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : BaseUiState
 
 sealed interface CreateAction {

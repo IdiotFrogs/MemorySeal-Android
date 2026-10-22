@@ -97,9 +97,8 @@ class HomeViewModel @Inject constructor(
 
             intent {
                 if (results.any { it.isFailure }) {
-                    val errorMessage = results.first { it.isFailure }.exceptionOrNull()?.message
-
-                    reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
+                    reduce { state.copy(isLoading = false) }
+                    showErrorToast()
                 } else {
                     // 비동기로 여러 API 호출하므로 실행 시점에 데이터 있는지 파악
                     val latestData = state.data ?: HomeData()
@@ -113,7 +112,6 @@ class HomeViewModel @Inject constructor(
                                 unopenedBanner = unopenedResponse.getOrNull()
                             ),
                             isLoading = false,
-                            errorMessage = null,
                         )
                     }
                 }
@@ -136,18 +134,13 @@ class HomeViewModel @Inject constructor(
                     state.copy(
                         data = latestData.copy(opened = PaginationState<MyTimeCapsuleContent>().addPage(it)),
                         isLoading = false,
-                        errorMessage = null,
                     )
                 }
             }
         }.onFailure {
             intent {
-                reduce {
-                    state.copy(
-                        isLoading = false,
-                        errorMessage = it.message
-                    )
-                }
+                reduce { state.copy(isLoading = false) }
+                showErrorToast()
             }
         }
     }
@@ -186,10 +179,9 @@ class HomeViewModel @Inject constructor(
                     data = latestData.copy(
                         opened = latestOpened.addPage(response),
                     ),
-                    errorMessage = null,
                 )
             }
-        }.onFailure { error ->
+        }.onFailure {
             val latestData = state.data ?: return@onFailure
             val latestOpened = latestData.opened
             val isCurrentRequest = latestOpened.currentPage == currentPage &&
@@ -202,7 +194,6 @@ class HomeViewModel @Inject constructor(
                     data = latestData.copy(
                         opened = latestOpened.setLoadingMore(false),
                     ),
-                    errorMessage = error.message,
                 )
             }
         }
@@ -213,12 +204,12 @@ class HomeViewModel @Inject constructor(
 
         requestCollaboratorUseCase(body).onSuccess {
             intent {
-                reduce { state.copy(isLoading = false, errorMessage = null) }
+                reduce { state.copy(isLoading = false) }
                 fetchHome()
             }
         }.onFailure {
             intent {
-                reduce { state.copy(isLoading = false, errorMessage = it.message) }
+                reduce { state.copy(isLoading = false) }
                 postSideEffect(HomeSideEffect.ShowJoinErrorDialog)
             }
         }
@@ -254,7 +245,6 @@ class HomeViewModel @Inject constructor(
 data class HomeUiState(
     override val data: HomeData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<HomeData>
 
 @Immutable

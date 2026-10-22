@@ -54,15 +54,8 @@ class MemoryViewModel @AssistedInject constructor(
 
         intent {
             if (collaboratorsResult.isFailure || memoryContentsResult.isFailure) {
-                val errorMessage = collaboratorsResult.exceptionOrNull()?.message
-                    ?: memoryContentsResult.exceptionOrNull()?.message
-
-                reduce {
-                    state.copy(
-                        isLoading = false,
-                        errorMessage = errorMessage,
-                    )
-                }
+                reduce { state.copy(isLoading = false) }
+                postSideEffect(MemorySideEffect.NavigateToBack)
             } else {
                 val collaboratorsResponse = collaboratorsResult.getOrThrow()
                 val memoryContentsResponse = memoryContentsResult.getOrThrow()
@@ -76,7 +69,6 @@ class MemoryViewModel @AssistedInject constructor(
                                 .addPage(memoryContentsResponse),
                         ),
                         isLoading = false,
-                        errorMessage = null,
                     )
                 }
             }
@@ -117,10 +109,9 @@ class MemoryViewModel @AssistedInject constructor(
                     data = latestData.copy(
                         collaborators = latestCollaborators.addPage(response),
                     ),
-                    errorMessage = null,
                 )
             }
-        }.onFailure { error ->
+        }.onFailure {
             val latestData = state.data ?: return@onFailure
             val latestCollaborators = latestData.collaborators
             val isCurrentRequest = latestCollaborators.currentPage == currentPage &&
@@ -133,7 +124,6 @@ class MemoryViewModel @AssistedInject constructor(
                     data = latestData.copy(
                         collaborators = latestCollaborators.setLoadingMore(false),
                     ),
-                    errorMessage = error.message,
                 )
             }
         }
@@ -199,10 +189,9 @@ class MemoryViewModel @AssistedInject constructor(
                     data = latestData.copy(
                         memoryContents = latestContents.addPage(response),
                     ),
-                    errorMessage = null,
                 )
             }
-        }.onFailure { error ->
+        }.onFailure {
             val latestData = state.data ?: return@onFailure
             val latestContents = latestData.memoryContents
             val isCurrentRequest = latestContents.currentPage == advancedCurrentPage &&
@@ -215,7 +204,6 @@ class MemoryViewModel @AssistedInject constructor(
                     data = latestData.copy(
                         memoryContents = latestContents.setLoadingMore(false),
                     ),
-                    errorMessage = error.message,
                 )
             }
         }
@@ -266,19 +254,14 @@ class MemoryViewModel @AssistedInject constructor(
                                 .mergeSelectedContent(response),
                         ),
                         isLoading = false,
-                        errorMessage = null,
                     )
                 }
             }
-        }.onFailure { error ->
+        }.onFailure {
             intent {
-                reduce {
-                    state.copy(
-                        isLoading = false,
-                        errorMessage = error.message,
-                    )
-                }
+                reduce { state.copy(isLoading = false) }
             }
+            showErrorToast()
         }
     }
 
@@ -308,7 +291,6 @@ data class MemoryData(
 data class MemoryUiState(
     override val data: MemoryData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<MemoryData>
 
 sealed interface MemoryAction {
