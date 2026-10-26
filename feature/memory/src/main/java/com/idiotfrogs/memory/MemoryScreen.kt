@@ -18,6 +18,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -28,6 +32,8 @@ import com.idiotfrogs.designsystem.component.MSLoadingIndicator
 import com.idiotfrogs.designsystem.component.MSLoadingOverlay
 import com.idiotfrogs.designsystem.component.MSText
 import com.idiotfrogs.designsystem.component.MSTimeCapsuleContentItem
+import com.idiotfrogs.designsystem.component.photoviewer.MSPhotoViewerDialog
+import com.idiotfrogs.designsystem.component.photoviewer.MSPhotoViewerUiModel
 import com.idiotfrogs.designsystem.theme.MSTheme
 import com.idiotfrogs.designsystem.util.LoadNextPageEffect
 import com.idiotfrogs.memory.component.MemoryCollaboratorListItem
@@ -67,6 +73,7 @@ fun MemoryScreen(
     onAction: (MemoryAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var photoViewer by remember { mutableStateOf<MSPhotoViewerUiModel?>(null) }
     val collaborators = data.collaborators.items
     val memoryContents = data.memoryContents.items
     val myUserId = collaborators.firstOrNull { it.isMe }?.userId
@@ -189,6 +196,16 @@ fun MemoryScreen(
                                     authorNickname = memoryContent.nickname,
                                     authorProfileImageUrl = memoryContent.profileImageUrl,
                                     showAuthor = !isMine && index == 0,
+                                    onImageClick = { imageIndex ->
+                                        val imageUrls = content.uiModel.imageUrls
+                                        if (imageIndex in imageUrls.indices) {
+                                            photoViewer = MSPhotoViewerUiModel(
+                                                authorNickname = memoryContent.nickname,
+                                                imageUrls = imageUrls,
+                                                initialIndex = imageIndex,
+                                            )
+                                        }
+                                    },
                                 )
                             }
                         }
@@ -208,6 +225,15 @@ fun MemoryScreen(
                     }
                 }
             }
+        }
+    }
+
+    photoViewer?.let { viewer ->
+        key(viewer) {
+            MSPhotoViewerDialog(
+                viewer = viewer,
+                onDismiss = { photoViewer = null },
+            )
         }
     }
 }

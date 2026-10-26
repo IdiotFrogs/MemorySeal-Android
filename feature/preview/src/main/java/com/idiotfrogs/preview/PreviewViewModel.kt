@@ -2,12 +2,14 @@ package com.idiotfrogs.preview
 
 import androidx.compose.runtime.Immutable
 import com.idiotfrogs.domain.usecase.timecapsule.GetMyTimeCapsuleContentUseCase
+import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.base.DataUiState
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 
@@ -15,6 +17,7 @@ import org.orbitmvi.orbit.viewmodel.container
 class PreviewViewModel @AssistedInject constructor(
     @Assisted private val capsuleId: Long,
     private val getMyTimeCapsuleContentUseCase: GetMyTimeCapsuleContentUseCase,
+    private val getMyProfileUseCase: GetMyProfileUseCase,
 ) : BaseViewModel<PreviewUiState, PreviewSideEffect, PreviewAction>() {
 
     override val container: Container<PreviewUiState, PreviewSideEffect> = container(
@@ -25,12 +28,19 @@ class PreviewViewModel @AssistedInject constructor(
     private fun fetchPreview() = safeLaunch {
         intent { reduce { state.copy(isLoading = true) } }
 
-        fetchWithRetry { getMyTimeCapsuleContentUseCase(capsuleId) }
+        val profile = fetchWithRetry { getMyProfileUseCase() }
+        val contentsResult = getMyTimeCapsuleContentUseCase(capsuleId)
+        val nickname = profile.getOrNull()?.nickname ?: "나"
+
+        contentsResult
             .onSuccess { contents ->
                 intent {
                     reduce {
                         state.copy(
-                            data = PreviewData(contents = contents.map { it.toUiModel() }),
+                            data = PreviewData(
+                                contents = contents.map { it.toUiModel() },
+                                myNickname = nickname,
+                            ),
                             isLoading = false,
                         )
                     }
@@ -58,6 +68,7 @@ class PreviewViewModel @AssistedInject constructor(
 @Immutable
 data class PreviewData(
     val contents: List<PreviewContentUiModel> = emptyList(),
+    val myNickname: String = "나",
 )
 
 @Immutable
