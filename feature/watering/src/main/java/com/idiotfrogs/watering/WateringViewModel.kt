@@ -44,12 +44,14 @@ class WateringViewModel @AssistedInject constructor(
 
     private fun fetchWatering() = safeLaunch {
         intent { reduce { state.copy(isLoading = true) } }
-        val result = getWateringUseCase.invoke(
-            capsuleId = capsuleId,
-            page = 0,
-            size = WATERING_LOAD_SIZE,
-            sort = SORT_DESC
-        )
+        val result = fetchWithRetry {
+            getWateringUseCase.invoke(
+                capsuleId = capsuleId,
+                page = 0,
+                size = WATERING_LOAD_SIZE,
+                sort = SORT_DESC
+            )
+        }
         intent {
             if (result.isFailure) {
                 reduce { state.copy(isLoading = false) }

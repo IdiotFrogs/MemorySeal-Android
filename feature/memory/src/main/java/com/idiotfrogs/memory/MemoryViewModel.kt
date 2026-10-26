@@ -34,19 +34,17 @@ class MemoryViewModel @AssistedInject constructor(
     private fun fetchMemory() = safeLaunch {
         intent { reduce { state.copy(isLoading = true) } }
 
-        val collaboratorsDeferred = async {
+        val collaboratorsDeferred = fetchWithRetry {
             getTimeCapsuleCollaboratorsUseCase(
                 capsuleId = capsuleId,
                 page = 0,
-                size = MEMORY_COLLABORATOR_PAGE_SIZE,
-            )
+                size = MEMORY_COLLABORATOR_PAGE_SIZE,)
         }
-        val memoryContentsDeferred = async {
+        val memoryContentsDeferred = fetchWithRetry {
             getTimeCapsuleContentUseCase(
                 timeCapsuleId = capsuleId,
                 page = 0,
-                size = MEMORY_CONTENT_PAGE_SIZE,
-            )
+                size = MEMORY_CONTENT_PAGE_SIZE,)
         }
 
         val collaboratorsResult = collaboratorsDeferred.await()

@@ -41,7 +41,7 @@ class EditProfileViewModel @Inject constructor(
     private fun fetchProfile() {
         safeLaunch {
             intent { reduce { state.copy(isLoading = true) } }
-            val result = getMyProfileUseCase()
+            val result = fetchWithRetry { getMyProfileUseCase() }
 
             intent {
                 if (result.isFailure) {

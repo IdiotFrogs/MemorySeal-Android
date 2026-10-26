@@ -73,19 +73,19 @@ class HomeViewModel @Inject constructor(
         safeLaunch {
             intent { reduce { state.copy(isLoading = true) } }
 
-            val userDeferred = async { getMyProfileUseCase() }
-            val beforeBuriedDeferred = async {
+            val userDeferred = fetchWithAsyncRetry { getMyProfileUseCase() }
+            val beforeBuriedDeferred = fetchWithAsyncRetry {
                 getMyTimeCapsuleUseCase(
                     status = TimeCapsuleStatus.BEFOREBURIED, page = 0, size = 6
                 )
             }
-            val buriedDeferred = async {
+            val buriedDeferred = fetchWithRetry {
                 getMyTimeCapsuleUseCase(
                     status = TimeCapsuleStatus.BURIED, page = 0, size = 6
                 )
             }
-            val seasonBannerDeferred = async { getSeasonBannerUseCase.invoke() }
-            val unopenedDeferred = async { getUnopenedUseCase.invoke() }
+            val seasonBannerDeferred = fetchWithRetry { getSeasonBannerUseCase.invoke() }
+            val unopenedDeferred = fetchWithRetry { getUnopenedUseCase.invoke() }
 
             val userResult = userDeferred.await()
             val beforeBuriedResult = beforeBuriedDeferred.await()
@@ -122,11 +122,13 @@ class HomeViewModel @Inject constructor(
     private fun fetchOpened() = intent {
         intent { reduce { state.copy(isLoading = true) } }
 
-        getMyTimeCapsuleUseCase(
-            status = TimeCapsuleStatus.OPENED,
-            page = 0,
-            size = 10,
-        ).onSuccess {
+        fetchWithRetry {
+            getMyTimeCapsuleUseCase(
+                status = TimeCapsuleStatus.OPENED,
+                page = 0,
+                size = 10,
+            )
+        }.onSuccess {
             // 비동기로 여러 API 호출하므로 실행 시점에 데이터 있는지 파악
             val latestData = state.data ?: HomeData()
             intent {

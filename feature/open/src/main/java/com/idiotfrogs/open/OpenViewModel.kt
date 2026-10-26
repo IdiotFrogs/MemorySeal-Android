@@ -33,7 +33,7 @@ class OpenViewModel @AssistedInject constructor(
     }
 
     fun fetchOpen() = intent {
-        getTimeCapsuleUseCase.invoke(capsuleId)
+        fetchWithRetry { getTimeCapsuleUseCase.invoke(capsuleId) }
             .onSuccess { capsule ->
                 capsule.openedAt?.let { openedAt ->
                     val viewedAt = Clock.System.todayIn(TimeZone.of("Asia/Seoul"))

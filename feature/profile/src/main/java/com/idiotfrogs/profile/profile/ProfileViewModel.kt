@@ -40,7 +40,7 @@ class ProfileViewModel @Inject constructor(
         safeLaunch {
             intent { reduce { state.copy(isLoading = true) } }
 
-            val userDeferred = async { getMyProfileUseCase() }
+            val userDeferred = fetchWithRetry { getMyProfileUseCase() }
 
             val userResult = userDeferred.await()
 

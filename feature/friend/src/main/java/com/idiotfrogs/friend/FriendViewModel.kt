@@ -47,7 +47,9 @@ class FriendViewModel @AssistedInject constructor(
             }
         }
 
-        getTimeCapsuleCollaboratorsUseCase(capsuleId, 0, FRIEND_PAGE_SIZE).onSuccess {
+        fetchWithRetry {
+            getTimeCapsuleCollaboratorsUseCase(capsuleId, 0, FRIEND_PAGE_SIZE)
+        }.onSuccess {
             intent {
                 reduce {
                     state.copy(

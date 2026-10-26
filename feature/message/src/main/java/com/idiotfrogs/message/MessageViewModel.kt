@@ -37,7 +37,7 @@ class MessageViewModel @AssistedInject constructor(
     private fun fetchTimeCapsuleContent() = safeLaunch {
         intent { reduce { state.copy(isLoading = true) } }
 
-        getMyTimeCapsuleContentUseCase(capsuleId).onSuccess {
+        fetchWithRetry { getMyTimeCapsuleContentUseCase(capsuleId) }.onSuccess {
             intent {
                 reduce {
                     state.copy(

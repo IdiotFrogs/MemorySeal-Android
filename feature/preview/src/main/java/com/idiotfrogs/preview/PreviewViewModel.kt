@@ -25,7 +25,7 @@ class PreviewViewModel @AssistedInject constructor(
     private fun fetchPreview() = safeLaunch {
         intent { reduce { state.copy(isLoading = true) } }
 
-        getMyTimeCapsuleContentUseCase(capsuleId)
+        fetchWithRetry { getMyTimeCapsuleContentUseCase(capsuleId) }
             .onSuccess { contents ->
                 intent {
                     reduce {

@@ -38,14 +38,16 @@ class HomeDetailViewModel @AssistedInject constructor(
     private fun fetchItem() = intent {
         intent { reduce { state.copy(isLoading = true) } }
 
-        getMyTimeCapsuleUseCase(
-            status = when (homeDetailType) {
-                HomeDetailType.BURIED -> TimeCapsuleStatus.BURIED
-                HomeDetailType.BEFORE_BURIED -> TimeCapsuleStatus.BEFOREBURIED
-            },
-            page = 0,
-            size = 10,
-        ).onSuccess {
+        fetchWithRetry {
+            getMyTimeCapsuleUseCase(
+                status = when (homeDetailType) {
+                    HomeDetailType.BURIED -> TimeCapsuleStatus.BURIED
+                    HomeDetailType.BEFORE_BURIED -> TimeCapsuleStatus.BEFOREBURIED
+                },
+                page = 0,
+                size = 10,
+            )
+        }.onSuccess {
             intent {
                 reduce {
                     state.copy(
