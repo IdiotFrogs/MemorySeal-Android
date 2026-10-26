@@ -33,7 +33,7 @@ class OpenViewModel @AssistedInject constructor(
     }
 
     fun fetchOpen() = intent {
-        getTimeCapsuleUseCase.invoke(capsuleId)
+        fetchWithRetry { getTimeCapsuleUseCase.invoke(capsuleId) }
             .onSuccess { capsule ->
                 capsule.openedAt?.let { openedAt ->
                     val viewedAt = Clock.System.todayIn(TimeZone.of("Asia/Seoul"))
@@ -43,7 +43,7 @@ class OpenViewModel @AssistedInject constructor(
                 }
                 reduce { state.copy(data = OpenData(imageUrl = capsule.mainImageUrl)) }
             }
-            .onFailure { /** no-op */ }
+            .onFailure { postSideEffect(OpenSideEffect.NavigateToBack) }
     }
 
     @AssistedFactory
@@ -56,7 +56,6 @@ class OpenViewModel @AssistedInject constructor(
 data class OpenUiState(
     override val data: OpenData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<OpenData>
 
 @Immutable
@@ -70,4 +69,5 @@ sealed interface OpenAction {
 
 sealed interface OpenSideEffect {
     data class NavigateToMemory(val capsuleId: Long) : OpenSideEffect
+    data object NavigateToBack : OpenSideEffect
 }

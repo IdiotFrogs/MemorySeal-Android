@@ -16,7 +16,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import java.io.File
@@ -40,9 +39,9 @@ class MessageViewModel @AssistedInject constructor(
     private fun fetchTimeCapsuleContent() = safeLaunch {
         intent { reduce { state.copy(isLoading = true) } }
 
-        val profile = async { getMyProfileUseCase() }
-        val contentsResult = getMyTimeCapsuleContentUseCase(capsuleId)
-        val nickname = profile.await().getOrNull()?.nickname ?: "나"
+        val profile = fetchWithRetry { getMyProfileUseCase() }
+        val contentsResult = fetchWithRetry { getMyTimeCapsuleContentUseCase(capsuleId) }
+        val nickname = profile.getOrNull()?.nickname ?: "나"
 
         contentsResult.onSuccess { contents ->
             intent {
@@ -50,12 +49,14 @@ class MessageViewModel @AssistedInject constructor(
                     state.copy(
                         data = MessageData(contents = contents, myNickname = nickname),
                         isLoading = false,
-                        errorMessage = null,
                     )
                 }
             }
         }.onFailure {
-            intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+            intent {
+                reduce { state.copy(isLoading = false) }
+                postSideEffect(MessageSideEffect.NavigateToBack)
+            }
         }
     }
 
@@ -78,16 +79,17 @@ class MessageViewModel @AssistedInject constructor(
                             state.copy(
                                 data = (state.data ?: MessageData()).copy(contents = contents),
                                 isLoading = false,
-                                errorMessage = null,
                             )
                         }
                     }
                 }.onFailure {
-                    intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                    intent { reduce { state.copy(isLoading = false) } }
+                    showErrorToast()
                 }
                 RefreshSideEffect.tryEmit(RefreshEvent.Detail(capsuleId))
             }.onFailure {
-                intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                intent { reduce { state.copy(isLoading = false) } }
+                showErrorToast()
             }
         }
     }
@@ -118,12 +120,12 @@ class MessageViewModel @AssistedInject constructor(
                                 }
                             ),
                             isLoading = false,
-                            errorMessage = null,
                         )
                     }
                 }
             }.onFailure {
-                intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                intent { reduce { state.copy(isLoading = false) } }
+                showErrorToast()
             }
         }
     }
@@ -158,13 +160,13 @@ class MessageViewModel @AssistedInject constructor(
                                 }
                             ),
                             isLoading = false,
-                            errorMessage = null,
                         )
                     }
                 }
                 RefreshSideEffect.tryEmit(RefreshEvent.Detail(capsuleId))
             }.onFailure {
-                intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                intent { reduce { state.copy(isLoading = false) } }
+                showErrorToast()
             }
         }
     }
@@ -212,7 +214,6 @@ data class MessageData(
 data class MessageUiState(
     override val data: MessageData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<MessageData>
 
 sealed interface MessageAction {

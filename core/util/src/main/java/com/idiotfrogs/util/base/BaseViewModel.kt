@@ -10,6 +10,8 @@ import com.idiotfrogs.util.sideEffect.AppSideEffect
 import com.idiotfrogs.util.sideEffect.MSSideEffect
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import org.orbitmvi.orbit.ContainerHost
@@ -30,4 +32,21 @@ abstract class BaseViewModel<STATE: Any, SIDE_EFFECT: Any, ACTION> : ViewModel()
     protected fun safeLaunch(block: suspend CoroutineScope.() -> Unit) {
         safeScope.launch(block = block)
     }
+
+    protected fun showErrorToast() {
+        MSSideEffect.postSideEffect(AppSideEffect.ShowErrorToast)
+    }
+
+    /** 화면 로드와 관련된 조회 API 호출 시 사용한다. 실패 할 경우 1회에 한하여 재 조회 한다. */
+    protected suspend fun <T> fetchWithRetry(block: suspend () -> Result<T>): Result<T> {
+        val result = block()
+        if (result.isSuccess) return result
+
+        return block()
+    }
+
+    /** [fetchWithRetry]를 async로 실행한다. 재조회까지 끝난 결과를 Deferred로 반환한다. */
+    protected fun <T> CoroutineScope.fetchWithAsyncRetry(
+        block: suspend () -> Result<T>
+    ): Deferred<Result<T>> = async { fetchWithRetry(block) }
 }
