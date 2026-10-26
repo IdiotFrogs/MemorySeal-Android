@@ -25,7 +25,6 @@ import com.idiotfrogs.util.paging.PaginationState
 import com.idiotfrogs.util.sideEffect.RefreshEvent
 import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import org.orbitmvi.orbit.Container
@@ -79,13 +78,13 @@ class HomeViewModel @Inject constructor(
                     status = TimeCapsuleStatus.BEFOREBURIED, page = 0, size = 6
                 )
             }
-            val buriedDeferred = fetchWithRetry {
+            val buriedDeferred = fetchWithAsyncRetry {
                 getMyTimeCapsuleUseCase(
                     status = TimeCapsuleStatus.BURIED, page = 0, size = 6
                 )
             }
-            val seasonBannerDeferred = fetchWithRetry { getSeasonBannerUseCase.invoke() }
-            val unopenedDeferred = fetchWithRetry { getUnopenedUseCase.invoke() }
+            val seasonBannerDeferred = fetchWithAsyncRetry { getSeasonBannerUseCase.invoke() }
+            val unopenedDeferred = fetchWithAsyncRetry { getUnopenedUseCase.invoke() }
 
             val userResult = userDeferred.await()
             val beforeBuriedResult = beforeBuriedDeferred.await()

@@ -29,7 +29,7 @@ class PreviewViewModel @AssistedInject constructor(
         intent { reduce { state.copy(isLoading = true) } }
 
         val profile = fetchWithRetry { getMyProfileUseCase() }
-        val contentsResult = getMyTimeCapsuleContentUseCase(capsuleId)
+        val contentsResult = fetchWithRetry { getMyTimeCapsuleContentUseCase(capsuleId) }
         val nickname = profile.getOrNull()?.nickname ?: "나"
 
         contentsResult

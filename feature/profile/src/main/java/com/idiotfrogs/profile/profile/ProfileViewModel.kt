@@ -10,7 +10,6 @@ import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.sideEffect.RefreshEvent
 import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
@@ -40,9 +39,7 @@ class ProfileViewModel @Inject constructor(
         safeLaunch {
             intent { reduce { state.copy(isLoading = true) } }
 
-            val userDeferred = fetchWithRetry { getMyProfileUseCase() }
-
-            val userResult = userDeferred.await()
+            val userResult = fetchWithRetry { getMyProfileUseCase() }
 
             intent {
                 if (userResult.isFailure) {

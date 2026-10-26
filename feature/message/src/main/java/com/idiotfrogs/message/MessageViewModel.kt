@@ -16,7 +16,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import java.io.File
@@ -41,7 +40,7 @@ class MessageViewModel @AssistedInject constructor(
         intent { reduce { state.copy(isLoading = true) } }
 
         val profile = fetchWithRetry { getMyProfileUseCase() }
-        val contentsResult = getMyTimeCapsuleContentUseCase(capsuleId)
+        val contentsResult = fetchWithRetry { getMyTimeCapsuleContentUseCase(capsuleId) }
         val nickname = profile.getOrNull()?.nickname ?: "나"
 
         contentsResult.onSuccess { contents ->
@@ -50,12 +49,14 @@ class MessageViewModel @AssistedInject constructor(
                     state.copy(
                         data = MessageData(contents = contents, myNickname = nickname),
                         isLoading = false,
-                        errorMessage = null,
                     )
                 }
             }
         }.onFailure {
-            intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+            intent {
+                reduce { state.copy(isLoading = false) }
+                postSideEffect(MessageSideEffect.NavigateToBack)
+            }
         }
     }
 

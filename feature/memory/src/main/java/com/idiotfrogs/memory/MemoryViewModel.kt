@@ -12,7 +12,6 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 
@@ -34,17 +33,19 @@ class MemoryViewModel @AssistedInject constructor(
     private fun fetchMemory() = safeLaunch {
         intent { reduce { state.copy(isLoading = true) } }
 
-        val collaboratorsDeferred = fetchWithRetry {
+        val collaboratorsDeferred = fetchWithAsyncRetry {
             getTimeCapsuleCollaboratorsUseCase(
                 capsuleId = capsuleId,
                 page = 0,
-                size = MEMORY_COLLABORATOR_PAGE_SIZE,)
+                size = MEMORY_COLLABORATOR_PAGE_SIZE,
+            )
         }
-        val memoryContentsDeferred = fetchWithRetry {
+        val memoryContentsDeferred = fetchWithAsyncRetry {
             getTimeCapsuleContentUseCase(
                 timeCapsuleId = capsuleId,
                 page = 0,
-                size = MEMORY_CONTENT_PAGE_SIZE,)
+                size = MEMORY_CONTENT_PAGE_SIZE,
+            )
         }
 
         val collaboratorsResult = collaboratorsDeferred.await()
