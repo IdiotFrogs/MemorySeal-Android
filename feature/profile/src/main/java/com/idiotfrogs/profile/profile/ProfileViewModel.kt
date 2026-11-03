@@ -10,7 +10,6 @@ import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.sideEffect.RefreshEvent
 import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.async
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
@@ -40,21 +39,17 @@ class ProfileViewModel @Inject constructor(
         safeLaunch {
             intent { reduce { state.copy(isLoading = true) } }
 
-            val userDeferred = async { getMyProfileUseCase() }
-
-            val userResult = userDeferred.await()
+            val userResult = fetchWithRetry { getMyProfileUseCase() }
 
             intent {
                 if (userResult.isFailure) {
-                    val errorMessage = userResult.exceptionOrNull()?.message
-
-                    reduce { state.copy(isLoading = false, errorMessage = errorMessage) }
+                    reduce { state.copy(isLoading = false) }
+                    if (state.data == null) postSideEffect(ProfileSideEffect.NavigateToBack) else showErrorToast()
                 } else {
                     reduce {
                         state.copy(
                             data = ProfileData(user = userResult.getOrNull()),
                             isLoading = false,
-                            errorMessage = null,
                         )
                     }
                 }
@@ -70,7 +65,7 @@ class ProfileViewModel @Inject constructor(
                         postSideEffect(ProfileSideEffect.NavigateToLogin)
                     }
                 }
-                .onFailure { /** no-op */ }
+                .onFailure { showErrorToast() }
         }
     }
 
@@ -81,11 +76,12 @@ class ProfileViewModel @Inject constructor(
             withdrawUseCase()
                 .onSuccess {
                     intent {
-                        reduce { state.copy(isLoading = false, errorMessage = null) }
+                        reduce { state.copy(isLoading = false) }
                         postSideEffect(ProfileSideEffect.NavigateToLogin)
                     }
                 }.onFailure {
-                    intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                    intent { reduce { state.copy(isLoading = false) } }
+                    showErrorToast()
                 }
         }
     }
@@ -105,7 +101,6 @@ class ProfileViewModel @Inject constructor(
 data class ProfileUiState(
     override val data: ProfileData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<ProfileData>
 
 @Immutable

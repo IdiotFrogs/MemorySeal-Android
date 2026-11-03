@@ -28,9 +28,9 @@ class PreviewViewModel @AssistedInject constructor(
     private fun fetchPreview() = safeLaunch {
         intent { reduce { state.copy(isLoading = true) } }
 
-        val profile = async { getMyProfileUseCase() }
-        val contentsResult = getMyTimeCapsuleContentUseCase(capsuleId)
-        val nickname = profile.await().getOrNull()?.nickname ?: "나"
+        val profile = fetchWithRetry { getMyProfileUseCase() }
+        val contentsResult = fetchWithRetry { getMyTimeCapsuleContentUseCase(capsuleId) }
+        val nickname = profile.getOrNull()?.nickname ?: "나"
 
         contentsResult
             .onSuccess { contents ->
@@ -42,18 +42,13 @@ class PreviewViewModel @AssistedInject constructor(
                                 myNickname = nickname,
                             ),
                             isLoading = false,
-                            errorMessage = null,
                         )
                     }
                 }
-            }.onFailure { error ->
+            }.onFailure {
                 intent {
-                    reduce {
-                        state.copy(
-                            isLoading = false,
-                            errorMessage = error.message,
-                        )
-                    }
+                    reduce { state.copy(isLoading = false) }
+                    postSideEffect(PreviewSideEffect.NavigateToBack)
                 }
             }
     }
@@ -80,7 +75,6 @@ data class PreviewData(
 data class PreviewUiState(
     override val data: PreviewData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<PreviewData>
 
 sealed interface PreviewAction {

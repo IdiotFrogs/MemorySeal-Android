@@ -38,14 +38,16 @@ class HomeDetailViewModel @AssistedInject constructor(
     private fun fetchItem() = intent {
         intent { reduce { state.copy(isLoading = true) } }
 
-        getMyTimeCapsuleUseCase(
-            status = when (homeDetailType) {
-                HomeDetailType.BURIED -> TimeCapsuleStatus.BURIED
-                HomeDetailType.BEFORE_BURIED -> TimeCapsuleStatus.BEFOREBURIED
-            },
-            page = 0,
-            size = 10,
-        ).onSuccess {
+        fetchWithRetry {
+            getMyTimeCapsuleUseCase(
+                status = when (homeDetailType) {
+                    HomeDetailType.BURIED -> TimeCapsuleStatus.BURIED
+                    HomeDetailType.BEFORE_BURIED -> TimeCapsuleStatus.BEFOREBURIED
+                },
+                page = 0,
+                size = 10,
+            )
+        }.onSuccess {
             intent {
                 reduce {
                     state.copy(
@@ -53,18 +55,13 @@ class HomeDetailViewModel @AssistedInject constructor(
                             detailItems = PaginationState<MyTimeCapsuleContent>().addPage(it)
                         ),
                         isLoading = false,
-                        errorMessage = null,
                     )
                 }
             }
         }.onFailure {
             intent {
-                reduce {
-                    state.copy(
-                        isLoading = false,
-                        errorMessage = it.message
-                    )
-                }
+                reduce { state.copy(isLoading = false) }
+                postSideEffect(NavigateToBack)
             }
         }
     }
@@ -106,10 +103,9 @@ class HomeDetailViewModel @AssistedInject constructor(
                     data = latestData.copy(
                         detailItems = latestOpened.addPage(response),
                     ),
-                    errorMessage = null,
                 )
             }
-        }.onFailure { error ->
+        }.onFailure {
             val latestData = state.data ?: return@onFailure
             val latestOpened = latestData.detailItems
             val isCurrentRequest = latestOpened.currentPage == currentPage &&
@@ -122,7 +118,6 @@ class HomeDetailViewModel @AssistedInject constructor(
                     data = latestData.copy(
                         detailItems = latestOpened.setLoadingMore(false),
                     ),
-                    errorMessage = error.message,
                 )
             }
         }
@@ -138,7 +133,6 @@ class HomeDetailViewModel @AssistedInject constructor(
 data class HomeDetailUiState(
     override val data: HomeDetailData? = null,
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : DataUiState<HomeDetailData>
 
 @Immutable

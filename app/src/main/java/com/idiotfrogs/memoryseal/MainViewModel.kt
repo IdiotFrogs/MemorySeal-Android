@@ -41,6 +41,7 @@ class MainViewModel @Inject constructor(
             MSSideEffect.appSideEffect.collect { sideEffect ->
                 when (sideEffect) {
                     AppSideEffect.LoginRequired -> _event.emit(MainEvent.NavigateToLogin)
+                    AppSideEffect.ShowErrorToast -> _event.emit(MainEvent.ShowToast(ERROR_TOAST_MESSAGE))
                 }
             }
         }
@@ -121,6 +122,7 @@ class MainViewModel @Inject constructor(
         private const val PENDING_INVITE_CAPSULE_ID_KEY = "pendingInviteCapsuleId"
         private const val ALREADY_CONTRIBUTOR_MESSAGE = "이미 참여한 타임캡슐이에요."
         private const val INVITE_FAILURE_MESSAGE = "타임캡슐 참여에 실패했어요. 다시 시도해 주세요."
+        private const val ERROR_TOAST_MESSAGE = "일시적인 오류가 발생했어요. 잠시 후 다시 시도해 주세요."
     }
 }
 

@@ -16,6 +16,7 @@ import com.idiotfrogs.model.timecapsule.TimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.model.timecapsule.TimeCapsuleUnopenedContent
 import com.idiotfrogs.util.exception.AlreadyContributorException
+import com.idiotfrogs.util.exception.HostCannotLeaveException
 import com.idiotfrogs.model.timecapsule.WateringResponse
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
@@ -115,7 +116,14 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
     }
 
     override suspend fun leaveTimeCapsule(capsuleId: Long) {
-        return timeCapsuleDataSource.leaveTimeCapsule(capsuleId)
+        return try {
+            timeCapsuleDataSource.leaveTimeCapsule(capsuleId)
+        } catch (exception: HttpException) {
+            if (exception.code() == HOST_CANNOT_LEAVE_STATUS_CODE) {
+                throw HostCannotLeaveException()
+            }
+            throw exception
+        }
     }
 
     override suspend fun getTimeCapsuleContent(
@@ -197,5 +205,6 @@ class TimeCapsuleRepositoryImpl @Inject constructor(
 
     companion object {
         private const val ALREADY_CONTRIBUTOR_STATUS_CODE = 409
+        private const val HOST_CANNOT_LEAVE_STATUS_CODE = 400
     }
 }

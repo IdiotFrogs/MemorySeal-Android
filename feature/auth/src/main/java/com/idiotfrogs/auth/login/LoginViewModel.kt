@@ -3,10 +3,12 @@ package com.idiotfrogs.auth.login
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.util.base.BaseUiState
 import com.idiotfrogs.util.base.BaseViewModel
+import com.idiotfrogs.util.exception.LoginCancelledException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -18,7 +20,7 @@ class LoginViewModel @Inject constructor(
         onCreate = {
             safeLaunch {
                 // TODO 자동 로그인 체크
-                intent { reduce { state.copy(isLoading = false, errorMessage = null) } }
+                intent { reduce { state.copy(isLoading = false) } }
             }
         }
     )
@@ -39,15 +41,19 @@ class LoginViewModel @Inject constructor(
 
                 result.onSuccess { profile ->
                     intent {
-                        reduce { state.copy(isLoading = false, errorMessage = null) }
+                        reduce { state.copy(isLoading = false) }
                         if (profile.isOnboarding) postSideEffect(LoginSideEffect.NavigateToHome)
                         else postSideEffect(LoginSideEffect.NavigateToSignUp)
                     }
                 }.onFailure {
-                    intent { reduce { state.copy(isLoading = false, errorMessage = it.message) } }
+                    intent { reduce { state.copy(isLoading = false) } }
+                    showErrorToast()
                 }
             } catch (throwable: Throwable) {
-                intent { reduce { state.copy(isLoading = false, errorMessage = throwable.message) } }
+                intent { reduce { state.copy(isLoading = false) } }
+                if (throwable !is LoginCancelledException && throwable !is CancellationException) {
+                    showErrorToast()
+                }
                 throw throwable
             }
         }
@@ -56,7 +62,6 @@ class LoginViewModel @Inject constructor(
 
 data class LoginUiState(
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : BaseUiState
 
 sealed interface LoginAction {

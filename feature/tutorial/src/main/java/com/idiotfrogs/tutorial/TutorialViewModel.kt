@@ -32,7 +32,6 @@ class TutorialViewModel @Inject constructor(
 
 data class TutorialUiState(
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : BaseUiState
 
 sealed interface TutorialAction {

@@ -19,7 +19,7 @@ class SplashViewModel @Inject constructor(
         initialState = SplashUiState(),
         onCreate = {
             /** todo: 데이터 로드 등 사전 작업 */
-            intent { reduce { state.copy(isLoading = false, errorMessage = null) } }
+            intent { reduce { state.copy(isLoading = false) } }
         }
     )
 
@@ -35,13 +35,13 @@ class SplashViewModel @Inject constructor(
 
             if (getAccessTokenUseCase.accessToken.firstOrNull() == null) {
                 intent {
-                    reduce { state.copy(isLoading = false, errorMessage = null) }
+                    reduce { state.copy(isLoading = false) }
                     postSideEffect(SplashSideEffect.NavigateToLogin)
                 }
             } else {
                 val result = getMyProfileUseCase()
                 intent {
-                    reduce { state.copy(isLoading = false, errorMessage = null) }
+                    reduce { state.copy(isLoading = false) }
                     result.onSuccess {
                         if (it.isOnboarding) {
                             postSideEffect(SplashSideEffect.NavigateToHome)
@@ -59,7 +59,6 @@ class SplashViewModel @Inject constructor(
 
 data class SplashUiState(
     override val isLoading: Boolean = false,
-    override val errorMessage: String? = null,
 ) : BaseUiState
 
 sealed interface SplashAction {
