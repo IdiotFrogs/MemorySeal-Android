@@ -91,10 +91,11 @@ fun HomeRoute(
             HomeSideEffect.NavigateToProfile -> navigator.navigate(Routes.Profile)
             is HomeSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(it.id))
             is HomeSideEffect.NavigateToHomeDetail -> navigator.navigate(Routes.HomeDetail(it.homeDetailType))
-            HomeSideEffect.JoinSucceeded -> {
+            is HomeSideEffect.JoinSucceeded -> {
                 showJoinContainer = false
                 focusManager.clearFocus()
                 keyboardController?.hide()
+                navigator.navigate(Routes.Detail(it.id))
             }
             HomeSideEffect.ShowJoinErrorDialog -> showJoinErrorDialog = true
         }

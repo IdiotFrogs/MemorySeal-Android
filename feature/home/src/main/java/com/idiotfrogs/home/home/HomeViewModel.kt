@@ -216,7 +216,7 @@ class HomeViewModel @Inject constructor(
         requestCollaboratorUseCase(body).onSuccess {
             intent {
                 reduce { state.copy(isLoading = false) }
-                postSideEffect(HomeSideEffect.JoinSucceeded)
+                postSideEffect(HomeSideEffect.JoinSucceeded(it.capsuleId))
                 fetchHome()
             }
         }.onFailure {
@@ -295,6 +295,6 @@ sealed interface HomeSideEffect {
     data object NavigateToProfile : HomeSideEffect
     data class NavigateToDetail(val id: Long) : HomeSideEffect
     data class NavigateToHomeDetail(val homeDetailType: HomeDetailType) : HomeSideEffect
-    data object JoinSucceeded : HomeSideEffect
+    data class JoinSucceeded(val id: Long) : HomeSideEffect
     data object ShowJoinErrorDialog: HomeSideEffect
 }
