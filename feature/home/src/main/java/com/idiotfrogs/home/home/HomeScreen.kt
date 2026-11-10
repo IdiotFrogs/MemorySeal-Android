@@ -33,6 +33,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -77,7 +79,10 @@ fun HomeRoute(
 ) {
     val navigator = LocalComposeMSNavigator.current
     val uiState by viewModel.collectAsState()
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
+    var showJoinContainer by remember { mutableStateOf(false) }
     var showJoinErrorDialog by remember { mutableStateOf(false) }
 
     viewModel.collectSideEffect {
@@ -86,6 +91,11 @@ fun HomeRoute(
             HomeSideEffect.NavigateToProfile -> navigator.navigate(Routes.Profile)
             is HomeSideEffect.NavigateToDetail -> navigator.navigate(Routes.Detail(it.id))
             is HomeSideEffect.NavigateToHomeDetail -> navigator.navigate(Routes.HomeDetail(it.homeDetailType))
+            HomeSideEffect.JoinSucceeded -> {
+                showJoinContainer = false
+                focusManager.clearFocus()
+                keyboardController?.hide()
+            }
             HomeSideEffect.ShowJoinErrorDialog -> showJoinErrorDialog = true
         }
     }
@@ -98,6 +108,8 @@ fun HomeRoute(
                 onAction = viewModel::onAction,
                 selectedMenu = selectedMenu,
                 onSelectChange = onSelectChange,
+                showJoinContainer = showJoinContainer,
+                onJoinContainerVisibilityChange = { if (!showJoinErrorDialog) showJoinContainer = it },
             )
         }
 
@@ -133,14 +145,15 @@ fun HomeScreen(
     onAction: (HomeAction) -> Unit,
     selectedMenu: BottomMenu,
     onSelectChange: (BottomMenu) -> Unit,
+    showJoinContainer: Boolean,
+    onJoinContainerVisibilityChange: (Boolean) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var showJoinContainer by remember { mutableStateOf(false) }
 
     val ime = WindowInsets.ime
     val density = LocalDensity.current
     val imeHeight by remember { derivedStateOf { ime.getBottom(density) } }
-    val showDim by remember { derivedStateOf { expanded || showJoinContainer } }
+    val showDim = expanded || showJoinContainer
 
     val menuList by remember {
         mutableStateOf(
@@ -152,7 +165,7 @@ fun HomeScreen(
                     },
                     MSMenuFabModel("참여코드로 합류하기") {
                         expanded = false
-                        showJoinContainer = true
+                        onJoinContainerVisibilityChange(true)
                     },
                 )
             )
@@ -164,7 +177,7 @@ fun HomeScreen(
 
     LaunchedEffect(imeHeight) {
         if (showJoinContainer && imeHeight == 0) {
-            showJoinContainer = false
+            onJoinContainerVisibilityChange(false)
             expanded = false
         }
     }
@@ -372,7 +385,8 @@ fun HomeScreen(
         }
 
         fun onDimClick() {
-            expanded = false; showJoinContainer = false
+            expanded = false
+            onJoinContainerVisibilityChange(false)
         }
 
         MSDim(
@@ -396,7 +410,7 @@ fun HomeScreen(
             isShow = showJoinContainer,
             textFieldState = textFieldState,
             onJoin = { onAction(HomeAction.JoinCodeSubmitted(textFieldState.text.toString())) },
-            onCancel = { showJoinContainer = false }
+            onCancel = { onJoinContainerVisibilityChange(false) }
         )
     }
 }
@@ -405,11 +419,15 @@ fun HomeScreen(
 @Composable
 fun HomeScreenPreview() {
     var selectedMenu by remember { mutableStateOf(BottomMenu.HOME) }
+    var showJoinContainer by remember { mutableStateOf(false) }
+
     HomeScreen(
         data = HomeData(),
         isRefreshing = false,
         onAction = {},
         selectedMenu = selectedMenu,
         onSelectChange = { selectedMenu = it },
+        showJoinContainer = showJoinContainer,
+        onJoinContainerVisibilityChange = { showJoinContainer = it },
     )
 }
