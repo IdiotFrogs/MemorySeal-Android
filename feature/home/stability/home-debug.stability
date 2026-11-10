@@ -143,7 +143,7 @@ public fun com.idiotfrogs.home.home.HomeRoute(selectedMenu: com.idiotfrogs.home.
     - viewModel: UNSTABLE (has mutable properties or unstable members)
 
 @Composable
-public fun com.idiotfrogs.home.home.HomeScreen(data: com.idiotfrogs.home.home.HomeData, isRefreshing: kotlin.Boolean, onAction: kotlin.Function1<com.idiotfrogs.home.home.HomeAction, kotlin.Unit>, selectedMenu: com.idiotfrogs.home.component.BottomMenu, onSelectChange: kotlin.Function1<com.idiotfrogs.home.component.BottomMenu, kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.home.home.HomeScreen(data: com.idiotfrogs.home.home.HomeData, isRefreshing: kotlin.Boolean, onAction: kotlin.Function1<com.idiotfrogs.home.home.HomeAction, kotlin.Unit>, selectedMenu: com.idiotfrogs.home.component.BottomMenu, onSelectChange: kotlin.Function1<com.idiotfrogs.home.component.BottomMenu, kotlin.Unit>, showJoinContainer: kotlin.Boolean, onJoinContainerVisibilityChange: kotlin.Function1<kotlin.Boolean, kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
   params:
@@ -152,4 +152,6 @@ public fun com.idiotfrogs.home.home.HomeScreen(data: com.idiotfrogs.home.home.Ho
     - onAction: STABLE (function type)
     - selectedMenu: STABLE (class with no mutable properties)
     - onSelectChange: STABLE (function type)
+    - showJoinContainer: STABLE (primitive type)
+    - onJoinContainerVisibilityChange: STABLE (function type)
 
