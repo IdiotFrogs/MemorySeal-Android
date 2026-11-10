@@ -8,12 +8,10 @@ import com.idiotfrogs.domain.usecase.timecapsule.GetUnopenedUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.RequestCollaboratorUseCase
 import com.idiotfrogs.domain.usecase.user.GetMyProfileUseCase
 import com.idiotfrogs.home.home.HomeSideEffect.*
-import com.idiotfrogs.model.home.Season
 import com.idiotfrogs.model.home.SeasonBannerResponse
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleContent
 import com.idiotfrogs.model.timecapsule.MyTimeCapsuleResponse
 import com.idiotfrogs.model.timecapsule.PendingCollaboratorsRequest
-import com.idiotfrogs.model.timecapsule.TimeCapsuleRole
 import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.model.timecapsule.TimeCapsuleUnopenedContent
 import com.idiotfrogs.model.user.ProfileResponse
@@ -25,13 +23,10 @@ import com.idiotfrogs.util.paging.PaginationState
 import com.idiotfrogs.util.sideEffect.RefreshEvent
 import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.todayIn
 import org.orbitmvi.orbit.Container
 import org.orbitmvi.orbit.viewmodel.container
 import javax.inject.Inject
 import kotlin.collections.emptyList
-import kotlin.time.Clock
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -51,9 +46,13 @@ class HomeViewModel @Inject constructor(
             fetchOpened()
             syncFcmToken()
             RefreshSideEffect.events.collect {
-                if (it is RefreshEvent.Home) {
-                    fetchHome()
-                    fetchOpened()
+                when (it) {
+                    RefreshEvent.Home -> {
+                        fetchHome()
+                        fetchOpened()
+                    }
+                    RefreshEvent.Watered -> refreshBuried()
+                    else -> Unit
                 }
             }
         }
@@ -78,11 +77,7 @@ class HomeViewModel @Inject constructor(
                     status = TimeCapsuleStatus.BEFOREBURIED, page = 0, size = 6
                 )
             }
-            val buriedDeferred = fetchWithAsyncRetry {
-                getMyTimeCapsuleUseCase(
-                    status = TimeCapsuleStatus.BURIED, page = 0, size = 6
-                )
-            }
+            val buriedDeferred = fetchWithAsyncRetry { getBuriedTimeCapsules() }
             val seasonBannerDeferred = fetchWithAsyncRetry { getSeasonBannerUseCase.invoke() }
             val unopenedDeferred = fetchWithAsyncRetry { getUnopenedUseCase.invoke() }
 
@@ -99,9 +94,8 @@ class HomeViewModel @Inject constructor(
                     reduce { state.copy(isLoading = false) }
                     showErrorToast()
                 } else {
-                    // 비동기로 여러 API 호출하므로 실행 시점에 데이터 있는지 파악
-                    val latestData = state.data ?: HomeData()
                     reduce {
+                        val latestData = state.data ?: HomeData()
                         state.copy(
                             data = latestData.copy(
                                 user = userResult.getOrNull(),
@@ -118,6 +112,23 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private suspend fun getBuriedTimeCapsules() = getMyTimeCapsuleUseCase(
+        status = TimeCapsuleStatus.BURIED,
+        page = 0,
+        size = 6,
+    )
+
+    private fun refreshBuried() = safeLaunch {
+        getBuriedTimeCapsules().onSuccess { response ->
+            intent {
+                reduce {
+                    val latestData = state.data ?: HomeData()
+                    state.copy(data = latestData.copy(buried = response.content))
+                }
+            }
+        }
+    }
+
     private fun fetchOpened() = intent {
         intent { reduce { state.copy(isLoading = true) } }
 
@@ -128,10 +139,9 @@ class HomeViewModel @Inject constructor(
                 size = 10,
             )
         }.onSuccess {
-            // 비동기로 여러 API 호출하므로 실행 시점에 데이터 있는지 파악
-            val latestData = state.data ?: HomeData()
             intent {
                 reduce {
+                    val latestData = state.data ?: HomeData()
                     state.copy(
                         data = latestData.copy(opened = PaginationState<MyTimeCapsuleContent>().addPage(it)),
                         isLoading = false,
@@ -157,7 +167,7 @@ class HomeViewModel @Inject constructor(
 
         reduce {
             state.copy(
-                data = currentData.copy(
+                data = state.data?.copy(
                     opened = opened.setLoadingMore(true),
                 ),
             )
@@ -177,7 +187,7 @@ class HomeViewModel @Inject constructor(
 
             reduce {
                 state.copy(
-                    data = latestData.copy(
+                    data = state.data?.copy(
                         opened = latestOpened.addPage(response),
                     ),
                 )
@@ -192,7 +202,7 @@ class HomeViewModel @Inject constructor(
 
             reduce {
                 state.copy(
-                    data = latestData.copy(
+                    data = state.data?.copy(
                         opened = latestOpened.setLoadingMore(false),
                     ),
                 )

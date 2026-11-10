@@ -8,6 +8,8 @@ import com.idiotfrogs.model.timecapsule.WateringContentResponse
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.paging.PaginationState
+import com.idiotfrogs.util.sideEffect.RefreshEvent
+import com.idiotfrogs.util.sideEffect.RefreshSideEffect
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -175,6 +177,7 @@ class WateringViewModel @AssistedInject constructor(
             wateringUseCase.invoke(capsuleId)
                 .onSuccess {
                     analyticsTracker.ticketWatered(stage)
+                    RefreshSideEffect.tryEmit(RefreshEvent.Watered)
                     fetchWatering() // 실제 0페이지 데이터를 다시 불러와 업데이트 처리
                 }
                 .onFailure { showErrorToast() }
