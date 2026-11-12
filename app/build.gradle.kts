@@ -35,16 +35,23 @@ val localProperties = providers.fileContents(
 androidComponents {
     onVariants { variant ->
         val server = variant.productFlavors.single { it.first == "server" }.second
-        val propertyName = if (server == "dev") "DEV_BASE_URL" else "BASE_URL"
+        val isDev = server == "dev"
+        val propertyNames = mapOf(
+            "BASE_URL" to if (isDev) "DEV_BASE_URL" else "BASE_URL",
+            "WEB_CLIENT_ID" to if (isDev) "DEV_WEB_CLIENT_ID" else "WEB_CLIENT_ID",
+        )
+        val buildConfigFields = checkNotNull(variant.buildConfigFields)
 
-        val field = localProperties.map { properties ->
-            val url = checkNotNull(properties.getProperty(propertyName)) {
-                "Add $propertyName to local.properties"
-            }.trim().removeSurrounding("\"")
-            val escapedUrl = url.replace("\\", "\\\\").replace("\"", "\\\"")
-            BuildConfigField<Serializable>("String", "\"$escapedUrl\"", null)
+        for ((fieldName, propertyName) in propertyNames) {
+            val field = localProperties.map { properties ->
+                val value = checkNotNull(properties.getProperty(propertyName)) {
+                    "Add $propertyName to local.properties"
+                }.trim().removeSurrounding("\"")
+                val escapedValue = value.replace("\\", "\\\\").replace("\"", "\\\"")
+                BuildConfigField<Serializable>("String", "\"$escapedValue\"", null)
+            }
+            buildConfigFields.put(fieldName, field)
         }
-        checkNotNull(variant.buildConfigFields).put("BASE_URL", field)
     }
 }
 
@@ -68,6 +75,7 @@ dependencies {
     implementation(project(":core:util"))
     implementation(project(":core:di"))
     implementation(project(":core:network"))
+    implementation(project(":core:social-login"))
     implementation(project(":core:analytics"))
     implementation(project(":core:app-link"))
     implementation(project(":common:resource"))

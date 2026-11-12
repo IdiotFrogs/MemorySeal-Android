@@ -26,13 +26,14 @@ import javax.inject.Inject
 class LoginManager @Inject constructor(
     @ActivityContext private val context: Context,
     private val localDataSource: LocalDataSource,
-    private val authDataSource: AuthDataSource
+    private val authDataSource: AuthDataSource,
+    @param:GoogleWebClientId private val googleWebClientId: String,
 ) {
     suspend fun googleLogin() {
         val credentialManager = CredentialManager.create(context)
 
         val googleSignInOption = GetSignInWithGoogleOption.Builder(
-            BuildConfig.WEB_CLIENT_ID
+            googleWebClientId,
         ).build()
 
         val request = GetCredentialRequest.Builder()

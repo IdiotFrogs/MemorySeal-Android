@@ -1,5 +1,3 @@
-import java.util.Properties
-
 plugins {
     id("convention.android.library")
     id("convention.android.hilt")
@@ -7,14 +5,6 @@ plugins {
 
 android {
     namespace = "com.idiotfrogs.social_login"
-
-    buildFeatures {
-        buildConfig = true
-    }
-
-    defaultConfig {
-        buildConfigField("String", "WEB_CLIENT_ID", getLocalProperty("WEB_CLIENT_ID"))
-    }
 }
 
 dependencies {
@@ -39,11 +29,4 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext)
     androidTestImplementation(libs.androidx.test.espresso)
-}
-
-fun getLocalProperty(name: String): String {
-    val propertiesFile = rootProject.file("local.properties")
-    val properties = Properties()
-    properties.load(propertiesFile.inputStream())
-    return properties.getProperty(name)
 }
