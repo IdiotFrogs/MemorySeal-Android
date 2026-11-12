@@ -1,8 +1,51 @@
+import com.android.build.api.variant.BuildConfigField
+import java.io.Serializable
+import java.util.Properties
+
 plugins {
     id("convention.android.application")
     id("convention.android.hilt")
     alias(libs.plugins.baselineprofile)
     alias(libs.plugins.google.services)
+}
+
+android {
+    buildFeatures {
+        buildConfig = true
+    }
+
+    flavorDimensions += "server"
+    productFlavors {
+        create("dev") {
+            dimension = "server"
+            applicationIdSuffix = ".dev"
+        }
+        create("prod") {
+            dimension = "server"
+        }
+    }
+}
+
+val localProperties = providers.fileContents(
+    rootProject.layout.projectDirectory.file("local.properties"),
+).asText.orElse("").map { contents ->
+    Properties().apply { load(contents.reader()) }
+}
+
+androidComponents {
+    onVariants { variant ->
+        val server = variant.productFlavors.single { it.first == "server" }.second
+        val propertyName = if (server == "dev") "DEV_BASE_URL" else "BASE_URL"
+
+        val field = localProperties.map { properties ->
+            val url = checkNotNull(properties.getProperty(propertyName)) {
+                "Add $propertyName to local.properties"
+            }.trim().removeSurrounding("\"")
+            val escapedUrl = url.replace("\\", "\\\\").replace("\"", "\\\"")
+            BuildConfigField<Serializable>("String", "\"$escapedUrl\"", null)
+        }
+        checkNotNull(variant.buildConfigFields).put("BASE_URL", field)
+    }
 }
 
 dependencies {
@@ -24,6 +67,7 @@ dependencies {
     implementation(project(":core:navigation"))
     implementation(project(":core:util"))
     implementation(project(":core:di"))
+    implementation(project(":core:network"))
     implementation(project(":core:analytics"))
     implementation(project(":core:app-link"))
     implementation(project(":common:resource"))
