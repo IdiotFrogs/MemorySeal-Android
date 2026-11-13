@@ -1,3 +1,5 @@
+import com.idiotfrogs.memoryseal.localStringBuildConfigField
+
 plugins {
     id("convention.android.library")
     id("convention.android.hilt")
@@ -5,6 +7,18 @@ plugins {
 
 android {
     namespace = "com.idiotfrogs.social_login"
+
+    buildFeatures {
+        buildConfig = true
+    }
+}
+
+val webClientId = localStringBuildConfigField("WEB_CLIENT_ID")
+
+androidComponents {
+    onVariants { variant ->
+        checkNotNull(variant.buildConfigFields).put("WEB_CLIENT_ID", webClientId)
+    }
 }
 
 dependencies {

@@ -5,16 +5,16 @@ import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialCancellationException
-import com.idiotfrogs.local.LocalDataSource
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthWebException
 import com.google.firebase.auth.OAuthCredential
 import com.google.firebase.auth.OAuthProvider
-import com.idiotfrogs.extension.findActivity
-import com.idiotfrogs.model.auth.AuthTokenRequest
 import com.idiotfrogs.data.datasource.auth.AuthDataSource
+import com.idiotfrogs.extension.findActivity
+import com.idiotfrogs.local.LocalDataSource
+import com.idiotfrogs.model.auth.AuthTokenRequest
 import com.idiotfrogs.util.exception.EmptyTokenException
 import com.idiotfrogs.util.exception.LoginCancelledException
 import dagger.hilt.android.qualifiers.ActivityContext
@@ -27,14 +27,11 @@ class LoginManager @Inject constructor(
     @ActivityContext private val context: Context,
     private val localDataSource: LocalDataSource,
     private val authDataSource: AuthDataSource,
-    @param:GoogleWebClientId private val googleWebClientId: String,
 ) {
     suspend fun googleLogin() {
         val credentialManager = CredentialManager.create(context)
 
-        val googleSignInOption = GetSignInWithGoogleOption.Builder(
-            googleWebClientId,
-        ).build()
+        val googleSignInOption = GetSignInWithGoogleOption.Builder(BuildConfig.WEB_CLIENT_ID).build()
 
         val request = GetCredentialRequest.Builder()
             .addCredentialOption(googleSignInOption)
