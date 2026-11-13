@@ -38,7 +38,7 @@ androidComponents {
         val isDev = server == "dev"
         val propertyNames = mapOf(
             "BASE_URL" to if (isDev) "DEV_BASE_URL" else "BASE_URL",
-            "WEB_CLIENT_ID" to if (isDev) "DEV_WEB_CLIENT_ID" else "WEB_CLIENT_ID",
+            "WEB_CLIENT_ID" to "WEB_CLIENT_ID",
         )
         val buildConfigFields = checkNotNull(variant.buildConfigFields)
 
