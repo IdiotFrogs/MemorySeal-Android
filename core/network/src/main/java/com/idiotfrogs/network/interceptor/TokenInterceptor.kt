@@ -2,9 +2,9 @@ package com.idiotfrogs.network.interceptor
 
 import com.idiotfrogs.local.LocalDataSource
 import com.idiotfrogs.model.auth.AuthTokenResponse
-import com.idiotfrogs.network.BuildConfig
-import com.idiotfrogs.util.exception.LoginRequiredException
+import com.idiotfrogs.network.util.ApiBaseUrl
 import com.idiotfrogs.network.util.TokenClient
+import com.idiotfrogs.util.exception.LoginRequiredException
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -18,8 +18,9 @@ import javax.inject.Inject
 
 class TokenInterceptor @Inject constructor(
     private val json: Json,
-    @TokenClient private val okHttpClient: OkHttpClient,
     private val localDataSource: LocalDataSource,
+    @param:TokenClient private val okHttpClient: OkHttpClient,
+    @param:ApiBaseUrl private val baseUrl: String,
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
@@ -37,7 +38,7 @@ class TokenInterceptor @Inject constructor(
 
         if (currentTime >= tokenResponse.accessTokenExpiresIn) {
             val reissueRequest = Request.Builder()
-                .url(BuildConfig.BASE_URL + "auth/reissue")
+                .url(baseUrl + "auth/reissue")
                 .header("RefreshToken", "Bearer ${tokenResponse.refreshToken}")
                 .post("".toRequestBody()) // Body 없음
                 .build()
