@@ -1,8 +1,36 @@
+import com.idiotfrogs.memoryseal.localStringBuildConfigField
+
 plugins {
     id("convention.android.application")
     id("convention.android.hilt")
     alias(libs.plugins.baselineprofile)
     alias(libs.plugins.google.services)
+}
+
+android {
+    buildFeatures {
+        buildConfig = true
+    }
+
+    flavorDimensions += "server"
+    productFlavors {
+        create("dev") {
+            dimension = "server"
+            applicationIdSuffix = ".dev"
+        }
+        create("prod") {
+            dimension = "server"
+        }
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        val server = variant.productFlavors.single { it.first == "server" }.second
+        val baseUrlProperty = if (server == "dev") "DEV_BASE_URL" else "BASE_URL"
+        checkNotNull(variant.buildConfigFields)
+            .put("BASE_URL", localStringBuildConfigField(baseUrlProperty))
+    }
 }
 
 dependencies {
@@ -24,6 +52,7 @@ dependencies {
     implementation(project(":core:navigation"))
     implementation(project(":core:util"))
     implementation(project(":core:di"))
+    implementation(project(":core:network"))
     implementation(project(":core:analytics"))
     implementation(project(":core:app-link"))
     implementation(project(":common:resource"))

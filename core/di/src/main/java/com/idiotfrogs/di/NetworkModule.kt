@@ -1,10 +1,11 @@
 package com.idiotfrogs.di
 
-import com.idiotfrogs.network.service.AuthService
 import com.idiotfrogs.network.interceptor.TokenInterceptor
+import com.idiotfrogs.network.service.AuthService
 import com.idiotfrogs.network.service.HomeService
 import com.idiotfrogs.network.service.TimeCapsuleService
 import com.idiotfrogs.network.service.UserService
+import com.idiotfrogs.network.util.ApiBaseUrl
 import com.idiotfrogs.network.util.BaseClient
 import com.idiotfrogs.network.util.TokenClient
 import dagger.Module
@@ -47,10 +48,11 @@ object NetworkModule {
     @Singleton
     fun providesRetrofit(
         json: Json,
-        @BaseClient okHttpClient: OkHttpClient
+        @BaseClient okHttpClient: OkHttpClient,
+        @ApiBaseUrl baseUrl: String,
     ): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)
+            .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()

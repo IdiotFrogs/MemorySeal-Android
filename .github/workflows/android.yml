@@ -58,7 +58,10 @@ jobs:
       - run: chmod +x gradlew
       - run: echo '${{ secrets.LOCAL_PROPERTIES }}' > ./local.properties
       - run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > ${{ github.workspace }}/app/google-services.json
-      - run: ./gradlew stabilityCheck
+      - run: >-
+          ./gradlew stabilityCheck
+          :app:prodDebugStabilityCheck :app:prodReleaseStabilityCheck
+          -x :app:stabilityCheck
 
   build:
     runs-on: ubuntu-latest
@@ -74,7 +77,7 @@ jobs:
       - run: chmod +x gradlew
       - run: echo '${{ secrets.LOCAL_PROPERTIES }}' > ./local.properties
       - run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > ${{ github.workspace }}/app/google-services.json
-      - run: ./gradlew assembleDebug lintDebug --stacktrace
+      - run: ./gradlew :app:assembleProdDebug :app:lintProdDebug lintDebug --stacktrace
 
   notify:
     runs-on: ubuntu-latest

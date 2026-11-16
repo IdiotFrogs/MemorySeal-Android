@@ -29,6 +29,16 @@ android {
 
     targetProjectPath = ":app"
 
+    flavorDimensions += "server"
+    productFlavors {
+        create("dev") {
+            dimension = "server"
+        }
+        create("prod") {
+            dimension = "server"
+        }
+    }
+
     testOptions.managedDevices.devices {
         maybeCreate<com.android.build.api.dsl.ManagedVirtualDevice>("pixel6api34").apply {
             device = "Pixel 6"

@@ -1,4 +1,4 @@
-import java.util.Properties
+import com.idiotfrogs.memoryseal.localStringBuildConfigField
 
 plugins {
     id("convention.android.library")
@@ -11,9 +11,13 @@ android {
     buildFeatures {
         buildConfig = true
     }
+}
 
-    defaultConfig {
-        buildConfigField("String", "WEB_CLIENT_ID", getLocalProperty("WEB_CLIENT_ID"))
+val webClientId = localStringBuildConfigField("WEB_CLIENT_ID")
+
+androidComponents {
+    onVariants { variant ->
+        checkNotNull(variant.buildConfigFields).put("WEB_CLIENT_ID", webClientId)
     }
 }
 
@@ -39,11 +43,4 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext)
     androidTestImplementation(libs.androidx.test.espresso)
-}
-
-fun getLocalProperty(name: String): String {
-    val propertiesFile = rootProject.file("local.properties")
-    val properties = Properties()
-    properties.load(propertiesFile.inputStream())
-    return properties.getProperty(name)
 }
