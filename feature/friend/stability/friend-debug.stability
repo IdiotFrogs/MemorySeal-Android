@@ -13,13 +13,14 @@ public fun com.idiotfrogs.friend.FriendRoute(capsuleId: kotlin.Long, viewModel: 
     - viewModel: UNSTABLE (has mutable properties or unstable members)
 
 @Composable
-public fun com.idiotfrogs.friend.FriendScreen(capsuleId: kotlin.Long, toastState: com.idiotfrogs.friend.FriendScreenActionState, data: com.idiotfrogs.friend.CollaboratorsData, onAction: kotlin.Function1<com.idiotfrogs.friend.FriendAction, kotlin.Unit>): kotlin.Unit
+public fun com.idiotfrogs.friend.FriendScreen(capsuleId: kotlin.Long, toastState: com.idiotfrogs.friend.FriendScreenActionState, data: com.idiotfrogs.friend.CollaboratorsData, canInvite: kotlin.Boolean, onAction: kotlin.Function1<com.idiotfrogs.friend.FriendAction, kotlin.Unit>): kotlin.Unit
   skippable: true
   restartable: true
   params:
     - capsuleId: STABLE (primitive type)
     - toastState: STABLE (class with no mutable properties)
     - data: STABLE (marked @Stable or @Immutable)
+    - canInvite: STABLE (primitive type)
     - onAction: STABLE (function type)
 
 @Composable
