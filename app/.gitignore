@@ -1,2 +1,4 @@
 /build
 /release/
+/dev/**/*.aab
+/prod/**/*.aab
