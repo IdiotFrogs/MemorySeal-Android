@@ -6,9 +6,11 @@ import com.idiotfrogs.domain.usecase.timecapsule.DelegationTimeCapsuleHostUseCas
 import com.idiotfrogs.domain.usecase.timecapsule.DeleteTimeCapsuleContributorsUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleCollaboratorsUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleInviteCodeUseCase
+import com.idiotfrogs.domain.usecase.timecapsule.GetTimeCapsuleStatusUseCase
 import com.idiotfrogs.domain.usecase.timecapsule.SearchTimeCapsuleCollaboratorsUseCase
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponse
 import com.idiotfrogs.model.timecapsule.TimeCapsuleCollaboratorsResponseData
+import com.idiotfrogs.model.timecapsule.TimeCapsuleStatus
 import com.idiotfrogs.util.base.DataUiState
 import com.idiotfrogs.util.base.BaseViewModel
 import com.idiotfrogs.util.paging.PaginationState
@@ -27,6 +29,7 @@ class FriendViewModel @AssistedInject constructor(
     private val appLinkManager: AppLinkManager,
     private val getTimeCapsuleInviteCodeUseCase: GetTimeCapsuleInviteCodeUseCase,
     private val getTimeCapsuleCollaboratorsUseCase: GetTimeCapsuleCollaboratorsUseCase,
+    private val getTimeCapsuleStatusUseCase: GetTimeCapsuleStatusUseCase,
     private val delegationTimeCapsuleHostUseCase: DelegationTimeCapsuleHostUseCase,
     private val deleteTimeCapsuleContributorsUseCase: DeleteTimeCapsuleContributorsUseCase,
     private val searchTimeCapsuleCollaboratorsUseCase: SearchTimeCapsuleCollaboratorsUseCase,
@@ -34,7 +37,10 @@ class FriendViewModel @AssistedInject constructor(
 
     override val container: Container<FriendUiState, FriendSideEffect> = container(
         initialState = FriendUiState(),
-        onCreate = { fetchFriend() }
+        onCreate = {
+            fetchFriend()
+            fetchInviteAvailability()
+        }
     )
 
     private fun fetchFriend() = safeLaunch {
@@ -63,6 +69,12 @@ class FriendViewModel @AssistedInject constructor(
                 reduce { state.copy(isLoading = false) }
                 postSideEffect(FriendSideEffect.NavigateToBack)
             }
+        }
+    }
+
+    private fun fetchInviteAvailability() = safeLaunch {
+        getTimeCapsuleStatusUseCase(capsuleId).onSuccess {
+            intent { reduce { state.copy(canInvite = it == TimeCapsuleStatus.BEFOREBURIED) } }
         }
     }
 
@@ -258,6 +270,7 @@ class FriendViewModel @AssistedInject constructor(
 data class FriendUiState(
     override val data: CollaboratorsData? = null,
     override val isLoading: Boolean = false,
+    val canInvite: Boolean = false,
 ) : DataUiState<CollaboratorsData>
 
 @Immutable

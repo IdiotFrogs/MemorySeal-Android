@@ -49,6 +49,9 @@ interface TimeCapsuleService {
     @GET("time-capsules/{capsuleId}")
     suspend fun getTimeCapsule(@Path("capsuleId") capsuleId: Long): TimeCapsuleResponse
 
+    @GET("time-capsules/{capsuleId}/status")
+    suspend fun getTimeCapsuleStatus(@Path("capsuleId") capsuleId: Long): TimeCapsuleStatus
+
     @GET("time-capsules/{capsuleId}/collaborators")
     suspend fun getTimesCapsuleCollaborators(
         @Path("capsuleId") capsuleId: Long,

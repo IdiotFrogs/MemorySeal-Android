@@ -30,6 +30,8 @@ interface TimeCapsuleDataSource {
 
     suspend fun getTimeCapsule(capsuleId: Long): TimeCapsuleResponse
 
+    suspend fun getTimeCapsuleStatus(capsuleId: Long): TimeCapsuleStatus
+
     suspend fun getTimesCapsuleCollaborators(
         capsuleId: Long,
         page: Int,

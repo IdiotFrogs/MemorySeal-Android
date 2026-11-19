@@ -118,6 +118,7 @@ fun FriendRoute(
                 capsuleId = capsuleId,
                 toastState = toastState,
                 data = data,
+                canInvite = uiState.canInvite,
                 onAction = viewModel::onAction,
             )
         }
@@ -132,6 +133,7 @@ fun FriendScreen(
     capsuleId: Long,
     toastState: FriendScreenActionState,
     data: CollaboratorsData,
+    canInvite: Boolean,
     onAction: (FriendAction) -> Unit,
 ) {
     val focusManager = LocalFocusManager.current
@@ -176,26 +178,28 @@ fun FriendScreen(
                     paddingValues = PaddingValues(horizontal = 0.dp, vertical = 16.dp),
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    FriendInviteButton(
-                        modifier = Modifier.weight(1f),
-                        text = "참여 링크 공유",
-                        icon = R.drawable.img_share,
-                        onClick = { onAction(FriendAction.InviteLinkShareClicked(capsuleId)) },
-                    )
-                    FriendInviteButton(
-                        modifier = Modifier.weight(1f),
-                        text = "참여 코드 복사",
-                        icon = R.drawable.img_copy,
-                        onClick = { onAction(FriendAction.InviteCodeCopyClicked(capsuleId)) },
-                    )
-                }
+                if (canInvite) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        FriendInviteButton(
+                            modifier = Modifier.weight(1f),
+                            text = "참여 링크 공유",
+                            icon = R.drawable.img_share,
+                            onClick = { onAction(FriendAction.InviteLinkShareClicked(capsuleId)) },
+                        )
+                        FriendInviteButton(
+                            modifier = Modifier.weight(1f),
+                            text = "참여 코드 복사",
+                            icon = R.drawable.img_copy,
+                            onClick = { onAction(FriendAction.InviteCodeCopyClicked(capsuleId)) },
+                        )
+                    }
 
-                Spacer(Modifier.height(20.dp))
+                    Spacer(Modifier.height(20.dp))
+                }
 
                 MSTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -361,6 +365,7 @@ fun FriendScreenPreview() {
     FriendScreen(
         capsuleId = 0L,
         toastState = FriendScreenActionState.IDLE,
+        canInvite = true,
         data = CollaboratorsData(
             collaborators = PaginationState(
                 items = listOf(
